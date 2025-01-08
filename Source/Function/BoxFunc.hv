@@ -149,7 +149,22 @@ BoxFunc := class extend BoxExeConstObj
 				return Execute(objs)
 			}
 		}
-		return new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
+		fCall := new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
+
+		ft := GetType()->{TypeFunc^}
+
+		if ft.ExtraResults.Size() != 0
+		{
+			tInt := TokenInt
+			tInt.Parsed = 0
+			subCall := innerTryGetFieldCall(fCall,tInt&)
+			if ft.ResultRef
+				subCall = new PtrToRef(subCall)
+			printf("hey %s\n",fCall.GetType().GetBADStr().Str())
+			return subCall
+		}
+
+		return fCall
 	}
 	
 	IsConstexpr := virtual false

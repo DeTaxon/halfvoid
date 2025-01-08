@@ -5,10 +5,15 @@ MakeItDouble := !(int x) -> int, int
 	result.0 = x*2
 }
 
+//TODO return x*2,x*3
+//TODO cehck if return ref as frist and others
+//TODO create a1,a2 := MultiParamResult()
+//TODO optimize c := MultiParamResult()
+
 main := !(char^[] args) -> int
 {
 	c := MakeItDouble(7)
-	printf("hey %i\n",c.0)
+	printf("hey %i\n",c)
 }
 
 
