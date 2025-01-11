@@ -9,13 +9,13 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		if itm.Down.GetValue() == "yield"
 			isYield = true
 
-		resultCall := BoxExeObj^
+		resultCalls := new List.{BoxExeObj^}
 
 		preRes := ReturnHalfState^
 
-		if itm.Down.Right is TokenIndent and itm.Down.Right->{TokenIndent^}.Value == "void"
+		if itm.Down.Right is TokenIndent and itm.Down.Right->{TokenIndent^}.Value == "void" //TODO void AND multiple vars?
 		{
-			preRes = new ReturnHalfState(itm.Down.Right,null,isYield)
+			resultCalls = null
 		}else{
 			dwnRes := TryGetExeCall(itm.Down.Right)
 			if dwnRes == null
@@ -23,8 +23,26 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 				CurrentWork?.SetErrorMessage(itm.Down.Right.MakeError("could not get result to return"))
 				return null
 			}
-			preRes = new ReturnHalfState(itm.Down.Right,dwnRes,isYield)
+			resultCalls.Push(dwnRes)
 		}
+		iter := itm.Down.Right.Right
+
+		while iter?.GetValue() == ","
+		{
+			iter = iter.Right
+
+			dwnRes := TryGetExeCall(iter)
+			if dwnRes == null
+			{
+				MakeErrorMsg(iter,"could not get result to return")
+				return null
+			}
+			resultCalls.Push(dwnRes)
+
+			iter = iter.Right
+		}
+		preRes = new ReturnHalfState(itm.Down.Right,resultCalls,isYield)
+
 
 		if CurrentReturns.IsAutoResult
 		{

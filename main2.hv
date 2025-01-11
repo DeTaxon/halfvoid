@@ -1,15 +1,18 @@
 
 
-MakeItDouble := !(int x) -> int, int
+MakeItDouble := !(int x) -> int//, int
 {
-	result.0 = x*2
+	return x*2//,x*3
 }
 
 //TODO return x*2,x*3
+//TODO interpreter supports multiple results
 //TODO cehck if return ref as frist and others
 //TODO create a1,a2 := MultiParamResult()
-//TODO optimize c := MultiParamResult()
+//TODO optimize c,y := MultiParamResult()
 
+
+//TODO ccheck autodeduct return
 main := !(char^[] args) -> int
 {
 	c := MakeItDouble(7)

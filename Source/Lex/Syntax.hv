@@ -679,7 +679,22 @@ RuleReturn := !(void^ itr)-> int
 
 	if not InDataR(It) return 0
 
-	return 2
+	size := 2
+
+	while It.GetValue() == ","
+	{
+		It = It.Right
+
+		if It == null return size
+		if not InDataR(It) return size
+		It = It.Right
+
+		size += 2
+
+		if It == null return size
+	}
+
+	return size
 }
 
 RuleIf := !(void^ itr)-> int

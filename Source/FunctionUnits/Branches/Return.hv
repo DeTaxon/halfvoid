@@ -62,32 +62,49 @@ BoxYield := class extend BoxReturn
 ReturnHalfState := class extend BoxExeObj
 {
 	isYield := bool
-	callObj := BoxExeObj^
+	callObjs := BoxExeObj^[]
 	returnObj := BoxExeObj^
 	errorToken := Token^
-	this := !(Token^ erToken,BoxExeObj^ toCall,bool iY) -> void
+	this := !(Token^ erToken,BoxExeObj^[] toCall,bool iY) -> void
 	{
 		errorToken = erToken
-		callObj = toCall
+		callObjs = toCall
 		isYield = iY
 	}
 
 	ResolveStep := !() -> void
 	{
-		if callObj != null
+		totalObjs := HybridQueue.{BoxExeObj^,50}
+
+		if callObjs != null and callObjs.Size() != 0
 		{
-			if callObj.GetType() != GTypeVoid
+			for callObj,callIndx : callObjs
 			{
-				rRef := CurrentReturns.ResultRef
+				if callObj.GetType() == GTypeVoid
+				{
+					totalObjs.Push(callObj)
+					continue
+				}
 
 				callObj2 := BoxExeObj^
-				resType := callObj.GetType()
+
+				rRef := CurrentReturns.ResultRef
 				funcType := CurrentReturns.ResultType
+
+				if callIndx > 0
+				{
+					ft := CurrentFunc.GetType()->{TypeFunc^}
+					rRef = ft.ExtraResults[callIndx - 1].IsRef
+					funcType = ft.ExtraResults[callIndx - 1].ItType
+				}
+
+				callObjs := List.{BoxExeObj^}
+				resType := callObj.GetType()
 				if rRef
 				{
 					if not callObj.IsMem()
 					{
-						CurrentWork?.SetErrorMessage(errorToken.MakeError("Can not return reference, object does not sits in memory"))
+						MakeErrorMsg(errorToken,"Can not return reference, object does not sits in memory")
 						return void
 					}
 				}
@@ -147,14 +164,22 @@ ReturnHalfState := class extend BoxExeObj
 						return void
 					}
 				}
+				totalObjs.Push(callObj)
 			}
 		}
-	 
+
+		resObj := BoxExeObj^
+		if totalObjs.Size() == 1
+		{
+			resObj = totalObjs[0]
+		}else if totalObjs.Size() > 1{
+			resObj = totalObjs[0]
+		}
 		if isYield
 		{
-			returnObj = new BoxYield(CurrentReturns.ExitLabel,callObj)
+			returnObj = new BoxYield(CurrentReturns.ExitLabel,resObj)
 		}else{
-			returnObj = new BoxReturn(CurrentReturns.ExitLabel,callObj)
+			returnObj = new BoxReturn(CurrentReturns.ExitLabel,resObj)
 		}
 	}
 	GetReturnObj := !() -> BoxExeObj^
@@ -163,15 +188,15 @@ ReturnHalfState := class extend BoxExeObj
 	}
 	IsReturnMem := !() -> bool
 	{
-		if callObj == null
+		if callObjs == null or callObjs.Size() == 0
 			return false
-		return callObj.IsMem()
+		return callObjs[0].IsMem()
 	}
 	GetSetType := !() -> Type^
 	{
-		if callObj == null
+		if callObjs == null or callObjs.Size() == 0 //TODOTODO check for multiple variables
 			return GTypeVoid
-		return callObj.GetType()
+		return callObjs[0].GetType()
 	}
 
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
