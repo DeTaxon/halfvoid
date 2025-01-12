@@ -10,6 +10,10 @@ BoxReturn := class extend BoxExeObj
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		if ResultCall? is BoxBlock
+		{
+			c := 40
+		}
 		ResultCall?.PrintDefaultUse(ctx)
 
 		if ctx.deferObjects.Size() == 0
@@ -75,6 +79,7 @@ ReturnHalfState := class extend BoxExeObj
 	ResolveStep := !() -> void
 	{
 		totalObjs := HybridQueue.{BoxExeObj^,50}
+		ft := CurrentFunc.GetType()->{TypeFunc^}
 
 		if callObjs != null and callObjs.Size() != 0
 		{
@@ -93,7 +98,6 @@ ReturnHalfState := class extend BoxExeObj
 
 				if callIndx > 0
 				{
-					ft := CurrentFunc.GetType()->{TypeFunc^}
 					rRef = ft.ExtraResults[callIndx - 1].IsRef
 					funcType = ft.ExtraResults[callIndx - 1].ItType
 				}
@@ -117,7 +121,7 @@ ReturnHalfState := class extend BoxExeObj
 						{
 							callObj2 = GetExchange(new UnrefFuncCall(callObj),funcType.GetPoint())
 						}else{
-							CurrentWork?.SetErrorMessage(errorToken.MakeError("result type does not compare with function result"))
+							MakeErrorMsg(errorToken,"result type does not compare with function result")
 							return void
 						}
 					}else{
@@ -147,10 +151,28 @@ ReturnHalfState := class extend BoxExeObj
 				}
 
 				objs := CheckExeDownList
-				objs.Push(CurrentReturns.ResultVar.CreateVarCall())
+
+				if ft.ExtraResults.Size() == 0
+				{
+					objs.Push(CurrentReturns.ResultVar.CreateVarCall())
+				}else{
+					if callIndx >= ft.GetResultCount()
+					{
+						MakeErrorMsg(errorToken,"too many results")
+						return void
+					}
+
+					varGet := CurrentReturns.ResultVar.CreateVarCall()
+					varIndx := TokenInt
+					varIndx.Parsed = callIndx
+
+					newSet := innerTryGetFieldCall(varGet,varIndx&)
+					assert(newSet != null)
+					objs.Push(newSet)
+				}
 				objs.Push(callObj2)
 
-				if rRef
+				if rRef and ft.GetResultCount() < 2
 				{
 					cns := List.{BoxExeConstObj^}
 					setPtrFunc := GPointStoreTemplate.GetFunc(objs,cns)
@@ -160,7 +182,7 @@ ReturnHalfState := class extend BoxExeObj
 					callObj = innerTryGetInfixCall(StringSpan("="),objs,errorToken)
 					if callObj == null
 					{
-						CurrentWork?.SetErrorMessage(errorToken.MakeError("Can not return value, no \"=\" operator"))
+						MakeErrorMsg(errorToken,"Can not return value, no \"=\" operator")
 						return void
 					}
 				}
@@ -173,7 +195,9 @@ ReturnHalfState := class extend BoxExeObj
 		{
 			resObj = totalObjs[0]
 		}else if totalObjs.Size() > 1{
-			resObj = totalObjs[0]
+			resBlock := new BoxBlock
+			resBlock.exeLines.Push(totalObjs[^])
+			resObj = resBlock
 		}
 		if isYield
 		{

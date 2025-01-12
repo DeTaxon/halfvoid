@@ -1,8 +1,8 @@
 
 
-MakeItDouble := !(int x) -> int//, int
+MakeItDouble := !(int x) -> int, int
 {
-	return x*2//,x*3
+	return x*2,x*3
 }
 
 //TODO return x*2,x*3
@@ -16,7 +16,7 @@ MakeItDouble := !(int x) -> int//, int
 main := !(char^[] args) -> int
 {
 	c := MakeItDouble(7)
-	printf("hey %i\n",c)
+	printf("hey %i %i %i\n",c,c&[1],c&[2])
 }
 
 

@@ -127,7 +127,10 @@ BoxBlock := class extend BoxExeObj
 		if quitLabel != null
 			ctx.deferObjects.PushFront(quitLabel)
 
-		exeLines[^].PrintCode(ctx)
+		for it : exeLines
+		{
+			it.PrintCode(ctx)
+		}
 
 		while deferObjsAtStart  !=  ctx.deferObjects.Size()
 		{

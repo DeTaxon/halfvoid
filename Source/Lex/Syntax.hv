@@ -681,7 +681,9 @@ RuleReturn := !(void^ itr)-> int
 
 	size := 2
 
-	while It.GetValue() == ","
+	It = It.Right
+
+	while It?.GetValue() == ","
 	{
 		It = It.Right
 
@@ -690,8 +692,6 @@ RuleReturn := !(void^ itr)-> int
 		It = It.Right
 
 		size += 2
-
-		if It == null return size
 	}
 
 	return size

@@ -150,6 +150,10 @@ BoxExeObj := class extend BoxUnit
 	{
 		return false
 	}
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		PrintDefaultUse(ctx)
+	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if IsMem()
