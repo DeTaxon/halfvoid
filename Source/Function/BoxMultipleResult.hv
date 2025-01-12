@@ -1,0 +1,34 @@
+
+BoxMultipleResult := class extends BoxExeObj
+{
+	BaseResult := BoxExeObj^
+	FirstResult := BoxExeObj^
+	FirstResultVar := LocalVar^
+
+
+	IsMem := virtual !() -> bool
+	{
+		return FirstResult.IsMem() 
+	}
+	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		BaseResult?.PrintDefaultUse(ctx)
+		FirstResultVar.PrintDefaultUse(ctx)
+		FirstResult.PrintPointPre(ctx)
+	}
+	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		FirstResult.PrintPointUse(ctx)
+	}
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		BaseResult?.PrintDefaultUse(ctx)
+		FirstResultVar.PrintDefaultUse(ctx)
+		FirstResult.PrintPre(ctx)
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		FirstResult.PrintUse(ctx)
+	}
+
+}
