@@ -1,11 +1,36 @@
 
 BoxMultipleResult := class extends BoxExeObj
 {
-	BaseResult := BoxExeObj^
+	BaseResult := BoxFuncCall^
 	FirstResult := BoxExeObj^
 	FirstResultVar := LocalVar^
 
+	MultyVars := AVLMap.{int,LocalVar^}
 
+	GetLocalVar := !(int indx) -> LocalVar^
+	{
+		if indx == 0
+			return FirstResultVar
+
+		return MultyVars[indx]?
+
+
+		tInt := TokenInt
+		tInt.Parsed = indx
+
+		assert(BaseResult.ResultVar != null)
+		subCall := innerTryGetFieldCall(BaseResult.ResultVar.CreateVarCall(),tInt&)
+
+		if subCall == null
+			return null
+
+		//TODO isRef
+		//if ft.ResultRef
+		//	subCall = new PtrToRef(subCall)
+		
+		result = ToLocalVar(subCall)
+		MultyVars[indx] = result
+	}
 	IsMem := virtual !() -> bool
 	{
 		return FirstResult.IsMem() 
@@ -14,6 +39,7 @@ BoxMultipleResult := class extends BoxExeObj
 	{
 		BaseResult?.PrintDefaultUse(ctx)
 		FirstResultVar.PrintDefaultUse(ctx)
+		MultyVars[^].PrintDefaultUse(ctx)
 		FirstResult.PrintPointPre(ctx)
 	}
 	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
@@ -24,6 +50,7 @@ BoxMultipleResult := class extends BoxExeObj
 	{
 		BaseResult?.PrintDefaultUse(ctx)
 		FirstResultVar.PrintDefaultUse(ctx)
+		MultyVars[^].PrintDefaultUse(ctx)
 		FirstResult.PrintPre(ctx)
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void

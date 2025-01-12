@@ -84,9 +84,9 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 		}
 		if par is BorrowedCallVar 
 		{
-			av := par->{BorrowedCallVar^}
-			if av.itName == asItm.Value
-				return GetParamCaptureVar(av.itVar.CreateVarCall(),asItm.Value,par,metFuncs)
+			av := par->{BorrowedCallVar^} 
+			if av.itVars.Contain(asItm.Value)
+				return GetParamCaptureVar(av.itVars[asItm.Value].CreateVarCall(),asItm.Value,par,metFuncs)
 		}
 		if par is AliasVar
 		{

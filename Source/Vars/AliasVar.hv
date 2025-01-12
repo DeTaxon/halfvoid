@@ -16,15 +16,23 @@ AliasVar := class extend BoxUnit
 
 BorrowedCallVar := class extend BoxUnit
 {
-	itName := StringSpan
 	itValue := BoxExeObj^
-	itVar := LocalVar^
 
-	this := !(StringSpan setName, BoxExeObj^ setValue,LocalVar^ setVar) -> void
+	itVars := AVLMap.{Str,LocalVar^}
+
+	this := !(BoxExeObj^ setValue) -> void
 	{
-		itName = setName
 		itValue = setValue
-		itVar = setVar
+	}
+	AddVarPair := !(Str varName,LocalVar^ varObj) -> void
+	{
+		itVars[varName] = varObj
+	}
+	this := !(Str setName, BoxExeObj^ setValue,LocalVar^ setVar) -> void
+	{
+		itValue = setValue
+
+		itVars[setName] = setVar
 	}
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{

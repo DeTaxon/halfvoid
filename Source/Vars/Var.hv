@@ -7,8 +7,34 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 	if iter.Right == null
 		return null
-	if iter.Right?.GetValue() != ":="
-		return null
+
+	manyNames := HybridQueue.{Str,5}
+
+	iter2 := obj.Down
+
+	while true
+	{
+		if iter2 is TokenIndent {
+			manyNames.Push(iter2.Value)
+		}else if iter2 is TokenString {
+			manyNames.Push(iter2.Value)
+		}
+		iter2 = iter2.Right
+
+		if iter2 == null return null
+
+		if iter2.GetValue() == ":="
+		{
+			iter = iter2.Left
+			break
+		}
+
+		if iter2.GetValue() != ","
+			return null
+		iter2 = iter2.Right
+
+		if iter2 == null return null
+	}
 
 	name := StringSpan
 	isSuffix := bool
@@ -96,11 +122,11 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				})
 				return mv
 			}else{
-				CurrentWork?.SetErrorMessage(varToken.MakeError("Compiler error, could not get class"))
+				MakeErrorMsg(varToken,"Compiler error, could not get class")
 				return null
 			}
 		}else{
-			CurrentWork?.SetErrorMessage(varToken.MakeError("Field variable must be inside method"))
+			MakeErrorMsg(varToken,"Field variable must be inside method")
 			return null
 		}
 	}
@@ -185,7 +211,25 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 					return new BorrowedCallVar(name,exeObj,fc.ResultVar)
 				}
-				
+			}
+			if exeObj is BoxMultipleResult
+			{ 
+				//TODO check too many vars for function,  c,r,x := Funct()
+				borrow := new BorrowedCallVar(exeObj)
+
+				for name, i : manyNames
+				{
+					lVar := exeObj.GetLocalVar(i)
+					if lVar == null
+					{
+						MakeErrorMsg(varToken,"Too many variables for multy result function")
+						return null
+					}
+						
+					borrow.AddVarPair(name,lVar)
+				}
+
+				return borrow
 			}
 			if refVar and not exeObj.IsMem()
 			{

@@ -85,7 +85,8 @@ BoxFunc := class extend BoxExeConstObj
 
 		if (fTyp.ResultType.IsComplexReturn() and not fTyp.ResultRef) or fTyp.ExtraResults.Size() != 0
 		{
-			fTyp.ResultType.PrintType(ctx)
+			norm := NormalizeFuncType(fTyp)
+			norm.Params[0].ItType.PrintType(ctx)
 			f^ << "* %result" 
 			needComma = true
 		}
