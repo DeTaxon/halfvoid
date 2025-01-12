@@ -24,9 +24,8 @@ BoxMultipleResult := class extends BoxExeObj
 		if subCall == null
 			return null
 
-		//TODO isRef
-		//if ft.ResultRef
-		//	subCall = new PtrToRef(subCall)
+		if BaseResult.callObj.GetType()->{TypeFunc^}.GetResult(indx).IsRef
+			subCall = new PtrToRef(subCall)
 		
 		result = ToLocalVar(subCall)
 		MultyVars[indx] = result

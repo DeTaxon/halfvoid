@@ -1,14 +1,13 @@
 
+z := 22
 
-MakeItDouble := !(int x) -> int, int
+MakeItDouble := !(int x) -> int, ref int
 {
-	return x*2,x*3
+	return x*2,z
 }
 
-//TODO return x*2,x*3
 //TODO interpreter supports multiple results
-//TODO cehck if return ref as frist and others
-//TODO create a1,a2 := MultiParamResult()
+//TODO cehck if return ref as frist
 //TODO optimize c,y := MultiParamResult()
 
 
@@ -16,7 +15,7 @@ MakeItDouble := !(int x) -> int, int
 main := !(char^[] args) -> int
 {
 	c,r := MakeItDouble(7)
-	printf("hey %i %i %i\n",c,r)
+	printf("hey %i %i %p %p\n",c,r,r&,z&)
 }
 
 
