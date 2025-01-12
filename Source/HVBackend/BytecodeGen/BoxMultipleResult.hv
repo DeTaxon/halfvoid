@@ -1,0 +1,10 @@
+AppendClass BoxMultipleResult
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		BaseResult?.WriteMC(ctx)
+		FirstResultVar.WriteMC(ctx)
+		MultyVars[^].WriteMC(ctx)
+		result = FirstResult.WriteMC(ctx)
+	}
+}

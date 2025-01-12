@@ -8,9 +8,9 @@ AppendClass BoxFuncBody
 		fType := GetType()->{TypeFunc^}
 		resType := fType.ResultType
 		ctx.InputsIndxCount = Params.Size()
-		if resType != GTypeVoid
+		if resType != GTypeVoid or fType.ExtraResults.Size() != 0
 		{
-			if resType.IsComplexReturn() and not fType.ResultRef
+			if (resType.IsComplexReturn() and not fType.ResultRef) or fType.ExtraResults.Size() != 0
 			{
 				ctx.InputsIndxStart = 1
 				ctx.InputsIndxCount += 1

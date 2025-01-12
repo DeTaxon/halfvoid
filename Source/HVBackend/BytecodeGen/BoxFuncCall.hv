@@ -16,6 +16,9 @@ AppendClass BoxFuncCall
 
 			isComplex := fType.ResultType.IsComplexReturn() and not fType.ResultRef
 
+			if fType.ExtraResults.Size() != 0
+				isComplex = true
+
 			if ResultVar != null
 			{
 				ctx.AddLocalVar(ResultVar)
@@ -62,7 +65,7 @@ AppendClass BoxFuncCall
 
 			if fType.ResultType != GTypeVoid //TODO ref
 			{
-				if fType.ResultType.IsComplexReturn() and not fType.ResultRef
+				if (fType.ResultType.IsComplexReturn() and not fType.ResultRef) or fType.ExtraResults.Size() != 0
 				{
 					resultId = ResultVar.CreateVarCall().WriteMC(ctx).CreatedId
 				}else{

@@ -4,6 +4,8 @@ MCInterpFunction2 := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] in
 	fType := interpFunc.BaseFunction.GetType()->{TypeFunc^}
 
 	isComplex := fType.ResultType.IsComplexReturn() and not fType.ResultRef
+	if fType.ExtraResults.Size() != 0
+		isComplex = true
 
 	if isComplex and resultPtr != null
 	{
@@ -161,7 +163,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					vTableIndx := 0
 					fType := fncHV->{BuildInVirtualCall^}.wrappedFunc.GetType()->{TypeFunc^}
 
-					if fType.ResultType.IsComplexReturn() and not fType.ResultRef
+					if (fType.ResultType.IsComplexReturn() and not fType.ResultRef) or fType.ExtraResults.Size() != 0
 						vTableIndx = 1
 			
 					v1 := thisFrame.GetObjectPtr(indxs[vTableIndx])
