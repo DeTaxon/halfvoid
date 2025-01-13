@@ -201,6 +201,11 @@ ToLocalVar := !(BoxExeObj^ itm,Str varName) -> LocalVar^
 		return mainVar
 	}
 }
+ToFakeLocalVar := !(BoxExeObj^ itm,Str varName = "") -> LocalVar^
+{
+	result = new LocalVar(varName,itm.GetType(),true,false)
+	result.proxyOut.Down = itm
+}
 
 
 ConstMapToList := !(AVLMap.{Str,BoxUnit^} cMap, List.{BoxUnit^} cList) -> void

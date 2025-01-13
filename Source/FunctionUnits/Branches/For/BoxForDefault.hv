@@ -36,7 +36,7 @@ BoxFor := class extend BoxExeObj
 
 					objs0 := CheckExeDownList
 					objs0.Push(CreatedIndex.CreateVarCall())
-					CreatedIndexInc = CreateFuncCall(StringSpan("++"),objs0)
+					CreatedIndexInc = CreateFuncCall("++",objs0)
 					assert(CreatedIndexInc != null)
 				}
 				it.IndVar = new LocalVar(it.IndexName,GTypeInt,true,false)

@@ -2,16 +2,20 @@
 BoxMultipleResult := class extends BoxExeObj
 {
 	BaseResult := BoxFuncCall^
-	FirstResult := BoxExeObj^
-	FirstResultVar := LocalVar^
 
 	MultyVars := AVLMap.{int,LocalVar^}
 
+	this := !(BoxFuncCall^ funcCall) -> void
+	{
+		
+		BaseResult = funcCall
+		FirstResultVar := GetLocalVar(0)
+		ObjType = FirstResultVar.CreateVarCall().GetType()
+
+	}
+
 	GetLocalVar := !(int indx) -> LocalVar^
 	{
-		if indx == 0
-			return FirstResultVar
-
 		return MultyVars[indx]?
 
 
@@ -27,34 +31,30 @@ BoxMultipleResult := class extends BoxExeObj
 		if BaseResult.callObj.GetType()->{TypeFunc^}.GetResult(indx).IsRef
 			subCall = new PtrToRef(subCall)
 		
-		result = ToLocalVar(subCall)
+		result = ToFakeLocalVar(subCall)
 		MultyVars[indx] = result
 	}
 	IsMem := virtual !() -> bool
 	{
-		return FirstResult.IsMem() 
+		return true
 	}
 	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		BaseResult?.PrintDefaultUse(ctx)
-		FirstResultVar.PrintDefaultUse(ctx)
 		MultyVars[^].PrintDefaultUse(ctx)
-		FirstResult.PrintPointPre(ctx)
 	}
 	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		FirstResult.PrintPointUse(ctx)
+		GetLocalVar(0).CreateVarCall().PrintPointUse(ctx)
 	}
 	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		BaseResult?.PrintDefaultUse(ctx)
-		FirstResultVar.PrintDefaultUse(ctx)
 		MultyVars[^].PrintDefaultUse(ctx)
-		FirstResult.PrintPre(ctx)
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		FirstResult.PrintUse(ctx)
+		GetLocalVar(0).CreateVarCall().PrintUse(ctx)
 	}
 
 }

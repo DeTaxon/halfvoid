@@ -36,7 +36,7 @@ ForSubObjects := class
 		}
 		if getForCall == null
 		{
-			getForCall = CreateFuncCall(StringSpan("for"),objs7)
+			getForCall = CreateFuncCall("for",objs7)
 		}
 
 		if getForCall == null
@@ -157,24 +157,36 @@ ForSubObjects := class
 			return void
 		}
 
+
 		GetCall = iCall
 		IsFinished = iFins
 		HaveValue = haveValue
 
-		ValueVar = new LocalVar(ValueName,iCall.GetType(),true,iCall.IsMem())
-		CurrentFunc.AddLocalVar(ValueVar)
-
-		objs8 := CheckExeDownList
-		if iCall.IsMem()
+		if iCall is BoxMultipleResult
 		{
-			objs8.Push(ValueVar.CreateVarBaseCall())
-			objs8.Push(new UnrefFuncCall(iCall))
+			ValueVar = iCall.GetLocalVar(0)
+			ValueVar.itName = ValueName
+			IndVar = iCall.GetLocalVar(1) //TODOTODO steal var, not a copy
+			IndVar.itName = IndexName
+
+			CallGetValue = iCall
 		}else{
-			objs8.Push(ValueVar.CreateVarBaseCall())
-			objs8.Push(iCall)
+			ValueVar = new LocalVar(ValueName,iCall.GetType(),true,iCall.IsMem())
+			CurrentFunc.AddLocalVar(ValueVar)
+
+			objs8 := CheckExeDownList
+			if iCall.IsMem()
+			{
+				objs8.Push(ValueVar.CreateVarBaseCall())
+				objs8.Push(new UnrefFuncCall(iCall))
+			}else{
+				objs8.Push(ValueVar.CreateVarBaseCall())
+				objs8.Push(iCall)
+			}
+			CallGetValue = CreateFuncCall("=",objs8)
+			assert(CallGetValue != null)
 		}
-		CallGetValue = CreateFuncCall(StringSpan("="),objs8)
-		assert(CallGetValue != null)
+
 	}
 
 	"=" := default

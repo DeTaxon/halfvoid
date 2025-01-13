@@ -8,11 +8,50 @@ MakeItDouble := !(int x) -> int, int
 //TODO cycle for works with nultiple results
 //TODO interpreter supports multiple results, for cycle
 
+BaseFor := class
+{
+	start := int
+	end := int
+
+	doub := int
+
+	HaveValue := !() -> bool
+	{
+		return start <= end
+	}
+	"()" := !() -> int, int
+	{
+		z = start + 70
+		return start, z
+	}
+	Inc := !() -> void
+	{
+		start += 1
+	}
+
+}
+
+BaseClass := class
+{
+	"for" := !() -> BaseFor
+	{
+		result.end = 10
+	}
+}
 
 main := !(char^[] args) -> int
 {
-	c,r := MakeItDouble(7)
-	printf("hey %i %i\n",c,r)
+	//c,r := MakeItDouble(7)
+	//printf("hey %i %i\n",c,r)
+	//
+	
+	cc := BaseClass
+
+	for i,j : cc
+	{
+		printf("test %i %i\n",i,j)
+		printf("b %p %p\n",j&,z&)
+	}
 }
 
 

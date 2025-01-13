@@ -5,7 +5,6 @@ AppendClass BoxIfTrueOnly
 	IsEditSupported := virtual true
 	ElementName := virtual "If"
 
-
 	SubElementsCount := virtual !() -> int { return 2 }
 	GetSubElement := virtual !(int index) -> HV_Object^
 	{ 

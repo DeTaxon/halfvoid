@@ -156,22 +156,7 @@ BoxFunc := class extend BoxExeConstObj
 
 		if ft.ExtraResults.Size() != 0
 		{
-			tInt := TokenInt
-			tInt.Parsed = 0
-
-			assert(fCall.ResultVar != null)
-			subCall := innerTryGetFieldCall(fCall.ResultVar.CreateVarCall(),tInt&) //TODO hide code to BoxMultipleResult constructor
-			if ft.ResultRef
-				subCall = new PtrToRef(subCall)
-			
-			multyRes := new BoxMultipleResult
-
-			multyRes.BaseResult = fCall
-			multyRes.FirstResultVar = ToLocalVar(subCall)
-			multyRes.FirstResult = multyRes.FirstResultVar.CreateVarCall()
-			multyRes.ObjType = multyRes.FirstResult.GetType()
-
-			return multyRes
+			return new BoxMultipleResult(fCall)
 		}
 
 		return fCall
