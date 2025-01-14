@@ -43,17 +43,28 @@ GetItemUser := !(Str name) -> BoxExeObj^
 
 		if it.impClass == null
 		{
-			it.bodyClass.AwaitReadyState()
-			it.bodyClass.AwaitTypeState()
-			resType := it.bodyClass.ItType
-			tmpl := intGetTemplate("internalHVCreateBase")
-			assert(tmpl != null)
-			fnc := tmpl.GetFunc(![],![resType])
-			assert(fnc != null)
-			
-			mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
-			MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
+			if it.startedCompile
+				continue
+
+			it.startedCompile = true
+
+			SubWork(() ==> {
+				it.bodyClass.AwaitReadyState()
+				it.bodyClass.AwaitTypeState()
+				resType := it.bodyClass.ItType
+				tmpl := intGetTemplate("internalHVCreateBase")
+				assert(tmpl != null)
+				fnc := tmpl.GetFunc(![],![resType])
+				assert(fnc != null)
+				
+				mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
+				MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
+				it.finishedRun = true
+			})
 		}
+		if not it.finishedRun
+			continue
+
 		res := BoxExeObj^
 		res = it.impClass?.GetItem(name)?->{BoxExeObj^}
 		if res? is in BoxExeObj
@@ -68,6 +79,8 @@ UserModule := class
 	bodyClass := BoxClassBody^
 	impClass := internalHVModuleBase^
 
+	startedCompile := bool
+	finishedRun := bool
 	isCompiled := bool
 	compileWork := CWorkUserModuleCompilation^
 

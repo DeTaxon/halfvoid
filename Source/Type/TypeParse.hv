@@ -37,13 +37,10 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{Str,BoxUnit^}^ resCnsts) -> Type^
 		}
 	}
 
-	if name == "glFuncsClass" //TODO i cant use this, due to recursion
+	obj := GetItemUser(name)
+	if obj? is in Type
 	{
-		obj := GetItemUser(name)
-		if obj? is in Type
-		{
-			return obj->{Type^}
-		}
+		return obj->{Type^}
 	}
 
 	return null
