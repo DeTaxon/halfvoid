@@ -56,7 +56,7 @@ JsonNode := class
 
 	GetStr := !() -> StringSpan { result = itValue }
 
-	"[]" := !(StringView^ walkPath) -> JsonNode^
+	"[]" := !(Str walkPath) -> JsonNode^
 	{
 		itms := HybridQueue.{StringSpan,20}
 		walkPath.DivideStr(" ",x ==> { itms.Push(x)}) 

@@ -40,6 +40,8 @@ WorkBag := CompilerWork
 
 NonStopBuild := false
 
+ProjectSettings := ProjectSettingsType^
+
 mainFuncName := "internalHVEntryPoint"
 
 OutputFile := char^
@@ -79,6 +81,40 @@ main := !(char^[] args) -> int
 
 
 	AddCompilerVars := List.{Str}
+
+	if args.Size() == 1
+	{
+		projData := FSGetFile("HVProject.json")
+		if projData == null
+		{
+			printf("no input data, suggest to create empty HVProject.json file for zero input usage\n")
+			return 0
+		}
+		ProjectSettings := new ProjectSettingsType
+
+		if not ProjectSettings.LoadSettings(projData)
+		{
+			printf("corrupted project file\n")
+			return 0
+		}
+
+		totalSettings := ProjectSettings.CollectSettings()
+
+		if totalSettings != null
+		{
+			for it : totalSettings.UsedFiles
+			{
+				file := FSGetFile(it)
+				if file == null
+				{
+					printf("file not found %s\n",it)
+				}
+				fileBox := new BoxFile(file)
+				CodeFiles.Push(fileBox)
+				CodeSpaces[2000].Files.Push(fileBox)
+			}
+		}
+	}
 
 	i := 1
 	while i < args.Size()

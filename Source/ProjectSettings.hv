@@ -1,0 +1,70 @@
+ProjectSettingsType := class extends TGCObject
+{
+	itFile := File^
+
+	settingsSets := List.{SettingsSet^}
+
+	this := !() -> void
+	{
+	}
+
+
+	CollectSettings := !() -> SettingsSet^
+	{
+
+	}
+
+	LoadSettings := !(File^ fil) -> bool
+	{
+		itFile = fil
+
+		if fil.Size() == 0
+			return true
+
+		fileData := itFile.GetBlob()
+
+		js := new Json
+
+		if not js.ParseString(fileData.GetPointer(),fileData.Size())
+			return false
+		js.Print(0)
+
+		compilerSets := js^["CompilerSettingsList"]
+		if compilerSets != null
+		{
+			for nodes : compilerSets^
+			{
+				
+			}
+		}
+
+		return true
+	}
+	SaveSettings := !() -> void
+	{
+		
+	}
+}
+
+SettingsUsedFolders := class extends TGCObject
+{
+	Level := int
+	FolderPath := Str
+
+	"=" := default
+}
+
+SettingsSet := class extends TGCObject
+{
+	KeyVals := AVLMap.{Str,Str}
+
+	InheritedSets := List.{Str}
+
+	UsedFiles := List.{Str}
+	UsedFolders := List.{SettingsUsedFolders}
+
+	CacheFilePath := Str?
+	OutputFilePath := Str?
+
+	ClangFlags := Str?
+}

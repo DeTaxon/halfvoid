@@ -1,0 +1,12 @@
+{
+	"CompilerSettingsList" : [
+		{
+			"Name" : "Main",
+			"Files" : ["main2.hv"],
+			"Folders" : {
+				"Level" : 0,
+				"FolderPath" : "StandardLibrary/"
+			}
+		}
+	]
+}
