@@ -44,7 +44,7 @@ ProjectSettings := ProjectSettingsType^
 
 mainFuncName := "internalHVEntryPoint"
 
-OutputFile := char^
+OutputFile := Str
 main := !(char^[] args) -> int
 {	
 	GCompileThread = CurrentThread 
@@ -102,6 +102,7 @@ main := !(char^[] args) -> int
 
 		if totalSettings != null
 		{
+			OutputFile = totalSettings.BytecodeFilePath?
 			for it : totalSettings.UsedFiles
 			{
 				file := FSGetFile(it)
@@ -112,6 +113,28 @@ main := !(char^[] args) -> int
 				fileBox := new BoxFile(file)
 				CodeFiles.Push(fileBox)
 				CodeSpaces[2000].Files.Push(fileBox)
+			}
+			for it : totalSettings.UsedFolders
+			{
+				num := it.Level
+				FSReadFolder(StringSpan(it.FolderPath),true,zObj ==> {
+					if zObj is not in File
+						return void
+
+					zFil := zObj->{File^}
+					zFil.IncRef()//TODO memory
+					nm := zFil.GetName()
+					if nm.End == ".hv" or nm.End == osHVFile
+					{
+						fObj := new BoxFile(zFil)
+						CodeFiles.Push(fObj)
+						CodeSpaces[num].Files.Push(fObj)
+					}else if nm.End == ".clib" or nm.End == osCLIBFile
+					{
+						spc := CodeSpaces[num]&
+						spc.Modules.Push(new CLib(zFil,spc))
+					}
+				})
 			}
 		}
 	}

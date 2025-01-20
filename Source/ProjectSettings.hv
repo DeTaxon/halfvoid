@@ -2,7 +2,7 @@ ProjectSettingsType := class extends TGCObject
 {
 	itFile := File^
 
-	settingsSets := List.{SettingsSet^}
+	SettingSets := List.{SettingsSet^}
 
 	this := !() -> void
 	{
@@ -11,7 +11,9 @@ ProjectSettingsType := class extends TGCObject
 
 	CollectSettings := !() -> SettingsSet^
 	{
-
+		if SettingSets.Size() != 0
+			return SettingSets[0]
+		return null
 	}
 
 	LoadSettings := !(File^ fil) -> bool
@@ -27,14 +29,16 @@ ProjectSettingsType := class extends TGCObject
 
 		if not js.ParseString(fileData.GetPointer(),fileData.Size())
 			return false
-		js.Print(0)
 
 		compilerSets := js^["CompilerSettingsList"]
 		if compilerSets != null
 		{
-			for nodes : compilerSets^
+			for node : compilerSets^
 			{
-				
+				newNode := new SettingsSet
+				newNode.ParseJson(node)
+
+				SettingSets.Push(newNode)
 			}
 		}
 
@@ -51,11 +55,18 @@ SettingsUsedFolders := class extends TGCObject
 	Level := int
 	FolderPath := Str
 
+	"this" := !(int val, Str setSt) -> void
+	{
+		Level = val
+		FolderPath = setSt
+	}
 	"=" := default
 }
 
 SettingsSet := class extends TGCObject
 {
+	Name := Str
+
 	KeyVals := AVLMap.{Str,Str}
 
 	InheritedSets := List.{Str}
@@ -64,7 +75,23 @@ SettingsSet := class extends TGCObject
 	UsedFolders := List.{SettingsUsedFolders}
 
 	CacheFilePath := Str?
-	OutputFilePath := Str?
+	BytecodeFilePath := Str?
 
 	ClangFlags := Str?
+
+	ParseJson := !(JsonNode^ node) -> void
+	{
+		Name = node^["Name"]?.GetStr()
+
+		for usedFolder : node^["Folders"]
+		{
+			UsedFolders.Emplace(usedFolder^["Level"]?.GetStr().ToInt(),usedFolder^["FolderPath"]?.GetStr())
+		}
+		for usedFile : node^["Files"]
+		{
+			UsedFiles.Push(usedFile.GetStr())
+		}
+
+		BytecodeFilePath = node^["BytecodeFilePath"]?.GetStr()
+	}
 }

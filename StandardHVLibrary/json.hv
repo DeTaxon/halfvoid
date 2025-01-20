@@ -54,7 +54,7 @@ JsonNode := class
 	IsRecord := !() -> bool { return itType == jsonTypeRecord}
 	IsArray := !() -> bool { return itType == jsonTypeArray}
 
-	GetStr := !() -> StringSpan { result = itValue }
+	GetStr := !() -> Str { result = itValue }
 
 	"[]" := !(Str walkPath) -> JsonNode^
 	{

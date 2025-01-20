@@ -3,10 +3,13 @@
 		{
 			"Name" : "Main",
 			"Files" : ["main2.hv"],
-			"Folders" : {
-				"Level" : 0,
-				"FolderPath" : "StandardLibrary/"
-			}
+			"Folders" : [
+				{
+					"Level" : 0,
+					"FolderPath" : "StandardHVLibrary/"
+				}
+			],
+			"BytecodeFilePath" : "/tmp/out.ll"
 		}
 	]
 }
