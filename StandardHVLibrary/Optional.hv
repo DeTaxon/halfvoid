@@ -16,6 +16,7 @@ Optional := class .{@T}
 			return value
 		return void
 	}
+	Get := !() -> T { assert(isSet) return value } // error prone
 	GetOr := !(T onBad) -> T { return isSet ?: value : onBad }
 	"=" := !(T newValue) -> void {
 		value = newValue

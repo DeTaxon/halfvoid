@@ -76,6 +76,7 @@ SettingsSet := class extends TGCObject
 
 	CacheFilePath := Str?
 	BytecodeFilePath := Str?
+	OutputFilePath := Str?
 
 	ClangFlags := Str?
 
@@ -93,5 +94,6 @@ SettingsSet := class extends TGCObject
 		}
 
 		BytecodeFilePath = node^["BytecodeFilePath"]?.GetStr()
+		OutputFilePath = node^["OutputFilePath"]?.GetStr()
 	}
 }

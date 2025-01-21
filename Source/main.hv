@@ -41,6 +41,7 @@ WorkBag := CompilerWork
 NonStopBuild := false
 
 ProjectSettings := ProjectSettingsType^
+CompileSettings := SettingsSet^
 
 mainFuncName := "internalHVEntryPoint"
 
@@ -98,12 +99,12 @@ main := !(char^[] args) -> int
 			return 0
 		}
 
-		totalSettings := ProjectSettings.CollectSettings()
+		CompileSettings = ProjectSettings.CollectSettings()
 
-		if totalSettings != null
+		if CompileSettings != null
 		{
-			OutputFile = totalSettings.BytecodeFilePath?
-			for it : totalSettings.UsedFiles
+			OutputFile = CompileSettings.BytecodeFilePath?
+			for it : CompileSettings.UsedFiles
 			{
 				file := FSGetFile(it)
 				if file == null
@@ -114,7 +115,7 @@ main := !(char^[] args) -> int
 				CodeFiles.Push(fileBox)
 				CodeSpaces[2000].Files.Push(fileBox)
 			}
-			for it : totalSettings.UsedFolders
+			for it : CompileSettings.UsedFolders
 			{
 				num := it.Level
 				FSReadFolder(StringSpan(it.FolderPath),true,zObj ==> {
@@ -384,6 +385,21 @@ main := !(char^[] args) -> int
 	//		printf("Depth %i Count %i\n",ind,it)
 	//	}
 	//}
+	
+
+	if CompileSettings?.OutputFilePath.IsSet()
+	{
+		assert(CompileSettings.BytecodeFilePath.IsSet())
+
+		setPath := CompileSettings.OutputFilePath.Get()
+
+		echo := TEchoStream
+
+		echo << "clang " << CompileSettings.BytecodeFilePath.Get() << " -o " << CompileSettings.OutputFilePath.Get()
+		echo << " -g -lm"
+
+		system(echo.GetStr().Str())
+	}
 
 	exit(0)
 	return 0

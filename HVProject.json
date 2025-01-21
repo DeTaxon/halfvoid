@@ -9,7 +9,8 @@
 					"FolderPath" : "StandardHVLibrary/"
 				}
 			],
-			"BytecodeFilePath" : "/tmp/out.ll"
+			"BytecodeFilePath" : "/tmp/out.ll",
+			"OutputFilePath" : "test"
 		}
 	]
 }

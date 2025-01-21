@@ -41,17 +41,7 @@ BaseClass := class
 
 main := !(char^[] args) -> int
 {
-	//c,r := MakeItDouble(7)
-	//printf("hey %i %i\n",c,r)
-	//
-	
-	cc := BaseClass
-
-	for i,j : cc
-	{
-		printf("test %i %i\n",i,j)
-		printf("b %p %p\n",j&,z&)
-	}
+	printf("yeparonie\n")
 }
 
 
