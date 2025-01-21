@@ -129,7 +129,6 @@ LayoutHorizontal := class extend LayoutBase
 			if it.0 is LayoutSpacer
 				continue
 
-			newOffset := offset + it.1
 			it.0.PushDraw(ctx,cmdB,offset + it.1)
 		}
 	}
@@ -140,7 +139,6 @@ LayoutHorizontal := class extend LayoutBase
 			if it.0 is LayoutSpacer
 				continue
 
-			newOffset := offset + it.1
 			it.0.DrawGL(ctx,offset + it.1)
 		}
 	}

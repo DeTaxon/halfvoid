@@ -1,87 +1,102 @@
-TextLabel := class extend TGCObject
+TextLabel := class extend GUIObject
 {
-	itText := String^
-	itFont := Font^
-	itMesh := TVkMesh^
-	textSize := vec2f
-	needChange := bool
+	itText := Str
+	//itFont := Font^
+	//itMesh := TVkMesh^
+	//textSize := vec2f
+	//needChange := bool
 
-	this := !(Font^ fnt, StringView data) -> void
+	this := !(Str data) -> void
 	{
-		itFont = fnt
-		itText = data.GetString()
-		needChange = true
+		//itFont = fnt
+		itText = data
+		//needChange = true
 	}
-	CreateMesh := !(VulkanInstance^ inst) -> void
+	//CreateMesh := !(VulkanInstance^ inst) -> void
+	//{
+	//	if itText->{void^}  == null
+	//		return void
+
+	//	xPos := float
+	//	yPos := float
+
+	//	msh := Vector.{u8}(GUIVertex->TypeSize*itText.Size()*4)
+	//	mshIndex := Vector.{u8}(itText.Size()*4*6)
+
+	//	ptr := msh.GetPointer()->{GUIVertex^}
+	//	ind := mshIndex.GetPointer()->{int^}
+
+	//	for i : itText.Size()
+	//	{
+	//		test := stbtt_aligned_quad
+
+	//		stbtt_GetPackedQuad(itFont.packedChars.GetPointer(),512,512,itText.Str()[i],xPos&,yPos&,test&,1)
+
+	//		for it,j : ![!{false,false},!{true,false},!{false,true},!{true,true}]
+	//		{
+	//			ptr[i*4 + j].pos[0] = it.0 ?: test.x1 : test.x0
+	//			ptr[i*4 + j].pos[1] = it.1 ?: test.y1 : test.y0
+	//			ptr[i*4 + j].uv[0] = it.0 ?: test.s1 : test.s0
+	//			ptr[i*4 + j].uv[1] = it.1 ?: test.t1 : test.t0
+
+	//			for k : 4
+	//				ptr[i*4 + j].color[k] = 255
+	//		}
+
+	//		ind[i*6 + 0] = i*4 + 0
+	//		ind[i*6 + 1] = i*4 + 1
+	//		ind[i*6 + 2] = i*4 + 2
+	//		ind[i*6 + 3] = i*4 + 2
+	//		ind[i*6 + 4] = i*4 + 1
+	//		ind[i*6 + 5] = i*4 + 3
+	//	}
+	//	itMesh = inst.CreateMesh(msh&,mshIndex&,VKType(VType_UInt32,1))
+	//	textSize = vec2f(xPos,yPos)
+	//}
+	GetLayout := virtual !(LayoutContext^ ctx) -> GUILayoutInfo
 	{
-		if itText->{void^}  == null
-			return void
-
-		xPos := float
-		yPos := float
-
-		msh := Vector.{u8}(GUIVertex->TypeSize*itText.Size()*4)
-		mshIndex := Vector.{u8}(itText.Size()*4*6)
-
-		ptr := msh.GetPointer()->{GUIVertex^}
-		ind := mshIndex.GetPointer()->{int^}
-
-		for i : itText.Size()
+		switch ctx.DrawType
 		{
-			test := stbtt_aligned_quad
-
-			stbtt_GetPackedQuad(itFont.packedChars.GetPointer(),512,512,itText.Str()[i],xPos&,yPos&,test&,1)
-
-			for it,j : ![!{false,false},!{true,false},!{false,true},!{true,true}]
-			{
-				ptr[i*4 + j].pos[0] = it.0 ?: test.x1 : test.x0
-				ptr[i*4 + j].pos[1] = it.1 ?: test.y1 : test.y0
-				ptr[i*4 + j].uv[0] = it.0 ?: test.s1 : test.s0
-				ptr[i*4 + j].uv[1] = it.1 ?: test.t1 : test.t0
-
-				for k : 4
-					ptr[i*4 + j].color[k] = 255
-			}
-
-			ind[i*6 + 0] = i*4 + 0
-			ind[i*6 + 1] = i*4 + 1
-			ind[i*6 + 2] = i*4 + 2
-			ind[i*6 + 3] = i*4 + 2
-			ind[i*6 + 4] = i*4 + 1
-			ind[i*6 + 5] = i*4 + 3
+		case "Text"
+			result.LayoutTypeW = 1
+			result.Sizes.x = itText.Size()
+			result.LayoutTypeH = 1
+			result.Sizes.y = 1
 		}
-		itMesh = inst.CreateMesh(msh&,mshIndex&,VKType(VType_UInt32,1))
-		textSize = vec2f(xPos,yPos)
 	}
-	GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	DrawCli := virtual !(DrawCliContext^ ctx,vec2i offset) -> void
 	{
-		if needChange
-		{
-			CreateMesh(ctx.inst)
-			needChange = false
-		}
+		mvaddstr(offset.y,offset.x,itText.NonNullStr())
 	}
-	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
-	{
-		if needChange
-		{
-			CreateMesh(ctx.inst)
-			needChange = false
-		}
+	//GetLayout := virtual !(VkOverlayContext^ ctx) -> Tuple.{vec2f,int,int}
+	//{
+	//	if needChange
+	//	{
+	//		CreateMesh(ctx.inst)
+	//		needChange = false
+	//	}
+	//}
+	//PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	//{
+	//	if needChange
+	//	{
+	//		CreateMesh(ctx.inst)
+	//		needChange = false
+	//	}
 
-		ctx.textDrawShader.ApplyShaderToQueue(ctx.inst,cmdB,ctx.w,ctx.h)
+	//	ctx.textDrawShader.ApplyShaderToQueue(ctx.inst,cmdB,ctx.w,ctx.h)
 
-		sts := VkDescriptorSet[1]
-		sts[0] = itFont.baseAtlas.atlasDescriptor
-		ctx.inst.Funcs.vkCmdBindDescriptorSets(cmdB,VK_PIPELINE_BIND_POINT_GRAPHICS,ctx.textDrawLayout.Get(),0,1,sts[0]&,0,null)
+	//	sts := VkDescriptorSet[1]
+	//	sts[0] = itFont.baseAtlas.atlasDescriptor
+	//	ctx.inst.Funcs.vkCmdBindDescriptorSets(cmdB,VK_PIPELINE_BIND_POINT_GRAPHICS,ctx.textDrawLayout.Get(),0,1,sts[0]&,0,null)
 
-		itMesh.Bind(cmdB)
-		scales := float[4]
-		scales[0] = 1.0 / ctx.w
-		scales[1] = 1.0 / ctx.h
-		scales[2] = offset.x
-		scales[3] = offset.y
-		ctx.inst.Funcs.vkCmdPushConstants(cmdB,ctx.textDrawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
-		ctx.inst.Funcs.vkCmdDrawIndexed(cmdB,itText.Size()*6,1,0,0,0)
-	}
+	//	itMesh.Bind(cmdB)
+	//	scales := float[4]
+	//	scales[0] = 1.0 / ctx.w
+	//	scales[1] = 1.0 / ctx.h
+	//	scales[2] = offset.x
+	//	scales[3] = offset.y
+	//	ctx.inst.Funcs.vkCmdPushConstants(cmdB,ctx.textDrawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,4*4,scales&)
+	//	ctx.inst.Funcs.vkCmdDrawIndexed(cmdB,itText.Size()*6,1,0,0,0)
+	//}
 }

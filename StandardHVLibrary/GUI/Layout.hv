@@ -107,9 +107,17 @@ LayoutBase := class extend GUIObject
 	}
 }
 
+LayoutDrawType := enum
+{
+	"Text",
+	"Pixel"
+}
+
 LayoutContext := class
 {
 	w := float
 	h := float
+
+	DrawType := LayoutDrawType
 }
 

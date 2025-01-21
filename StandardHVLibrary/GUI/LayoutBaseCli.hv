@@ -12,7 +12,14 @@ AppendClass LayoutBase
 	{
 		for it : objects
 		{
-			it.0.DrawCli(ctx,offset)
+			if it.0 is LayoutSpacer
+				continue
+
+			intOffset := vec2i
+			intOffset.x = it.1.x
+			intOffset.y = it.1.y
+
+			it.0.DrawCli(ctx,offset + intOffset)
 		}
 	}
 }

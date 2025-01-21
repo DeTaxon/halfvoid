@@ -6,17 +6,105 @@ AppendClass VkOverlayContext
 		result.baseContext = this&
 	}
 }
-
-LayoutTabs := class extend GUIObject//LayoutBase
+LayoutTab := class extend GUIObject
 {
-	objects := List.{Tuple.{GUIObject^,vec2f,vec2f,bool}} // obj, offset, size, is staticInLayoutTerms (width for vertical)
+	Name := Str
+	Down := GUIObject^
+	this := !(Str tabName,GUIObject^ obj) -> void
+	{
+		Name = tabName
+		Down = obj
+	}
+}
+
+
+TabObjDataType := class extend TGCObject
+{
+	Object := GUIObject^
+	Offset := vec2f
+	Size := vec2f
+	IsStatic := bool // is staticInLayoutTerms (width for vertical
+
+	this := !(GUIObject^ obj,vec2f offset, vec2f size) -> void
+	{
+		Object = obj
+		Offset = offset
+		Size = size
+	}
+	"=" := default
+}
+
+LayoutTabs := class extend GUIObject
+{
+	Glue := LayoutVertical^
+	Header := LayoutTabsHeader^
+	Content := LayoutTabsObjectHolder^
+	this := !(GUIObject^[] objs) -> void
+	{
+		names := HybridQueue.{Str,20}
+		newObjs := HybridQueue.{GUIObject^,20}
+
+		for it : objs
+		{
+			if it is LayoutTab {
+				names.Push(it.Name)
+				newObjs.Push(it.Down)
+			}else{
+				names.Push("Unknown")
+				newObjs.Push(it)
+			}
+		}
+
+		Header = new LayoutTabsHeader(names)
+		Content = new LayoutTabsObjectHolder(newObjs)
+		Glue = new LayoutVertical(![Header,Content])
+	}
+	GetLayout := virtual !(LayoutContext^ ctx) -> GUILayoutInfo
+	{
+		result = Glue.GetLayout(ctx)
+	}
+	SetLayout := virtual !(LayoutContext^ ctx,vec2f setSize) -> void
+	{
+		Glue.SetLayout(ctx,setSize)
+	}
+	NextTab := !() -> void
+	{
+		Content.NextTab()
+		Header.currentIndex = Content.currentIndex
+	}
+	DrawCli := virtual !(DrawCliContext^ ctx,vec2i offset) -> void
+	{
+		Glue.DrawCli(ctx,offset)
+	}
+}
+LayoutTabsHeader := class extend LayoutHorizontal
+{
+	currentIndex := int
+
+	this := !(Str[] names) -> void
+	{
+		SetSize("full",0,"static",1) //TODO instead 1 maybe get from text size?
+		
+		labels := HybridQueue.{GUIObject^,20}
+
+		for it : names
+		{
+			labels.Push(new TextLabel(it))
+			labels.Push(new TextLabel("  "))
+		}
+		super(labels)
+	}
+}
+LayoutTabsObjectHolder := class extend GUIObject//LayoutBase
+{
+	objects := List.{TabObjDataType} // obj, offset, size, is staticInLayoutTerms (width for vertical)
 	//baseContext := VkOverlayContext^
 	currentIndex := int
 	this := !(GUIObject^[] objs) -> void
 	{
 		for it : objs
 		{
-			objects.Emplace(it,vec2f(0,0),vec2f(0,0),false)
+			objects.Emplace(it,vec2f(0,0),vec2f(0,0))
 		}
 	}
 
@@ -89,7 +177,7 @@ LayoutTabs := class extend GUIObject//LayoutBase
 		for it : objects
 		{
 			newSize := setSize
-			itL := it.0.GetLayout(ctx)
+			itL := it.Object.GetLayout(ctx)
 			if itL.LayoutTypeW == 1
 			{
 				newSize.x = itL.Sizes.x
@@ -98,7 +186,7 @@ LayoutTabs := class extend GUIObject//LayoutBase
 			{
 				newSize.y = itL.Sizes.y
 			}
-			it.0.SetLayout(ctx,newSize)
+			it.Object.SetLayout(ctx,newSize)
 		}
 	}
 	//PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
@@ -117,7 +205,7 @@ LayoutTabs := class extend GUIObject//LayoutBase
 		{
 			if i != currentIndex
 				continue
-			it.0.DrawCli(ctx,offset)
+			it.Object.DrawCli(ctx,offset)
 			break
 		}
 	}
@@ -127,7 +215,7 @@ LayoutTabs := class extend GUIObject//LayoutBase
 		{
 			if i != currentIndex
 				continue
-			it.0.MousePressed(ctx,buttonNum,pressed,offset - it.1)
+			it.Object.MousePressed(ctx,buttonNum,pressed,offset - it.Offset)
 			return void
 		}
 	}

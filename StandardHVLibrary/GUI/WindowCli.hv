@@ -27,6 +27,7 @@ WindowCli := class extend TGCObject
 		
 		layoutContext.w = getmaxx(ctx.Window)
 		layoutContext.h = getmaxy(ctx.Window)
+		layoutContext.DrawType = "Text"
 
 		mainGUIObject.GetLayout(layoutContext&)
 		mainGUIObject.SetLayout(layoutContext&,vec2f(layoutContext.w,layoutContext.h))

@@ -10,15 +10,21 @@ CliWin := class extend WindowCli
 	InitWindow := virtual !() -> GUIObject^
 	{
 		tabs = new  LayoutTabs(![
-			new LayoutHorizontal(![
-				new MultilineText(StatusList)
-			]),
-			new LayoutHorizontal(![
-				new MultilineText(HotloadList)
-			]),
-			new LayoutHorizontal(![
-				new MultilineText(ConsoleList)
-			]),
+			new LayoutTab("Status",
+				new LayoutHorizontal(![
+					new MultilineText(StatusList)
+				])
+			),
+			new LayoutTab("Hotload",
+				new LayoutHorizontal(![
+					new MultilineText(HotloadList)
+				])
+			),
+			new LayoutTab("Console",
+				new LayoutHorizontal(![
+					new MultilineText(ConsoleList)
+				])
+			),
 		])
 	
 		return new FrameCli(tabs)
