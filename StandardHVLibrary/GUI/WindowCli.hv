@@ -22,6 +22,14 @@ WindowCli := class extend TGCObject
 		raw()
 		noecho()
 		nonl()
+		start_color()
+
+		for it : 8
+			init_pair(it + 1, it,COLOR_BLACK)
+
+		ctx.Init()
+
+		ctx.CurrentColor = Color("white") 
 
 		mainGUIObject = InitWindow()
 		
@@ -79,4 +87,41 @@ DrawCliContext := class
 	TerminalSize := vec2i
 	Window := void^
 
+	CurrentColor := Color
+	Colors := Color[8]
+
+	Init := !() -> void
+	{
+		Colors[0] = Color("black")	
+		Colors[1] = Color("red")	
+		Colors[2] = Color("green")
+		Colors[3] = Color("yellow")
+		Colors[4] = Color("blue")
+		Colors[5] = Color("magenta")
+		Colors[6] = Color("cyan")
+		Colors[7] = Color("white")
+	}
+	DrawTextAt := !(int y, int x, Str text) -> void
+	{
+	}
+	SetTextColor := !(Color color) -> void
+	{
+		dist := float[8]
+
+		for i : 8
+		{
+			dist[i] += Abs(color.r - Colors[i].r)
+			dist[i] += Abs(color.g - Colors[i].g)
+			dist[i] += Abs(color.b - Colors[i].b)
+		}
+
+		minI := 0
+		for i : 8
+		{
+			if dist[i] < dist[minI]
+				minI = i
+		}
+		CurrentColor = color
+		attron(COLOR_PAIR(minI + 1))
+	}
 }

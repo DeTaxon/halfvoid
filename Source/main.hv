@@ -137,6 +137,7 @@ main := !(char^[] args) -> int
 					}
 				})
 			}
+			NonStopBuild = true
 		}
 	}
 

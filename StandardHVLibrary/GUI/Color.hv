@@ -1,7 +1,39 @@
 Color := class
 {
-	r := u8
-	g := u8
-	b := u8
-	a := u8
+	r := float 
+	g := float 
+	b := float 
+	a := float 
+
+	this := !(Str colorName) -> void
+	{
+		switch colorName
+		{
+		case "black"
+			this.this(0.0,0.0,0.0,1.0)
+		case "red"
+			this.this(1.0,0.0,0.0,1.0)
+		case "green"
+			this.this(0.0,1.0,0.0,1.0)
+		case "yellow"
+			this.this(1.0,1.0,0.0,1.0)
+		case "blue"
+			this.this(0.0,0.0,1.0,1.0)
+		case "magenta"
+			this.this(1.0,0.0,1.0,1.0)
+		case "cyan"
+			this.this(1.0,0.0,0.0,1.0)
+		case "white"
+			this.this(1.0,1.0,1.0,1.0)
+		}
+	}
+	this := !(float setR,float setG, float setB,float setA) -> void
+	{
+		r = setR
+		g = setG
+		b = setB
+		a = setA
+	}
+
+	"=" := default
 }

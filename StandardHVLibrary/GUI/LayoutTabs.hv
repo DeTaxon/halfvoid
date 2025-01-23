@@ -94,6 +94,27 @@ LayoutTabsHeader := class extend LayoutHorizontal
 		}
 		super(labels)
 	}
+	DrawCli := virtual !(DrawCliContext^ ctx,vec2i offset) -> void
+	{
+		oldColor := ctx.CurrentColor
+		defer ctx.SetTextColor(oldColor)
+
+		for it,i : objects
+		{
+			isSet := (i div 2) == currentIndex
+
+			if isSet {
+				ctx.SetTextColor(Color("green"))
+			}else{
+				ctx.SetTextColor(oldColor)
+			}
+			intOffset := vec2i
+			intOffset.x = it.1.x
+			intOffset.y = it.1.y
+
+			it.0.DrawCli(ctx,offset + intOffset)
+		}
+	}
 }
 LayoutTabsObjectHolder := class extend GUIObject//LayoutBase
 {
