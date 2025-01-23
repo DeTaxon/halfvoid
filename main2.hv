@@ -1,50 +1,19 @@
 
-z := 22
-
-MakeItDouble := !(int x) -> int, int
+TestClass := class
+	#LazyClass()
 {
-	return x*2,x*3
-}
-//TODO cycle for works with nultiple results
-//TODO interpreter supports multiple results, for cycle
-
-BaseFor := class
-{
-	start := int
-	end := int
-
-	doub := int
-
-	HaveValue := !() -> bool
-	{
-		return start <= end
-	}
-	"()" := !() -> int, int
-	{
-		z = start + 70
-		return start, z
-	}
-	Inc := !() -> void
-	{
-		start += 1
-	}
-
-}
-
-BaseClass := class
-{
-	"for" := !() -> BaseFor
-	{
-		result.end = 10
-	}
+	x := int
+	y := double
+	z := vec4f
 }
 
 main := !(char^[] args) -> int
 {
-	printf("yeparonie\n")
+	c := TestClass
+	printf("i %i\n",c->TypeSize)
 }
 
-
+//TODO lazy class and fake fields
 
 
 #CreateCallCommand(

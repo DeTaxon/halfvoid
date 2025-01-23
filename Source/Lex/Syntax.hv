@@ -310,6 +310,21 @@ RuleClass := !(void^ itr) -> int
 		}
 	}
 
+	while It.Down? is TokenIndent and It.Down->{TokenIndent^}.Value[0] == '#'
+	{
+		It = It.Right
+		size += 1
+
+		if It == null return 0
+
+		if It.GetValue() == ","
+		{
+			It = It.Right
+			if It == null return 0
+			size += 1
+		}
+	}
+
 	if It.GetValue() != "{}" return 0
 	return size + 1
 }

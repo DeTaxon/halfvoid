@@ -11,7 +11,9 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 {
 	constantsToken := Token^
 	bodyToken := Token^
-	
+
+	isClassLazy := bool
+
 	IsPacked := bool
 	ItParents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
 
@@ -98,6 +100,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		newClass.ComputeConsts()
 		newClass.TemplateParent = this&
 		newClass.IsPacked = IsPacked
+		newClass.isClassLazy = isClassLazy
 
 		ItFile?.FileClasses.Push(newClass)
 

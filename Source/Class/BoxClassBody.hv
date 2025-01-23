@@ -6,6 +6,7 @@ PClassParser := class
 	classToken := Token^
 
 	isPacked := bool
+	isClassLazy := bool
 	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
 	bodyToken := Token^
 	constValue := Token^
@@ -54,7 +55,24 @@ PClassParser := class
 				parents.Emplace(iter,inh)
 				iter = iter.Right
 			}
-			assert(iter.GetValue() == "{}")
+		}
+		while iter.GetValue() != "{}"
+		{
+			if iter.Down? is TokenIndent
+			{
+				val := iter.Down->{TokenIndent^}.Value
+
+				if val == "#LazyClass"
+					isClassLazy = true
+			}
+
+			iter = iter.Right
+			assert(iter != null)
+
+			if iter.GetValue() == ","
+				iter = iter.Right
+			assert(iter != null)
+
 		}
 		bodyToken = iter
 
@@ -78,8 +96,12 @@ PClassParser := class
 		if not IsFound()
 			return null
 		if constValue != null
-			return new BoxClassTemplateBody(isPacked,parents,bodyToken,constValue)
-		return new BoxClassBody(isPacked,parents,bodyToken)
+		{
+			res :=  new BoxClassTemplateBody(isPacked,parents,bodyToken,constValue)
+			return res
+		}
+		res := new BoxClassBody(isPacked,parents,bodyToken)
+		return res
 	}
 	ComputeHash := !(Blob^ fileData) -> u32
 	{
@@ -153,8 +175,14 @@ BoxClassBody := class extend BoxClassPoison
 	NamedConstants := AVLMap.{Str,BoxUnit^}
 	NamedConstantsVars := List.{BoxUnit^}
 
+	isClassLazy := bool
+
 	hash := u32
 
+	IsClassLazy := !() -> bool
+	{
+		return isClassLazy
+	}
 	ComputeConsts := !() -> void
 	{
 		for it,ind : NamedConstants
