@@ -179,7 +179,7 @@ osReadFolder := !(char^ inName, !(Str)& -> void cb) -> void
 	ech << "/*"
 
 	nowEntry := WIN32_FIND_DATAW
-	utf16Name := Utf8ToUtf16(ech.GetString().Str())
+	utf16Name := Utf8ToUtf16(ech.GetStr())
 	hndl := FindFirstFileW(utf16Name.GetPointer(),nowEntry&)
 
 	if hndl&->{u64^}^ == (not_b 0U)

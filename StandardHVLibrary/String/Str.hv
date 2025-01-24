@@ -135,9 +135,10 @@ ToString := !(double this) -> Str
 
 	if above1 == 0
 	{
-		smallBuffer[iter + 1] = '.'
-		smallBuffer[iter + 2] = '0'
-		iter += 3
+		smallBuffer[iter + 0] = '.'
+		smallBuffer[iter + 1] = '0'
+		//smallBuffer[iter + 3] = 0
+		iter += 2
 	}else{
 		iterAtStart := iter
 		toStringToCBuffer(above1,smallBuffer,iter&)

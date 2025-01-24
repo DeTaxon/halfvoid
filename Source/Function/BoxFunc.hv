@@ -294,10 +294,22 @@ PrintFuncCallCommon := !(LLVMWriteContext^ ctx,BoxExeObj^ fncObj,int resId,ExeDo
 
 NormalizeType := !(Type^ oldType) -> Type^
 {
-	if oldType is in TypePoint and oldType.Base is TypeFunc
+	//TODO arrays?
+	iter := oldType
+	while iter != null
 	{
-		return NormalizeFuncType(oldType.Base->{TypeFunc^}).GetPoint()
+		if iter is not in TypePoint
+			break
+		iter = iter.Base
 	}
+
+	if iter != null and oldType is TypePoint
+	{
+		return NormalizeType(oldType.Base).GetPoint()
+	}
+	if oldType is TypeFunc
+		return NormalizeFuncType(oldType)
+	
 	return oldType
 }
 

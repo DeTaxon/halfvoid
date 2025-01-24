@@ -78,9 +78,8 @@ Stream := class extend TGCObject
 	}
 	"<<" := !(double value) -> ref Stream
 	{
-		intVal := char[80]
-		len := snprintf(intVal[0]&,80,"%f",value)
-		Write(intVal[0]&,len)
+		val := ToString(value)
+		Write(val.NonNullStr(),val.Size())
 		return this
 	}
 }

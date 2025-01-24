@@ -107,7 +107,7 @@ halfvoid:
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -emulate-tls -win32 -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll
-	clang  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
+	clang -g  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
 	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid $(flags)  -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang -g -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
