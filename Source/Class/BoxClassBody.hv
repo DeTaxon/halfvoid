@@ -98,9 +98,11 @@ PClassParser := class
 		if constValue != null
 		{
 			res :=  new BoxClassTemplateBody(isPacked,parents,bodyToken,constValue)
+			res.isClassLazy = isClassLazy
 			return res
 		}
 		res := new BoxClassBody(isPacked,parents,bodyToken)
+		res.isClassLazy = isClassLazy
 		return res
 	}
 	ComputeHash := !(Blob^ fileData) -> u32
@@ -174,8 +176,6 @@ BoxClassBody := class extend BoxClassPoison
 
 	NamedConstants := AVLMap.{Str,BoxUnit^}
 	NamedConstantsVars := List.{BoxUnit^}
-
-	isClassLazy := bool
 
 	hash := u32
 
@@ -391,6 +391,12 @@ BoxClassBody := class extend BoxClassPoison
 		}
 
 		PrimeParentStep()
+
+		for it : Parents
+		{
+			if it.isClassLazy
+				isClassLazy = true
+		}
 		VParentState.Emit()
 
 		CurrentScope = this&
@@ -500,9 +506,16 @@ BoxClassBody := class extend BoxClassPoison
 						}
 					}
 				}
+
+				if isClassLazy
+					LazyFields[name] = asType
 				if newField == null
-					newField = new FieldParam(name,asType)
-				Fields.Push(newField)
+				{
+					if not isClassLazy
+						Fields.Push(new FieldParam(name,asType))
+				}else{
+					Fields.Push(newField)
+				}
 			}else
 			{
 

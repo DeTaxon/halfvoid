@@ -19,6 +19,7 @@ BoxClass := class extend BoxUnit
 
 	Name := Str
 
+	LazyFields := AVLMap.{Str,Type^}
 	Fields := List.{FieldParam^}
 	FieldsPath := List.{FieldPath^}
 	DefaultSpace := FieldSpace
@@ -26,6 +27,7 @@ BoxClass := class extend BoxUnit
 	ItSize := int
 	ItAlign := int
 
+	isClassLazy := bool
 
 	Constants := ConstantHolder^
 	PrimeParents := HybridQueue.{Tuple.{BoxClass^,BoxClass^,int},1}
