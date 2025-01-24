@@ -185,6 +185,8 @@ AppendClass BoxClass
 			fldClass := newFieldType->{TypeClass^}.ToClass
 			fldClass.AddDependsOnGrow(fieldCB.Capture())
 		}
+
+		return newPath
 	}
 	GetField := virtual !(Str val) -> FieldPath^
 	{
@@ -198,6 +200,11 @@ AppendClass BoxClass
 		for it : Parents
 		{
 			return it.GetField(val)
+		}
+
+		if LazyFields.Contain(val)
+		{
+			return AddExtraField(val,LazyFields[val])
 		}
 		return null
 	}
