@@ -32,6 +32,12 @@ AppendClass Window
 			//it&->{void^^}^ = glfwGetProcAddress(nameBuffer[0]&)
 			//printf("proc %s %p\n",ind,it)
 		}
+		if mainGUIObject != null
+		{
+			layoutContext := LayoutContext
+			mainGUIObject.GetLayout(layoutContext&)
+			mainGUIObject.SetLayout(layoutContext&,windowSize)
+		}
 
 
 		if InitGL(ctx&)
