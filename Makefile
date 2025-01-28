@@ -70,6 +70,10 @@ test.exe:
 test2.exe:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid -emulate-tls -win32 -g -C0 StandardHVLibrary/ main2.hv -cache /tmp/TestCache.zip -o /tmp/out.ll
 	clang --target=x86_64-w64-mingw32-gnu -g /tmp/out.ll -mfsgsbase -o test.exe -lws2_32
+unit:
+	./halfvoid -g $(flags) -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Tests -o /tmp/out.ll
+	clang -g /tmp/out.ll -o /tmp/hv_tests -lm -ldl
+	/tmp/hv_tests
 jit:
 	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -jit -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 run:
@@ -123,4 +127,4 @@ cycle_release.exe:
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe test.exe Mach.m
+.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe test.exe Mach.m unit

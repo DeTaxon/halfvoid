@@ -23,7 +23,7 @@ Variant := class .{@TypeList...}
 }
 
 VariantTest := !() -> bool
-	#Mark("Test")
+	//#Mark("Test")
 {
 	test := Variant.{int,float,Str}
 

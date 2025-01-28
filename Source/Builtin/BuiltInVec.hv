@@ -43,12 +43,14 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 			return null
 		
 		strVal := consts[0]->{BoxExeString^}
-		if not (strVal is BoxExeString)
+		if strVal is not BoxExeString
 			return null
 		switch strVal.Value^
 		{
 			case "x"
+				//always here
 			case "y"
+				//always here
 			case "z"
 				if vecSize < 3
 					return null
@@ -77,7 +79,9 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 				return GetFuncType(1,![a],![true],resType,false,false)
 		}
 
-		return GetFuncType(1,![a],![true],a.Base,true,false)
+
+		inpMem := objs[0].IsMem()
+		return GetFuncType(1,![a],![inpMem],a.Base,inpMem,false)
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
@@ -102,6 +106,8 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 			if tp.Params[0].IsRef
 			{
 				return new BuiltInVecElementRef(tp,vecInd)
+			}else{
+				return new BuiltInVecElementValue(tp,vecInd)
 			}
 		}else{
 			inds := int[4]
@@ -139,6 +145,30 @@ BuiltInVecElementRef := class extend BoxFuncCommon
 		f^ << "* "
 		lst[0].PrintPointUse(ctx)
 		f^ << " , i32 0, i32 " << vecInd
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+}
+BuiltInVecElementValue := class extend BoxFuncCommon
+{
+	vecInd := int
+	this := !(TypeFunc^ tp,int ind) -> void
+	{
+		SetType(tp)
+		vecInd = ind
+	}
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	{
+		f := ctx.writeStream
+		typ := lst[0].GetType()
+		lst[0].PrintPre(ctx)
+
+		f^ << "%T" << resId << " = extractelement "
+		typ.PrintType(ctx)
+		f^ << " "
+		lst[0].PrintUse(ctx)
+		f^ << " , i32 " << vecInd
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"

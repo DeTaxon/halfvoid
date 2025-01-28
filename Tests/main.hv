@@ -2,9 +2,9 @@
 
 main := !(char^[] args) -> void
 {
-	for it : #Marked("Test")
+	for it : #MarkedFunctions("Test")
 	{
 		it()
-		//TODO exceptions?
 	}
+	printf("good\n")
 }

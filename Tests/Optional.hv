@@ -1,0 +1,14 @@
+
+OptionalTests := !() -> void
+	#Mark("Test")
+{
+	x := vec4f?
+
+	x = vec4f(1.0,1.0,1.0,1.0)
+
+	if x.IsSet()
+	{
+		y := x.Get().yx
+	}
+	
+}
