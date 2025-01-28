@@ -8,7 +8,7 @@ OptionalTests := !() -> void
 
 	if x.IsSet()
 	{
-		y := x.Get().yx
+		y := x.y
 	}
 	
 }
