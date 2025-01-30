@@ -1,21 +1,29 @@
 
-TaskTimersMutex := Mutex^
-TaskTimersArray := List.{Tuple.{double,Task^}}
+AppendClass TaskWorker
+{
+	TaskTimersArray := List.{Tuple.{double,Task^}}
 
+	CheckTimers := !(double nowTime) -> void
+	{
+		while TaskTimersArray.Size() != 0 and (TaskTimersArray[0].0 - nowTime <= 0.001) //1 ms accuracy
+		{
+			PendingTasks.PushFront(TaskTimersArray[0].1)
+			TaskTimersArray.Pop()
+			InterlockSub(TaskLoopWorkCounter,1)
+		}
+	}
+}
 
 #MarkFunction("JITPass",TSleep)
 TSleep := !(double val) -> void
 {
 	endTime := GetSteadyTime() + val
-	TaskCheckMutex.Lock()
-	TaskLoopWorkCounter += 1
+	InterlockAdd(TaskLoopWorkCounter,1)
 
-	TaskTimersArray.SortedPush(!{endTime,CurrentTask})
+	ct := CurrentThread
 
-	//if someoneOnLoop
-	//	TaskWaitTasksConVar.Notify()
-	CurrentThread.ThreadMainTask.switchToTask()
-	TaskCheckMutex.Unlock()
+	ct.TaskTimersArray.SortedPush(!{endTime,CurrentTask})
+	ct.ThreadMainTask.switchToTask()
 }
 
 #MarkFunction("JITPass",TaskYield)

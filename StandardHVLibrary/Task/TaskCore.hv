@@ -23,6 +23,9 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		//	TaskCodePollWork(0.0)
 		//	someoneOnLoop = false
 		//}
+		//
+		nowTime := GetSteadyTime()
+		ct.CheckTimers(nowTime)
 
 		doTask := ct.PopReadyTask()
 
@@ -31,32 +34,13 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			doTask.switchToTask()
 			continue
 		}
-
-		if TaskLoopWorkCounter != 0 and not someoneOnLoop
+		
+		if ct.TaskTimersArray.Size() != 0 or TaskLoopWorkCounter != 0
 		{
-			someoneOnLoop = true
-
-			nowTime := GetSteadyTime()
-
-			someResumed := false
-			while TaskTimersArray.Size() != 0 and (TaskTimersArray[0].0 - nowTime <= 0.001) //1 ms accuracy
-			{
-				TaskTimersArray[0].1.resume()
-				someResumed = true
-				TaskTimersArray.Pop()
-				TaskLoopWorkCounter -= 1
-			}
 			waitTime := 1.0
-			if TaskTimersArray.Size() != 0
-			{
-				waitTime = TaskTimersArray[0].0 - nowTime
-			}
-			if TaskLoopWorkCounter != 0 and not someResumed
-			{
-				ct.itConVar.WaitFor(TaskCheckMutex,waitTime)
-				//TaskCodePollWork(waitTime)
-			}
-			someoneOnLoop = false
+			if ct.TaskTimersArray.Size() != 0
+				waitTime = ct.TaskTimersArray[0].0 - nowTime
+			ct.itConVar.WaitFor(TaskCheckMutex,waitTime)
 		}else
 		{
 			TaskPausedWorkers += 1
@@ -97,5 +81,4 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		}
 	}
 }
-someoneOnLoop := bool
 TaskLoopWorkCounter := int
