@@ -204,6 +204,7 @@ AppendClass BoxClass
 
 		if LazyFields.Contain(val)
 		{
+			//TODO instead of adding at the end? maybe add in order of creation
 			return AddExtraField(val,LazyFields[val])
 		}
 		return null

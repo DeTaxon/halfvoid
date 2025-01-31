@@ -46,7 +46,7 @@ TracyPrintf := !(char^ msg,...) -> void
 		vprintf_hv_stream(echo,msg,va&)
 		va_end(va&)
 		st := Str
-		st->AsString = echo.GetString()
+		st = echo.GetStr()
 		TracyMessage(st)
 	}
 }

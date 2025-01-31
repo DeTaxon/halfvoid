@@ -23,7 +23,10 @@ TSleep := !(double val) -> void
 	ct := CurrentThread
 
 	ct.TaskTimersArray.SortedPush(!{endTime,CurrentTask})
+
+	TaskCheckMutex.Lock()
 	ct.ThreadMainTask.switchToTask()
+	TaskCheckMutex.Unlock()
 }
 
 #MarkFunction("JITPass",TaskYield)
