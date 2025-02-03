@@ -7,12 +7,24 @@ TestClass := class
 	z := vec4f
 }
 
+MaybeHere := !() -> void
+	#Mark("TestFunc")
+{
+	printf("yep\n")
+}
+
 main := !(char^[] args) -> int
 {
 	//c := ToString(-0.01)
 	//printf("test <%s> %i\n",c,c.Size())
-	defer printf("defer\n")
-	printf("main\n")
+	
+	for it : #MarkedFunctions("TestFunc")
+	{
+		c := void^
+		c = it
+		printf("here %p\n",c)
+		c->{!()^->void}()
+	}
 }
 
 //TODO lazy class and fake fields

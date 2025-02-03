@@ -1,0 +1,12 @@
+AppendClass FuncToPointerObj
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		fncRes := ctx.AddFuncConst(func)
+		funcPtr := ctx.CreateVar(func.GetType().GetPoint())
+
+		HVB_ins_get_pointer(ctx,funcPtr,fncRes)
+
+		result.CreatedId = funcPtr
+	}
+}

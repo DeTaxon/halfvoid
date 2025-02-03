@@ -43,7 +43,7 @@ BoxFuncToPointer := class extend ExchangeUnit
 	}
 }
 
-FuncToPointerObj := class extend BoxExeObj
+FuncToPointerObj := class extend BoxExeObj //TODO replace FuncPointerParam with this
 {
 	func := BoxFunc^
 
@@ -63,10 +63,5 @@ FuncToPointerObj := class extend BoxExeObj
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		func.PrintName(ctx)
-	}
-	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
-	{
-		//TODOTODOTODOTODO must not be empty or called
-		ctx.AddFuncConst(func)
 	}
 }
