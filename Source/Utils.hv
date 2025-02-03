@@ -310,3 +310,17 @@ MakeErrorMsg := !(Token^ itm,Str errorMsg) -> void
 	if CurrentWork != null
 		CurrentWork.SetErrorMessage(c)
 }
+
+"suffix hv" := !(int x) -> BoxExeObj^
+{
+	return GetExeInt(x)
+}
+"suffix hv" := !(double x) -> BoxExeObj^
+{
+	return new BoxExeDouble(x)
+}
+"suffix hv" := !(char^ x) -> BoxExeObj^
+{
+	c := StringSpan(x)
+	return GetExeString(c&)
+}
