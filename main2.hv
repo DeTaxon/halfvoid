@@ -9,8 +9,10 @@ TestClass := class
 
 main := !(char^[] args) -> int
 {
-	c := ToString(-0.01)
-	printf("test <%s> %i\n",c,c.Size())
+	//c := ToString(-0.01)
+	//printf("test <%s> %i\n",c,c.Size())
+	defer printf("defer\n")
+	printf("main\n")
 }
 
 //TODO lazy class and fake fields

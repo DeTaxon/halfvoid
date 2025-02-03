@@ -22,8 +22,4 @@ BoxDefer := class extend BoxExeObj
 	{
 		onDefer[^].PrintDefaultUse(ctx)
 	}
-	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
-	{
-		//TODOTODOTODOTODO must not be empty or called
-	}
 }
