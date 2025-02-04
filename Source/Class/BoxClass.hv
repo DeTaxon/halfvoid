@@ -19,7 +19,7 @@ BoxClass := class extend BoxUnit
 
 	Name := Str
 
-	LazyFields := AVLMap.{Str,Type^}
+	LazyFields := AVLMap.{Str,Tuple.{Type^,Token^}}
 	Fields := List.{FieldParam^}
 	FieldsPath := List.{FieldPath^}
 	DefaultSpace := FieldSpace

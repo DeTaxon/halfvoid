@@ -491,6 +491,7 @@ BoxClassBody := class extend BoxClassPoison
 			itm := iter.Down.Right.Right
 
 			asType := ParseType(itm)
+
 			if asType != null
 			{
 				newField := FieldParam^
@@ -508,7 +509,7 @@ BoxClassBody := class extend BoxClassPoison
 				}
 
 				if isClassLazy
-					LazyFields[name] = asType
+					LazyFields[name] = !{asType,itm}
 				if newField == null
 				{
 					if not isClassLazy
@@ -703,6 +704,11 @@ BoxClassBody := class extend BoxClassPoison
 							exeObj := TryGetExeCall(itm)
 							if exeObj == null
 							{
+								if isClassLazy
+								{
+									LazyFields[name] = !{null->{Type^},itm}
+									return void
+								}
 								MakeErrorMsg(itm,"Unknown object")
 								return void
 							}
@@ -715,8 +721,14 @@ BoxClassBody := class extend BoxClassPoison
 									PoisonFields[name] = !{itm,true}
 								}
 							}else{
-								CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
-								return void
+								if isClassLazy
+								{
+									LazyFields[name] = !{null->{Type^},itm}
+									return void
+								}else{
+									CurrentWork?.SetErrorMessage(itm.MakeError("Unknown object"))
+									return void
+								}
 							}
 						}
 					}

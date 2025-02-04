@@ -5,6 +5,7 @@ TestClass := class
 	x := int
 	y := int 
 	z := int
+	SomeBadType := AwnserToEverything
 }
 TestClass2 := class extends TestClass
 {

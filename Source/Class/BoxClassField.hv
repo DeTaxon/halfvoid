@@ -180,7 +180,14 @@ AppendClass BoxClass
 		if LazyFields.Contain(val)
 		{
 			//TODO instead of adding at the end? maybe add in order of creation
-			return AddExtraField(val,LazyFields[val])
+			obj := ref LazyFields[val]
+
+			if obj.0 != null
+				return AddExtraField(val,obj.0)
+			newType := ParseType(obj.1)
+			if newType != null
+				return AddExtraField(val,newType)
+			//TODO if newType == null , emit that field of class is ill
 		}
 		return null
 	}
