@@ -18,50 +18,51 @@ hvr_Class := class extend BoxClassPoison
 			return newFieldCB?(val)?->{Type^}
 		return null
 	}
-	GetField := virtual !(Str val) -> FieldPath^
-	{
-		for it : FieldsPath
-		{
-			if it.Field.Name == val
-			{
-				return it
-			}
-		}
+	//TODOTODO
+	//GetField := virtual !(Str val) -> FieldPath^
+	//{
+	//	for it : FieldsPath
+	//	{
+	//		if it.Field.Name == val
+	//		{
+	//			return it
+	//		}
+	//	}
 
-		newFieldType := GetNewFieldType(val)
+	//	newFieldType := GetNewFieldType(val)
 
-		if newFieldType == null
-			return null
+	//	if newFieldType == null
+	//		return null
 
-		newField := new FieldParam(val,newFieldType)
-		Fields.Push(newField)
+	//	newField := new FieldParam(val,newFieldType)
+	//	Fields.Push(newField)
 
-		fPath := new FieldPath(ItType,newField.Value)
-		fPath.Field = newField
-		fPath.Index = FieldsPath.Size()
+	//	fPath := new FieldPath(ItType,newField.Value)
+	//	fPath.Field = newField
+	//	fPath.Index = FieldsPath.Size()
 
-		FieldsPath.Push(fPath)
+	//	FieldsPath.Push(fPath)
 
-		fieldAlign := newFieldType.GetAlign()
-		ItAlign = max(ItAlign,fieldAlign)
+	//	fieldAlign := newFieldType.GetAlign()
+	//	ItAlign = max(ItAlign,fieldAlign)
 
-		unalign := ItSize mod fieldAlign
-		if unalign != 0
-		{
-			ItSize += fieldAlign - unalign
-		}
+	//	unalign := ItSize mod fieldAlign
+	//	if unalign != 0
+	//	{
+	//		ItSize += fieldAlign - unalign
+	//	}
 
-		ItSize += newFieldType.GetSize() //todo variable size object?
-		RecalculateSize()
-		//printf("hm %i\n",ItSize)
+	//	ItSize += newFieldType.GetSize() //todo variable size object?
+	//	RecalculateSize()
+	//	//printf("hm %i\n",ItSize)
 
-		for it : fieldIterators
-		{
-			it.ItemCreated(FieldsPath.Size() - 1)
-		}
+	//	for it : fieldIterators
+	//	{
+	//		it.ItemCreated(FieldsPath.Size() - 1)
+	//	}
 
-		return fPath 
-	}
+	//	return fPath 
+	//}
 
 }
 

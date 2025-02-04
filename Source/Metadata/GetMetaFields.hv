@@ -22,6 +22,7 @@ TryGetMetaFields := !(Token^ itm, bool isLocal = false) -> BoxExeObj^
 		CurrentWork?.SetErrorMessage(itm.MakeError("Object does not have fields"))
 		return null
 	}
+	DB_FieldUsage.Add(CurrentFunc?,cls)
 
 	if isLocal
 		return cls.GetFieldsIteratorLocal(dwn)

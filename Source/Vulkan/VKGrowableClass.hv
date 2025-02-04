@@ -52,37 +52,7 @@ VKGrowableClass := class extend BoxClass
 
 		if newFieldType == null
 			return null
-		//printf("wut %s\n",val.GetString().Str())
 
-		//return AddExtraField(val,newFieldType)
-
-		newField := new FieldParam(val,newFieldType)
-		Fields.Push(newField)
-
-		fPath := new FieldPath(ItType,newField.Value)
-		fPath.Field = newField
-		fPath.Index = FieldsPath.Size()
-
-		FieldsPath.Push(fPath)
-
-		fieldAlign := newFieldType.GetAlign()
-		ItAlign = max(ItAlign,fieldAlign)
-
-		unalign := ItSize mod fieldAlign
-		if unalign != 0
-		{
-			ItSize += fieldAlign - unalign
-		}
-
-		ItSize += newFieldType.GetSize() //todo variable size object?
-		RecalculateSize()
-		//printf("hm %i\n",ItSize)
-
-		for it : fieldIterators
-		{
-			it.ItemCreated(FieldsPath.Size() - 1)
-		}
-
-		return fPath 
+		return AddExtraField(val,newFieldType)
 	}
 }

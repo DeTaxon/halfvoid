@@ -22,7 +22,7 @@ GVoidObj := BoxExeObj^
 GDebugTypePrintMeta := List.{Type^}
 
 AllClasses := List.{BoxClass^}
-AllFunctions := List.{BoxFunc^}
+AllFunctions := AVLSet.{BoxFunc^} //TODO remove when moved to optimized output
 
 targetLinux := false
 targetWindows := false
@@ -35,6 +35,7 @@ RunMode := bool
 RunModeFuncName := char^
 
 GInterpCntx := MCInterpContext
+GHotloadCntx := HotloadContext
 
 WorkBag := CompilerWork
 
@@ -47,7 +48,7 @@ mainFuncName := "internalHVEntryPoint"
 
 OutputFile := Str
 main := !(char^[] args) -> int
-{	
+{
 	GCompileThread = CurrentThread 
 	HotloadStream& = new VoidStream
 	GInterpCntx.InterpMode = true
@@ -457,6 +458,12 @@ WaitForParsingObjects := !() -> void
 	maxUses := 50
 	while true
 	{
+		if GHotloadCntx.HaveWork()
+		{
+			ReloadApply(GHotloadCntx&)
+			GHotloadCntx.Reset()
+		}
+
 		WorkBag.DoWork()
 		if WorkBag.WorkCount() == 0
 			break
@@ -471,6 +478,7 @@ WaitForParsingObjects := !() -> void
 			if used >= maxUses
 				break
 		}
+
 
 		TaskYield()
 	}

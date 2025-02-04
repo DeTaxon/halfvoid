@@ -21,16 +21,6 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 	IsMetaIteratable := virtual !() -> bool { return true }
 	MetaIteretableSize := virtual !() -> int { itClass.AwaitTypeState() return itClass.GetFieldsCount() }
 
-	infoUser := !(int)&->void
-	RegisterUser := virtual !(!(int)&->void cb) -> void //TODO toobad, not designed for that use
-	{
-		infoUser = cb
-	}
-	ItemCreated := !(int ind) -> void
-	{
-		infoUser(ind) //TODO can be null
-	}
-
 	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ 
 	{
 		itClass.AwaitTypeState()

@@ -228,7 +228,7 @@ BoxFuncBody := class extend BoxFuncCommon
 			returnHolder.ResultType = fTy.ResultType
 		}
 
-		AllFunctions.Push(this&)
+		AllFunctions.Insert(this&)
 
 		stackSize := UnitStack.Size()
 

@@ -16,6 +16,25 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 		return GBoolFalse
 	}
 
+	if cmd == "#Print"
+	{
+		strToken := itm.Down.Right.Down
+
+		if strToken != null
+		{
+
+			dat := TryGetExeCall(strToken)
+
+			if dat? is BoxExeString
+			{
+				//TODO add \n only if needed
+				printf("%s\n",dat->{BoxExeString^}.Value.NonNullStr())
+			}
+		}
+		return GObjNone
+
+	}
+
 	if cmd == "#File"
 	{
 		return TryEmbedFile(itm)

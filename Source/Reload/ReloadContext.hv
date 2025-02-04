@@ -13,12 +13,27 @@ HotloadContext := class extend TGCObject
 
 	fileDatas := AVLMap.{BoxFile^,Blob^}
 
+	AddFunction := !(BoxFunc^ x) -> void
+	{
+		if x is not in BoxFuncBody
+			return void
+		ReloadFunctions.PushUniq(x->{BoxFuncBody^})
+	}
+	HaveWork := !() -> bool
+	{
+		if ReloadFunctions.Size() != 0
+			return true
+		if ReloadClasses.Size() != 0
+			return true
+		return false
+	}
+
 	Reset := !() -> void
 	{
 		ChangedFunctions.Destroy()
 		ChangedVirtualFunctions.Destroy()
 
-		fileDatas[^].IncRef() //TODO intetional memleak
+		fileDatas[^].IncRef()
 		fileDatas.Destroy()
 	}
 	

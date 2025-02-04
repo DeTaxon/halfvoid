@@ -6,11 +6,30 @@ TestClass := class
 	y := double
 	z := vec4f
 }
+TestClass2 := class extends TestClass
+{
+	w := bool
+}
 
 MaybeHere := !() -> void
-	#Mark("TestFunc")
 {
-	printf("yep\n")
+	#Print("Compiles")
+
+	c := TestClass
+	for it, ind : c->AllFields
+	{
+		printf("1: field %s\n",ind)
+	}
+}
+MaybeHere2 := !() -> void
+{
+	#Print("Compiles2")
+
+	c2 := TestClass2
+	for it, ind : c2->AllFields
+	{
+		printf("2: field %s\n",ind)
+	}
 }
 
 main := !(char^[] args) -> int
@@ -18,13 +37,25 @@ main := !(char^[] args) -> int
 	//c := ToString(-0.01)
 	//printf("test <%s> %i\n",c,c.Size())
 	
-	for it : #MarkedFunctions("TestFunc")
-	{
-		c := void^
-		c = it
-		printf("here %p\n",c)
-		c->{!()^->void}()
-	}
+	Fnc1()
+	MaybeHere()
+	MaybeHere2()
+	Fnc2()
+}
+
+Fnc1 := !() -> void
+{
+	c := TestClass
+	c.x = 0
+}
+Fnc2 := !() -> void
+{
+	Fnc3()
+}
+Fnc3 := !() -> void
+{
+	c := TestClass
+	c.y = 0.0
 }
 
 //TODO lazy class and fake fields
