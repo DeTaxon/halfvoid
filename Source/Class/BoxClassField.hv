@@ -305,6 +305,7 @@ AppendClass BoxClass
 		DB_ClassComposition.Value.Get(this&, x ==> {
 			x->{BoxClassBody^}.fieldLayoutChanged()
 		})
+		RecalculateSize()
 	}
 }
 FieldParam := class extend BoxUnit

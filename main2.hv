@@ -3,12 +3,12 @@ TestClass := class
 	#LazyClass()
 {
 	x := int
-	y := double
-	z := vec4f
+	y := int 
+	z := int
 }
 TestClass2 := class extends TestClass
 {
-	w := bool
+	w := int
 }
 
 MaybeHere := !() -> void
@@ -16,9 +16,10 @@ MaybeHere := !() -> void
 	#Print("Compiles")
 
 	c := TestClass
+
 	for it, ind : c->AllFields
 	{
-		printf("1: field %s\n",ind)
+		printf("1: field %s %i %i\n",ind,it,TestClass->TypeSize)
 	}
 }
 MaybeHere2 := !() -> void
@@ -28,7 +29,7 @@ MaybeHere2 := !() -> void
 	c2 := TestClass2
 	for it, ind : c2->AllFields
 	{
-		printf("2: field %s\n",ind)
+		printf("2: field %s %i %i\n",ind,it,TestClass2->TypeSize)
 	}
 }
 
