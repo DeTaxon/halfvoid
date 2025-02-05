@@ -22,6 +22,9 @@ main := !(char^[] args) -> int
 	{
 		printf("yep %i %s\n",it,ind)
 	}
+	d := #ComputePi(15)
+
+	printf("test %s\n",d)
 }
 
 //TODO lazy class and fake fields
@@ -41,10 +44,10 @@ main := !(char^[] args) -> int
 
 		return ret
 	}//,
-	//ExchangeOutput = !(Blob^ val) -> Str
-	//{
-	//	return new StringOnCStr(val.GetPointer()->{char^})
-	//}
+	ExchangeOutput = !(Blob^ val) -> Str
+	{
+		return new StringOnCStr(val.GetPointer()->{char^})
+	}
 )
 
 

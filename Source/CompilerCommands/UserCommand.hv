@@ -220,7 +220,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 				blobSize := resBlb.Size()
 				blobDatas.Push(res)
 
-				ptrToBlob := CreateFuncCall(StringSpan("internalHVCreateBlobOnSpan"),![res->{BoxExeObj^},GetExeInt(blobSize)]) //TODO GetExeInt for s64
+				ptrToBlob := CreateFuncCall(StringSpan("internalHVCreateBlobOnSpan"),![res->{BoxExeObj^},GetExeS64(blobSize)])
 				assert(ptrToBlob != null)
 				blobRefToPtr := new UnrefFuncCall(ptrToBlob)
 				blbRes := new PtrExchange(blobRefToPtr,GBlobType.GetPoint())

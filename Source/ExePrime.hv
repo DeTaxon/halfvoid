@@ -25,6 +25,15 @@ GetExeInt := !(int val) -> BoxExeInt^
 	GlobalInts[val] = newObj
 	return newObj
 }
+GlobalInts64 := AVLMap.{int,BoxExeS64^}
+GetExeS64 := !(s64 val) -> BoxExeS64^
+{
+	if GlobalInts64.Contain(val)
+		return GlobalInts64[val]
+	newObj := new BoxExeS64(val)
+	GlobalInts64[val] = newObj
+	return newObj
+}
 
 GlobalStrings := AVLMap.{String^,BoxExeString^}
 strIdIterator := 1
