@@ -218,7 +218,7 @@ ReturnHalfState := class extend BoxExeObj
 	}
 	GetSetType := !() -> Type^
 	{
-		if callObjs == null or callObjs.Size() == 0 //TODOTODO check for multiple variables
+		if callObjs == null or callObjs.Size() == 0
 			return GTypeVoid
 		return callObjs[0].GetType()
 	}

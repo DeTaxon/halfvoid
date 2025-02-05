@@ -163,6 +163,11 @@ AppendClass BoxClass
 
 		return newPath
 	}
+
+	GetFieldFailedCB := virtual !(Str val) -> Type^
+	{
+		return null
+	}
 	GetField := virtual !(Str val) -> FieldPath^
 	{
 		AwaitTypeState()
@@ -189,6 +194,11 @@ AppendClass BoxClass
 				return AddExtraField(val,newType)
 			//TODO if newType == null , emit that field of class is ill
 		}
+
+		newType := GetFieldFailedCB(val)
+		if newType != null
+			return AddExtraField(val,newType)
+
 		return null
 	}
 	GetFieldByIndex := virtual !(int val) -> FieldPath^
