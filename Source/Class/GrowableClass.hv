@@ -84,16 +84,6 @@ GrowableClassMetaFieldsLocal := class extend  BoxMetaGrowingObject
 	IsMetaIteratable := virtual !() -> bool { return true }
 	MetaIteretableSize := virtual !() -> int { itClass.AwaitTypeState() return itClass.Fields.Size() }
 
-	infoUser := !(int)&->void
-	RegisterUser := virtual !(!(int)&->void cb) -> void //TODO toobad, not designed for that use
-	{
-		infoUser = cb
-	}
-	ItemCreated := !(int ind) -> void
-	{
-		infoUser(ind) //TODO can be null
-	}
-
 	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ 
 	{
 		itClass.AwaitTypeState()
@@ -106,9 +96,5 @@ GrowableClassMetaFieldsLocal := class extend  BoxMetaGrowingObject
 	{
 		itClass.AwaitTypeState()
 		return GetExeString(itClass.GetFieldByIndexTuple(ind).Field.Name.GetString())
-	}
-	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
-	{
-		//TODOTODOTODOTODO must not be empty or called
 	}
 }

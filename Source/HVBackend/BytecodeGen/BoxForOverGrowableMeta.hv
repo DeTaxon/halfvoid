@@ -25,3 +25,10 @@ AppendClass GrowableClassMetaFields
 		objRes.WriteMC(ctx)
 	}
 }
+AppendClass GrowableClassMetaFieldsLocal
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		objRes.WriteMC(ctx)
+	}
+}

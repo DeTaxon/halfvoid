@@ -1,64 +1,27 @@
 
 TestClass := class
-	#LazyClass()
+	//#LazyClass()
 {
 	x := int
 	y := int 
 	z := int
-	SomeBadType := AwnserToEverything
 
 }
 TestClass2 := class extends TestClass
 {
 	w := int
 }
-
-MaybeHere := !() -> void
-{
-	#Print("Compiles")
-
-	c := TestClass
-
-	for it, ind : c->AllFields
-	{
-		printf("1: field %s %i %i\n",ind,it,TestClass->TypeSize)
-	}
-}
-MaybeHere2 := !() -> void
-{
-	#Print("Compiles2")
-
-	c2 := TestClass2
-	for it, ind : c2->AllFields
-	{
-		printf("2: field %s %i %i\n",ind,it,TestClass2->TypeSize)
-	}
-}
-
 main := !(char^[] args) -> int
 {
 	//c := ToString(-0.01)
 	//printf("test <%s> %i\n",c,c.Size())
-	
-	Fnc1()
-	MaybeHere()
-	MaybeHere2()
-	Fnc2()
-}
 
-Fnc1 := !() -> void
-{
-	c := TestClass
-	c.x = 0
-}
-Fnc2 := !() -> void
-{
-	Fnc3()
-}
-Fnc3 := !() -> void
-{
-	c := TestClass
-	c.y = 0.0
+	c := TestClass2
+	c.w = 15
+	for it, ind : c->LocalFields
+	{
+		printf("yep %i %s\n",it,ind)
+	}
 }
 
 //TODO lazy class and fake fields
