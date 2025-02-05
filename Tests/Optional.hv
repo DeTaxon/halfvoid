@@ -1,6 +1,6 @@
 
 OptionalTests := !() -> void
-	#Mark("Test")
+	#Mark("UnitTest")
 {
 	x := vec4f?
 

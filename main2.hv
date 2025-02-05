@@ -22,69 +22,11 @@ main := !(char^[] args) -> int
 	{
 		printf("yep %i %s\n",it,ind)
 	}
-	d := #ComputePi(15)
-
-	printf("test %s\n",d)
 }
 
 //TODO lazy class and fake fields
 //TODO lazy class in hotload
 //TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
-
-
-#CreateCallCommand(
-	Name = "ComputePi",
-	Call = !(int numCount) -> Blob^
-	{
-		pi := CalculatePiBlob(numCount)
-
-		ret := MakeBlob(numCount + 1)
-		memset(ret.GetPointer(),0,ret.Size())
-		memcpy(ret.GetPointer(),pi.GetPointer(),pi.Size())
-
-		return ret
-	}//,
-	ExchangeOutput = !(Blob^ val) -> Str
-	{
-		return new StringOnCStr(val.GetPointer()->{char^})
-	}
-)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -146,67 +88,6 @@ JavaMain := !() -> void
 
 
 
-
-CalculatePiBlob := !(int nums) -> Blob^
-{
-	bigNums := nums*3
-	values := malloc(bigNums*4)->{int^}
-
-	result = new BlobOnVector(nums + 1)
-	resultPtr := result.GetPointer()->{u8^}
-	memset(resultPtr,0,result.Size())
-	//resultPtr[nums] = 0
-
-	i := 0
-	while i < bigNums
-	{
-		values[i] = 2
-		i += 1
-	}
-	i = 0
-	while i < nums
-	{
-		j := 0
-		while j < bigNums
-		{
-			values[j] *= 10
-			j += 1
-		}
-		j = bigNums - 1
-		while j >= 1
-		{
-			thisMul := j
-			thisDiv := 2*j + 1
-
-			carry := (values[j] div thisDiv)*thisMul
-			modul := values[j] mod thisDiv
-			values[j] = modul
-			j -= 1
-			values[j] += carry
-		}
-		num := values[0] div 10
-		values[0] = values[0] mod 10
-
-		c := 0
-		while num != 0
-		{
-			resultPtr[i + c] += num
-			if resultPtr[i + c] >= 10
-			{
-				resultPtr[i + c] = resultPtr[i + c] mod 10
-				num = 1
-			}else{
-				num = 0
-			}
-			c -= 1
-		}
-		i += 1
-	}
-	for i : nums
-	{
-		resultPtr[i] += '0'
-	}
-}
 
 
 //Zip file

@@ -2,7 +2,7 @@
 
 main := !(char^[] args) -> void
 {
-	for it : #MarkedFunctions("Test")
+	for it : #MarkedFunctions("UnitTest")
 	{
 		it()
 	}
