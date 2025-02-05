@@ -124,7 +124,6 @@ main := !(char^[] args) -> int
 						return void
 
 					zFil := zObj->{File^}
-					zFil.IncRef()//TODO memory
 					nm := zFil.GetName()
 					if nm.End == ".hv" or nm.End == osHVFile
 					{
