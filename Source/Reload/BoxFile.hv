@@ -11,7 +11,7 @@ AppendClass BoxFile
 		oldData := ReloadFileOldData
 		oldData.ctx = ctx
 
-		oldData.Functions.Push(Functions[^]) //TODO i need std::swap
+		oldData.Functions.Push(Functions[^])
 		Functions.Destroy()
 
 		oldData.FileClasses.Push(FileClasses[^])
