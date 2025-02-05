@@ -28,7 +28,11 @@ AppendClass Window
 		for it,ind : ctx.gl->AllFields
 		{
 			sprintf(nameBuffer[0]&,"gl%s",ind)
-			it&->{void^^}^ = glGetProcAddress(nameBuffer[0]&)
+
+			fncPtr := ref it&->{void^^}^
+			fncPtr = glGetProcAddress(nameBuffer[0]&)
+			if fncPtr == null
+				fncPtr = lib.Get(nameBuffer[0]&)
 			//it&->{void^^}^ = glfwGetProcAddress(nameBuffer[0]&)
 			//printf("proc %s %p\n",ind,it)
 		}

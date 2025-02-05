@@ -5,7 +5,7 @@
       "name": "(gdb) test",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/ver3",
+      "program": "${workspaceFolder}/test",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
