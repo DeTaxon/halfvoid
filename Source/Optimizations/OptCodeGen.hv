@@ -16,11 +16,8 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 
 	PrintDebugMeta(ctx)
 	PrintDeclares(ctx)
-
-	for st : GlobalStrings //TODO replace
-	{
-		st.PrintCode(ctx)
-	}
+	
+	c.UsedStrings[^].PrintCode(ctx)
 	c.UsedClasses[^].PrintAsType(ctx)
 	OptPrintGlobals(GInterpCntx&,ctx,c.WriteGlobals)
 	c.DeclareFunctions[^].PrintCode(ctx)
@@ -61,6 +58,7 @@ CollectFunctionsCtx := class extend TGCObject
 	WriteFunctions := List.{BoxFuncBody^}
 	DeclareFunctions := List.{BoxFuncDeclare^}
 	UsedClasses := List.{BoxClass^}
+	UsedStrings := AVLSet.{BoxExeString^}
 
 	UsedTypes := AVLSet.{Type^}
 	
@@ -164,6 +162,11 @@ CollectFunctionsCtx := class extend TGCObject
 			checkType(cnst->{Type^})
 			return void
 		}
+		if cnst is in BoxExeString
+		{
+			UsedStrings.Insert(cnst->{BoxExeString^})
+			return void
+		}
 
 	}
 	checkGlobal := !(GlobalVar2^ glb) -> void
@@ -174,6 +177,41 @@ CollectFunctionsCtx := class extend TGCObject
 		checkType(glb.GetType())
 		checkedGlobals.Insert(glb)
 		checkGlobals.PushFront(glb)
+
+		varType := glb.GetType()
+
+		if varType != null
+			checkGlobVal(varType,GInterpCntx.GetGlobalVarMem(glb))
+	}
+	checkGlobVal := !(Type^ varType,void^ varPtr) -> void
+	{
+		if varType is in TypeArr
+		{
+			sz := varType->{TypeArr^}.len
+			baseSize := varType.Base.GetSize()
+
+			for i : sz
+			{
+				subPtr := varPtr->{u8^}[baseSize*i]&
+
+				checkGlobVal(varType.Base,subPtr)
+			}
+			return void
+		}
+		if varType == GTypeStrBase
+		{
+			stPtr := varPtr->{String^}.GetString()
+			UsedStrings.Insert(GetExeString(stPtr))
+			return void
+		}
+
+		if varType == GTypeChar.GetPoint() and varPtr->{char^^}^ != null
+		{
+			stPtr := StringSpan(varPtr->{char^^}^)&
+			UsedStrings.Insert(GetExeString(stPtr))
+			return void
+		}
+
 	}
 
 	Collect := !() -> void
@@ -206,6 +244,8 @@ CollectFunctionsCtx := class extend TGCObject
 						checkGlobal(it.GetValueObject())
 					case MCConstFunction
 						checkFunction(it.GetValue())
+					case MCConstString
+						UsedStrings.Insert(GetExeString(it.GetValue()))
 					}
 				}
 			}
@@ -230,6 +270,8 @@ CollectFunctionsCtx := class extend TGCObject
 						if cnst is CheckInfoConst
 						{
 							checkGlobal(cnst->{CheckInfoConst^}.ItGlobVar)
+						}else {
+							checkConstant(cnst)
 						}
 					}else if it is VTableFunc
 					{
@@ -274,7 +316,7 @@ CollectFunctionsCtx := class extend TGCObject
 
 	Workarounds := !() -> void
 	{
-		msCall := CreateFuncCall("memset",![GObjNull,GetExeInt(0),GetExeInt(0)])
+		msCall := CreateFuncCall("memset",![GObjNull,0hv,0hv])
 
 		if msCall? is BoxFuncCall
 		{
@@ -314,7 +356,7 @@ GlobTryPrintConst := !(MCInterpContext^ iCtx,GlobalVar2^ var,Stream strm) -> boo
 GlobTryPrintConst2 := !(MCInterpContext^ iCtx,Type^ varType,void^ varPtr,Stream strm) -> bool
 {
 	ctx := LLVMWriteContext
-	ctx.writeStream = strm& //TODO bad
+	ctx.writeStream = strm&
 
 	if varType is in TypeArr
 	{
