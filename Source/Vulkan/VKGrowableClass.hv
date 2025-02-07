@@ -20,11 +20,11 @@ VKGrowableClass := class extend BoxClass
 	{
 		itModule = bs
 
-		Name = "VulkanFunctionsClass" //todo
+		Name = "VulkanFunctionsClass"
 		ItId = GetNewId()
-		ItType = new TypeClass(this&) //TODO remove duplicate from BoxClassBody,BoxTuple
+		ItType = new TypeClass(this&)
 
-		ItAlign = 1 //TODO pointer size
+		ItAlign = 1
 		ItSize = 0
 	}
 	GetFieldFailedCB := virtual !(Str val) -> Type^

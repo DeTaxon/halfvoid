@@ -12,7 +12,10 @@ GetAssemblerInline := !(Token^ itm) -> BoxExeObj^
 			break
 
 		if itr is not TokenString
-			return null //TODO error
+		{
+			MakeErrorMsg(itm,"Invalid object")
+			return null
+		}
 
 		st := itr->{TokenString^}.Value
 
@@ -226,7 +229,6 @@ BoxAssemblerInline := class extend BoxExeObj
 
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		//TODO add something,
 		//right now empty is fine
 	}
 }
