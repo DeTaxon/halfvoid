@@ -214,6 +214,11 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			}
 			if exeObj is BoxMultipleResult
 			{ 
+				if manyNames.Size() > exeObj.ResultCount()
+				{
+					MakeErrorMsg(obj,"Too many variables, function does not provide that many results")
+					return null
+				}
 				//TODO check too many vars for function,  c,r,x := Funct()
 				borrow := new BorrowedCallVar(exeObj)
 

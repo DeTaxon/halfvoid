@@ -15,13 +15,7 @@ main := !(char^[] args) -> int
 {
 	//c := ToString(-0.01)
 	//printf("test <%s> %i\n",c,c.Size())
-
-	c := TestClass2
-	c.w = 15
-	for it, ind : c->LocalFields
-	{
-		printf("yep %i %s\n",it,ind)
-	}
+	
 }
 
 //TODO lazy class and fake fields
@@ -32,6 +26,14 @@ main := !(char^[] args) -> int
 
 
 
+ThisIsError := !() -> void
+{
+	c,y := ManyRes()
+}
+ManyRes := !() -> int, GCObject^ //TODO GCObject is incorrect type, emit error
+{
+	return 5, new TGCObject
+}
 
 
 

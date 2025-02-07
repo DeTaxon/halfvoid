@@ -5,13 +5,25 @@ BoxMultipleResult := class extends BoxExeObj
 
 	MultyVars := AVLMap.{int,LocalVar^}
 
+	VarsCount := int
+
 	this := !(BoxFuncCall^ funcCall) -> void
 	{
-		
 		BaseResult = funcCall
 		FirstResultVar := GetLocalVar(0)
 		ObjType = FirstResultVar.CreateVarCall().GetType()
 
+		assert(BaseResult.GetType() is in TypeClass)
+
+		tpl := BaseResult.GetType()->{TypeClass^}.ToClass
+		VarsCount = tpl.GetLocalFieldsCount()
+
+		printf("yep %i\n",VarsCount)
+	}
+
+	ResultCount := !() -> int
+	{
+		return VarsCount
 	}
 
 	GetLocalVar := !(int indx) -> LocalVar^

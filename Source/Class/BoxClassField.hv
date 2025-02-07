@@ -110,6 +110,10 @@ AppendClass BoxClass
 		fieldsOffset = posOffset
 
 	}
+	GetLocalFieldsCount := !() -> int
+	{
+		return Fields.Size()
+	}
 	GetFieldsCount := !() -> int
 	{
 		sum := 0
