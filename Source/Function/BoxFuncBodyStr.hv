@@ -20,7 +20,7 @@ BoxFuncBodyStr := class extend BoxFuncBody
 		}
 	}
 
-	ParseString := !(StringSpan strData) -> void
+	ParseString := !(Str strData) -> void
 	{
 		fl := GetAnyFile()
 

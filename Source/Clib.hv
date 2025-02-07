@@ -311,10 +311,7 @@ CLib := class extend ModuleInterface
 			dt << ind << "&->{void^^}^ = lib.Get(\"" << ind << "\")\n"
 		}
 
-		st := dt.GetStr()
-		st.IncRef() //TODO memory leak
-
-		blank := StringSpan(st.Str())
+		blank := StringSpan(dt.GetStr())
 		initFunc.ParseString(blank)
 	}
 }

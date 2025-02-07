@@ -22,7 +22,7 @@ GVoidObj := BoxExeObj^
 GDebugTypePrintMeta := List.{Type^}
 
 AllClasses := List.{BoxClass^}
-AllFunctions := AVLSet.{BoxFunc^} //TODO remove when moved to optimized output
+AllFunctions := AVLSet.{BoxFunc^}
 
 targetLinux := false
 targetWindows := false
@@ -148,7 +148,7 @@ main := !(char^[] args) -> int
 		{
 			case "-cache"
 				i += 1
-				OpenCacheFile(args[i]) //TODO args check
+				OpenCacheFile(args[i])
 			case "-O"
 				OptimizeMode = true
 			case "-run"
@@ -189,7 +189,6 @@ main := !(char^[] args) -> int
 							return void
 
 						zFil := zObj->{File^}
-						zFil.IncRef()//TODO memory
 						nm := zFil.GetName()
 						if nm.End == ".hv" or nm.End == osHVFile
 						{
