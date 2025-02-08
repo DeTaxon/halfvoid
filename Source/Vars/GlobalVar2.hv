@@ -58,7 +58,7 @@ GlobalVar2 := class extend BoxUnit
 			parseHatch.Await()
 			return void
 		}
-		startedParse = true //TODO thread unsafe
+		startedParse = true
 		cls := this&
 		TSpawnTask(() ==> [cls] {
 			cls.Parse()

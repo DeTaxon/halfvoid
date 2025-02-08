@@ -171,7 +171,7 @@ BoxClass := class extend BoxUnit
 			par.AwaitParentStep()
 			for pp : par.PrimeParents
 			{
-				PrimeParents.Emplace(pp.0,par,pp.2 + 1) //todo Remove duplicates
+				PrimeParents.Emplace(pp.0,par,pp.2 + 1)
 			}
 		}
 		for par : Parents
@@ -179,7 +179,7 @@ BoxClass := class extend BoxUnit
 			par.AwaitParentStep()
 			for pp : par.PrimeParents
 			{
-				PrimeParents.Emplace(pp.0,par,pp.2 + 1) //todo Remove duplicates
+				PrimeParents.Emplace(pp.0,par,pp.2 + 1)
 			}
 		}
 		PrimeParents.Emplace(this&,this&,0)

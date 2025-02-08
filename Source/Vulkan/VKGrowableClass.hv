@@ -24,6 +24,8 @@ VKGrowableClass := class extend BoxClass
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 
+		hvClass.baseClass = this& 
+
 		ItAlign = 1
 		ItSize = 0
 	}

@@ -110,7 +110,7 @@ AppendClass HVContextImplementation
 		clss.Remove(null)
 		for it : clss
 		{
-			if it.hvClass.baseClass == null //TODO who does not have it? mabe make it into multiple inheritance
+			if it.hvClass.baseClass == null
 				continue
 			cb(it.hvClass&)
 		}

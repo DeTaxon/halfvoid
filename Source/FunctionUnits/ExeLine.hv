@@ -1,7 +1,7 @@
 BoxExeLine := class extend BoxExeLineSimple
 {
 	exitLabel := BoxLabel^
-	addPostStack := List.{BoxUnit^} //TODO optimize out for size
+	addPostStack := List.{BoxUnit^}
 
 	this := !() -> void
 	{
@@ -267,7 +267,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{Str,BoxExeO
 				if funcObj == null
 				{
 					CurrentWork?.SetErrorMessage(itm.MakeError("software error, compiler is broken"))
-					return false //TODO exception
+					return false
 				}
 				
 				assert(funcObj.VariadicName.Size() != 0)
@@ -296,14 +296,14 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{Str,BoxExeO
 					if itr.Down is not TokenIndent
 					{
 						CurrentWork?.SetErrorMessage(itr.MakeError("Left of operator = must be a name"))
-						return false //TODO Exception
+						return false
 					}
 					name := itr.Down->{TokenIndent^}.Value
 					obj := TryGetExeCall(itr.Down.Right.Right)
 					if obj == null
 					{
 						CurrentWork?.SetErrorMessage(itr.Down.Right.Right.MakeError("Could not parse"))
-						return false //TODO exception
+						return false
 					}
 					namedInputs[name] = obj
 				}else{
@@ -348,7 +348,7 @@ CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 					consts.Push(cns->{BoxExeConstObj^})
 				}else{
 					CurrentWork?.SetErrorMessage(iter.MakeError("could not get constant value"))
-					return void //TODO make exception
+					return void
 				}
 			}
 		}
@@ -490,7 +490,6 @@ makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts)
 oneGonnaOnly := task_local bool
 isGonnaWorkCache := AVLMap.{Type^,AVLMap.{Type^,bool}}[2]
 
-//TODO i don't like it
 IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 {
 	if oneGonnaOnly

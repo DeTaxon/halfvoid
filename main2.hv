@@ -21,8 +21,7 @@ main := !(char^[] args) -> int
 //TODO lazy class and fake fields
 //TODO lazy class in hotload
 //TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
-
-
+//TODO allow !(ref int x) , in functions and function types, lambdas
 
 
 

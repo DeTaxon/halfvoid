@@ -103,7 +103,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 				if t == null
 					return null
 
-				if iter.Right?.GetValue() == "&" //TODO switch to ref
+				if iter.Right?.GetValue() == "&"
 				{
 					isRefs[k] = true
 					iter = iter.Right
