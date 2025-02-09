@@ -11,3 +11,15 @@ DB_FieldUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_LocalVarUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_ClassFieldUsage := HVTable2.{BoxFunc^,BoxClass^}
 
+
+DB_ForgetFunction := !(BoxFunc^ fnc) -> void
+{
+	if fnc is in BoxFuncBody
+		DB_EmbeddedFiles.Key.RemoveAll(fnc->{BoxFuncBody^})
+
+	DB_TypeSizeUsage.Key.RemoveAll(fnc)
+	DB_FieldUsage.Key.RemoveAll(fnc)
+	DB_LocalVarUsage.Key.RemoveAll(fnc)
+
+}
+

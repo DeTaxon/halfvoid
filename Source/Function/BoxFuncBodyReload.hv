@@ -10,6 +10,7 @@ AppendClass BoxFuncBody
 
 		//ExitLabel = null
 		
+		thisWork = null
 		WorkBag.works.DeleteIf(x ==> [c = this&]{
 			if x is not CWorkFuncCompile
 				return false
@@ -35,10 +36,7 @@ AppendClass BoxFuncBody
 
 		body = null
 
-		DB_EmbeddedFiles.Key.RemoveAll(this&)
-		DB_TypeSizeUsage.Key.RemoveAll(this&)
-		DB_FieldUsage.Key.RemoveAll(this&)
-		DB_LocalVarUsage.Key.RemoveAll(this&)
+		DB_ForgetFunction(this&)
 	}
 
 	ReloadFunction := !(HotloadContext^ ctx,PFunctionParser^ headerData) -> void

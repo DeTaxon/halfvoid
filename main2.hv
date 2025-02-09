@@ -1,21 +1,16 @@
 
-TestClass := class
-	//#LazyClass()
+NewClass2 := class
 {
 	x := int
-	y := int 
-	z := int
+}
 
-}
-TestClass2 := class extends TestClass
-{
-	w := int
-}
 main := !(char^[] args) -> int
 {
 	//c := ToString(-0.01)
 	//printf("test <%s> %i\n",c,c.Size())
-	
+
+	bad := NewClass
+	printf("good\n")
 }
 
 //TODO lazy class and fake fields
