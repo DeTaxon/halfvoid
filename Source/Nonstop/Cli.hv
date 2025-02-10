@@ -260,6 +260,14 @@ ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void
 }
 ReloadApply := !(HotloadContext^ hotload) -> void
 {
+	for it : WorkBag.works
+	{
+		switch it is
+		{
+		case CWorkFuncCompile
+			hotload.AddFunction(it.itFunc)
+		}
+	}
 	while hotload.ReloadFunctions.Size() != 0 or hotload.ReloadClasses.Size() != 0
 	{
 		if hotload.ReloadClasses.Size() != 0

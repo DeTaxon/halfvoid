@@ -23,3 +23,8 @@ DB_ForgetFunction := !(BoxFunc^ fnc) -> void
 
 }
 
+DB_ForgetClass := !(BoxClass^ cls) -> void
+{
+	CodeSpaces[^].Globals[cls.Name].DeleteIf(x ==> { return x == cls } )
+	CodeSpaces[^].Types.Remove(cls.Name)
+}

@@ -185,6 +185,33 @@ BoxFile := class extend BoxUnit
 
 			ParsedTokens.Insert(iter)
 		}
+
+		if oldData != null
+		{
+			for oldClass : oldData.FileClasses
+			{
+				foundIt := false
+				for newClass : FileClasses
+				{
+					if newClass.Name != oldClass.Name
+						continue
+					foundIt = true
+					break
+				}
+
+				if foundIt
+					continue
+
+				DB_FieldUsage.Value.Get(oldClass,x ==> {
+					oldData.ctx.AddFunction(x)
+				})
+				DB_LocalVarUsage.Value.Get(oldClass,x ==> {
+					oldData.ctx.AddFunction(x)
+				})
+
+				DB_ForgetClass(oldClass)
+			}
+		}
 	}
 	AddClass := !(StringSpan name, PClassParser^ d) -> void
 	{
