@@ -6,10 +6,9 @@ DB_EmbeddedFiles := HVTable2.{BoxFuncBody^,File^}
 DB_ClassExtends := HVTable2.{BoxClass^,BoxClass^} //Left extend right
 DB_TypeSizeUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_VTableUsage := HVTable2.{BoxClass^, BoxFunc^}
-DB_ClassComposition := HVTable2.{BoxClass^, BoxClass^}
+DB_ClassComposition := HVTable2.{BoxClass^, BoxClass^} // Left uses right
 DB_FieldUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_LocalVarUsage := HVTable2.{BoxFunc^,BoxClass^}
-DB_ClassFieldUsage := HVTable2.{BoxFunc^,BoxClass^}
 
 
 DB_ForgetFunction := !(BoxFunc^ fnc) -> void
@@ -23,8 +22,23 @@ DB_ForgetFunction := !(BoxFunc^ fnc) -> void
 
 }
 
-DB_ForgetClass := !(BoxClass^ cls) -> void
+DB_ForgetClass := !(HotloadContext^ ctx, BoxClass^ cls) -> void
 {
+	if ctx != null
+	{
+		DB_FieldUsage.Value.Get(cls,x ==> {
+			ctx.AddFunction(x)
+		})
+		DB_LocalVarUsage.Value.Get(cls,x ==> {
+			ctx.AddFunction(x)
+		})
+		DB_ClassComposition.Value.Get(cls,x ==> {
+			ctx.AddClass(x)
+		})
+		DB_ClassExtends.Value.Get(cls,x ==> {
+			ctx.AddClass(x)
+		})
+	}
 	CodeSpaces[^].Globals[cls.Name].DeleteIf(x ==> { return x == cls } )
 	CodeSpaces[^].Types.Remove(cls.Name)
 }

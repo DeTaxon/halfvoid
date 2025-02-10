@@ -19,6 +19,12 @@ HotloadContext := class extend TGCObject
 			return void
 		ReloadFunctions.PushUniq(x->{BoxFuncBody^})
 	}
+	AddClass := !(BoxClass^ x) -> void
+	{
+		if x is not in BoxClassBody
+			return void
+		ReloadClasses.PushUniq(x->{BoxClassBody^})
+	}
 	HaveWork := !() -> bool
 	{
 		if ReloadFunctions.Size() != 0

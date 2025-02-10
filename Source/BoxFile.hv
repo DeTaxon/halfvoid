@@ -202,14 +202,7 @@ BoxFile := class extend BoxUnit
 				if foundIt
 					continue
 
-				DB_FieldUsage.Value.Get(oldClass,x ==> {
-					oldData.ctx.AddFunction(x)
-				})
-				DB_LocalVarUsage.Value.Get(oldClass,x ==> {
-					oldData.ctx.AddFunction(x)
-				})
-
-				DB_ForgetClass(oldClass)
+				DB_ForgetClass(oldData.ctx,oldClass)
 			}
 		}
 	}

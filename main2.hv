@@ -1,7 +1,12 @@
 
-NewClass2 := class
+NewClass3 := class
 {
 	x := int
+}
+
+NNC := class
+{
+	y := NewClass2
 }
 
 main := !(char^[] args) -> int
@@ -9,10 +14,11 @@ main := !(char^[] args) -> int
 	//c := ToString(-0.01)
 	//printf("test <%s> %i\n",c,c.Size())
 
-	bad := NewClass2
-	bad.x = 100
+	bad := NNC
+	bad.y.x = 100
 	printf("good asd\n")
 }
+
 
 //TODO lazy class and fake fields
 //TODO lazy class in hotload
