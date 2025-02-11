@@ -8,6 +8,8 @@ AppendClass BoxClassBody
 		if not startedParse
 			return void
 
+		thisWork = null
+
 		HotloadStream << "Started reload of class " << className << "\n"
 
 		oldData := new ClassReloadOldData

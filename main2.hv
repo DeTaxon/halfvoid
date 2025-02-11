@@ -1,5 +1,5 @@
 
-NewClass3 := class
+NewClass2 := class
 {
 	x := int
 }
