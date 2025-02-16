@@ -632,6 +632,8 @@ CWorkBaseFile := class extend CWorkUnit
 			name := itToken.Down->{TokenIndent^}.Value
 			newVarTemplate := new GlobalVarTemplate(name,itToken.Down.Right.Right.Right.Right,itToken.Down.Right.Right.Right,itToken.Down.Right.Right)
 			CurrentCodeSpace.Globals[name].Push(newVarTemplate)
+
+			itState = "Complete"
 			return "Complete"
 		}
 
@@ -689,14 +691,21 @@ CWorkBaseFile := class extend CWorkUnit
 			}
 
 			vr.Work()
+
+			itState = "Complete"
+			return "Complete"
 		}else{
 			cmdRes := TryGetCommand(itToken)
 			if cmdRes == null
 			{
 				itError = itToken.MakeError("Unknown object")
+				itState = "Failed"
 				return "Failed"
 			}
 		}
+
+		itState = "Complete"
+		return "Complete"
 
 	}
 	IsDone := virtual !() -> bool {

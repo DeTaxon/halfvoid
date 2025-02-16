@@ -446,8 +446,7 @@ WorkToError := !(CWorkUnit^ itWork) -> Str
 	}
 }
 
-
-WaitForParsingObjects := !() -> void
+WaitForParsingObjects := !() -> bool
 {
 	TaskYield()
 
@@ -458,7 +457,7 @@ WaitForParsingObjects := !() -> void
 	{
 		if GHotloadCntx.HaveWork()
 		{
-			ReloadApply(GHotloadCntx&)
+			ReloadApply(GHotloadCntx&, true)
 			GHotloadCntx.Reset()
 		}
 
@@ -474,12 +473,15 @@ WaitForParsingObjects := !() -> void
 		}else{
 			used += 1
 			if used >= maxUses
-				break
+				return false
 		}
+		HotloadStream << "Work " << nowCount << ":" << prevCount << ":" << maxUses << ":" << used << "\n"
 
 
 		TaskYield()
 	}
+
+	return true
 }
 
 WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void

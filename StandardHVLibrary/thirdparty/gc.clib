@@ -1,0 +1,10 @@
+{
+	"link" : "static",
+	"initname" : "standartcinit",
+	"libs" : [
+		"libgc.so"
+	],
+	"funcs" : {
+		"GC_malloc" : "void^,u64"
+	}
+}

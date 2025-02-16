@@ -14,6 +14,7 @@ main := !(char^[] args) -> int
 	//c := ToString(-0.01)
 	//printf("test <%s> %i\n",c,c.Size())
 
+
 	bad := NNC
 	bad.y.x = 100
 	printf("good asd\n")

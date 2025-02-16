@@ -20,6 +20,7 @@ CompilerWork := class
 
 	DoWork := !() -> int
 	{
+
 		while works.Size() != 0
 		{
 			completeCount := 0
@@ -35,12 +36,12 @@ CompilerWork := class
 				{
 					case "Complete"
 						completeCount += 1
-					case "MadeProgress"
-						progressCount += 1
-						works.Push(itm)
 					case "Failed"
 						works.Push(itm)
 						failsCount += 1
+					case void //"MadeProgress"
+						progressCount += 1
+						works.Push(itm)
 				}
 			}
 			if completeCount == 0 and progressCount == 0 and failsCount != 0
@@ -53,6 +54,8 @@ CompilerWork := class
 
 CWorkUnit := class extend TGCObject
 {
+	UnitName := poison virtual #ThisClass()->TypeName
+	
 	DoWork := virtual !() -> CWorkState {}
 	IsDone := virtual !() -> bool {}
 	GetErrorMessage := virtual !() -> Str {}
