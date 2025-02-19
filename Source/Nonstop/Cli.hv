@@ -161,21 +161,18 @@ EnterCliMode := !() -> int
 			if changedObj is not in File
 				return void
 
-			hotload := HotloadContext
+			hotload := GHotloadCntx& 
 			asFile := changedObj->{File^}
 
-			CheckEmbededFile(hotload&,asFile)
+			CheckEmbededFile(hotload,asFile)
 
 			fName := asFile.GetName()
 
 			if fName.End == ".hv"
 			{
-				ChangedHVFile(hotload&,asFile,changedOption)
+				ChangedHVFile(hotload,asFile,changedOption)
 			}
-
-			ReloadApply(hotload&)
-
-
+			StartWorkBox()
 		})
 	})
 
@@ -187,6 +184,21 @@ EnterCliMode := !() -> int
 
 	cliWin.Run()
 	exit(0) //TODO 
+
+}
+
+gSomeOneOnWork := bool
+StartWorkBox := !() -> void
+{
+	if gSomeOneOnWork
+		return void
+
+	gSomeOneOnWork = true
+
+	SubWork(() ==> {
+		WaitForParsingObjects()
+		gSomeOneOnWork = false
+	})
 
 }
 
@@ -257,74 +269,6 @@ ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void
 
 	foundFile.ReloadFile(hotload,asFile)
 
-}
-ReloadApply := !(HotloadContext^ hotload, bool skipWait = false) -> void
-{
-	//TODOTODO WHAT IS GOING ON, i need code below to work, but it breaks tetris
-	//for it : WorkBag.works
-	//{
-	//	switch it is
-	//	{
-	//	case CWorkFuncCompile
-	//		hotload.AddFunction(it.itFunc)
-	//	case CWorkClassCompile
-	//		hotload.AddClass(it.itClass)
-	//	}
-	//}
-	while hotload.ReloadFunctions.Size() != 0 or hotload.ReloadClasses.Size() != 0
-	{
-		if hotload.ReloadClasses.Size() != 0
-		{
-			newClass := hotload.ReloadClasses.Pop()
-			newClass.ReloadClass(hotload)
-		}else{
-			newFunc := hotload.ReloadFunctions.Pop()
-
-			HotloadStream << "Reloading function " << newFunc.GetGoodName() << "\n"
-			newFunc.ReloadFunction(hotload,null)
-		}
-	}
-
-	while hotload.ChangedVirtualTables.Size() != 0
-	{
-		cls := hotload.ChangedVirtualTables.Pop()
-		DB_VTableUsage.Key.Get(cls,x ==> {
-			if x is in BoxFuncBody
-			{
-				x->{BoxFuncBody^}.ReloadFunction(hotload,null)
-			}
-		})
-		DB_VTableUsage.Key.RemoveAll(cls)
-	}
-
-	hotload.FailedToCompile[^].Recompile()
-	hotload.FailedToCompile.Destroy()
-
-	if skipWait
-		return void
-
-	waitRes := WaitForParsingObjects()
-
-	if not waitRes
-	{
-		WorkBag.CancelAll()
-	}
-
-
-	//HotloadStream << "Apply " << hotload.ChangedFunctions.Size() << " " << hotload&->{void^}->{size_t}  << "\n"
-
-	GInterpCntx.Reload(hotload) //TODO for skipWait==true caller must do it
-	hotload.Reset()
-
-	//if WorkBag.works.Size() != 0
-	//{
-	//	for it : WorkBag.works
-	//	{
-	//		if it is not CWorkFuncCompile
-	//			continue
-	//		hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
-	//	}
-	//}
 }
 
 CliParseMain := !() -> void
