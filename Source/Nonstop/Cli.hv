@@ -197,6 +197,9 @@ StartWorkBox := !() -> void
 
 	SubWork(() ==> {
 		WaitForParsingObjects()
+
+		if WorkBag.WorkCount() != 0
+			WorkBag.CancelAll()
 		gSomeOneOnWork = false
 	})
 
@@ -289,7 +292,7 @@ CliParseMain := !() -> void
 
 	TLSStep()
 
-	while WorkBag.works.Size() != 0
+	if WorkBag.works.Size() != 0
 	{
 		WaitForParsingObjects()
 		TSleep(0.01)
@@ -303,7 +306,7 @@ CliParseMain := !() -> void
 			libs.CreateInitPart()
 	}
 
-	while WorkBag.works.Size() != 0
+	if WorkBag.works.Size() != 0
 	{
 		WaitForParsingObjects()
 		TSleep(0.01)

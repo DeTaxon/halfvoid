@@ -3,12 +3,26 @@ AppendClass BoxClassBody
 	
 	ReloadClass := !(HotloadContext^ ctx) -> void
 	{
-		className := GetGoodName()
-
 		if not startedParse
 			return void
 
+		oldSize := 0
+		if FieldsState.Emited() 
+			oldSize = ItType.GetSize()
+
 		thisWork = null
+		FieldsState.Reset()
+
+		AddClassWork()
+
+		SubWork (() ==> [c = this&,ctx,oldSize] {
+			c.ReloadClassCore(ctx,oldSize)
+		})
+	}
+
+	ReloadClassCore := !(HotloadContext^ ctx,int oldSize) -> void
+	{
+		className := GetGoodName()
 
 		HotloadStream << "Started reload of class " << className << "\n"
 
@@ -32,7 +46,6 @@ AppendClass BoxClassBody
 			setLine.Push(it[^])
 		}
 
-		oldSize := ItType.GetSize()
 		oldHash := GetMemStructureHash()
 
 		oldData.VTableType = VTableType
@@ -55,7 +68,13 @@ AppendClass BoxClassBody
 		VTableValue = null
 		VTableField = null
 
-		WorkBody(oldData)
+		res := WorkBody(oldData)
+
+		if not res
+		{
+			HotloadStream << "Class " << className << " failed to compile\n"
+			return void
+		}
 
 		newSize := ItType.GetSize()
 		newHash := GetMemStructureHash()

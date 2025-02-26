@@ -1,5 +1,5 @@
 
-ReloadApply := !(HotloadContext^ hotload, bool skipWait = false) -> void
+ReloadApply := !(HotloadContext^ hotload) -> void
 {
 	//TODOTODO WHAT IS GOING ON, i need code below to work, but it breaks tetris
 	//for it : WorkBag.works
@@ -26,6 +26,7 @@ ReloadApply := !(HotloadContext^ hotload, bool skipWait = false) -> void
 		}
 	}
 
+
 	while hotload.ChangedVirtualTables.Size() != 0
 	{
 		cls := hotload.ChangedVirtualTables.Pop()
@@ -40,30 +41,4 @@ ReloadApply := !(HotloadContext^ hotload, bool skipWait = false) -> void
 
 	hotload.FailedToCompile[^].Recompile()
 	hotload.FailedToCompile.Destroy()
-
-	if skipWait
-		return void
-
-	waitRes := WaitForParsingObjects()
-
-	if not waitRes
-	{
-		WorkBag.CancelAll()
-	}
-
-
-	//HotloadStream << "Apply " << hotload.ChangedFunctions.Size() << " " << hotload&->{void^}->{size_t}  << "\n"
-
-	GInterpCntx.Reload(hotload) //TODO for skipWait==true caller must do it
-	hotload.Reset()
-
-	//if WorkBag.works.Size() != 0
-	//{
-	//	for it : WorkBag.works
-	//	{
-	//		if it is not CWorkFuncCompile
-	//			continue
-	//		hotload.FailedToCompile.Push(it->{CWorkFuncCompile^}.itFunc)
-	//	}
-	//}
 }

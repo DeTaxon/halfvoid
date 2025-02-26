@@ -1,23 +1,19 @@
 
-NewClass2 := class
+
+ccc := class
 {
 	x := int
 }
 
-NNC := class
+
+yyy := class
 {
-	y := NewClass2
+	x := ccc
 }
 
 main := !(char^[] args) -> int
 {
-	//c := ToString(-0.01)
-	//printf("test <%s> %i\n",c,c.Size())
-
-
-	bad := NNC
-	bad.y.x = 100
-	printf("good asd\n")
+	r := yyy
 }
 
 

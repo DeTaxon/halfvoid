@@ -20,7 +20,6 @@ CompilerWork := class
 
 	DoWork := !() -> int
 	{
-
 		while works.Size() != 0
 		{
 			completeCount := 0
@@ -44,6 +43,7 @@ CompilerWork := class
 						works.Push(itm)
 				}
 			}
+			//HotloadStream << "Work " << works.Size() << " " << failsCount << "\n" 
 			if completeCount == 0 and progressCount == 0 and failsCount != 0
 				break
 		}

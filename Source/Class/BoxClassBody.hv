@@ -296,7 +296,7 @@ BoxClassBody := class extend BoxClassPoison
 		}
 		return echo.GetStr()
 	}
-	WorkBody := virtual !(ClassReloadOldData^ oldData) -> void
+	WorkBody := virtual !(ClassReloadOldData^ oldData) -> bool
 	{
 		GParsedAllFiles.Await()
 
@@ -316,12 +316,12 @@ BoxClassBody := class extend BoxClassPoison
 			if inhType == null
 			{
 				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("can not inherit unknown class"))
-				return void
+				return false
 			}
 			if not (inhType is TypeClass)
 			{
 				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("parent type must be class"))
-				return void
+				return false
 			}
 			asClsParent := inhType->{TypeClass^}
 			asClsParent.ToClass.StartParseBody()
@@ -405,12 +405,12 @@ BoxClassBody := class extend BoxClassPoison
 
 		checkClassBody(Body,oldData,funcs)
 		if thisWork.IsCanceled
-			return void
+			return false
 		for it : Appends
 		{
 			checkClassBody(it.1,oldData,funcs)
 			if thisWork.IsCanceled
-				return void
+				return false
 		}
 		
 		if buildCtx.MemParents.Size() != 0
@@ -436,6 +436,7 @@ BoxClassBody := class extend BoxClassPoison
 		if #Var("Tracy") TracyPrintf("Ended class parse %p %s",this&,GetGoodName())
 		FieldsState.Emit()
 
+		return true
 	}
 
 	CheckVTableFuncUsage := !() -> void
@@ -821,6 +822,8 @@ CWorkClassCompile := class extend CWorkUnit
 
 	DoWork := virtual !() -> CWorkState 
 	{
+		if itClass.thisWork != this&
+			return "Complete"
 		if IsDone()
 			return "Complete"
 		return "Failed"

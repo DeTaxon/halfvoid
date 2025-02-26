@@ -457,7 +457,7 @@ WaitForParsingObjects := !() -> bool
 	{
 		if GHotloadCntx.HaveWork()
 		{
-			ReloadApply(GHotloadCntx&, true)
+			ReloadApply(GHotloadCntx&)
 			GHotloadCntx.Reset()
 		}
 
@@ -475,9 +475,6 @@ WaitForParsingObjects := !() -> bool
 			if used >= maxUses
 				return false
 		}
-		HotloadStream << "Work " << nowCount << ":" << prevCount << ":" << maxUses << ":" << used << "\n"
-
-
 		TaskYield()
 	}
 
