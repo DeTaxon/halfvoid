@@ -251,7 +251,7 @@ BoxClassBody := class extend BoxClassPoison
 	}
 
 	thisWork := CWorkClassCompile^
-	AddClassWork := !() -> CWorkUnit^
+	AddClassWork := !() -> CWorkClassCompile^
 	{
 		return thisWork?
 
@@ -812,6 +812,7 @@ BoxClassBody := class extend BoxClassPoison
 CWorkClassCompile := class extend CWorkUnit
 {
 	itClass := BoxClassBody^
+	oldData := ClassReloadOldData^
 	IsCanceled := bool
 	errMessage := Str
 

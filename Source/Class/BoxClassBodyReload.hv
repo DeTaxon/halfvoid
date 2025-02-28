@@ -1,7 +1,7 @@
 AppendClass BoxClassBody
 {
 	
-	ReloadClass := !(HotloadContext^ ctx) -> void
+	ReloadClass := !(HotloadContext^ ctx, ClassReloadOldData^ oldData = null) -> void
 	{
 		if not startedParse
 			return void
@@ -15,48 +15,55 @@ AppendClass BoxClassBody
 
 		AddClassWork()
 
-		SubWork (() ==> [c = this&,ctx,oldSize] {
-			c.ReloadClassCore(ctx,oldSize)
+		SubWork (() ==> [c = this&,ctx,oldSize, oldData] {
+			c.ReloadClassCore(ctx,oldSize,oldData)
 		})
 	}
 
-	ReloadClassCore := !(HotloadContext^ ctx,int oldSize) -> void
+	ReloadClassCore := !(HotloadContext^ ctx,int oldSize,ClassReloadOldData^ prevOldData) -> void
 	{
 		className := GetGoodName()
 
 		HotloadStream << "Started reload of class " << className << "\n"
 
-		oldData := new ClassReloadOldData
-		oldData.ctx = ctx
+		oldData := prevOldData
 
-		for it, ind : DefaultSpace.MethodTemplates
+		if oldData == null
 		{
-			setLine := ref oldData.OldFuncTemplates[ind]
-			setLine.Push(it[^])
-		}
-		for it, ind : DefaultSpace.Methods
-		{
-			setLine := ref oldData.OldFuncs[ind]
-			setLine.Push(it[^])
+			oldData = new ClassReloadOldData
+			oldData.ctx = ctx
+
+			for it, ind : DefaultSpace.MethodTemplates
+			{
+				setLine := ref oldData.OldFuncTemplates[ind]
+				setLine.Push(it[^])
+			}
+			for it, ind : DefaultSpace.Methods
+			{
+				setLine := ref oldData.OldFuncs[ind]
+				setLine.Push(it[^])
+			}
+
+			for it, ind : PreVTableFuncs
+			{
+				setLine := ref oldData.OldFuncs[ind]
+				setLine.Push(it[^])
+			}
+
+			oldData.VTableType = VTableType
+			oldData.VTableValue = VTableValue
+			oldData.VTableField = VTableField
+
+			oldData.OldFields.Push(Fields[^])
+			oldData.OldFieldPaths.Push(FieldsPath[^])
 		}
 
-		for it, ind : PreVTableFuncs
-		{
-			setLine := ref oldData.OldFuncs[ind]
-			setLine.Push(it[^])
-		}
+		AddClassWork().oldData = oldData
 
 		oldHash := GetMemStructureHash()
 
-		oldData.VTableType = VTableType
-		oldData.VTableValue = VTableValue
-		oldData.VTableField = VTableField
-
 		PrimeParents.Destroy()
 		Parents.Destroy()
-
-		oldData.OldFields.Push(Fields[^])
-		oldData.OldFieldPaths.Push(FieldsPath[^])
 
 		DefaultSpace.MethodTemplates.Destroy()
 

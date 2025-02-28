@@ -104,6 +104,12 @@ List := class.{@T} extend TArrayView.{T}
 		}
 		return itr.data
 	}
+	Contain := !(T val) -> bool
+	{
+		if this[^] == val
+			return true
+		return false
+	}
 
 
 	createVector := virtual !(Vector.{T}^^ res,int nowSize) -> void

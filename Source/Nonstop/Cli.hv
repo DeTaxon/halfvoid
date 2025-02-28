@@ -196,6 +196,17 @@ StartWorkBox := !() -> void
 	gSomeOneOnWork = true
 
 	SubWork(() ==> {
+
+		for it : WorkBag.works
+		{
+			switch it is
+			{
+			case CWorkClassCompile
+				if it.oldData != null and not GHotloadCntx.ReloadClasses.Contain(it.itClass)
+					it.itClass.ReloadClass(GHotloadCntx&,it.oldData)
+			}
+		}
+
 		WaitForParsingObjects()
 
 		if WorkBag.WorkCount() != 0
