@@ -163,7 +163,18 @@ AppendClass BoxClass
 			fldClass := newFieldType->{TypeClass^}.ToClass
 			DB_ClassComposition.Add(this&,fldClass)
 		}
-		fieldLayoutChanged()
+		//fieldLayoutChanged()
+
+		DB_TypeSizeUsage.Value.Get(this&,x ==> {
+			GHotloadCntx.AddFunction(x)
+		})
+
+		DB_ClassExtends.Value.Get(this&,x ==> {
+			x->{BoxClassBody^}.fieldLayoutChanged()
+		})
+		DB_ClassComposition.Value.Get(this&, x ==> {
+			x->{BoxClassBody^}.fieldLayoutChanged()
+		})
 
 		return newPath
 	}
@@ -257,10 +268,12 @@ AppendClass BoxClass
 	}
 	GetFieldsIterator := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
 	{
+		DB_TypeSizeUsage.Add(CurrentFunc?,this&)
 		return new GrowableClassMetaFields(itm,this&)
 	}
 	GetFieldsIteratorLocal := virtual !(BoxExeObj^ itm) -> BoxMetaObj^
 	{
+		DB_TypeSizeUsage.Add(CurrentFunc?,this&)
 		return new GrowableClassMetaFieldsLocal(itm,this&)
 	}
 
