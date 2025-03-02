@@ -29,7 +29,7 @@ Type := class extend BoxExeConstObj
 			res := new TypeArrayView(this&)
 
 			tpys := List.{BoxExeConstObj^}
-			tpys.Push(this&) //TODO maybe use temp obj on stack
+			tpys.Push(this&)
 			assert(ArrayViewTemplate != null)
 			rClass := ArrayViewTemplate.GetClass(tpys)
 			assert(rClass != null)

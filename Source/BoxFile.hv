@@ -537,7 +537,7 @@ BoxFile := class extend BoxUnit
 		{
 			f := ctx.writeStream
 			pth := file.GetPath()
-			if fsIsExist(pth.Str()) //TODO to something better
+			if fsIsExist(pth.Str())
 			{
 				pth2 := fsGetAbsolutePath(pth)
 				if not pth2.IsSet()
@@ -628,7 +628,6 @@ CWorkBaseFile := class extend CWorkUnit
 
 		if itToken.Down?.Right?.Right?.GetValue() == "@"// and itToken.Down.Right.Right.Right?.GetValue() == "{}"
 		{
-			//TODO must be token, not str
 			name := itToken.Down->{TokenIndent^}.Value
 			newVarTemplate := new GlobalVarTemplate(name,itToken.Down.Right.Right.Right.Right,itToken.Down.Right.Right.Right,itToken.Down.Right.Right)
 			CurrentCodeSpace.Globals[name].Push(newVarTemplate)

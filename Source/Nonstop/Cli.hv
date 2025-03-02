@@ -183,7 +183,7 @@ EnterCliMode := !() -> int
 	StartStatusMonitor()
 
 	cliWin.Run()
-	exit(0) //TODO 
+	exit(0) 
 
 }
 
@@ -242,7 +242,6 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 
 		if foundFile != null
 		{
-			HotloadStream << "Test , redeemed reload\n" //TODO delete after i see it
 			ReloadFile(hotload,foundFile)
 		}else{
 			HotloadStream << "File was created " << fName << "\n"

@@ -32,7 +32,7 @@ TemplateInternalTupleConstructor := BoxFuncTemplate^
 
 InitInternals := !() -> void
 {
-	GetAnyFile() //TODO move to somewhere
+	GetAnyFile()	
 	//TracyZone("Internal functions")
 
 	GOperatorSetGC = intGetTemplate("internalGCSetVal")

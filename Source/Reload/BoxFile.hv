@@ -30,7 +30,7 @@ AppendClass BoxFile
 		}
 		ClassAppends.Destroy()
 
-		//TODO deleted functions,classes,classtemplates,typedefs
+		//TODO deleted functions,classtemplates,typedefs
 		ParseClasses(oldData&)
 		ParseTypedefs(oldData&)
 		ParseAppendClasses(oldData&)

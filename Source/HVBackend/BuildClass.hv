@@ -5,11 +5,11 @@ hvr_Class := class extend BoxClassPoison
 
 	this := !() -> void
 	{
-		Name = "ModuleClass" //todo
+		Name = "ModuleClass"
 		ItId = GetNewId()
 		ItType = new TypeClass(this&)
 
-		ItAlign = 1 //TODO pointer size
+		ItAlign = 1
 		ItSize = 0
 	}
 	GetFieldFailedCB := virtual !(Str val) -> Type^
@@ -47,9 +47,9 @@ HVClassImpl := class extend HV_Class
 	{
 		if fncObj == null
 			return void
-		if fncObj->{BoxUnit^} is not in BoxFuncTemplate
+		if fncObj->{BoxUnit^} is not in BoxFuncTemplateBody
 			return void
-		tmpl := fncObj->{BoxFuncTemplateBody^} //TODO, check if body
+		tmpl := fncObj->{BoxFuncTemplateBody^}
 		tmpl.ParentScope = baseClass
 		baseClass.DefaultSpace.MethodTemplates[funcName].Push(fncObj->{BoxFuncTemplate^})
 	}
