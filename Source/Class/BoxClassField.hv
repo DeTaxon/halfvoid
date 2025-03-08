@@ -48,8 +48,8 @@ AppendClass BoxClass
 			cb := (BoxClass^ cls, int id) ==> {
 				RecalculateSize()
 
-				dependentsOnGrow[^](cls,id) //todo cls or this?
-				fieldIterators[^].ItemCreated(id)
+				//dependentsOnGrow[^](cls,id) //todo cls or this?
+				//fieldIterators[^].ItemCreated(id)
 				
 			}
 		}

@@ -80,7 +80,8 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxExeObj^
 }
 GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb) -> BoxExeObj^
 {
-	return new BoxBlockBreak(itm, () ==> BoxUnit^ {
+	failed := false
+	res := new BoxBlockBreak(itm, () ==> BoxUnit^ {
 
 		forLine := new BoxExeLine()
 		forLine.ItToken = itm
@@ -94,6 +95,7 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb
 			if dwnRes == null
 			{
 				CurrentWork?.SetErrorMessage(it.DownToken.MakeError("Could not get result for cycle over obj"))
+				failed = true
 				return null
 			}
 
@@ -107,6 +109,7 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb
 				if not dwnRes->{BoxMetaObj^}.IsMetaIteratable()
 				{
 					CurrentWork?.SetErrorMessage(it.DownToken.MakeError("Meta object is not iteratable"))
+					failed = true
 					return null
 				}
 
@@ -134,5 +137,8 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb
 
 		return resFor
 	})
+	if failed
+		return null
+	return res
 }
 

@@ -29,11 +29,17 @@ VkDebugCallback := !(int flags,int bojType,u64 object,u64 location,int msgCode,c
 	exit(0)
 	return 0
 }
-
+tst := class
+{
+	x := u8[10]
+}
 main := !(char^[] args) -> int
 {
-	c := TestWin(400,400,"Hello world") //TODO should not crash without constructor
-	c.RunVulkan()
+	c := tst
+	c.x[^] = 15
+	printf("yep %i\n",c.x[^])
+	//C := TestWin(400,400,"Hello world") //TODO should not crash without constructor
+	//C.RunVulkan()
 }
 
 
