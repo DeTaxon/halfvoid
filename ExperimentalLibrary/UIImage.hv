@@ -1,0 +1,33 @@
+UIImage := class extends GUIObject
+{
+	vImage := TVkTexture^
+	textureSet := VkDescriptorSet
+
+	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
+	{
+		inst := ctx.inst
+
+		ctx.textDrawShader.ApplyShaderToQueue(ctx.inst,cmdB,400,400) //TODO
+
+		dat := CType
+		dat.resol.x = 1.0 
+		dat.resol.y = 1.0 
+		dat.scale.x = 1.0
+		dat.scale.y = 1.0
+		data.color[^] = 255
+
+		inst.Funcs.vkCmdBindDescriptorSets(cmdB,VK_PIPELINE_BIND_POINT_GRAPHICS,ctx.textDrawLayout.Get(),0,1,textureSet&,0,null)
+		inst.Funcs.vkCmdPushConstants(cmdB,ctx.textDrawLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,32,dat&)
+		ctx.boxMesh.Bind(cmdB)
+		inst.Funcs.vkCmdDrawIndexed(cmdB,6,1,0,0,0) //TODO remove 6?
+	}
+}
+
+CType := class
+{
+	resol := vec2f
+	offset := vec2f
+	scale := vec2f
+	padding := vec2f
+	color := u8[4]
+}

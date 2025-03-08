@@ -137,6 +137,11 @@ main := !(char^[] args) -> int
 					}
 				})
 			}
+
+			if CompileSettings.VulkanProtocolFile.IsSet()
+			{
+				CodeSpaces[-1].Modules.Push(new ModuleVulkan(CompileSettings.VulkanProtocolFile.Get()))
+			}
 			NonStopBuild = true
 		}
 	}
@@ -475,6 +480,7 @@ WaitForParsingObjects := !() -> bool
 			if used >= maxUses
 				return false
 		}
+
 		TaskYield()
 	}
 

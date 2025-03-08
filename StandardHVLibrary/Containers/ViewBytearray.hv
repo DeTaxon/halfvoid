@@ -1,0 +1,5 @@
+
+"->{}" := !(@T[@Size] fixedArray) .{u8[]} -> ArraySpan.{u8}
+{
+	result."this"(fixedArray[0]&->{u8^},Size*T->TypeSize)
+}

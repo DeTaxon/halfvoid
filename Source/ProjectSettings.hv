@@ -74,6 +74,8 @@ SettingsSet := class extends TGCObject
 	UsedFiles := List.{Str}
 	UsedFolders := List.{SettingsUsedFolders}
 
+	VulkanProtocolFile := Str?
+
 	CacheFilePath := Str?
 	BytecodeFilePath := Str?
 	OutputFilePath := Str?
@@ -95,5 +97,7 @@ SettingsSet := class extends TGCObject
 
 		BytecodeFilePath = node^["BytecodeFilePath"]?.GetStr()
 		OutputFilePath = node^["OutputFilePath"]?.GetStr()
+
+		VulkanProtocolFile = node^["VulkanProtocolFile"]?.GetStr()
 	}
 }

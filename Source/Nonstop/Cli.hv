@@ -211,6 +211,9 @@ StartWorkBox := !() -> void
 
 		if WorkBag.WorkCount() != 0
 			WorkBag.CancelAll()
+
+		GInterpCntx.ReloadFunctions(GHotloadCntx&)
+
 		gSomeOneOnWork = false
 	})
 

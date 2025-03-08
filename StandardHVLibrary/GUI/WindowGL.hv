@@ -4,10 +4,14 @@ AppendClass Window
 	{
 		Init(windowSize.x,windowSize.y,windowTitle.Str(),false)
 		mainGUIObject = InitWindow()
+		ClearColor.x = 0
+		ClearColor.y = 0
+		ClearColor.z = 0
+		ClearColor.w = 1
 	}
 	InitGL := virtual !(WindowGLContext^ ctx) -> bool
 	{
-
+		return true
 	}
 	RunGL := !() -> void
 	{
@@ -33,8 +37,6 @@ AppendClass Window
 			fncPtr = glGetProcAddress(nameBuffer[0]&)
 			if fncPtr == null
 				fncPtr = lib.Get(nameBuffer[0]&)
-			//it&->{void^^}^ = glfwGetProcAddress(nameBuffer[0]&)
-			//printf("proc %s %p\n",ind,it)
 		}
 		if mainGUIObject != null
 		{
@@ -46,7 +48,6 @@ AppendClass Window
 
 		if InitGL(ctx&)
 		{
-
 			ctx.gl.Viewport(0,0,windowSize.x,windowSize.y)
 
 			ctx.gl.ClearColor(ClearColor.x,ClearColor.y,ClearColor.z,ClearColor.w)

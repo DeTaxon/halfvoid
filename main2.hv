@@ -1,19 +1,39 @@
 
 
-ccc := class
+
+TestWin := class extends Window
 {
-	x := int
+	InitWindow := virtual !() -> GUIObject^
+	{
+		m := new UIImage
+
+
+		txt := FSGetFile("Monster1.webp")
+		m.vImage = vInstance.CreateTexture()
+		m.vImage.CreateTexture(txt)
+
+		m.textureSet = vkOverlay.atlasPool.CreateDescriptor()
+		vSetTexture(vInstance,m.textureSet,m.vImage,vInstance.SamplerNearest)
+
+		return new LayoutVertical(![
+			m
+		])
+	}
 }
 
-
-yyy := class
+vkDebugObj := VkDebugReportCallbackEXT
+VkDebugCallback := !(int flags,int bojType,u64 object,u64 location,int msgCode,char^ prefix,char^ msg,void^ usrData) -> int
 {
-	x := ccc
+	printf("VkError <%s>\n",msg)
+	assert(false)
+	exit(0)
+	return 0
 }
 
 main := !(char^[] args) -> int
 {
-	r := yyy
+	c := TestWin(400,400,"Hello world") //TODO should not crash without constructor
+	c.RunVulkan()
 }
 
 

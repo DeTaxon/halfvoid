@@ -31,10 +31,9 @@ Image := class extend TGCObject
 
 	Destroy := virtual !() -> void
 	{
-		if Data != null
-		{
-			free(Data)
-			Data = null
-		}
+		if Data == null
+			return void
+		free(Data)
+		Data = null
 	}
 }

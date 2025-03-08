@@ -7,10 +7,15 @@
 				{
 					"Level" : 0,
 					"FolderPath" : "StandardHVLibrary/"
+				},
+				{
+					"Level" : 0,
+					"FolderPath" : "ExperimentalLibrary/"
 				}
 			],
 			"BytecodeFilePath" : "/tmp/out.ll",
-			"OutputFilePath" : "test"
+			"OutputFilePath" : "test",
+			"VulkanProtocolFile" : "./vk.xml"
 		}
 	]
 }

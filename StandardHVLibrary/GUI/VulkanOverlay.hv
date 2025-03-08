@@ -8,13 +8,15 @@ VkOverlayContext := class
 	textDrawLayout := TShaderInput^
 	textDrawShader := vShader^
 
-	figureDrawLayout := TShaderInput^
-	figureDrawShader := vShader^
+	//figureDrawLayout := TShaderInput^
+	//figureDrawShader := vShader^
 
 	atlasPool := TDescriptorPool^
 
 	CmdGeneration := s64
 	DataGeneration := s64
+
+	boxMesh := TVkMesh^
 
 	FontAtlases := List.{FontAtlas^}
 	CreateFont := !(File^ fil, float height) -> Font^
@@ -48,20 +50,44 @@ VkOverlayContext := class
 		)
 		drawShader := drawLayout.CreateShader(#EmbedVulkanShader("local:TextVert.vert"),#EmbedVulkanShader("local:TextFrag.frag"))
 
-		figureDrawLayout = rPass.CreateLayout(![
-			VKType(VType_Float,2),
-			VKType(VType_Float,2),
-			VKType(VType_UInt8,4)
-		],![],![
-			new TVertexPushConstant(4*4)
-		],
-		1
-		)
-		figureDrawShader = drawLayout.CreateShader(#EmbedVulkanShader("local:FigureDraw.vert"),#EmbedVulkanShader("local:FigureDraw.frag"))
+		//figureDrawLayout = rPass.CreateLayout(![
+		//	VKType(VType_Float,2),
+		//	VKType(VType_Float,2),
+		//	VKType(VType_UInt8,4)
+		//],![],![
+		//	new TVertexPushConstant(4*4)
+		//],
+		//1
+		//)
+		//figureDrawShader = drawLayout.CreateShader(#EmbedVulkanShader("local:FigureDraw.vert"),#EmbedVulkanShader("local:FigureDraw.frag"))
 
 		textDrawLayout = drawLayout
 		textDrawShader = drawShader
 
 		atlasPool = textDrawLayout.CreateDescriptorPool(0,10)
+
+		boxVerts := UI_VK_Vertex[4]
+
+		for x : ![0.0,1.0,0.0,1.0], y : ![0.0,0.0,1.0,1.0], i : 4
+		{
+			boxVerts[i].position[0] = x
+			boxVerts[i].position[1] = y
+			boxVerts[i].uv[0] = x
+			boxVerts[i].uv[1] = y
+			boxVerts[i].color[^] = 255
+		}
+
+		boxIndexes := ![0,1,2,2,3,1]
+
+		boxMesh = inst.CreateMesh(boxVerts,boxIndexes,VKType(VType_UInt32,1))
 	}
 }
+
+UI_VK_Vertex := packed_class
+{
+	position := float[2]
+	uv := float[2]
+	color := u8[4]
+}
+
+

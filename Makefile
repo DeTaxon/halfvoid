@@ -59,7 +59,7 @@ flags := $(NoScary) $(trc) $(Exper) $(opt_mode)
 MainTarget: test
 
 test:
-	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid $(flags) -g -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -o /tmp/out.ll
+	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid $(flags) --vk vk.xml -g -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -o /tmp/out.ll
 	clang -g /tmp/out.ll -mfsgsbase -lm -o test
 testground:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid $(flags) -g -O -C0 StandardHVLibrary -C0 ExperimentalLibrary TestGround.hv -o /tmp/out.ll
