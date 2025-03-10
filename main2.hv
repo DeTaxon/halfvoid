@@ -3,14 +3,13 @@
 
 TestWin := class extends Window
 {
+	img := Image^
 	InitWindow := virtual !() -> GUIObject^
 	{
 		m := new UIImage
 
-
-		txt := FSGetFile("Monster1.webp")
 		m.vImage = vInstance.CreateTexture()
-		m.vImage.CreateTexture(txt)
+		m.vImage.CreateTexture(img)
 
 		m.textureSet = vkOverlay.atlasPool.CreateDescriptor()
 		vSetTexture(vInstance,m.textureSet,m.vImage,vInstance.SamplerNearest)
@@ -35,11 +34,9 @@ tst := class
 }
 main := !(char^[] args) -> int
 {
-	c := tst
-	c.x[^] = 15
-	printf("yep %i\n",c.x[^])
-	//C := TestWin(400,400,"Hello world") //TODO should not crash without constructor
-	//C.RunVulkan()
+	c := TestWin(400,400,"Hello world") //TODO should not crash without constructor
+	c.img = DecodePNG(FSGetFile("Monster1.png"))
+	c.RunVulkan()
 }
 
 

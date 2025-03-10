@@ -145,7 +145,7 @@ ComputeBracketsHash := !(Blob^ fileData,Token^ startLine, Token^ brackets) -> u3
 	}
 	if i < blbSize
 		i += 1
-	funcCode := StringSpan(arr[startLineIndex]&,i - startLineIndex)
+	funcCode := StringSpan(arr[startLineIndex]&->{char^},i - startLineIndex)
 
 	crc := Crc32()
 	crc.Feed(funcCode.NonNullStr(),funcCode.Size())
@@ -297,7 +297,7 @@ ComputeHashOnLines := !(Blob^ fileData, int startLine, int endLine) -> u32
 	}
 	if i < blbSize
 		i += 1
-	funcCode := StringSpan(arr[startLineIndex]&,i - startLineIndex)
+	funcCode := StringSpan(arr[startLineIndex]&->{char^},i - startLineIndex)
 
 	crc := Crc32()
 	crc.Feed(funcCode.NonNullStr(),funcCode.Size())

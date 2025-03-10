@@ -1,0 +1,31 @@
+DecodePNG := !(File^ f) -> Image^
+{
+	result = new Image
+	result.CreateBlank(512,512)
+	result.ForEachPixelU8((x,y,p) ==>{
+		p[0] = 127
+		p[1] = 0 
+		p[2] = 255 
+		p[3] = 255
+	})
+
+	blb := f.GetBlob()
+
+	fileEnd := blb.GetPointer()->{u8^}[blb.Size()]&
+
+	iter := blb.GetPointer()->{u8^}[8]&
+
+	printf("ha %p %p %i %i %i %i\n",iter,fileEnd, iter < fileEnd, iter > fileEnd,iter != fileEnd,iter == fileEnd)
+
+	while iter < fileEnd
+	{
+		len := ToBigEndian(iter->{u32^}^) //TODO from
+		iter = iter[4]&
+		typ := StringSpan(iter->{char^},4)
+
+		printf("chunk %s %i\n",typ,len)
+
+		iter = iter[len + 8]&
+	}
+	printf("ha %p %p %i %i %i %i\n",iter,fileEnd, iter < fileEnd, iter > fileEnd,iter != fileEnd,iter == fileEnd)
+}

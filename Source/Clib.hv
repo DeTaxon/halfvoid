@@ -49,7 +49,7 @@ CLib := class extend ModuleInterface
 	}
 	Work := virtual !() -> void
 	{
-		textMap = StringSpan(fileMap.Get(),libFile.Size())
+		textMap = StringSpan(fileMap.Get()->{char^},libFile.Size())
 
 		js = new Json
 		js.ParseString(fileMap.Get()->{char^},textMap.Size())

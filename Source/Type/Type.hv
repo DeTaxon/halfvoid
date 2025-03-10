@@ -415,6 +415,7 @@ ForEachIntType := !(!(Type^,bool)&-> void cb) -> void
 	{
 		cb(TypeTable[i],i >= 4)
 	}
+	cb(GTypeChar, false)
 }
 GetSignedInt := !(Type^ inInt) -> Type^
 {
@@ -451,6 +452,8 @@ IsUInt := !(Type^ obj) -> bool
 	for i : 4
 		if TypeTable[i] == obj
 			return true
+	if obj == GTypeChar
+		return true
 	return false
 }
 IsInt := !(Type^ obj) -> bool
@@ -479,7 +482,7 @@ CreateStandardTypes := !() -> void
 	TypeTable[3] = new TypeInteger("i64","u64","!DIBasicType(name: \"ulong\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
 
 	//s
-	TypeTable[4] = new TypeInteger("i8","s8","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)
+	TypeTable[4] = new TypeInteger("i8","s8","!DIBasicType(name: \"sbyte\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)
 	TypeTable[5] = new TypeInteger("i16","s16","!DIBasicType(name: \"short\", size: 16, align: 16,encoding: DW_ATE_signed)",2,2)
 	TypeTable[6] = new TypeInteger("i32","s32","!DIBasicType(name: \"int\", size: 32, align: 32,encoding: DW_ATE_signed)",4,4)
 	TypeTable[7] = new TypeInteger("i64","s64","!DIBasicType(name: \"long\", size: 64, align: 64,encoding: DW_ATE_signed)",8,8)
@@ -506,6 +509,8 @@ CreateStandardTypes := !() -> void
 	TypeTable[24] = new TypeVector("<3 x i32>","vec3i",TypeTable[6],3,16)
 	TypeTable[25] = new TypeVector("<2 x i32>","vec2i",TypeTable[6],2,8)
 
+	TypeTable[26] = new TypeInteger("i8","char","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)
+
 	for it : ![23,24,25]
 		TypeTable[it].Base = TypeTable[6]
 
@@ -515,7 +520,7 @@ CreateStandardTypes := !() -> void
 	GTypeFloat =  TypeTable[9]
 	GTypeDouble = TypeTable[10]
 	GTypeU8 =    TypeTable[0]
-	GTypeChar = TypeTable[0]
+	GTypeChar = TypeTable[26]
 	GTypeInt =    TypeTable[6]
 	GTypeU32 =    TypeTable[2]
 	GTypeU64 =    TypeTable[3]
@@ -542,7 +547,7 @@ CreateStandardTypes := !() -> void
 	DefsTable[7] = new TypeDef("s64",TypeTable[7])
 
 	DefsTable[8] = new TypeDef("bool",TypeTable[8])
-	DefsTable[9] = new TypeDef("char",TypeTable[0])
+	DefsTable[9] = new TypeDef("char",TypeTable[26])
 	DefsTable[10] = new TypeDef("short",TypeTable[5])
 	DefsTable[11] = new TypeDef("int",TypeTable[6])
 	DefsTable[12] = new TypeDef("long",TypeTable[7])

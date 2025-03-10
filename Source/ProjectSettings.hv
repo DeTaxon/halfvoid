@@ -27,7 +27,7 @@ ProjectSettingsType := class extends TGCObject
 
 		js := new Json
 
-		if not js.ParseString(fileData.GetPointer(),fileData.Size())
+		if not js.ParseString(fileData.GetPointer()->{char^},fileData.Size())
 			return false
 
 		compilerSets := js^["CompilerSettingsList"]

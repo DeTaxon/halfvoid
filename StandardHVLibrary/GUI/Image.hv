@@ -24,7 +24,7 @@ Image := class extend TGCObject
 		{
 			for j : Width
 			{
-				cb(j,i,Data[j + i*Width]&)
+				cb(j,i,Data->{u32^}[j + i*Width]&->{u8^})
 			}
 		}
 	}

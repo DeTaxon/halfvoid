@@ -87,7 +87,17 @@ ToBigEndian := !(u16 val) -> u16
 	result&->{u8^}[1] = tmp
 }
 
-ToBigEndian := !(u32 val) -> u132
+ToBigEndian := !(u32 val) -> u32
+{
+	result = val
+	tmp := result&->{u8^}[0]
+	result&->{u8^}[0] = result&->{u8^}[3]
+	result&->{u8^}[3] = tmp
+	tmp = result&->{u8^}[1]
+	result&->{u8^}[1] = result&->{u8^}[2]
+	result&->{u8^}[2] = tmp
+}
+ToBigEndian := !(s32 val) -> s32
 {
 	result = val
 	tmp := result&->{u8^}[0]

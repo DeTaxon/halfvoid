@@ -11,7 +11,7 @@ loadLex2 := !(File^ pri,PriorityBagOld^^ res) -> void
 	fileMap := pri.GetMap()
 	fileMap.IncRef()
 	pri.IncRef()
-	res^ = new PriorityBagOld(fileMap.Get(),fileMap.Size())
+	res^ = new PriorityBagOld(fileMap.Get()->{char^},fileMap.Size())
 }
 
 GArchBitSize := 64
@@ -243,7 +243,7 @@ main := !(char^[] args) -> int
 	
 	mac := #File("Mach.m",true)
 	macMap := mac.GetMap()
-	LoadLexMachine(macMap.Get(),mac.Size()) 
+	LoadLexMachine(macMap.Get()->{char^},mac.Size()) 
 
 	CreateStandardTypes()
 	TypeDatabaseInitDefaults()

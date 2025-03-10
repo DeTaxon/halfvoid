@@ -82,6 +82,25 @@ TVkTexture := class
 			i *= 2
 		return i
 	}
+	CreateTexture := !(Image^ img) -> void
+	{	
+
+		useAlpha := true
+		//if not vkRGB8Support //TODO add info to instance?
+			useAlpha = true
+
+		memTyp := CreateObject(img.Width,img.Height,(x,y) ==> {
+			x.format = VK_FORMAT_R8G8B8_UNORM
+			if useAlpha x.format = VK_FORMAT_R8G8B8A8_UNORM
+		})
+
+		ptrToSet := itInstance.itStageMemory.Map()->{u8^}
+
+		memcpy(ptrToSet,img.GetPointer(),img.Width*img.Height*4) //TODO other formats!!
+
+		itInstance.itStageMemory.Unmap()
+		vStageCpyToImage(itInstance,itImg,itW,itH) //TODO
+	}
 	CreateTexture := !(int w, int h, u8[] data) -> void
 	{	
 

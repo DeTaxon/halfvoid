@@ -3,7 +3,7 @@ lexWordMachine := WordDetermMachine^
 LoadLexMachine := !(char^ ptrToChar,int Si) -> void
 {
 	lexWordMachine = new WordDetermMachine
-	lexWordMachine.LoadFromMap(ptrToChar,Si)
+	lexWordMachine.LoadFromMap(ptrToChar->{u8^},Si)
 }
 
 GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
