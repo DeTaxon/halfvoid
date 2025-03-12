@@ -6,7 +6,7 @@ ZipRWFile := class extend TGCObject
 	fileMap := MappedFile^
 
 	fileData := List.{zipIntEntry}
-	fileUnsavedData := List.{zipRWUnsavedData}
+	fileUnsavedData := List.{zipUnsavedData}
 
 	this := !(StringView inFileName) -> void
 	{

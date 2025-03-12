@@ -2,58 +2,74 @@
 BW := class
 {
 	sPoint := u8^
-	byteOffset := int
-	bitOffset := int
-	endSize := int
+	availBytes := int
+	readyBits := int
+	buffer := u64
 
-	this := !(void^ data, int size) -> void 
+	this := !(void^ data, int avB) -> void 
 	{
 		sPoint = data->{u8^}
-		byteOffset = 0
-		bitOffset = 0
-		endSize = size
+		availBytes = avB
 	}
-	Move := !(int toMov) -> void 
+
+	IsReadyBytes := !(int size) -> bool
 	{
-		bitOffset += toMov
-		byteOffset += bitOffset div 8
-		bitOffset = bitOffset mod 8
+		if readyBits >= size
+			return true
+	}
+	ExpectBits := !(int size) -> bool
+	{
+		while readyBits < size
+		{
+			if availBytes == 0
+				return false
+
+			buffer += sPoint^->{u64} shl readyBits
+
+			readyBits += 8
+			sPoint = sPoint[1]&
+			availBytes -= 1
+		}
+
+		return true
+	}
+	Move := !(int siz) -> void
+	{
+		assert(readyBits >= siz)
+		readyBits -= siz
+		buffer = buffer shr siz
 	}
 	Get := !(int siz) -> int 
 	{
-		msk := 0
-		msk = not_b msk
-		msk = msk shl siz
-		msk = not_b msk
-		preRes := 0
-		c := byteOffset + 4
-		while c >= byteOffset
-		{
-			preRes = preRes shl 8
-			preRes += sPoint[c]->{u32}->{int}
-			c--
-		}
-		preRes = preRes shr bitOffset
-		return preRes and_b msk
+		assert(readyBits >= siz)
+
+		//res := buffer shr (readyBits - siz)
+
+		mask := u64
+		mask = not_b mask
+		mask = mask shl siz
+		mask = not_b mask
+
+		result = buffer and_b mask
+
+		//printf("wut %x %x %x %i %i\n",siz,res,mask,readyBits,result)
 	}
 	MoveUp := !() -> void
 	{
-		if bitOffset != 0
-		{
-			bitOffset = 0
-			byteOffset += 1
-		}
+		readyBits = 0
 	}
 	CopyTo := !(u8^  toSet,int blkSize) -> void
 	{
-		memcpy(toSet,sPoint[byteOffset]&,blkSize)
-		byteOffset += blkSize
+		assert(availBytes >= blkSize)
+		memcpy(toSet,sPoint,blkSize)
+		sPoint = sPoint[blkSize]&
+		availBytes -= blkSize
 	}
 	GetAndMove := !(int siz) -> int
 	{
-		preRes := Get(siz)
+		ExpectBits(siz)
+		result = Get(siz)
 		Move(siz)
-		return preRes
 	}
 }
 
@@ -66,6 +82,7 @@ NotHuffmanTree9 := class  extend TGCObject
 
 	GetAndMove := !(BW bw) -> int
 	{
+		bw.ExpectBits(9)
 		itVal := bw.Get(9)
 		inFast := treeInfo[itVal]&
 
@@ -77,6 +94,7 @@ NotHuffmanTree9 := class  extend TGCObject
 		{
 			if extraNodes[i].Size() == 0
 				continue
+			bw.ExpectBits(i)
 			itVal = bw.Get(i)
 			if extraNodes[i][^].0 == itVal
 			{
@@ -191,18 +209,20 @@ DecodeSmallHuffmanTable := !(NotHuffmanTree9^ toApply,BW bw,u8^ res,int codesCou
 		{
 			case in 0..15
 				prevCode = itVal
-				outIter^ =itVal
+				outIter^ = itVal
 				outIter = outIter[1]&
 				codesCount--
 			case 16
+				bw.ExpectBits(2)
 				c1 := bw.GetAndMove(2)
 				for c1+3
 				{
-						outIter^ = prevCode
-						outIter = outIter[1]&
+					outIter^ = prevCode
+					outIter = outIter[1]&
 				}
 				codesCount -= c1+3
 			case 17
+				bw.ExpectBits(3)
 				c2 := bw.GetAndMove(3)
 				for c2+3
 				{
@@ -211,6 +231,7 @@ DecodeSmallHuffmanTable := !(NotHuffmanTree9^ toApply,BW bw,u8^ res,int codesCou
 				}
 				codesCount -= c2+3
 			case 18
+				bw.ExpectBits(7)
 				c3 := bw.GetAndMove(7)
 				for c3+11
 				{
@@ -257,15 +278,15 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 {
 	bw := BW(inpPoint,inpSize)
 
-	while true
+	while bw.ExpectBits(3)
 	{
 		isEnd := bw.GetAndMove(1)
 		compType := bw.GetAndMove(2)
 
-
 		if compType == 0
 		{
 		  	bw.MoveUp()
+			bw.ExpectBits(32)
 			toCpy := bw.Get(16)
 			bw.Move(32)
 			bw.CopyTo(outpPoint,toCpy)
@@ -281,6 +302,7 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 				litsTree = fixedHuffmanLiteral
 				distTree = fixedHuffmanDistance
 			}else{
+				bw.ExpectBits(14)
 				HLIT := bw.GetAndMove(5) + 257
 				HDIST := bw.GetAndMove(5) + 1
 				HCLEN := bw.GetAndMove(4) + 4
@@ -289,6 +311,7 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 
 				for it : HCLEN
 				{
+					bw.ExpectBits(3)
 					codeLens[codeLenTable[it]] = bw.GetAndMove(3)
 				}
 
@@ -342,3 +365,5 @@ CrappyDeflateInflate := !(void^ inpPoint,size_t inpSize,u8^ outpPoint,size_t out
 
 	return true
 }
+
+

@@ -235,13 +235,13 @@ main := !(char^[] args) -> int
 
 	GetFuncMangle(StringSpan("main"))
 
-	loadLex2(#File("Priority2.pr",true),PriorityData&)
-	loadLex2(#File("LexHVFileRoot2.pr",true),LexHVFileRoot&)
-	loadLex2(#File("LexHVInputVars2.pr",true),LexHVInputVars&)
+	loadLex2(#File("Priority2.pr"),PriorityData&)
+	loadLex2(#File("LexHVFileRoot2.pr"),LexHVFileRoot&)
+	loadLex2(#File("LexHVInputVars2.pr"),LexHVInputVars&)
 	
 	HVOperators.Insert(PriorityData.Opers[^])
 	
-	mac := #File("Mach.m",true)
+	mac := #File("Mach.m")
 	macMap := mac.GetMap()
 	LoadLexMachine(macMap.Get()->{char^},mac.Size()) 
 

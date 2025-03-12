@@ -34,9 +34,15 @@ tst := class
 }
 main := !(char^[] args) -> int
 {
-	c := TestWin(400,400,"Hello world") //TODO should not crash without constructor
-	c.img = DecodePNG(FSGetFile("Monster1.png"))
-	c.RunVulkan()
+	c := new ZipFile()
+	c.AnalizeFile("Test.zip")
+	r := c.GetFile("Test.txt")
+	data := r.GetBlob()
+	txt := StringSpan(data.GetPointer()->{char^},data.Size())
+	printf("yep %s\n",txt)
+	//c := TestWin(400,400,"Hello world") //TODO should not crash without constructor
+	//c.img = DecodePNG(FSGetFile("Monster1.png"))
+	//c.RunVulkan()
 }
 
 
@@ -47,14 +53,14 @@ main := !(char^[] args) -> int
 
 
 
-ThisIsError := !() -> void
-{
-	c,y := ManyRes()
-}
-ManyRes := !() -> int, GCObject^ //TODO GCObject is incorrect type, emit error
-{
-	return 5, new TGCObject
-}
+//ThisIsError := !() -> void
+//{
+//	c,y := ManyRes()
+//}
+//ManyRes := !() -> int, GCObject^ //TODO GCObject is incorrect type, emit error
+//{
+//	return 5, new TGCObject
+//}
 
 
 
