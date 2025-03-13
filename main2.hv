@@ -34,15 +34,22 @@ tst := class
 }
 main := !(char^[] args) -> int
 {
-	c := new ZipFile()
-	c.AnalizeFile("Test.zip")
-	r := c.GetFile("Test.txt")
-	data := r.GetBlob()
-	txt := StringSpan(data.GetPointer()->{char^},data.Size())
-	printf("yep %s\n",txt)
-	//c := TestWin(400,400,"Hello world") //TODO should not crash without constructor
-	//c.img = DecodePNG(FSGetFile("Monster1.png"))
-	//c.RunVulkan()
+	//TODO multiline defer support
+	//defer {
+	//	printf("hello\n")
+	//	printf("world\n")
+	//}
+
+	//c := new ZipFile()
+	//c.AnalizeFile("Test.zip")
+	//r := c.GetFile("Test.txt")
+	//data := r.GetBlob()
+	//txt := StringSpan(data.GetPointer()->{char^},data.Size())
+	//printf("yep %s\n",txt)
+
+	c := TestWin(400,400,"Hello world") //TODO should not crash without constructor
+	c.img = DecodePNG(FSGetFile("Monster1.png"))
+	c.RunVulkan()
 }
 
 

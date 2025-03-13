@@ -2,12 +2,14 @@ DecodePNG := !(File^ f) -> Image^
 {
 	result = new Image
 	result.CreateBlank(512,512)
-	result.ForEachPixelU8((x,y,p) ==>{
-		p[0] = 127
-		p[1] = 0 
-		p[2] = 255 
-		p[3] = 255
-	})
+	free(result.Data)
+	result.Data = malloc(1024*512*4)->{u8^}
+	//result.ForEachPixelU8((x,y,p) ==>{
+	//	p[0] = 127
+	//	p[1] = 0 
+	//	p[2] = 255 
+	//	p[3] = 255
+	//})
 
 	blb := f.GetBlob()
 
@@ -15,7 +17,8 @@ DecodePNG := !(File^ f) -> Image^
 
 	iter := blb.GetPointer()->{u8^}[8]&
 
-	printf("ha %p %p %i %i %i %i\n",iter,fileEnd, iter < fileEnd, iter > fileEnd,iter != fileEnd,iter == fileEnd)
+	dataChunks := List.{u8^}
+	dataChunkTotalSize := 0
 
 	while iter < fileEnd
 	{
@@ -23,9 +26,128 @@ DecodePNG := !(File^ f) -> Image^
 		iter = iter[4]&
 		typ := StringSpan(iter->{char^},4)
 
-		printf("chunk %s %i\n",typ,len)
+		//printf("chunk %s %i\n",typ,len)
+
+		switch typ
+		{
+		case "IHDR"
+			hdr := iter[4]&->{PNG_IHDR^}
+			for it, name : hdr^->#AllFields
+			{
+				printf("Header %s %i %i %x\n",name,it,ToBigEndian(it),it)
+			}
+		case "IDAT"
+			dataChunks.Push(iter[-4]&)
+			dataChunkTotalSize += len
+		}
 
 		iter = iter[len + 8]&
 	}
-	printf("ha %p %p %i %i %i %i\n",iter,fileEnd, iter < fileEnd, iter > fileEnd,iter != fileEnd,iter == fileEnd)
+
+	cmpBlob := MakeBlob(dataChunkTotalSize)
+
+	outPtr := cmpBlob.GetPointer()->{u8^}
+
+	for idat : dataChunks
+	{
+		len := ToBigEndian(idat->{u32^}^) //TODO from
+		memcpy(outPtr,idat[8]&,len)
+		outPtr = outPtr[len]&
+	}
+
+	w := 512
+	h := 512
+	bpp := 4
+
+	deflData := malloc(w*h*bpp + h)->{u8^}
+	defer free(deflData)
+
+	deflStrip := w*bpp + 1
+
+	CrappyDeflateInflate(cmpBlob.GetPointer()->{u8^}[2]&,cmpBlob.Size() - 6,deflData,w*h*bpp + h)
+
+	readyData := calloc((w + 16)*(h + 16),bpp)->{u8^}
+	defer free(readyData)
+
+	readyStrip := (w + 16)*bpp
+
+	for i : h
+	{
+		memcpy(readyData[readyStrip*i + 16*bpp]&,deflData[deflStrip*i + 1]&,w*bpp)
+	}
+
+	newText := malloc((w + 16)*(h + 16)*bpp)->{u8^}
+	defer free(newText)
+
+	newTextStrip := readyStrip
+
+	getPtr := readyData[16*bpp]&
+	setPtr := newText[16*bpp]&
+
+	for i : h
+	{
+		filtType := deflData[i*deflStrip]
+		for j : w
+		{
+			for k : 4
+			{
+				sIndx := newTextStrip*i + j*bpp + k
+				gIndx := readyStrip*i + bpp*j + k
+				switch filtType
+				{
+					//TODO 2 3
+					case 1
+						setPtr[sIndx] = getPtr[gIndx] + setPtr[sIndx - bpp]
+					case 4
+						setPtr[sIndx] = getPtr[gIndx]
+
+						left := setPtr[sIndx - bpp]->{u32}->{int}
+						up := setPtr[sIndx - newTextStrip]->{u32}->{int}
+						upLeft := setPtr[sIndx - newTextStrip - bpp]->{u32}->{int}
+
+						p := left + up - upLeft
+						pa := Abs(p - left)
+						pb := Abs(p - up)
+						pc := Abs(p - upLeft)
+						r := 0
+						if pa <= pb and pa <= pc
+						{
+							r = left
+						}else if pb <= pc
+						{
+							r += up
+						}else{
+							r += upLeft
+						}
+						setPtr[sIndx] += r
+					
+					case void
+						setPtr[newTextStrip*i + j*bpp + k] = getPtr[readyStrip*i + bpp*j + k]
+				}
+			}
+			
+		}
+	}
+	
+	
+	res := malloc(w*h*bpp)->{u8^}
+	
+	for i : h
+	{
+		memcpy(res[w*bpp*i]&,newText[newTextStrip*i + 16*bpp]&,w*bpp)
+	}
+
+	free(result.Data)
+	result.Data = res
+}
+
+PNG_IHDR := class
+{
+	Width := u32
+	Height := u32
+	BitDepth := u8
+	ColorType := u8
+	CompressionMethod := u8
+	FilterMethod := u8
+	InterlaceMethod := u8
 }
