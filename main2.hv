@@ -34,12 +34,6 @@ tst := class
 }
 main := !(char^[] args) -> int
 {
-	//TODO multiline defer support
-	//defer {
-	//	printf("hello\n")
-	//	printf("world\n")
-	//}
-
 	//c := new ZipFile()
 	//c.AnalizeFile("Test.zip")
 	//r := c.GetFile("Test.txt")

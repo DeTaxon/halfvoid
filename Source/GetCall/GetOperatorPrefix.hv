@@ -55,7 +55,17 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 	}
 	if itm.Down.GetValue() == "defer"
 	{
-		deferedCall := TryGetExeCall(itm.Down.Right)
+		obj := itm.Down.Right
+
+		deferedCall := BoxExeObj^
+		if obj.GetValue() == "{}"
+		{
+			deferedCall = new BoxBlock(obj)	
+		}else{
+			deferedCall = TryGetExeCall(itm.Down.Right)
+		}
+		if deferedCall == null
+			return null
 		return new BoxDefer(deferedCall)
 
 		//lmbdPre := CreateHeadlessLambda(itm.Down.Right)->{BoxLambdaHolder^}

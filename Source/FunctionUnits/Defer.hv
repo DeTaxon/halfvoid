@@ -22,4 +22,8 @@ BoxDefer := class extend BoxExeObj
 	{
 		onDefer[^].PrintDefaultUse(ctx)
 	}
+	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		onDefer[^].PrintDebugMeta(ctx)
+	}
 }
