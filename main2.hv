@@ -28,21 +28,18 @@ VkDebugCallback := !(int flags,int bojType,u64 object,u64 location,int msgCode,c
 	exit(0)
 	return 0
 }
-tst := class
-{
-	x := u8[10]
-}
 main := !(char^[] args) -> int
 {
-	//c := new ZipFile()
-	//c.AnalizeFile("Test.zip")
-	//r := c.GetFile("Test.txt")
-	//data := r.GetBlob()
-	//txt := StringSpan(data.GetPointer()->{char^},data.Size())
-	//printf("yep %s\n",txt)
+	//FSReadFolder("/home/max/Images/",true,x ==>{
+	//	if x is not File
+	//		return void
 
-	c := TestWin(400,400,"Hello world") //TODO should not crash without constructor
-	c.img = DecodePNG(FSGetFile("Monster1.png"))
+	//	printf("yep <%s>\n",x.GetPath())
+	//	DecodePNG(x)
+	//})
+	
+	c := TestWin(600,600,"Hello world") //TODO should not crash without constructor
+	c.img = DecodePNG(FSGetFile("filter0.png"))
 	c.RunVulkan()
 }
 

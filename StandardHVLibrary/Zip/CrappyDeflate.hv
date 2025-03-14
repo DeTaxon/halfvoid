@@ -21,7 +21,7 @@ BW := class
 	{
 		while readyBits < size
 		{
-			if availBytes == 0
+			if availBytes == 0 //TODO it fails
 				return false
 
 			buffer += sPoint^->{u64} shl readyBits
@@ -120,6 +120,9 @@ inverseSomeBit := !(int inp,int size) -> int
 
 ApplyHuffmanTree := !(char^ valueSizes,int arrLen, NotHuffmanTree9^ toSet) -> void
 {
+	for i : 16
+		internalHVInitClass(toSet.extraNodes[i]) //TODO fix it
+
 	maxSize := 0
 	for c : arrLen
 	{

@@ -1,15 +1,11 @@
 DecodePNG := !(File^ f) -> Image^
 {
 	result = new Image
-	result.CreateBlank(512,512)
-	free(result.Data)
-	result.Data = malloc(1024*512*4)->{u8^}
-	//result.ForEachPixelU8((x,y,p) ==>{
-	//	p[0] = 127
-	//	p[1] = 0 
-	//	p[2] = 255 
-	//	p[3] = 255
-	//})
+
+	w := 0
+	h := 0
+	bpp := 0
+	isIndexed := false
 
 	blb := f.GetBlob()
 
@@ -22,7 +18,7 @@ DecodePNG := !(File^ f) -> Image^
 
 	while iter < fileEnd
 	{
-		len := ToBigEndian(iter->{u32^}^) //TODO from
+		len := FromBigEndian(iter->{u32^}^)
 		iter = iter[4]&
 		typ := StringSpan(iter->{char^},4)
 
@@ -32,10 +28,32 @@ DecodePNG := !(File^ f) -> Image^
 		{
 		case "IHDR"
 			hdr := iter[4]&->{PNG_IHDR^}
-			for it, name : hdr^->#AllFields
+			w = FromBigEndian(hdr.Width)
+			h = FromBigEndian(hdr.Height)
+
+			assert(hdr.BitDepth == 8) //TODO other depths
+			//assert(hdr.InterlaceMethod == 0)
+
+			cType := hdr.ColorType
+
+			if (cType and_b 1) != 0
 			{
-				printf("Header %s %i %i %x\n",name,it,ToBigEndian(it),it)
+				isIndexed = true
+				cType = cType xor_b 1
 			}
+			
+			if cType == 6
+			{
+				bpp = 4
+			}else if cType == 2
+			{
+				bpp = 3 //TODO Image supports types
+			}else {
+				assert(false) //TODO other color types
+			}
+			if isIndexed
+				bpp = 1
+
 		case "IDAT"
 			dataChunks.Push(iter[-4]&)
 			dataChunkTotalSize += len
@@ -43,6 +61,9 @@ DecodePNG := !(File^ f) -> Image^
 
 		iter = iter[len + 8]&
 	}
+	
+	result.Width = w
+	result.Height = h
 
 	cmpBlob := MakeBlob(dataChunkTotalSize)
 
@@ -54,10 +75,6 @@ DecodePNG := !(File^ f) -> Image^
 		memcpy(outPtr,idat[8]&,len)
 		outPtr = outPtr[len]&
 	}
-
-	w := 512
-	h := 512
-	bpp := 4
 
 	deflData := malloc(w*h*bpp + h)->{u8^}
 	defer free(deflData)
@@ -89,15 +106,22 @@ DecodePNG := !(File^ f) -> Image^
 		filtType := deflData[i*deflStrip]
 		for j : w
 		{
-			for k : 4
+			for k : bpp
 			{
 				sIndx := newTextStrip*i + j*bpp + k
 				gIndx := readyStrip*i + bpp*j + k
 				switch filtType
 				{
-					//TODO 2 3
+					case 0
+						setPtr[sIndx] = getPtr[gIndx]
 					case 1
 						setPtr[sIndx] = getPtr[gIndx] + setPtr[sIndx - bpp]
+					case 2
+						setPtr[sIndx] = getPtr[sIndx] + setPtr[sIndx - newTextStrip]
+					case 3
+						//TODO
+						avrg := (setPtr[sIndx - bpp]->{u32} + setPtr[sIndx -  newTextStrip]->{u32}) div 2
+						setPtr[sIndx] = getPtr[sIndx] + avrg
 					case 4
 						setPtr[sIndx] = getPtr[gIndx]
 
@@ -122,6 +146,7 @@ DecodePNG := !(File^ f) -> Image^
 						setPtr[sIndx] += r
 					
 					case void
+						assert(false)
 						setPtr[newTextStrip*i + j*bpp + k] = getPtr[readyStrip*i + bpp*j + k]
 				}
 			}
@@ -137,7 +162,6 @@ DecodePNG := !(File^ f) -> Image^
 		memcpy(res[w*bpp*i]&,newText[newTextStrip*i + 16*bpp]&,w*bpp)
 	}
 
-	free(result.Data)
 	result.Data = res
 }
 

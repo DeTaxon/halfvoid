@@ -3,30 +3,26 @@ Library := class
 {
 	hndl := void^
 	itFileName := char^
-	loadedObjs := AVLMap.{String^,void^}
+	loadedObjs := AVLMap.{Str,void^}
 
 	this := !() -> void
 	{
 	}
-	Get := virtual !(StringView name) -> void^
+	Get := virtual !(Str name) -> void^
 	{
-		nm := name.GetString()
+		return loadedObjs[name]?
+		//if $win32 if win32DllData != null
+		//{
+		//	inExport := win32DllData.exportFunctions.TryFind(name)
+		//	if inExport != null
+		//	{
+		//		loadedFuncs[StrCopy(name)] = inExport^
+		//		return inExport^
+		//	}
+		//}
 
-		inMap := loadedObjs.TryFind(nm)
-		if inMap != null
-			return inMap^
-		// if $win32 if win32DllData != null
-		// {
-		// 	inExport := win32DllData.exportFunctions.TryFind(name)
-		// 	if inExport != null
-		// 	{
-		// 		loadedFuncs[StrCopy(name)] = inExport^
-		// 		return inExport^
-		// 	}
-		// }
-
-		newFunc := LoadFuncLib(hndl,name.GetString().Str())
-		loadedObjs[nm] = newFunc
+		newFunc := LoadFuncLib(hndl,name.CStr())
+		loadedObjs[name] = newFunc
 		
 		return newFunc
 	}
@@ -34,7 +30,7 @@ Library := class
 
 LibDatabaseType := class
 {
-	loadedLibs := AVLMap.{String^,Library^}
+	loadedLibs := AVLMap.{Str,Library^}
 	
 	//Destroy := !() -> void
 	//{
@@ -46,13 +42,9 @@ LibDatabaseType := class
 	//	}
 	//	itMemPool.Destroy()
 	//}
-	GetLib := !(StringView name) -> Library^
+	GetLib := !(Str name) -> Library^
 	{
-		nrm := name.GetString()
-		inMap := loadedLibs.TryFind(nrm)
-		if inMap != null
-			return inMap^
-
+		return loadedLibs[name]?
 		hndl := void^
 
 		// if '*' in name
@@ -88,13 +80,13 @@ LibDatabaseType := class
 		// 		}
 		// 	}
 		// }else{
-			hndl = OpenLib(nrm.Str())
+			hndl = OpenLib(name.CStr())
 
 			
 			if hndl == null
 			{
 				nameBuff := char[1024] //TODO better string support?
-				sprintf(nameBuff,"./%s",nrm.Str())
+				sprintf(nameBuff,"./%s",name.CStr())
 				//if exTest.IsExist()
 				//{
 					hndl = OpenLib(nameBuff)
@@ -106,7 +98,7 @@ LibDatabaseType := class
 
 				newObj := new Library
 				newObj.hndl = hndl
-				loadedLibs[nrm] = newObj
+				loadedLibs[name] = newObj
 				
 				return newObj
 			}
@@ -171,7 +163,7 @@ LibDatabaseType := class
 }
 gLibDB := LibDatabaseType
 
-GetLibrary := !(StringView libName) -> Library^
+GetLibrary := !(Str libName) -> Library^
 {
 	return gLibDB.GetLib(libName)
 }

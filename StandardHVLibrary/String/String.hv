@@ -50,6 +50,10 @@ String := class extend StringView
 		res.itSize = itSize
 		return res[ind]
 	}
+	CStr := !() -> char^
+	{
+		return charPtr
+	}
 	Str := virtual !() -> char^
 	{
 		return charPtr
