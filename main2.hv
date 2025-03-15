@@ -33,13 +33,12 @@ main := !(char^[] args) -> int
 	//FSReadFolder("/home/max/Images/",true,x ==>{
 	//	if x is not File
 	//		return void
-
 	//	printf("yep <%s>\n",x.GetPath())
 	//	DecodePNG(x)
 	//})
 	
 	c := TestWin(600,600,"Hello world") //TODO should not crash without constructor
-	c.img = DecodePNG(FSGetFile("filter0.png"))
+	c.img = DecodePNG(FSGetFile("1505520929135285081.png"))
 	c.RunVulkan()
 }
 

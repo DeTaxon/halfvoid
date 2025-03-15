@@ -16,23 +16,34 @@ DecodePNG := !(File^ f) -> Image^
 	dataChunks := List.{u8^}
 	dataChunkTotalSize := 0
 
+	palleteData := Blob^
+
 	while iter < fileEnd
 	{
 		len := FromBigEndian(iter->{u32^}^)
 		iter = iter[4]&
 		typ := StringSpan(iter->{char^},4)
 
-		//printf("chunk %s %i\n",typ,len)
+		printf("chunk %s %i\n",typ,len)
 
 		switch typ
 		{
+		case "PLTE"
+			palleteData = MakeBlob(len)
+			memcpy(palleteData.GetPointer(),iter[4]&,len)
 		case "IHDR"
 			hdr := iter[4]&->{PNG_IHDR^}
 			w = FromBigEndian(hdr.Width)
 			h = FromBigEndian(hdr.Height)
 
+			for it, name : hdr^->#AllFields
+			{
+				printf("field %i %i %s\n",it,FromBigEndian(it),name)
+			}
 			assert(hdr.BitDepth == 8) //TODO other depths
 			//assert(hdr.InterlaceMethod == 0)
+			if hdr.InterlaceMethod != 0
+				return void
 
 			cType := hdr.ColorType
 
@@ -45,14 +56,21 @@ DecodePNG := !(File^ f) -> Image^
 			if cType == 6
 			{
 				bpp = 4
+				result.ColorType = "RGBA"
 			}else if cType == 2
 			{
 				bpp = 3 //TODO Image supports types
+				result.ColorType = "RGB"
+			}else if cType == 0 {
+				bpp = 1 //TODO
 			}else {
 				assert(false) //TODO other color types
 			}
 			if isIndexed
+			{
 				bpp = 1
+				result.ColorType = "RGB"
+			}
 
 		case "IDAT"
 			dataChunks.Push(iter[-4]&)
@@ -71,7 +89,7 @@ DecodePNG := !(File^ f) -> Image^
 
 	for idat : dataChunks
 	{
-		len := ToBigEndian(idat->{u32^}^) //TODO from
+		len := FromBigEndian(idat->{u32^}^)
 		memcpy(outPtr,idat[8]&,len)
 		outPtr = outPtr[len]&
 	}
@@ -81,7 +99,7 @@ DecodePNG := !(File^ f) -> Image^
 
 	deflStrip := w*bpp + 1
 
-	CrappyDeflateInflate(cmpBlob.GetPointer()->{u8^}[2]&,cmpBlob.Size() - 6,deflData,w*h*bpp + h)
+	CrappyDeflateInflate(cmpBlob.GetPointer()->{u8^}[2]&,cmpBlob.Size() - 2,deflData,w*h*bpp + h)
 
 	readyData := calloc((w + 16)*(h + 16),bpp)->{u8^}
 	defer free(readyData)
@@ -93,7 +111,7 @@ DecodePNG := !(File^ f) -> Image^
 		memcpy(readyData[readyStrip*i + 16*bpp]&,deflData[deflStrip*i + 1]&,w*bpp)
 	}
 
-	newText := malloc((w + 16)*(h + 16)*bpp)->{u8^}
+	newText := malloc((w + 32)*(h + 32)*bpp)->{u8^}
 	defer free(newText)
 
 	newTextStrip := readyStrip
@@ -153,16 +171,33 @@ DecodePNG := !(File^ f) -> Image^
 			
 		}
 	}
-	
-	
-	res := malloc(w*h*bpp)->{u8^}
-	
-	for i : h
-	{
-		memcpy(res[w*bpp*i]&,newText[newTextStrip*i + 16*bpp]&,w*bpp)
-	}
 
-	result.Data = res
+	if palleteData != null
+	{
+		plt := palleteData.GetPointer()->{u8^}
+
+		res := malloc(w*h*4)->{u8^}
+		memset(res,255,w*h*4) //TODO , skip alpha
+		for i : h
+		{
+			for j : w
+			{
+				indx := newText[newTextStrip*i +j*bpp + 16*bpp]
+				memcpy(res[(i*w + j)*4]&,plt[indx*3]&,3)
+			}
+		}
+		result.Data = res
+		result.ColorType = "RGBA"
+	}else{
+		res := malloc(w*h*bpp)->{u8^}
+		
+		for i : h
+		{
+			memcpy(res[w*bpp*i]&,setPtr[newTextStrip*i]&,w*bpp)
+		}
+
+		result.Data = res
+	}
 }
 
 PNG_IHDR := class

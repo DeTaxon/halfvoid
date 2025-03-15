@@ -1,6 +1,13 @@
+ImageColorTypeEnum := enum
+{
+	"RGB",
+	"RGBA"
+}
+
 Image := class extend TGCObject
 {
 	Data := u8^
+	ColorType := ImageColorTypeEnum
 	Width := int
 	Height := int
 
@@ -18,6 +25,16 @@ Image := class extend TGCObject
 	{
 		return Data
 	}
+	GetPixelSize := !() -> int
+	{
+		switch ColorType
+		{
+		case "RGB"
+			return 3
+		case "RGBA"
+			return 4
+		}
+	}
 	ForEachPixelU8 := !(!(int,int,u8^)&->void cb) -> void
 	{
 		for i : Height
@@ -27,6 +44,40 @@ Image := class extend TGCObject
 				cb(j,i,Data->{u32^}[j + i*Width]&->{u8^})
 			}
 		}
+	}
+
+	ToColorType := !(ImageColorTypeEnum toType) -> Image^
+	{
+		if toType == ColorType
+			return this&
+
+		if toType == "RGBA"
+		{
+			result = new Image
+			result.Width = Width
+			result.Height = Height
+			result.ColorType = toType
+
+			res := malloc(Width*Height*4)->{u8^}
+			memset(res,255,Width*Height*4)
+
+			bpp := GetPixelSize()
+			stride := bpp*Width
+
+			for i : Height
+			{
+				for j : Width
+				{
+					memcpy(res[j*4 + i*4*Width]&, Data[j*bpp + i*stride]&,3)
+				}
+			}
+			result.Data = res
+
+			return result
+
+		}
+
+		assert(false)
 	}
 
 	Destroy := virtual !() -> void

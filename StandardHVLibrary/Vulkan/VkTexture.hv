@@ -89,6 +89,8 @@ TVkTexture := class
 		//if not vkRGB8Support //TODO add info to instance?
 			useAlpha = true
 
+		img = img.ToColorType("RGBA")
+
 		memTyp := CreateObject(img.Width,img.Height,(x,y) ==> {
 			x.format = VK_FORMAT_R8G8B8_UNORM
 			if useAlpha x.format = VK_FORMAT_R8G8B8A8_UNORM
@@ -96,7 +98,7 @@ TVkTexture := class
 
 		ptrToSet := itInstance.itStageMemory.Map()->{u8^}
 
-		memcpy(ptrToSet,img.GetPointer(),img.Width*img.Height*4) //TODO other formats!!
+		memcpy(ptrToSet,img.GetPointer(),img.Width*img.Height*img.GetPixelSize()) //TODO other formats!!
 
 		itInstance.itStageMemory.Unmap()
 		vStageCpyToImage(itInstance,itImg,itW,itH) //TODO
