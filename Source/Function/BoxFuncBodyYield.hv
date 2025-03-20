@@ -75,6 +75,8 @@ AppendClass BoxFuncBody
 		
 		for it,i : LocalVars
 		{
+			if it.GetType() == GTypeVoid
+				continue
 			tps.Push(it.GetBaseType())
 		}
 		return GetTuple(tps,true)

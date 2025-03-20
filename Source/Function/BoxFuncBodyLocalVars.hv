@@ -30,10 +30,18 @@ AppendClass BoxFuncBody
 		cnsts.Push(tpl.ItType)
 
 		locVarThis := Params[0]
+		skipedVars := 0
 		for it, i : LocalVars
 		{
+			if it.GetType() == GTypeVoid
+			{
+				skipedVars += 1
+				it.SetCall(GObjVoid)
+				continue
+			}
+
 			tp := it.GetBaseType()
-			pth := tpl.GetFieldByIndex(i)
+			pth := tpl.GetFieldByIndex(i - skipedVars)
 
 			asCls := GetExchange2(locVarThis.CreateVarCall(),lambdaClass.ItType.GetPoint(),false)
 
@@ -183,6 +191,9 @@ AppendClass BoxFuncBody
 
 		for it : LocalVars
 		{
+			if it.GetType() == GTypeVoid
+				continue
+
 			tp := it.GetBaseType()
 			f^ << "%Var" << ctx.GetLocalVarId(it) << " = alloca "
 			tp.PrintType(ctx)

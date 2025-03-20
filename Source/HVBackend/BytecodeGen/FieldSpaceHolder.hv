@@ -1,0 +1,9 @@
+AppendClass FieldSpaceHolder
+{
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+	}
+	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+	}
+}

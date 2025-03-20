@@ -1,45 +1,49 @@
 
 
 
-TestWin := class extends Window
-{
-	img := Image^
-	InitWindow := virtual !() -> GUIObject^
-	{
-		m := new UIImage
+//TestWin := class extends Window
+//{
+//	img := Image^
+//	InitWindow := virtual !() -> GUIObject^
+//	{
+//		m := new UIImage
+//
+//		m.vImage = vInstance.CreateTexture()
+//		m.vImage.CreateTexture(img)
+//
+//		m.textureSet = vkOverlay.atlasPool.CreateDescriptor()
+//		vSetTexture(vInstance,m.textureSet,m.vImage,vInstance.SamplerNearest)
+//
+//		return new LayoutVertical(![
+//			m
+//		])
+//	}
+//}
 
-		m.vImage = vInstance.CreateTexture()
-		m.vImage.CreateTexture(img)
-
-		m.textureSet = vkOverlay.atlasPool.CreateDescriptor()
-		vSetTexture(vInstance,m.textureSet,m.vImage,vInstance.SamplerNearest)
-
-		return new LayoutVertical(![
-			m
-		])
-	}
-}
-
-vkDebugObj := VkDebugReportCallbackEXT
-VkDebugCallback := !(int flags,int bojType,u64 object,u64 location,int msgCode,char^ prefix,char^ msg,void^ usrData) -> int
-{
-	printf("VkError <%s>\n",msg)
-	assert(false)
-	exit(0)
-	return 0
-}
+//vkDebugObj := VkDebugReportCallbackEXT
+//VkDebugCallback := !(int flags,int bojType,u64 object,u64 location,int msgCode,char^ prefix,char^ msg,void^ usrData) -> int
+//{
+//	printf("VkError <%s>\n",msg)
+//	assert(false)
+//	exit(0)
+//	return 0
+//}
 main := !(char^[] args) -> int
 {
-	//FSReadFolder("/home/max/Images/",true,x ==>{
-	//	if x is not File
-	//		return void
-	//	printf("yep <%s>\n",x.GetPath())
-	//	DecodePNG(x)
-	//})
+	spn := StringSpan("asdasdasdasd")
+	spn.DivideStr("s",(line) ==> {
+		switch line.Start
+		{
+		case "d"
+			printf("yep\n")
+		}
+		yield void
+		printf("skip\n")
+	})
 	
-	c := TestWin(600,600,"Hello world") //TODO should not crash without constructor
-	c.img = DecodePNG(FSGetFile("1505520929135285081.png"))
-	c.RunVulkan()
+	//c := TestWin(600,600,"Hello world") //TODO should not crash without constructor
+	//c.img = DecodePNG(FSGetFile("1505520929135285081.png"))
+	//c.RunVulkan()
 }
 
 
