@@ -32,6 +32,7 @@ main := !(char^[] args) -> int
 {
 	spn := StringSpan("asdasdasdasd")
 	spn.DivideStr("s",(line) ==> {
+		printf("line %s\n",line)
 		switch line.Start
 		{
 		case "d"

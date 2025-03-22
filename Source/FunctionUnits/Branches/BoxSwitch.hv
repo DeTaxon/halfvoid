@@ -25,12 +25,21 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 	if mainCall.GetType() is TypeEnum
 		return CreateSwitchOnEnum(obj,mainCall)
 
+	fSpaceBase := FieldSpace^
+	if mainCall is FieldSpaceHolder
+	{
+		sh := mainCall->{FieldSpaceHolder^}
+		mainCall = sh.downObj
+		fSpaceBase = sh.itField
+	}
+
 	toSetVar := mainCall
 	if mainCall.IsMem()
 		toSetVar = new UnrefFuncCall(mainCall)
+
 	
-	mainVar := new LocalVar(StringSpan(""),mainCall.GetType(),true,mainCall.IsMem())
-	setCall := CreateFuncCall(StringSpan("="),![mainVar.CreateVarBaseCall(),toSetVar])
+	mainVar := new LocalVar("",mainCall.GetType(),true,mainCall.IsMem())
+	setCall := CreateFuncCall("=",![mainVar.CreateVarBaseCall(),toSetVar])
 	
 	if setCall == null
 		return null
@@ -95,9 +104,16 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 		}
 		allConsts = false
 		baseObj := caseCheck
+
+		getVarObj := mainVar.CreateVarCall()
+
+		if fSpaceBase != null
+		{
+			getVarObj = new FieldSpaceHolder(getVarObj,fSpaceBase)
+		}
 		
 		objs := CheckExeDownList
-		objs.Push(mainVar.CreateVarCall() )
+		objs.Push(getVarObj)
 		objs.Push(caseCheck)
 		checkRes := BoxExeObj^
 		if caseCheckFuncName == "=="
