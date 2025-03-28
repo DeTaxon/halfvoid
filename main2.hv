@@ -30,17 +30,15 @@
 //}
 main := !(char^[] args) -> int
 {
-	spn := StringSpan("asdasdasdasd")
-	spn.DivideStr("s",(line) ==> {
-		printf("line %s\n",line)
-		switch line.Start
-		{
-		case "d"
-			printf("yep\n")
+	vec1 := vec4f(1.0,6.0,1.0,1.0)
+
+	cb1 := () ==> {
+		cb2 := () ==> {
+			printf("test %f\n",vec1.y)
 		}
-		yield void
-		printf("skip\n")
-	})
+		cb2()
+	}
+	cb1()
 	
 	//c := TestWin(600,600,"Hello world") //TODO should not crash without constructor
 	//c.img = DecodePNG(FSGetFile("1505520929135285081.png"))
