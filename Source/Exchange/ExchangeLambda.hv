@@ -10,12 +10,22 @@ ExchangeLambdaFromHolder := class extend ExchangeUnit
 
 		if hldr.CanBeThisType(to)
 			return 0
-		printf("yep\n")
+
+		if hldr.CanBeThisAsFunc(to) 
+			return 1000
 		return CmpNoExchange
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
 	{
 		hldr := obj->{BoxLambdaHolder^}
+
+		if hldr.CanBeThisAsFunc(expType)
+		{
+			func := hldr.CreateFunction(expType)
+			if func is in BoxFuncBody
+				func->{BoxFuncBody^}.ParseBody()
+			return func
+		}
 		return hldr.CreateLambda(expType)
 	}
 }

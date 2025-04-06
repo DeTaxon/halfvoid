@@ -280,11 +280,20 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		return resObj
 	}
+
 	CanBeThisType := !(Type^ tp) -> bool
 	{ //TODO: check argument count and types
 		if not (tp is in TypePoint)
 			return false
 		if TypeFight(tp.Base,GCILambda.ItType) != GCILambda.ItType
+			return false
+		return true
+	}
+	CanBeThisAsFunc := !(Type^ tp) -> bool
+	{ //TODO: check argument count and types
+		if tp is not in TypePoint
+			return false
+		if tp.Base == null or tp.Base is not TypeFunc
 			return false
 		return true
 	}

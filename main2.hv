@@ -28,17 +28,26 @@
 //	exit(0)
 //	return 0
 //}
+
+
+cc := !(!()^-> void cb) -> void
+{
+	cb()
+}
+
 main := !(char^[] args) -> int
 {
-	vec1 := vec4f(1.0,6.0,1.0,1.0)
+	cc(() ==> {
+		printf("yep\n")
+	})
+	//subFunc := !(int x) -> int
+	//{
+	//	return x*2
+	//}
 
-	cb1 := () ==> {
-		cb2 := () ==> {
-			printf("test %f\n",vec1.y)
-		}
-		cb2()
-	}
-	cb1()
+	//y := subFunc(5)
+
+	//printf("test %i\n",y)
 	
 	//c := TestWin(600,600,"Hello world") //TODO should not crash without constructor
 	//c.img = DecodePNG(FSGetFile("1505520929135285081.png"))
