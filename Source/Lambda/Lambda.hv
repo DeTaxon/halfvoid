@@ -69,6 +69,8 @@ BoxLambdaHolder := class extend BoxExeObj
 			return null
 		if toType.Base is not in TypeFunc
 			return null
+		//TODO capture does not work, but we can pass constants
+		//TODO functions cant use capture, bu i can make better erro saying taht this is not a lambda
 		//TODO, temporary fix , that probably gonna be forever
 		tmpl.Attrs.IsLambda = false
 		tmpl.Attrs.IsAutoResult = true
