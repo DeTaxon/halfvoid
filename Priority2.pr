@@ -2,6 +2,7 @@
 "#best ()"
 "try {} catch () {}"
 "new d ()" "! []" "! {}"
+#FunctionBody
 "d . d () . {}"
 "d () . {}" "d . {}"
 "d ^" "d []" "d ?" "d -> {}"  "d . d" "d . d ()"  "d s" "d &" "d -> d" "d -> d ()"

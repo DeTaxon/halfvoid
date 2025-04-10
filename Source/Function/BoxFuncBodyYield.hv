@@ -62,7 +62,7 @@ AppendClass BoxFuncBody
 		if YieldStateInt == null
 		{
 			assert(CurrentFunc == this&)
-			YieldStateInt = new LocalVar(".generator_state",GTypeInt,true,false)
+			YieldStateInt = new LocalVar("__generator_state",GTypeInt,true,false)
 		}
 		return YieldStateInt
 	}

@@ -162,6 +162,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		refVar = true
 		varToken = varToken.Right
 	}
+
 	exeObj := TryGetExeCall(varToken)
 	if exeObj != null
 	{
@@ -285,6 +286,26 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 			assert(false)
 		}
 	}
+
+	//function within function
+	c := PFunctionParser(varToken)
+	if c.IsFound()
+	{
+		obj := c.CreateObject()
+
+		if obj.IsOneFunc()
+		{
+			//TODO deletion of CurrentFunc deletes this func
+			//todo Optimize, variable can be constant, and we can pass without LocalVar
+			fnc := obj.GetOneFunc()
+			par := new FuncPointerParam(fnc)
+			assert(manyNames.Size() == 1)
+			return ToLocalVar(par.CreateCall(),manyNames[0])
+		}else{
+			//TODO template varaible support
+		}
+	}
+
 	
 	return null
 }

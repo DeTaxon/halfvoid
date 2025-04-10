@@ -218,23 +218,12 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	return TryGetBracketsCall(itm)?
 	return TryGetTemplateCall(itm)?
 	
-	isOperCall := TryCheckMathOperatorCall(itm)
-	if isOperCall != null
-		return isOperCall
+	return TryCheckMathOperatorCall(itm)?
 	
-	prm := TryExePrime(itm)
-	if prm != null
-		return prm
-
-	isParamCall := TryCheckGetParam(itm)
-	if isParamCall != null
-		return isParamCall
-	
-	unrefCall := TryGetUnrefObj(itm)
-	if unrefCall != null
-		return unrefCall
+	return TryExePrime(itm)?
+	return TryCheckGetParam(itm)?
+	return TryGetUnrefObj(itm)?
 	return TryGetPtrObj(itm)?
-
 	return TryGetQuickParam(itm)?
 
 	return null

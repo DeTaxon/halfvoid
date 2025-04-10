@@ -37,17 +37,14 @@ cc := !(!()^-> void cb) -> void
 
 main := !(char^[] args) -> int
 {
-	cc(() ==> {
-		printf("yep\n")
-	})
-	//subFunc := !(int x) -> int
-	//{
-	//	return x*2
-	//}
+	subFunc := !(int x) -> int
+	{
+		return x*2
+	}
 
-	//y := subFunc(5)
+	y := subFunc(5)
 
-	//printf("test %i\n",y)
+	printf("test %i\n",y)
 	
 	//c := TestWin(600,600,"Hello world") //TODO should not crash without constructor
 	//c.img = DecodePNG(FSGetFile("1505520929135285081.png"))

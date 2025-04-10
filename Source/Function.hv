@@ -172,7 +172,7 @@ PFunctionParser := class
 
 		return ComputeHashOnLines(fileData,startLine,endLine)
 	}
-	CreateObject := !() -> BoxUnit^
+	CreateObject := !() -> BoxFuncTemplate^
 	{
 		asTempl := new BoxFuncTemplateBody(Attr,brackets,null,constToken,resultToken,bodyToken,runToken)->{BoxFuncTemplate^}
 
