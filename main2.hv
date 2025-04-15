@@ -1,54 +1,20 @@
 
 
-
-//TestWin := class extends Window
-//{
-//	img := Image^
-//	InitWindow := virtual !() -> GUIObject^
-//	{
-//		m := new UIImage
-//
-//		m.vImage = vInstance.CreateTexture()
-//		m.vImage.CreateTexture(img)
-//
-//		m.textureSet = vkOverlay.atlasPool.CreateDescriptor()
-//		vSetTexture(vInstance,m.textureSet,m.vImage,vInstance.SamplerNearest)
-//
-//		return new LayoutVertical(![
-//			m
-//		])
-//	}
-//}
-
-//vkDebugObj := VkDebugReportCallbackEXT
-//VkDebugCallback := !(int flags,int bojType,u64 object,u64 location,int msgCode,char^ prefix,char^ msg,void^ usrData) -> int
-//{
-//	printf("VkError <%s>\n",msg)
-//	assert(false)
-//	exit(0)
-//	return 0
-//}
-
-
-cc := !(!()^-> void cb) -> void
+SomeClass := class extends TGCObject
 {
-	cb()
+	x := int
+}
+
+TestFunc := !(TGCObject^ tst) -> void
+{
+	printf("test %p\n",tst is SomeClass)
 }
 
 main := !(char^[] args) -> int
 {
-	subFunc := !(int x) -> int
-	{
-		return x*2
-	}
-
-	y := subFunc(5)
-
-	printf("test %i\n",y)
-	
-	//c := TestWin(600,600,"Hello world") //TODO should not crash without constructor
-	//c.img = DecodePNG(FSGetFile("1505520929135285081.png"))
-	//c.RunVulkan()
+	TestFunc(null)
+	TestFunc(new TGCObject)
+	TestFunc(new SomeClass)
 }
 
 

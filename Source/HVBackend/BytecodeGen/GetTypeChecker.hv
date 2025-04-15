@@ -2,10 +2,20 @@ AppendClass IsSameTypeChecker
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
+
+		endLabel := ctx.GetLabel(EndLabel&)
+
 		res := ctx.CreateVar(GTypeBool)
 		result.CreatedId = res
 
+		HVB_ins_clean(ctx,res)
+
 		dwn := DownObj.WriteMC(ctx)
+
+		zeroPtr := ctx.AddPointer(null)
+
+		cmpZeroCheck := HVB_ins_cmp_new(ctx,dwn.CreatedId,"==",zeroPtr)
+		HVB_ins_jump_if_bool(ctx,endLabel,cmpZeroCheck)
 
 		cpy := ctx.CreateVar(GTypeVoidP.GetPoint())
 
@@ -19,6 +29,8 @@ AppendClass IsSameTypeChecker
 		vrPointer := ctx.CreateVar(GTypeVoidP)
 		HVB_ins_get_pointer(ctx,vrPointer,vr)
 		HVB_ins_cmp(ctx,res,tablRef,"==",vrPointer)
+
+		HVB_ins_label(ctx,endLabel)
 
 	}
 }

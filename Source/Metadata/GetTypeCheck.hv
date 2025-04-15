@@ -62,11 +62,17 @@ IsSameTypeChecker := class extend BoxExeObj
 {
 	DownObj := BoxExeObj^
 	TargetType := TypeClass^
+	QuitLabel := BoxLabel
+	CheckLabel := BoxLabel
+	EndLabel := BoxLabel
 	resId := int
 	this := !(BoxExeObj^ dwnObj, TypeClass^ expType) -> void
 	{
 		ObjType = GTypeBool
 		DownObj = dwnObj
+		QuitLabel."this"()
+		CheckLabel."this"()
+		EndLabel."this"()
 
 		TargetType = expType
 
@@ -108,6 +114,28 @@ IsSameTypeChecker := class extend BoxExeObj
 		else
 			baseType = DownObj.GetType().Base
 
+
+		f^ << "%TNullCheck" << resId << " = icmp eq ptr "
+		if objIsRef
+			DownObj.PrintPointUse(ctx)
+		else
+			DownObj.PrintUse(ctx)
+		f^ << ", null"
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+		f^ << "br i1 %TNullCheck" << resId << " , label "
+		QuitLabel.PrintLabel(ctx)
+		f^ << ", label "
+		CheckLabel.PrintLabel(ctx)
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+
+
+		CheckLabel.PrintCode(ctx)
+
 		f^ << "%TPtr" << resId << " = getelementptr "
 		baseType.PrintType(ctx)
 		f^ << " , "
@@ -137,11 +165,27 @@ IsSameTypeChecker := class extend BoxExeObj
 		f^ << "*"
 		f^ << "\n"
 
-		f^ << "%T" << resId << " = icmp eq "
+		f^ << "%TVal" << resId << " = icmp eq "
 		TargetType.ToClass.VTableType.ItType.PrintType(ctx)
 		f^ << "* %TPre" << resId << " , "
 		TargetType.ToClass.VTableValue.PrintOutputName(ctx)
 		f^ << "\n"
+
+		EndLabel.PrintGo(ctx)
+
+		QuitLabel.PrintCode(ctx)
+
+		EndLabel.PrintCode(ctx)
+
+		f^ << "%T" << resId << " = phi i1 [0,"
+		QuitLabel.PrintLabel(ctx)
+		f^ << "] , [%TVal" << resId << ","
+		CheckLabel.PrintLabel(ctx)
+		f^ << "]"
+		if DebugMode
+			f^ << ", !dbg !" << GDebugLineCallId
+		f^ << "\n"
+		
 	}
 	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
