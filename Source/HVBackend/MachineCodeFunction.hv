@@ -26,6 +26,10 @@ MCVariable := class extend MCObject
 	GetValueType := !() -> ref Type^ { return Value&->{Type^^}^}
 	GetType := virtual !() -> Type^ { return GetValueType()}
 }
+MCConstValue := class extends MCVariable //same as variable, but assigned only once
+{
+	PrintObject := virtual !() -> void { printf("Const value with type %s", GetType().GetBADStr().Str()) }
+}
 MCGlobalVariable := class extend MCObject
 {
 	PrintObject := virtual !() -> void { printf("Global variable with type %s", GetType().GetBADStr().Str()) }

@@ -1,20 +1,22 @@
 
-
-SomeClass := class extends TGCObject
+tstEnum := enum
 {
-	x := int
-}
-
-TestFunc := !(TGCObject^ tst) -> void
-{
-	printf("test %p\n",tst is SomeClass)
+	"One",
+	"Two",
+	"Three"
 }
 
 main := !(char^[] args) -> int
 {
-	TestFunc(null)
-	TestFunc(new TGCObject)
-	TestFunc(new SomeClass)
+	c := tstEnum
+
+	c = "Three"
+
+	switch c
+	{
+		case in !["One","Two"]
+			printf("yes\n")
+	}
 }
 
 
