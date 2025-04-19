@@ -8,10 +8,13 @@ MCObject := class
 	Value := u64
 	Value2 := u64
 
+	MCObject() {}
+
 	"=" := !(MCObject setValue) -> void
 	{
 		this->VTable = setValue->VTable
 		Value = setValue.Value
+		Value2 = setValue.Value2
 	}
 	PrintObject := virtual !() -> void { printf("unknown object") }
 	GetType := virtual !() -> Type^ { return GTypeVoid}
@@ -55,7 +58,7 @@ MCConstInteger := class extend MCObject
 	IsConstant := virtual true
 	GetValue := !() -> ref int { return Value&->{int^}^}
 
-	PrintObject := virtual !() -> void { printf("Integer %i",GetValue()) }
+	PrintObject := virtual !() -> void { printf("Integer32 %i",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeInt }
 }
 MCConstBool := class extend MCObject
@@ -73,7 +76,7 @@ MCConstS64 := class extend MCObject
 	IsConstant := virtual true
 	GetValue := !() -> ref s64 { return Value&->{s64^}^}
 
-	PrintObject := virtual !() -> void { printf("Integer %li",GetValue()) }
+	PrintObject := virtual !() -> void { printf("Integer64 %li",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeS64 }
 }
 MCConstDouble := class extend MCObject
@@ -137,13 +140,22 @@ MCFunction := class //extend TGCObject
 	InputsIndxCount := int
 
 	Objects := MCObject[]
-	Labels := MCLabel[]
 	Lines := MCLine[]
 
 	//optimization info
 	StackFrameSize := int
 	StackOffsets := int[] // Also contains lable positions
 
+	CreateBaseFunc := !() -> MCFunction^
+	{
+		result = new MCFunction
+		result.BaseFunction = BaseFunction
+
+		result.ResultIndex = ResultIndex
+		result.InputsIndxStart = InputsIndxStart
+		result.InputsIndxCount = InputsIndxCount
+	}
+	
 	Print := !() -> void
 	{
 		printf("-------- Objects\n")

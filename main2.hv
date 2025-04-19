@@ -19,6 +19,12 @@ main := !(char^[] args) -> int
 	}
 }
 
+main_c := !() -> void
+{
+	x := 2
+	x *= 16
+	printf("hello world %i\n", x)
+}
 
 //TODO lazy class and fake fields
 //TODO lazy class in hotload

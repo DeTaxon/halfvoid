@@ -1,0 +1,254 @@
+
+LLVMPrintTextModule := !(HVModule module, LLVMWriteContext^ ctx) -> void
+{
+	LLVMWriteBodyFunction(module.Functions[^],ctx)
+}
+
+
+LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
+{
+	out := ref ctx.writeStream^
+
+	base := fnc.BaseFunction
+
+	fnc.Print()
+	fnc = PassForceReturnConstValues(fnc)
+	fnc.Print()
+	fnc = PassCreateConstValues(fnc)
+	fnc.Print()
+
+	out << "define "
+	base.GetType()->{TypeFunc^}.ResultType.PrintType(ctx)
+	out << " @" << base.OutputName << "()\n"
+	out << "{\n"
+
+	for var, i : fnc.Objects
+	{
+		if var is not MCVariable
+			continue
+		out << "	%Var" << i << " = alloca "
+		var.GetType().PrintType(ctx)
+		out << "\n"
+	}
+
+	indx := 0
+
+	printDebugEnd := () ==> {
+		//TODO !dbg
+		out << "\n"
+	}
+
+	while indx < fnc.Lines.Size()
+	{
+		op := ref fnc.Lines[indx]
+
+		if op.opcode == "call_start"
+		{
+			indx += 1
+
+			fObj := fnc.Objects[op.var2]
+
+			assert(fObj is MCConstFunction)
+
+//TODO function pointers
+
+			fncB := fObj&->{MCConstFunction^}.GetValue()
+
+			//TODO result
+
+			out << "	call "
+			fncB.PrintResultType(ctx)
+			out << " "
+			fncB.PrintName(ctx)
+
+			out << "("
+
+			needComma := false
+			while fnc.Lines[indx].opcode != "call_end"
+			{
+				ln := ref fnc.Lines[indx]
+				ob := ref fnc.Objects[ln.var1]
+				if needComma
+					out << ","
+				ob.GetType().PrintType(ctx)
+				out << " %Var" << fnc.Lines[indx].var1
+				needComma = true
+				indx += 1
+			}
+			out << ")\n"
+			indx += 1
+
+		}else
+		{
+			switch op.opcode
+			{
+			case "debug_set_file" //TODO
+			case "debug_set_line" //TODO
+			case "jmp" //TODO
+			case "label" //TODO
+			case "cast"
+
+				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
+				resType := ob1.GetType()
+				inpType := ob2.GetType()
+				if IsInt(resType) and IsInt(inpType)
+				{
+					out <<	"	%Var" << op.var1 << " = "
+					
+					if resType.GetSize() == inpType.GetSize() {
+						assert(false)
+
+					}else{
+						if resType.GetSize() > inpType.GetSize() {
+							if IsUInt(inpType) {
+								out << "zext"
+							}else{
+								out << "sext"
+							}
+						}else{
+							out << "trunc"
+						}
+						out << " "
+					}
+					ob2.GetType().PrintType(ctx)
+					out << " "
+					LLVMPrintObjValue(ctx,ob2,op.var2)
+					out << " to "
+					ob1.GetType().PrintType(ctx)
+					printDebugEnd()
+				}else if resType is in TypePoint and inpType is in TypePoint{
+					out << "	%Var" << op.var1 << " = bitcast ptr "
+					LLVMPrintObjValue(ctx,ob2,op.var2)
+					out << " to "
+					ob1.GetType().PrintType(ctx)
+					printDebugEnd()
+				}else{
+					printf("LLVM: unknown cast at %i\n",indx)
+					assert(false)
+				}
+			case "get_pointer"
+				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
+				if ob1 is MCConstValue and ob2 is MCVariable
+				{
+					out << "	%Var" << op.var1 << " = bitcast ptr %Var" << op.var2 << " to "
+					ob1.GetType().PrintType(ctx)
+					printDebugEnd()
+				}else{
+					assert(false)
+				}
+
+			case in !["add","sub","mul","div","mod"]
+				ob2 := ref fnc.Objects[op.var2]
+				ob3 := ref fnc.Objects[op.var3]
+
+				out << "	%Var" << op.var1 << " = "
+				switch op.opcode
+				{
+				case "add"
+					if IsInt(ob2.GetType()) out << "add" else out << "fadd"
+				case "sub"
+					if IsInt(ob2.GetType()) out << "sub" else out << "fsub"
+				case "mul"
+					if IsInt(ob2.GetType()) out << "mul" else out << "fmul"
+				case "div"
+					if IsInt(ob2.GetType()) {
+						if IsUInt(ob2.GetType())
+							out << "udiv"
+						else
+							out << "sdiv"
+					}else out << "fdiv"
+				case "mod"
+					if IsInt(ob2.GetType()) {
+						if IsUInt(ob2.GetType())
+							out << "urem"
+						else
+							out << "srem"
+					}else assert(false)
+				}
+				out << " "
+				ob2.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob2,op.var2)
+				out << " , "
+				LLVMPrintObjValue(ctx,ob3,op.var3)
+				printDebugEnd()
+				
+
+			case "mov"
+				op1 := ref fnc.Objects[op.var1]
+				op2 := ref fnc.Objects[op.var2]
+
+				if op1 is MCVariable and op2.IsConstant
+				{
+					out << "	store "
+					op2.GetType().PrintType(ctx)
+					out << " "
+					LLVMPrintObjValue(ctx,op2,op.var2)
+					out << " ,"
+					op1.GetType().PrintType(ctx)
+					out << "* %Var" << op.var1
+					printDebugEnd()
+				}else if op1 is MCVariable and op2 is MCConstValue {
+					out << "	store "
+					op2.GetType().PrintType(ctx)
+					out << " %Var" << op.var2 << " ,"
+					op1&->{MCVariable^}.GetType().PrintType(ctx)
+					out << "* %Var" << op.var1
+					printDebugEnd()
+				}else if op1 is MCConstValue and op2 is MCVariable {
+					out << "	%Var" << op.var1 << " = load "
+					op2.GetType().PrintType(ctx)
+					out << ","
+					op2.GetType().PrintType(ctx)
+					out << "* %Var" << op.var2
+					printDebugEnd()
+				}else{
+					printf("LLVM: unknown move type at %i\n",indx)
+					assert(false)
+				}
+			case "memset"
+				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
+				ob3 := ref fnc.Objects[op.var3]
+				out << "	call void @llvm.memset.inline.p0.p0i8.i32(ptr "
+				LLVMPrintObjValue(ctx,ob1,op.var1)
+				out << ",i8 "
+				LLVMPrintObjValue(ctx,ob2,op.var2)
+				out << ",i32 "
+				LLVMPrintObjValue(ctx,ob3,op.var3)
+				out << ",i1 0)"
+				printDebugEnd()
+			case void
+				printf("LLVM: unknown opcode %s at %i\n",op.opcode.ToCStr(),indx)
+				assert(false)
+			}
+			indx += 1
+		}
+	}
+
+	out << "	ret void\n"
+	out << "}\n"
+}
+
+LLVMPrintObjValue := !(LLVMWriteContext^ ctx,MCObject obj, int id) -> void
+{
+	out := ref ctx.writeStream^
+
+	switch obj is
+	{
+	case MCVariable
+			out << "%Var" << id
+	case MCConstValue
+			out << "%Var" << id
+	case MCConstString
+			st := GetExeString(obj.GetValue())
+			st.PrintUse(ctx)
+	case MCConstInteger
+			out << obj.GetValue()
+	case MCConstS64
+			out << obj.GetValue()
+	}
+
+}

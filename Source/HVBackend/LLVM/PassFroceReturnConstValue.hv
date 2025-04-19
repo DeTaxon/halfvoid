@@ -1,0 +1,74 @@
+
+PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
+{
+	@once RetConstFuncTableInit()
+
+	tbl := ref RetConstFuncTable
+
+	usages := Vector.{int}
+
+	usages.Resize(fnc.Objects.Size())
+
+	for it : fnc.Lines
+	{
+		if it.opcode == "get_pointer" and fnc.Objects[it.var2] is MCVariable
+			usages[it.var2] += 2
+		if not tbl.Contain(it.opcode)
+			continue
+		usages[it.var1] += 1
+	}
+
+	newObjs := List.{MCObject}
+	newCmds := List.{MCLine}
+
+	newObjs.Push(fnc.Objects[^])
+
+	for it : fnc.Lines
+	{
+		if tbl.Contain(it.opcode)
+		{
+			if usages[it.var1] == 1 and fnc.Objects[it.var1] is MCVariable
+			{
+				newObjs[it.var1]->SetType(MCConstValue)
+				newCmds.Push(it)
+			}else if usages[it.var1] >= 2 and fnc.Objects[it.var1] is MCVariable {
+				cnstId := newObjs.Size()
+				newObjs.Push(fnc.Objects[it.var1])
+				newObjs[-1]->SetType(MCConstValue)
+
+				newCmds.Push(it)
+				newCmds[-1].var1 = cnstId
+				newCmds.Push(MCLine("mov",it.var1,cnstId))
+			}else{
+				newCmds.Push(it)
+			}
+		}else{
+			newCmds.Push(it)
+		}
+	}
+
+	newFunc := fnc.CreateBaseFunc() 
+
+	newFunc.Objects = newObjs.ToVector()
+	newFunc.Lines = newCmds.ToVector()
+
+	return newFunc
+}
+
+RetConstFuncTable := AVLSet.{MCBaseOpcodes}
+
+RetConstFuncTableInit := !() -> void
+{
+	tbl := ref RetConstFuncTable
+
+	tbl.Insert("cast")
+
+	tbl.Insert("get_pointer")
+
+	tbl.Insert("add")
+	tbl.Insert("sub")
+	tbl.Insert("mul")
+	tbl.Insert("div")
+	tbl.Insert("mod")
+
+}

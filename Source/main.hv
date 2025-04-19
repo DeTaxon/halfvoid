@@ -46,6 +46,8 @@ CompileSettings := SettingsSet^
 
 mainFuncName := "internalHVEntryPoint"
 
+GTestGen := false
+
 OutputFile := Str
 main := !(char^[] args) -> int
 {
@@ -151,6 +153,9 @@ main := !(char^[] args) -> int
 	{
 		switch args[i]
 		{
+			case "-test"
+				GTestGen = true
+				mainFuncName = "main_c"
 			case "-cache"
 				i += 1
 				OpenCacheFile(args[i])
@@ -357,7 +362,7 @@ main := !(char^[] args) -> int
 	ctx := LLVMWriteContext
 	ctx.writeStream = outFile
 
-	if OptimizeMode
+	if OptimizeMode or GTestGen
 	{
 		OptCodeGenLLVM(ctx&)
 	}else{
