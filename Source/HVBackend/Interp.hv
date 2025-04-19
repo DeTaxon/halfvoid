@@ -541,8 +541,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 			cs += 1
 		case "cmp"
-			objTyp := interpFunc.Objects[thisLine.var3].GetType()
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var3)
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
 			ptr2 := thisFrame.GetObjectPtr(thisLine.var4)
 			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
 
@@ -578,7 +578,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					assert(false)
 				}
 
-				switch thisLine.V2Cond()
+				switch thisLine.V3Cond()
 				{
 					case "==" resBool^ = (spc == 0)
 					case "!=" resBool^ = (spc != 0)

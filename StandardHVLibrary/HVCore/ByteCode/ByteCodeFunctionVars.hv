@@ -47,6 +47,16 @@ MCLine := class
 		var3 = v3
 		var4 = v4
 		var5 = v5
+		assert(false)
+	}
+	this := !(MCBaseOpcodes code, u16 v1,u16 v2,MCJumpIfConditions v3, u16 v4 = 0, u16 v5 = 0) -> void
+	{
+		opcode = code
+		var1 = v1
+		var2 = v2
+		V3Cond() = v3
+		var4 = v4
+		var5 = v5
 	}
 	V1Cond := !() -> ref MCJumpIfConditions
 	{
@@ -55,5 +65,9 @@ MCLine := class
 	V2Cond := !() -> ref MCJumpIfConditions
 	{
 		return var2&->{MCJumpIfConditions^}^
+	}
+	V3Cond := !() -> ref MCJumpIfConditions
+	{
+		return var3&->{MCJumpIfConditions^}^
 	}
 }

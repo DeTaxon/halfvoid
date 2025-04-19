@@ -38,38 +38,38 @@ AppendClass BuiltInIntBase
 		switch llvm
 		{
 		case "icmp eq"
-			ctx.lines.Push(MCLine("cmp",resInd,"==",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"==",var2.CreatedId))
 		case "icmp ne"
-			ctx.lines.Push(MCLine("cmp",resInd,"!=",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"!=",var2.CreatedId))
 		case "icmp ult"
-			ctx.lines.Push(MCLine("cmp",resInd,"<",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<",var2.CreatedId))
 		case "icmp slt"
-			ctx.lines.Push(MCLine("cmp",resInd,"<",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<",var2.CreatedId))
 		case "icmp ule"
-			ctx.lines.Push(MCLine("cmp",resInd,"<=",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<=",var2.CreatedId))
 		case "icmp sle"
-			ctx.lines.Push(MCLine("cmp",resInd,"<=",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<=",var2.CreatedId))
 		case "icmp uge"
-			ctx.lines.Push(MCLine("cmp",resInd,">=",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">=",var2.CreatedId))
 		case "icmp sge"
-			ctx.lines.Push(MCLine("cmp",resInd,">=",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">=",var2.CreatedId))
 		case "icmp ugt"
-			ctx.lines.Push(MCLine("cmp",resInd,">",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">",var2.CreatedId))
 		case "icmp sgt"
-			ctx.lines.Push(MCLine("cmp",resInd,">",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">",var2.CreatedId))
 
 		case "fcmp ueq"
-			ctx.lines.Push(MCLine("cmp",resInd,"==",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"==",var2.CreatedId))
 		case "fcmp une"
-			ctx.lines.Push(MCLine("cmp",resInd,"!=",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"!=",var2.CreatedId))
 		case "fcmp ugt"
-			ctx.lines.Push(MCLine("cmp",resInd,">",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">",var2.CreatedId))
 		case "fcmp uge"
-			ctx.lines.Push(MCLine("cmp",resInd,">=",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">=",var2.CreatedId))
 		case "fcmp ult"
-			ctx.lines.Push(MCLine("cmp",resInd,"<",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<",var2.CreatedId))
 		case "fcmp ule"
-			ctx.lines.Push(MCLine("cmp",resInd,"<=",var1.CreatedId,var2.CreatedId))
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<=",var2.CreatedId))
 
 		case "add"
 			HVB_ins_add(ctx,resInd,var1.CreatedId,var2.CreatedId)

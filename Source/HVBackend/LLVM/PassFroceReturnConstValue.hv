@@ -63,7 +63,14 @@ RetConstFuncTableInit := !() -> void
 
 	tbl.Insert("cast")
 
+	tbl.Insert("cmp")
+
 	tbl.Insert("get_pointer")
+	
+	tbl.Insert("and")
+	tbl.Insert("or")
+	tbl.Insert("xor")
+	tbl.Insert("not")
 
 	tbl.Insert("add")
 	tbl.Insert("sub")

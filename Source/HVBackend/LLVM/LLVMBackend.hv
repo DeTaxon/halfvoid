@@ -31,6 +31,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		out << "\n"
 	}
 
+	tmpLabelIter := 0
+
 	indx := 0
 
 	printDebugEnd := () ==> {
@@ -50,7 +52,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 			assert(fObj is MCConstFunction)
 
-//TODO function pointers
+			//TODO function pointers
 
 			fncB := fObj&->{MCConstFunction^}.GetValue()
 
@@ -84,8 +86,18 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			{
 			case "debug_set_file" //TODO
 			case "debug_set_line" //TODO
-			case "jmp" //TODO
-			case "label" //TODO
+			case "jmp"
+				out << "	br label %Label" << op.var1 << "\n"
+			case "jmp_if_bool"
+				t := tmpLabelIter
+				tmpLabelIter += 1
+				out << "	br i1 "
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var2],op.var2)
+				out << ",label %Label" << op.var1 << " , label %TmpLabel" << t << "\n"
+				out << "TmpLabel" << t << ":\n"
+			case "label"
+				out << "	br label %Label" << op.var1 << "\n"
+				out << "Label" << op.var1 << ":\n"
 			case "cast"
 
 				ob1 := ref fnc.Objects[op.var1]
@@ -127,6 +139,58 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printf("LLVM: unknown cast at %i\n",indx)
 					assert(false)
 				}
+			case "cmp"
+				v1 := op.var2
+				v2 := op.var4
+				ob1 := ref fnc.Objects[v1]
+				ob2 := ref fnc.Objects[v2]
+
+				out << "	%Var" << op.var1 << " = "
+
+				if IsFloat(ob1.GetType()) {
+					out << "fcmp "
+					switch op.V3Cond()
+					{
+					case "<" out << "ult"
+					case "<=" out << "ule"
+					case ">" out << "ugt"
+					case ">=" out << "uge"
+					case "==" out << "ueq"
+					case "!=" out << "une"
+					}
+				}else{
+					out << "icmp "
+
+					if IsUInt(ob1.GetType()) {
+						switch op.V3Cond()
+						{
+						case "<" out << "ult"
+						case "<=" out << "ule"
+						case ">" out << "ugt"
+						case ">=" out << "uge"
+						case "==" out << "eq"
+						case "!=" out << "ne"
+						}
+					}else{
+						switch op.V3Cond()
+						{
+						case "<" out << "slt"
+						case "<=" out << "sle"
+						case ">" out << "sgt"
+						case ">=" out << "sge"
+						case "==" out << "eq"
+						case "!=" out << "ne"
+						}
+					}
+				}
+				out << " "
+				ob1.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob1,v1)
+				out << " , "
+				LLVMPrintObjValue(ctx,ob2,v2)
+				printDebugEnd()
+
 			case "get_pointer"
 				ob1 := ref fnc.Objects[op.var1]
 				ob2 := ref fnc.Objects[op.var2]

@@ -123,11 +123,14 @@ GenMCTable := !() -> void
 	tbl["call_end"] = MCLine("noop")
 
 	tbl["jmp"] = MCLine("noop")
+	tbl["jmp_if_bool"] = MCLine("noop",0,1)
 	tbl["label"] = MCLine("noop")
 
 	tbl["get_pointer"] = MCLine("noop")
 
 	tbl["cast"] = MCLine("noop",0,1)
+
+	tbl["cmp"] = MCLine("noop",0,1,0,1)
 
 	tbl["add"] = MCLine("noop",0,1,1)
 	tbl["sub"] = MCLine("noop",0,1,1)
