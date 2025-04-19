@@ -13,9 +13,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	fnc.Print()
 	fnc = PassForceReturnConstValues(fnc)
-	fnc.Print()
+	//fnc.Print()
 	fnc = PassCreateConstValues(fnc)
-	fnc.Print()
+	//fnc.Print()
 
 	out << "define "
 	base.GetType()->{TypeFunc^}.ResultType.PrintType(ctx)
@@ -56,9 +56,15 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 			fncB := fObj&->{MCConstFunction^}.GetValue()
 
-			//TODO result
 
-			out << "	call "
+			out << "	" 
+			if op.var1 != 0
+			{
+				assert(fnc.Objects[op.var1] is MCConstValue)
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var1],op.var1)
+				out << " = "
+			}
+			out << "call "
 			fncB.PrintResultType(ctx)
 			out << " "
 			fncB.PrintName(ctx)
@@ -292,7 +298,27 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		}
 	}
 
-	out << "	ret void\n"
+	fType2 := NormalizeFuncType(base.GetType()->{TypeFunc^})
+	rTyp := fType2.ResultType
+
+	if rTyp == GTypeVoid {
+		out << "	ret void"
+		printDebugEnd()
+	}else {
+		out << "	%ResultValue = load "
+		rTyp.PrintType(ctx)
+		out << " , "
+		rTyp.PrintType(ctx)
+		out << "* "
+		LLVMPrintObjValue(ctx,fnc.Objects[fnc.ResultIndex],fnc.ResultIndex)
+		printDebugEnd()
+
+		out << "	ret "
+		rTyp.PrintType(ctx)
+		out << "%ResultValue"
+		printDebugEnd()
+	}
+
 	out << "}\n"
 }
 

@@ -23,14 +23,18 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 
 	newObjs.Push(fnc.Objects[^])
 
-	for it : fnc.Lines
+	indx := 0
+	while indx < fnc.Lines.Size()
 	{
+		it := ref fnc.Lines[indx]
+
 		if tbl.Contain(it.opcode)
 		{
 			if usages[it.var1] == 1 and fnc.Objects[it.var1] is MCVariable
 			{
 				newObjs[it.var1]->SetType(MCConstValue)
 				newCmds.Push(it)
+				indx += 1
 			}else if usages[it.var1] >= 2 and fnc.Objects[it.var1] is MCVariable {
 				cnstId := newObjs.Size()
 				newObjs.Push(fnc.Objects[it.var1])
@@ -38,12 +42,26 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 
 				newCmds.Push(it)
 				newCmds[-1].var1 = cnstId
+
+				if it.opcode == "call_start"
+				{
+					while fnc.Lines[indx] != "call_end"
+					{
+						newCmds.Push(fnc.Lines[indx])
+						indx += 1
+					}
+					newCmds.Push(fnc.Lines[indx])
+					indx += 1
+				}
 				newCmds.Push(MCLine("mov",it.var1,cnstId))
+				indx += 1
 			}else{
 				newCmds.Push(it)
+				indx += 1
 			}
 		}else{
 			newCmds.Push(it)
+			indx += 1
 		}
 	}
 
@@ -62,6 +80,8 @@ RetConstFuncTableInit := !() -> void
 	tbl := ref RetConstFuncTable
 
 	tbl.Insert("cast")
+
+	tbl.Insert("call_start")
 
 	tbl.Insert("cmp")
 

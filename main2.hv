@@ -20,15 +20,16 @@ main := !(char^[] args) -> int
 	main_c()
 }
 
+Func2 := !() -> int
+{
+	printf("yep\n")
+	return 77
+}
+
 main_c := !() -> void
 {
-	i := 0
-
-	while i < 12
-	{
-		printf("hello world %i\n", i)
-		i += 1
-	}
+	c := Func2()
+	printf("yop %i\n",c)
 }
 
 //TODO lazy class and fake fields
