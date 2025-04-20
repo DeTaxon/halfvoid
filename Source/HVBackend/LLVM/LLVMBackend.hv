@@ -13,6 +13,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	fnc.Print()
 	fnc = PassForceReturnConstValues(fnc)
+	fnc = PassRemoveReferences(fnc)
+	fnc.Print()
+	fnc = PassForceReturnConstValues(fnc)
 	//fnc.Print()
 	fnc = PassCreateConstValues(fnc)
 	//fnc.Print()
@@ -115,8 +118,13 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					out <<	"	%Var" << op.var1 << " = "
 					
 					if resType.GetSize() == inpType.GetSize() {
-						assert(false)
-
+						out << "bitcast "
+						inpType.GetType().PrintType(ctx)
+						out << " "
+						LLVMPrintObjValue(ctx,ob2,op.var2)
+						out << " to "
+						ob2.GetType().PrintType(ctx)
+						printDebugEnd()
 					}else{
 						if resType.GetSize() > inpType.GetSize() {
 							if IsUInt(inpType) {
@@ -145,6 +153,34 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printf("LLVM: unknown cast at %i\n",indx)
 					assert(false)
 				}
+			case "load_element"
+				v1 := op.var2
+				v2 := op.var3
+				res := ref fnc.Objects[op.var1]
+				ob1 := ref fnc.Objects[v1]
+				ob2 := ref fnc.Objects[v2]
+
+				assert(res is MCConstValue)
+
+				if ob1 is MCVariable or ob1 is MCConstValue
+				{
+					out << "	%Var" << op.var1 << " = getelementptr "
+					res.GetType().Base.PrintType(ctx)
+					out << " , "
+					res.GetType().PrintType(ctx)
+					out << " "
+					LLVMPrintObjValue(ctx,ob1,v1)
+					out << " , "
+					ob2.GetType().PrintType(ctx)
+					out << " "
+					LLVMPrintObjValue(ctx,ob2,v2)
+					printDebugEnd()
+
+				}else {
+					printf("LLVM: unknown load_element at %i\n",indx)
+					assert(false)
+				}
+				
 			case "cmp"
 				v1 := op.var2
 				v2 := op.var4
@@ -206,12 +242,15 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					ob1.GetType().PrintType(ctx)
 					printDebugEnd()
 				}else{
+					printf("LLVM: unknown get at line %i\n",indx)
 					assert(false)
 				}
 
 			case in !["add","sub","mul","div","mod"]
 				ob2 := ref fnc.Objects[op.var2]
 				ob3 := ref fnc.Objects[op.var3]
+
+				printf("wut %s\n",ob2.GetType().GetBADStr().Str())
 
 				out << "	%Var" << op.var1 << " = "
 				switch op.opcode
@@ -289,6 +328,33 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << ",i32 "
 				LLVMPrintObjValue(ctx,ob3,op.var3)
 				out << ",i1 0)"
+				printDebugEnd()
+			case "llvm_store"
+				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
+
+				out << "	store "
+				ob2.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob2,op.var2)
+				out << " , "
+				ob1.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob1,op.var1)
+				printDebugEnd()
+			case "llvm_load"
+				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
+
+				assert(ob1 is MCConstValue)
+
+				out << "	%Var" << op.var1 << " = load "
+
+				ob1.GetType().PrintType(ctx)
+				out << " , "
+				ob2.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob2,op.var2)
 				printDebugEnd()
 			case void
 				printf("LLVM: unknown opcode %s at %i\n",op.opcode.ToCStr(),indx)

@@ -1,0 +1,157 @@
+
+PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
+{
+	@once RetConstFuncTableInit()
+
+	tbl := ref RetConstFuncTable
+
+	newObjs := List.{MCObject}
+	newCmds := List.{MCLine}
+
+	newCmds.Push(fnc.Lines[^])
+	newObjs.Push(fnc.Objects[^])
+
+	newFunc := fnc.CreateBaseFunc()
+
+	makeConst := (Type^ tp) ==> int
+	{
+		result = newObjs.Size()
+		newObjs.Emplace()
+		obj := ref newObjs[-1]
+		obj->SetType(MCConstValue)
+		obj&->{MCConstValue^}.GetValueType() = tp
+	}
+
+	vars := AVLMap.{int,int}
+
+	getVar := (int id) ==> int
+	{
+		return vars[id]?
+
+		tp := fnc.Objects[id].GetType()
+		tp = tp.GetPoint()
+
+		result = newObjs.Size()
+		newObjs.Emplace()
+		obj := ref newObjs[-1]
+		obj->SetType(MCVariable)
+		obj&->{MCVariable^}.GetValueType() = tp
+
+		vars[id] = result
+	}
+
+	for it , i : newObjs
+	{
+		if it is not MCReference
+			continue
+		
+		needCheck := false
+		for ln : newCmds
+		{
+			for j : 5
+				needCheck = needCheck or (ln.var1&[j] == i)
+			if needCheck
+				break
+		}
+		if not needCheck
+			continue
+
+		cnstId := newObjs.Size()
+		newObjs.Emplace()
+
+		newVar := ref newObjs[-1]&->{MCVariable^}^
+		newVar->SetType(MCVariable)
+
+		newVar.GetValueType() = it.GetType().GetPoint()
+
+		indx := 0
+
+		while indx < newCmds.Size()
+		{
+			op := ref newCmds[indx]
+
+			varUsed := false
+
+			for j : 5
+				varUsed = varUsed or (op.var1&[j] == i)
+
+			if varUsed
+			{
+
+				if op.opcode == "load_element" and op.var1 == i
+				{
+					tp := it.GetType()
+					tp = tp.GetPoint()
+					cnst := makeConst(tp)
+					vr := getVar(op.var1)
+
+
+					ln := MCLine("mov",vr,cnst)
+					newCmds.InsertAfter(indx,ln)
+					op.var1 = cnst
+
+					indx += 1
+				}else{
+					tp := fnc.Objects[op.var1].GetType()
+
+					if op.opcode == "load_element" and op.var2 == i {
+						cnst := makeConst(tp.GetPoint())
+						vr := getVar(op.var2)
+						newCmds.InsertAfter(indx - 1,MCLine("llvm_load",cnst,vr))
+						op.var2 = cnst
+					}
+
+					if tbl.Contain(op.opcode) and op.var1 == i {
+
+						cnstVal := makeConst(tp)
+						cnstSet := makeConst(tp.GetPoint())
+						vr := getVar(op.var1)
+
+						op.var1 = cnstVal
+
+						newCmds.InsertAfter(indx,MCLine("mov",cnstSet,vr))
+						newCmds.InsertAfter(indx+1,MCLine("mov",cnstVal,cnstSet))
+					}
+					if op.opcode == "get_pointer" and op.var2 == i {
+						op.opcode = "llvm_load"
+						op.var2 = getVar(op.var2)
+					}else if op.opcode == "mov" and op.var1 == i {
+
+						assert(fnc.Objects[op.var2].IsConstant)
+						tp := fnc.Objects[op.var1].GetType()
+
+						cnstVal := makeConst(tp)
+						cnstSet := makeConst(tp.GetPoint())
+						vr := getVar(op.var1)
+
+						newCmds.InsertAfter(indx - 1,MCLine("mov",cnstSet,vr))
+						op.opcode = "llvm_store"
+						op.var1 = cnstSet
+					}else{
+						for j : 1..5
+						{
+							if op.var1&[j] != i
+								continue
+							cnst2 := makeConst(tp.GetPoint())
+							cnst := makeConst(tp)
+							vr := getVar(op.var1&[j])
+							newCmds.InsertAfter(indx - 1,MCLine("llvm_load",cnst,cnst2))
+							newCmds.InsertAfter(indx - 1,MCLine("llvm_load",cnst2,vr))
+							op.var1&[j] = cnst
+						}
+
+					}
+					indx += 1
+				}
+
+			}else{
+				indx += 1
+			}
+		}
+	}
+
+	newFunc.Objects = newObjs.ToVector()
+	newFunc.Lines = newCmds.ToVector()
+
+	return newFunc
+}

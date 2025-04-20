@@ -20,16 +20,23 @@ main := !(char^[] args) -> int
 	main_c()
 }
 
-Func2 := !() -> int
+
+cc := class
 {
-	printf("yep\n")
-	return 77
+	x := int
+	y := int
 }
 
 main_c := !() -> void
 {
-	c := Func2()
-	printf("yop %i\n",c)
+	r := cc
+	r.x = 62
+	printf("test %i\n",r.x + 2)
+	//printf("test %i %p\n",r.x,r.x&)
+	//for i : 5
+	//{
+	//	printf("yep %i\n",i)
+	//}
 }
 
 //TODO lazy class and fake fields

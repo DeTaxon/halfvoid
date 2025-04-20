@@ -234,6 +234,33 @@ List := class.{@T} extend TArrayView.{T}
 			}
 		}
 	}
+	InsertAfter := !(int index,T value) -> void
+	{
+		if index < 0
+			PushFront(value)
+		if index >= Size() - 1
+			Push(value)
+
+		iter := start
+
+		for i : index
+			iter = iter.next
+
+		newNode := createNode()
+
+		newNode.data = value
+
+		newNode.next = iter.next
+		newNode.next?.prev = newNode
+		iter.next = newNode
+		newNode.prev = iter
+
+		if iter == end
+			end = newNode
+
+		itSize += 1
+		
+	}
 	DeleteAt := !(int index) -> bool
 	{
 		if index < 0

@@ -62,8 +62,18 @@ MCBaseOpcodes := enum extend u16
 	"debug_set_file",
 	"debug_set_line",
 
+
+	//DO NOT CREATE CODE WITH OPCODES BELOW!!!!
+	//opcodes below are backend specific
+
+	//BACKEND interpreter
 	//Optimizations
 	"load_element_opt_class_const"
+
+	//BACKEND llvm ir
+	"llvm_store", // var1^ = var2
+	"llvm_load"
+	//"llvm_copy_const" // var1 alias to var2
 }
 
 MCJumpIfConditions := enum extend u16

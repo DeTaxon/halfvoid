@@ -8,7 +8,9 @@ MCObject := class
 	Value := u64
 	Value2 := u64
 
-	MCObject() {}
+	"this" := !() -> void {
+
+	}
 
 	"=" := !(MCObject setValue) -> void
 	{

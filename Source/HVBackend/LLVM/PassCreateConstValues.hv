@@ -126,6 +126,7 @@ GenMCTable := !() -> void
 	tbl["jmp_if_bool"] = MCLine("noop",0,1)
 	tbl["label"] = MCLine("noop")
 
+	tbl["load_element"] = MCLine("noop",0,0,1,1,1)
 	tbl["get_pointer"] = MCLine("noop")
 
 	tbl["cast"] = MCLine("noop",0,1)
@@ -142,6 +143,9 @@ GenMCTable := !() -> void
 
 	tbl["debug_set_file"] = MCLine("noop")
 	tbl["debug_set_line"] = MCLine("noop")
+
+	tbl["llvm_store"] = MCLine("noop",0,1)
+	tbl["llvm_load"] = MCLine("noop")
 
 	for it : tbl
 	{
