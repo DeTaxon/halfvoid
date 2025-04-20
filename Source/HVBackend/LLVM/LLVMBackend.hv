@@ -20,9 +20,24 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	fnc = PassCreateConstValues(fnc)
 	//fnc.Print()
 
+
+	printDebugEnd := () ==> {
+		//TODO !dbg
+		out << "\n"
+	}
+
 	out << "define "
 	base.GetType()->{TypeFunc^}.ResultType.PrintType(ctx)
-	out << " @" << base.OutputName << "()\n"
+	out << " @" << base.OutputName << "("
+	for i : fnc.InputsIndxCount
+	{
+		if i != 0
+			out << ","
+		inx := fnc.InputsIndxStart + i
+		fnc.Objects[inx].GetType().PrintType(ctx)
+		out << " %Inp" << i
+	}
+	out << ")\n"
 	out << "{\n"
 
 	for var, i : fnc.Objects
@@ -33,15 +48,22 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		var.GetType().PrintType(ctx)
 		out << "\n"
 	}
+	for i : fnc.InputsIndxCount
+	{
+		inx := fnc.InputsIndxStart + i
+
+		tp := fnc.Objects[inx].GetType()
+		out << "	store "
+		tp.PrintType(ctx)
+		out << " %Inp" << i << " , "
+		tp.PrintType(ctx)
+		out << "* %Var" << inx
+		printDebugEnd()
+	}
 
 	tmpLabelIter := 0
 
 	indx := 0
-
-	printDebugEnd := () ==> {
-		//TODO !dbg
-		out << "\n"
-	}
 
 	while indx < fnc.Lines.Size()
 	{

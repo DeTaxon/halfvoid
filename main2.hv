@@ -27,11 +27,16 @@ cc := class
 	y := int
 }
 
+c2 := !(int x) -> int
+{
+	return x*13
+}
 main_c := !() -> void
 {
-	r := cc
-	r.x = 62
-	printf("test %i\n",r.x + 2)
+	printf("hey %i\n",c2(12))
+	//r := cc
+	//r.x = 62
+	//printf("test %i\n",r.x + 2)
 	//printf("test %i %p\n",r.x,r.x&)
 	//for i : 5
 	//{
