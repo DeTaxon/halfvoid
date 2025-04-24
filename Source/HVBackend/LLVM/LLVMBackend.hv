@@ -11,23 +11,45 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	fnc.Print()
+	needPrint := base.GetName() == "main_c"
+	//needPrint = true
+
+	if needPrint fnc.Print()
 	fnc = PassForceReturnConstValues(fnc)
 	fnc = PassRemoveReferences(fnc)
-	fnc.Print()
+	if needPrint fnc.Print()
 	fnc = PassForceReturnConstValues(fnc)
-	//fnc.Print()
+	if needPrint fnc.Print()
 	fnc = PassCreateConstValues(fnc)
-	//fnc.Print()
+	if needPrint fnc.Print()
+	fnc = PassAddingCastForPtrMove(fnc)
+
+	fType2 := NormalizeFuncType(base.GetType()->{TypeFunc^})
+	rTyp := fType2.ResultType
+
+	currentDbgFileId := int
+	currentDbgBlockId := int
+
+	dbgIsSet := false
+	currentDbgId := int
+
+	fncId := GetNewId()
 
 
 	printDebugEnd := () ==> {
-		//TODO !dbg
+		if dbgIsSet
+			out << ", !dbg !" << currentDbgId
 		out << "\n"
 	}
+	
+	dbgList := AVLMap.{int,Tuple.{int,int}}
+	dbgFiles := AVLMap.{Str,int}
+	dbgBlocks := AVLMap.{int,int}
 
 	out << "define "
-	base.GetType()->{TypeFunc^}.ResultType.PrintType(ctx)
+	rTyp.PrintType(ctx)
+	if fType2.ResultRef
+		out << "*"
 	out << " @" << base.OutputName << "("
 	for i : fnc.InputsIndxCount
 	{
@@ -37,7 +59,12 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		fnc.Objects[inx].GetType().PrintType(ctx)
 		out << " %Inp" << i
 	}
-	out << ")\n"
+	out << ")"
+	if DebugMode
+	{
+		out << " !dbg !" << fncId
+	}
+	out << "\n"
 	out << "{\n"
 
 	for var, i : fnc.Objects
@@ -75,12 +102,24 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 			fObj := fnc.Objects[op.var2]
 
-			assert(fObj is MCConstFunction)
 
-			//TODO function pointers
+			fncType := TypeFunc^
 
-			fncB := fObj&->{MCConstFunction^}.GetValue()
+			fncB := BoxFunc^
 
+			if fObj is MCConstFunction
+			{
+				fncB = fObj&->{MCConstFunction^}.GetValue()
+				fncType = fObj&->{MCConstFunction^}.GetValue().GetType()->{TypeFunc^}
+			}else if fObj is MCConstValue{
+				fncType = fObj.GetType().Base->{TypeFunc^}
+
+				assert(fncType != null and fncType is TypeFunc)
+			}else{
+				assert(false)
+			}
+
+			callType := NormalizeFuncType(fncType)
 
 			out << "	" 
 			if op.var1 != 0
@@ -90,9 +129,21 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << " = "
 			}
 			out << "call "
-			fncB.PrintResultType(ctx)
+			if callType.IsVargs
+				callType.PrintType(ctx)
+			else {
+				callType.ResultType.PrintType(ctx)
+				if callType.ResultRef
+					out << "*"
+			}
+
 			out << " "
-			fncB.PrintName(ctx)
+
+			if fncB != null {
+				fncB.PrintName(ctx)
+			}else{
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var2],op.var2)
+			}
 
 			out << "("
 
@@ -108,15 +159,37 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				needComma = true
 				indx += 1
 			}
-			out << ")\n"
+			out << ")"
+			printDebugEnd()
 			indx += 1
 
 		}else
 		{
 			switch op.opcode
 			{
-			case "debug_set_file" //TODO
-			case "debug_set_line" //TODO
+			case "debug_set_file"
+				currentDbgFileName := fnc.Objects[op.var1]&->{MCConstString^}.GetValue().Str()
+
+				if not dbgFiles.Contain(currentDbgFileName) {
+					dbgFiles[currentDbgFileName] = GetNewId()
+				}
+				currentDbgFileId = dbgFiles[currentDbgFileName]
+
+				blockId := GetNewId()
+
+				dbgBlocks[blockId] = currentDbgFileId
+				currentDbgBlockId = blockId
+			case "debug_set_line"
+				dbgIsSet = true
+
+				ln := fnc.Objects[op.var1]&->{MCConstInteger^}.GetValue()
+
+				itId := GetNewId() //TODO ignore if file is not set
+
+				dbgList[itId] = !{currentDbgBlockId,ln}
+
+				currentDbgId = itId
+				
 			case "jmp"
 				out << "	br label %Label" << op.var1 << "\n"
 			case "jmp_if_bool"
@@ -141,12 +214,6 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					
 					if resType.GetSize() == inpType.GetSize() {
 						out << "bitcast "
-						inpType.GetType().PrintType(ctx)
-						out << " "
-						LLVMPrintObjValue(ctx,ob2,op.var2)
-						out << " to "
-						ob2.GetType().PrintType(ctx)
-						printDebugEnd()
 					}else{
 						if resType.GetSize() > inpType.GetSize() {
 							if IsUInt(inpType) {
@@ -166,7 +233,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					ob1.GetType().PrintType(ctx)
 					printDebugEnd()
 				}else if resType is in TypePoint and inpType is in TypePoint{
-					out << "	%Var" << op.var1 << " = bitcast ptr "
+					out << "	%Var" << op.var1 << " = bitcast "
+					ob2.GetType().PrintType(ctx)
+					out << " "
 					LLVMPrintObjValue(ctx,ob2,op.var2)
 					out << " to "
 					ob1.GetType().PrintType(ctx)
@@ -187,9 +256,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				if ob1 is MCVariable or ob1 is MCConstValue
 				{
 					out << "	%Var" << op.var1 << " = getelementptr "
-					res.GetType().Base.PrintType(ctx)
+					ob1.GetType().PrintType(ctx)
 					out << " , "
-					res.GetType().PrintType(ctx)
+					ob1.GetType().GetPoint().PrintType(ctx)
 					out << " "
 					LLVMPrintObjValue(ctx,ob1,v1)
 					out << " , "
@@ -258,9 +327,21 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			case "get_pointer"
 				ob1 := ref fnc.Objects[op.var1]
 				ob2 := ref fnc.Objects[op.var2]
-				if ob1 is MCConstValue and ob2 is MCVariable
+				if ob1 is MCConstValue and (ob2 is MCVariable or ob2 is MCGlobalVariable)
 				{
-					out << "	%Var" << op.var1 << " = bitcast ptr %Var" << op.var2 << " to "
+					out << "	%Var" << op.var1 << " = bitcast "
+					ob2.GetType().PrintType(ctx)
+					out << "* "
+					LLVMPrintObjValue(ctx,ob2,op.var2)
+					out << " to "
+					ob1.GetType().PrintType(ctx)
+					printDebugEnd()
+				}else if ob1 is MCConstValue and ob2 is MCConstFunction{
+					out << "	%Var" << op.var1 << " = bitcast "
+					ob2.GetType().PrintType(ctx)
+					out << "* "
+					ob2&->{MCConstFunction^}.GetValue().PrintName(ctx)
+					out << " to "
 					ob1.GetType().PrintType(ctx)
 					printDebugEnd()
 				}else{
@@ -271,8 +352,6 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			case in !["add","sub","mul","div","mod"]
 				ob2 := ref fnc.Objects[op.var2]
 				ob3 := ref fnc.Objects[op.var3]
-
-				printf("wut %s\n",ob2.GetType().GetBADStr().Str())
 
 				out << "	%Var" << op.var1 << " = "
 				switch op.opcode
@@ -311,7 +390,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				op1 := ref fnc.Objects[op.var1]
 				op2 := ref fnc.Objects[op.var2]
 
-				if op1 is MCVariable and op2.IsConstant
+				if IsObjectVariable(op1) and op2.IsConstant
 				{
 					out << "	store "
 					op2.GetType().PrintType(ctx)
@@ -319,7 +398,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					LLVMPrintObjValue(ctx,op2,op.var2)
 					out << " ,"
 					op1.GetType().PrintType(ctx)
-					out << "* %Var" << op.var1
+					out << "* "
+					LLVMPrintObjValue(ctx,op1,op.var1)
 					printDebugEnd()
 				}else if op1 is MCVariable and op2 is MCConstValue {
 					out << "	store "
@@ -328,22 +408,57 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					op1&->{MCVariable^}.GetType().PrintType(ctx)
 					out << "* %Var" << op.var1
 					printDebugEnd()
-				}else if op1 is MCConstValue and op2 is MCVariable {
+				}else if op1 is MCConstValue and IsObjectVariable(op2) {
 					out << "	%Var" << op.var1 << " = load "
 					op2.GetType().PrintType(ctx)
 					out << ","
 					op2.GetType().PrintType(ctx)
-					out << "* %Var" << op.var2
+					out << "* "
+					LLVMPrintObjValue(ctx,op2,op.var2)
 					printDebugEnd()
 				}else{
 					printf("LLVM: unknown move type at %i\n",indx)
 					assert(false)
 				}
+			case "max" //TODO min
+				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
+				ob3 := ref fnc.Objects[op.var3]
+
+				tmpId := GetNewId()
+
+				out << "	%Tmp" << tmpId << " = "
+
+				if IsInt(ob2.GetType()) {
+					out << "icmp sgt" //TODO ugt
+				}else if IsFloat(ob2.GetType()) {
+					out << "fcmp ugt"
+				}else {
+					assert(false)
+				}
+
+				out << " "
+				ob2.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob2,op.var2)
+				out << " , "
+				LLVMPrintObjValue(ctx,ob3,op.var3)
+				printDebugEnd()
+
+				out << "	%Var" << op.var1 << " = select i1 %Tmp" << tmpId
+				out << " "
+				ob2.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob2,op.var2)
+				out << " , "
+				LLVMPrintObjValue(ctx,ob3,op.var3)
+				printDebugEnd()
+				
 			case "memset"
 				ob1 := ref fnc.Objects[op.var1]
 				ob2 := ref fnc.Objects[op.var2]
 				ob3 := ref fnc.Objects[op.var3]
-				out << "	call void @llvm.memset.inline.p0.p0i8.i32(ptr "
+				out << "	call void @llvm.memset.inline.p0.p0i8.i32(i8* "
 				LLVMPrintObjValue(ctx,ob1,op.var1)
 				out << ",i8 "
 				LLVMPrintObjValue(ctx,ob2,op.var2)
@@ -361,6 +476,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				LLVMPrintObjValue(ctx,ob2,op.var2)
 				out << " , "
 				ob1.GetType().PrintType(ctx)
+				if ob1 is MCVariable
+					out << "*"
 				out << " "
 				LLVMPrintObjValue(ctx,ob1,op.var1)
 				printDebugEnd()
@@ -375,9 +492,45 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				ob1.GetType().PrintType(ctx)
 				out << " , "
 				ob2.GetType().PrintType(ctx)
+				if ob2 is MCVariable
+					out << "*"
 				out << " "
 				LLVMPrintObjValue(ctx,ob2,op.var2)
 				printDebugEnd()
+			case in !["llvm_getelementptr","llvm_getelementptr0"]
+				v1 := op.var2
+				v2 := op.var3
+				res := ref fnc.Objects[op.var1]
+				ob1 := ref fnc.Objects[v1]
+				ob2 := ref fnc.Objects[v2]
+
+				assert(res is MCConstValue)
+
+				if ob1 is MCVariable or ob1 is MCConstValue
+				{
+					if ob1.GetType().Base == null
+						printf("broken %i\n",indx)
+					out << "	%Var" << op.var1 << " = getelementptr "
+					ob1.GetType().Base.PrintType(ctx)
+					out << " , "
+					ob1.GetType().PrintType(ctx)
+					out << " "
+					LLVMPrintObjValue(ctx,ob1,v1)
+
+					if op.opcode == "llvm_getelementptr0"
+						out << ", i32 0 , "
+					else 
+						out << " , "
+
+					ob2.GetType().PrintType(ctx)
+					out << " "
+					LLVMPrintObjValue(ctx,ob2,v2)
+					printDebugEnd()
+
+				}else {
+					printf("LLVM: unknown llvm_getelementptr at %i\n",indx)
+					assert(false)
+				}
 			case void
 				printf("LLVM: unknown opcode %s at %i\n",op.opcode.ToCStr(),indx)
 				assert(false)
@@ -386,8 +539,6 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		}
 	}
 
-	fType2 := NormalizeFuncType(base.GetType()->{TypeFunc^})
-	rTyp := fType2.ResultType
 
 	if rTyp == GTypeVoid {
 		out << "	ret void"
@@ -395,19 +546,64 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	}else {
 		out << "	%ResultValue = load "
 		rTyp.PrintType(ctx)
+		if fType2.ResultRef
+			out << "*"
 		out << " , "
 		rTyp.PrintType(ctx)
+		if fType2.ResultRef
+			out << "*"
 		out << "* "
 		LLVMPrintObjValue(ctx,fnc.Objects[fnc.ResultIndex],fnc.ResultIndex)
 		printDebugEnd()
 
 		out << "	ret "
 		rTyp.PrintType(ctx)
-		out << "%ResultValue"
+		if fType2.ResultRef
+			out << "*"
+		out << " %ResultValue"
 		printDebugEnd()
 	}
 
 	out << "}\n"
+
+	flId := base.bdy.Line.File.fileId
+
+	out << "!" << fncId << " = distinct !DISubprogram(name:\""
+	base.PrintName(ctx)
+	out << "\","
+	out << "linkageName:\""
+	base.PrintName(ctx)
+	out << "\","
+	out << "scope: !" << flId << " , file: !" << flId 
+	out << ",type: !" << base.GetType().MetaId
+	if base.bdy.Line != null
+	{
+		out << ", line:" << base.bdy.Line.Line
+		out << ", scopeLine:" << base.bdy.Line.Line
+	}
+	out << ", unit: !" << cuId
+	out << ", flags: DIFlagPrototyped"
+	out << ", spFlags: DISPFlagDefinition"
+	//if tmplId != -1
+	//	f << ", templateParams:!"<<tmplId
+	out << ")\n"
+
+	for fileId, pth : dbgFiles
+	{
+		out << "!" << fileId  << " = !DIFile(filename: \"" 
+		out << pth << "\", directory: \""
+		out <<  "/" <<"\")\n"
+	}
+	for it, ind : dbgBlocks
+	{
+		out << "!" << ind << " = !DILexicalBlock(scope: !" 
+		out << fncId << ", file: !" << flId
+		out << ")\n"
+	}
+	for it, ind : dbgList
+	{
+		out << "!" << ind  << " = !DILocation(line:" << it.1 << ",column:1, scope:!" << it.0 << ")\n"
+	}
 }
 
 LLVMPrintObjValue := !(LLVMWriteContext^ ctx,MCObject obj, int id) -> void
@@ -418,6 +614,8 @@ LLVMPrintObjValue := !(LLVMWriteContext^ ctx,MCObject obj, int id) -> void
 	{
 	case MCVariable
 			out << "%Var" << id
+	case MCGlobalVariable
+			obj.GetValueObject().PrintOutputName(ctx)
 	case MCConstValue
 			out << "%Var" << id
 	case MCConstString

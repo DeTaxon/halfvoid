@@ -16,15 +16,17 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 	toConstVar := (MCObject obj) ==> int
 	{
 		result = newObjs.Size()
-		newObjs.Push(obj)
+		newObjs.Emplace()
 		newObjs[-1]->SetType(MCConstValue)
+		newObjs[-1]&->{MCConstValue^}.GetValueType() = obj.GetType()
 	}
 	makeConstVar := (int id) ==> int
 	{
 		obj := ref fnc.Objects[id]
 		result = newObjs.Size()
-		newObjs.Push(obj)
+		newObjs.Emplace()
 		newObjs[-1]->SetType(MCConstValue)
+		newObjs[-1]&->{MCConstValue^}.GetValueType() = obj.GetType()
 		newCmds.Push(MCLine("mov",result,id))
 	}
 
@@ -49,9 +51,16 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			}
 			i += 1
 
-		case "call_start" // edge case, function pointers
+		case "call_start"
 			stLine := it
 			i += 1
+
+			if fnc.Objects[stLine.var2] is MCVariable
+			{
+				cnstId := makeConstVar(stLine.var2)
+				newCmds.Push(MCLine("mov",cnstId,stLine.var2))
+				stLine.var2 = cnstId
+			}
 
 			varConsts := HybridQueue.{int,16}
 			while fnc.Lines[i].opcode != "call_end"
@@ -60,7 +69,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 				assert(vr.opcode == "load_var")
 
 				obj := ref fnc.Objects[vr.var1]
-				if obj is MCVariable
+				if IsObjectVariable(obj)
 				{
 					cnstId := toConstVar(obj)
 					varConsts.Push(cnstId)
@@ -88,7 +97,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 					for i : 5
 					{
 						ob := ref fnc.Objects[it.var1&[i]]
-						if inf.var1&[i] != 0 and ob is MCVariable
+						if inf.var1&[i] != 0 and IsObjectVariable(ob)
 						{
 							vars[i] = makeConstVar(it.var1&[i])
 						}else{
@@ -126,7 +135,7 @@ GenMCTable := !() -> void
 	tbl["jmp_if_bool"] = MCLine("noop",0,1)
 	tbl["label"] = MCLine("noop")
 
-	tbl["load_element"] = MCLine("noop",0,0,1,1,1)
+	tbl["load_element"] = MCLine("noop",0,1,1,1,1)
 	tbl["get_pointer"] = MCLine("noop")
 
 	tbl["cast"] = MCLine("noop",0,1)
@@ -141,11 +150,17 @@ GenMCTable := !() -> void
 
 	tbl["memset"] = MCLine("noop",1,1,1)
 
+	tbl["max"] = MCLine("noop",0,1,1)
+	tbl["min"] = MCLine("noop",0,1,1)
+
+
 	tbl["debug_set_file"] = MCLine("noop")
 	tbl["debug_set_line"] = MCLine("noop")
 
 	tbl["llvm_store"] = MCLine("noop",0,1)
 	tbl["llvm_load"] = MCLine("noop")
+	tbl["llvm_getelementptr"] = MCLine("noop",0,1,1,1,1)
+	tbl["llvm_getelementptr0"] = MCLine("noop",0,1,1,1,1)
 
 	for it : tbl
 	{

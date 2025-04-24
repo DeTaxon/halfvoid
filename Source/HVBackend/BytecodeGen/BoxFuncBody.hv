@@ -54,9 +54,12 @@ AppendClass BoxFuncBody
 		Params[^].WriteMC(ctx)
 
 		fileObj := GetFileScope()
-		if fileObj != null
+		if fileObj != null and fileObj.file != null
 		{
-			HVB_ins_debug_set_file(ctx,fileObj.fileName.GetString().Str())
+			pth := fileObj.file.GetPath()
+			if fsIsExist(pth)
+				pth = fsGetAbsolutePath(pth).Get()
+			HVB_ins_debug_set_file(ctx,pth)
 			HVB_ins_debug_set_line(ctx,bdy?.Line?.Line)
 		}
 

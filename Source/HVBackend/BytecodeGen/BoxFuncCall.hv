@@ -8,8 +8,6 @@ AppendClass BoxFuncCall
 		}else{
 			WritePreCallMC(ctx)
 
-			fncId := GetFuncIdMC(ctx)
-
 			thisIndexes := HybridQueue.{int,16}
 
 			fType := GetFuncTypeMC()->{TypeFunc^}
@@ -57,6 +55,40 @@ AppendClass BoxFuncCall
 					HVB_ins_move(ctx,varId,subObj.CreatedId)
 					thisIndexes.Push(varId)
 				}
+			}
+
+			fncId := int 
+
+			if callObj is not BuildInVirtualCall
+			{
+				fncId = GetFuncIdMC(ctx)
+			}else{
+				vCall := callObj->{BuildInVirtualCall^}
+
+				funcType := vCall.wrappedFunc.GetType()->{TypeFunc^}
+				normFuncTypePtr := NormalizeType(funcType.GetPoint())
+
+				clsType := downs[0].GetType()->{TypeClass^}
+				vTableType := clsType.ToClass->{BoxClassBody^}.VTableType.ItType
+
+				assert(clsType is TypeClass)
+
+				baseRef := ctx.CreateReference(downs[0].GetType())
+				vTablePtrId := ctx.CreateReference(vTableType.GetPoint())
+				vTableId := ctx.CreateReference(vTableType)
+				fncPtr := ctx.CreateReference(normFuncTypePtr)
+				fncId = fncPtr
+				
+				zero := ctx.AddInteger(0)
+				indx := ctx.AddInteger(vCall.funcIndex)
+
+				assert(thisIndexes.Size() >= 1)
+
+				HVB_ins_load_element(ctx,baseRef,thisIndexes[0],zero)
+				HVB_ins_load_element(ctx,vTablePtrId,baseRef,zero)
+				HVB_ins_load_element(ctx,vTableId,vTablePtrId,zero)
+				HVB_ins_load_element(ctx,fncPtr,vTableId,indx)
+
 			}
 
 			//returnByInput := false
@@ -109,6 +141,14 @@ AppendClass BoxFuncCall
 	GetFuncTypeMC := virtual !() -> TypeFunc^
 	{
 		return callObj.GetType()->{TypeFunc^}
+	}
+}
+
+AppendClass BuildInVirtualCall
+{
+	GetFuncIdMC := virtual !(MCBuildContext^ ctx,int[] indx) -> int
+	{
+		return 0
 	}
 }
 AppendClass BoxFuncPointerCall

@@ -20,28 +20,37 @@ main := !(char^[] args) -> int
 	main_c()
 }
 
+//"for" := !(int this) -> RangeIterator
+//{
+//	result.end = this
+//}
+//
+//RangeIterator := class //WARNING end value not included
+//{
+//	value := int
+//	end := int
+//	"()" := !() -> int
+//	{
+//		printf("hoy %p\n",this&)
+//		result = value
+//		value += 1
+//	}
+//	IsFinished := !() -> bool
+//	{
+//		printf("hey %p %i %i\n",this&,value,end)
+//		result = value > end
+//		printf("hey2 %p\n",this&)
+//	}
+//}
+//
 
-cc := class
-{
-	x := int
-	y := int
-}
-
-c2 := !(int x) -> int
-{
-	return x*13
-}
 main_c := !() -> void
 {
-	printf("hey %i\n",c2(12))
-	//r := cc
-	//r.x = 62
-	//printf("test %i\n",r.x + 2)
-	//printf("test %i %p\n",r.x,r.x&)
-	//for i : 5
-	//{
-	//	printf("yep %i\n",i)
-	//}
+	c := () ==> {
+		printf("yep\n")
+	}
+	c()
+	c()
 }
 
 //TODO lazy class and fake fields
@@ -49,6 +58,8 @@ main_c := !() -> void
 //TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
 //TODO allow !(ref int x) , in functions and function types, lambdas
 
+
+//TODO switch on enum compiles even if one of the lements does not exist
 
 
 //ThisIsError := !() -> void

@@ -1,0 +1,37 @@
+
+LLVMPRintPrepareConst := !(LLVMWriteContext^ ctx,BuildInVirtualCall^ fnc , int resId) -> void
+{
+	out := ref ctx.writeStream^
+
+	out << "%VTableIndex" << resId << " = getelementptr "
+	clsType.PrintType(ctx)
+	out << " , "
+	clsType.PrintType(ctx)
+	out << "* "
+	thisItem.PrintPointUse(ctx)
+	out << " , i32 0, i32 0"
+	out << "\n"
+
+	out << "%VTable" << resId << " = load "
+	vTableType.PrintType(ctx)
+	out << "* , "
+	vTableType.PrintType(ctx)
+	out << "** %VTableIndex" << resId
+	out << "\n"
+
+	out << "%FuncIndex" << resId << " = getelementptr "
+	vTableType.PrintType(ctx)
+	out << " , "
+	vTableType.PrintType(ctx)
+	out << "* %VTable" << resId <<  ", i32 0, i32 " << funcIndex
+	if DebugMode
+		out << " , !dbg !" << GDebugLineCallId
+	out << "\n
+
+	out << "%FuncPtr" << resId << " = load "
+	normFuncTypePtr.PrintType(ctx)
+	out << " , "
+	normFuncTypePtr.PrintType(ctx)
+	out << "* %FuncIndex" << resId
+	out << "\n"
+}

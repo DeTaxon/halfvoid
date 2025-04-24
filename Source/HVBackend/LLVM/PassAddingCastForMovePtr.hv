@@ -1,0 +1,50 @@
+
+PassAddingCastForPtrMove := !(MCFunction^ fnc) ->MCFunction^
+{
+	newObjs := List.{MCObject}
+	newCmds := List.{MCLine}
+
+	newObjs.Push(fnc.Objects[^])
+
+	makeConst := (Type^ tp) ==> int
+	{
+		result = newObjs.Size()
+		newObjs.Emplace()
+		obj := ref newObjs[-1]
+		obj->SetType(MCConstValue)
+		obj&->{MCConstValue^}.GetValueType() = tp
+	}
+
+
+	for it : fnc.Lines
+	{
+		if it.opcode != "mov" {
+			newCmds.Push(it)
+			continue
+		}
+
+		ob1 := ref fnc.Objects[it.var1]
+		t1 := ob1.GetType()
+		ob2 := ref fnc.Objects[it.var2]
+		t2 := ob2.GetType()
+
+		if ob1 is MCVariable and ob2 is MCConstValue and t1 != t2
+			and t1 is in TypePoint and t2 is in TypePoint {
+
+			cnst := makeConst(t1)
+			newCmds.Push(MCLine("cast",cnst,it.var2))
+			newCmds.Push(MCLine("llvm_store",it.var1,cnst))
+		}else{
+
+			newCmds.Push(it)
+		} 
+	}
+
+
+	newFunc := fnc.CreateBaseFunc() 
+
+	newFunc.Objects = newObjs.ToVector()
+	newFunc.Lines = newCmds.ToVector()
+
+	return newFunc
+}
