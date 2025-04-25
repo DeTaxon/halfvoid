@@ -248,5 +248,33 @@ AppendClass BuiltInFloatSqrt
 
 		result.CreatedId = resVar
 	}
+}
 
+AppendClass BuiltInInterlockOper
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		var1 := indexes[0].WriteMC(ctx)
+		var2 := indexes[1].WriteMC(ctx)
+
+		rType := GetType()->{TypeFunc^}.ResultType
+
+		resInd := ctx.CreateVar(rType)
+		tmpId := ctx.CreateVar(rType.GetPoint())
+
+		HVB_ins_get_pointer(ctx,tmpId,var1.CreatedId)
+
+		result.CreatedId = resInd
+
+		switch llvm
+		{
+		case "add"
+			ctx.lines.Push(MCLine("atomic_add",resInd,tmpId,var2.CreatedId))
+		case "sub"
+			ctx.lines.Push(MCLine("atomic_sub",resInd,tmpId,var2.CreatedId))
+		case "xchg"
+			ctx.lines.Push(MCLine("atomic_xchg",resInd,tmpId,var2.CreatedId))
+		}
+	}
 }

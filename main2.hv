@@ -20,6 +20,9 @@ main := !(char^[] args) -> int
 	main_c()
 }
 
+//TODO interlock add,xch for interpreter backend
+//TODO atomic add,xchg for float,unsginder int
+
 //"for" := !(int this) -> RangeIterator
 //{
 //	result.end = this

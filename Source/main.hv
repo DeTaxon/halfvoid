@@ -155,7 +155,7 @@ main := !(char^[] args) -> int
 		{
 			case "-test"
 				GTestGen = true
-				mainFuncName = "main_c"
+				//mainFuncName = "main_c"
 			case "-cache"
 				i += 1
 				OpenCacheFile(args[i])

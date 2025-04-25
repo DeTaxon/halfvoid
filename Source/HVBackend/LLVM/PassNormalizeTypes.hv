@@ -1,0 +1,24 @@
+
+PassNormalizeTypes := !(MCFunction^ fnc) ->MCFunction^
+{
+	newObjs := List.{MCObject}
+	newCmds := List.{MCLine}
+
+	newObjs.Push(fnc.Objects[^])
+	newCmds.Push(fnc.Lines[^])
+
+	for it : newObjs
+	{
+		if it is not MCVariable
+			continue
+		vr := ref it&->{MCVariable^}^
+		vr.GetValueType() = NormalizeType(vr.GetValueType())
+	}
+
+	newFunc := fnc.CreateBaseFunc() 
+
+	newFunc.Objects = newObjs.ToVector()
+	newFunc.Lines = newCmds.ToVector()
+
+	return newFunc
+}

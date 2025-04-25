@@ -4,7 +4,7 @@ InterpPassPrepare := !(MCFunction^ optFunction) -> MCFunction^
 	result = optFunction
 	
 	result = InterpPassReplaceCoreFunction(result)
-	result = InterpPassPrecomputeLoadElement(result)
+	//result = InterpPassPrecomputeLoadElement(result)
 }
 
 
@@ -31,6 +31,7 @@ InterpPassPrecomputeLoadElement := !(MCFunction^ optFunction) -> MCFunction^
 		{
 			asClass := varType->{TypeClass^}.ToClass
 			fld := asClass.GetFieldByIndexRaw(indVal)
+			assert(fld != null)
 			it.ConstValue = fld.MemOffset
 			it.opcode = "load_element_opt_class_const"
 		}else if IsVecType(varType) or varType == GTypeQuantf {

@@ -19,7 +19,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 		newObjs.Emplace()
 		obj := ref newObjs[-1]
 		obj->SetType(MCConstValue)
-		obj&->{MCConstValue^}.GetValueType() = tp
+		obj&->{MCConstValue^}.GetValueType() = NormalizeType(tp)
 	}
 
 	vars := AVLMap.{int,int}
@@ -35,7 +35,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 		newObjs.Emplace()
 		obj := ref newObjs[-1]
 		obj->SetType(MCVariable)
-		obj&->{MCVariable^}.GetValueType() = tp
+		obj&->{MCVariable^}.GetValueType() = NormalizeType(tp)
 
 		vars[id] = result
 	}

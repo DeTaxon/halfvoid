@@ -99,6 +99,7 @@ MCConstFunction := class extend MCObject
 	GetValue := !() -> ref BoxFunc^ { return Value&->{BoxFunc^^}^}
 
 	PrintObject := virtual !() -> void { printf("Function %s",GetValue().GetName()) }
+	GetType := virtual !() -> Type^ { return GetValue().GetType() }
 }
 MCConstString :=  class extend MCObject
 {

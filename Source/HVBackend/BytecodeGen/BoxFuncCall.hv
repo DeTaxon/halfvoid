@@ -68,12 +68,34 @@ AppendClass BoxFuncCall
 				funcType := vCall.wrappedFunc.GetType()->{TypeFunc^}
 				normFuncTypePtr := NormalizeType(funcType.GetPoint())
 
-				clsType := downs[0].GetType()->{TypeClass^}
+				getIndx := 0
+
+				if funcType.ResultType != GTypeVoid and normFuncTypePtr.Base->{TypeFunc^}.ResultType == GTypeVoid {
+					getIndx = 1
+				}
+
+				dwnType := downs[getIndx].GetType()
+
+				clsType := dwnType->{TypeClass^}
+				if dwnType is not TypeClass
+					clsType = clsType.Base->{TypeClass^}
+				assert(clsType != null and clsType is TypeClass)
 				vTableType := clsType.ToClass->{BoxClassBody^}.VTableType.ItType
 
 				assert(clsType is TypeClass)
+				//if (vTableType->{TypeClass^}.ToClass.GetFieldByIndexRaw(vCall.funcIndex) == null) {
+				//	printf("why %s\n",clsType.GetBADStr().Str())
+				//	printf("WHY %i %i\n",vTableType->{TypeClass^}.ToClass.GetFieldsCount(),clsType->{TypeClass^}.ToClass.VTable.Size())
+				//	printf("WHY %i\n",vTableType->{TypeClass^}.ToClass.GetFieldByIndexRaw(vCall.funcIndex))
+				//	printf("WHY %s\n",vCall.wrappedFunc->{BoxFuncBody^}.GetName())
+				//	printf("WHY %s\n",downs[0].GetType().GetBADStr().Str())
+				//	printf("WHY %s\n",downs[1].GetType().GetBADStr().Str())
 
-				baseRef := ctx.CreateReference(downs[0].GetType())
+				//	assert(false)
+				//}
+
+			
+
 				vTablePtrId := ctx.CreateReference(vTableType.GetPoint())
 				vTableId := ctx.CreateReference(vTableType)
 				fncPtr := ctx.CreateReference(normFuncTypePtr)
@@ -84,7 +106,15 @@ AppendClass BoxFuncCall
 
 				assert(thisIndexes.Size() >= 1)
 
-				HVB_ins_load_element(ctx,baseRef,thisIndexes[0],zero)
+				baseRef := 0
+
+				if dwnType is TypeClass {
+					baseRef = ctx.CreateReference(downs[getIndx].GetType())
+					HVB_ins_load_element(ctx,baseRef,thisIndexes[getIndx],zero)
+				}else{
+					baseRef = thisIndexes[getIndx]
+				}
+
 				HVB_ins_load_element(ctx,vTablePtrId,baseRef,zero)
 				HVB_ins_load_element(ctx,vTableId,vTablePtrId,zero)
 				HVB_ins_load_element(ctx,fncPtr,vTableId,indx)

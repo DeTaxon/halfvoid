@@ -34,6 +34,10 @@ MCBaseOpcodes := enum extend u16
 	"div",
 	"mod",
 
+	"atomic_add",
+	"atomic_sub",
+	"atomic_xchg",
+
 	"call_start", // function opResult calling_convection
 	"load_var",
 	"call_end",

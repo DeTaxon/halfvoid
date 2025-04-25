@@ -112,25 +112,25 @@ List := class.{@T} extend TArrayView.{T}
 	}
 
 
-	createVector := virtual !(Vector.{T}^^ res,int nowSize) -> void
-	{
-		res^ = new Vector.{T}(nowSize)
-	}
+	//createVector := virtual !(Vector.{T}^^ res,int nowSize) -> void
+	//{
+	//	res^ = new Vector.{T}(nowSize)
+	//}
 	setFunc := virtual !(T^ lft,T^ right) -> void
 	{
 		lft^ = right^
 	}
 	ToVector := virtual !() -> Vector.{T}^
 	{
-		//nowSize := Size()
-		//result = new Vector.{T}(nowSize)
-		createVector(result&,Size())
+		nowSize := Size()
+		result = new Vector.{T}(nowSize)
+		//createVector(result&,Size())
 		ptrRes := result.GetPointer()
 		
 		for it,i : this
 		{
-			//result^[i] = it
-			setFunc(ptrRes[i]&,it&)
+			result^[i] = it
+			//setFunc(ptrRes[i]&,it&)
 		}
 	}
 	"in" := !(T itm) -> bool

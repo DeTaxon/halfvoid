@@ -45,6 +45,7 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 				cnstId := newObjs.Size()
 				newObjs.Push(fnc.Objects[it.var1])
 				newObjs[-1]->SetType(MCConstValue)
+				newObjs[-1]&->{MCConstValue^}.GetValueType() = fnc.Objects[it.var1].GetType()
 
 				newCmds.Push(it)
 				newCmds[-1].var1 = cnstId
@@ -112,6 +113,10 @@ RetConstFuncTableInit := !() -> void
 	tbl.Insert("mul")
 	tbl.Insert("div")
 	tbl.Insert("mod")
+
+	tbl.Insert("atomic_add")
+	tbl.Insert("atomic_sub")
+	tbl.Insert("atomic_xchg")
 
 	tbl.Insert("max")
 	tbl.Insert("min")

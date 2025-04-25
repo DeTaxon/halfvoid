@@ -1,0 +1,57 @@
+
+PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
+{
+	@once GenMCTable()
+	tbl := ref OpcodeMustConstTable
+
+
+	newObjs := List.{MCObject}
+	newCmds := List.{MCLine}
+
+	newObjs.Push(fnc.Objects[^])
+
+	makeConst := (Type^ tp) ==> int
+	{
+		result = newObjs.Size()
+		newObjs.Emplace()
+		obj := ref newObjs[-1]
+		obj->SetType(MCConstValue)
+		obj&->{MCConstValue^}.GetValueType() = NormalizeType(tp)
+	}
+
+	for it , i : fnc.Lines
+	{
+		if it.opcode != "cmp" or it.V3Cond() != "<=>"{
+			newCmds.Push(it)
+			continue
+		}
+
+		ob1 := fnc.Objects[it.var2]
+		ob2 := fnc.Objects[it.var4]
+
+		tp := ob1.GetType()
+
+		if IsInt(ob1.GetType()) {
+			newCmds.Push(MCLine("sub",it.var1,it.var2,it.var4))
+		}else if IsPointLikeType(tp){
+			c1 := makeConst(GTypeSizeT)
+			newCmds.Push(MCLine("cast",c1,it.var2))
+			c2 := makeConst(GTypeSizeT)
+			newCmds.Push(MCLine("cast",c2,it.var4))
+
+			resB := makeConst(GTypeSizeT)
+			newCmds.Push(MCLine("sub",resB,c1,c2))
+			newCmds.Push(MCLine("cast",it.var1,resB))
+		}else{
+
+			assert(false)
+		}
+	}
+
+	newFunc := fnc.CreateBaseFunc() 
+
+	newFunc.Objects = newObjs.ToVector()
+	newFunc.Lines = newCmds.ToVector()
+
+	return newFunc
+}

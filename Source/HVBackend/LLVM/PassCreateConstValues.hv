@@ -18,7 +18,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 		result = newObjs.Size()
 		newObjs.Emplace()
 		newObjs[-1]->SetType(MCConstValue)
-		newObjs[-1]&->{MCConstValue^}.GetValueType() = obj.GetType()
+		newObjs[-1]&->{MCConstValue^}.GetValueType() = NormalizeType(obj.GetType())
 	}
 	makeConstVar := (int id) ==> int
 	{
@@ -26,7 +26,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 		result = newObjs.Size()
 		newObjs.Emplace()
 		newObjs[-1]->SetType(MCConstValue)
-		newObjs[-1]&->{MCConstValue^}.GetValueType() = obj.GetType()
+		newObjs[-1]&->{MCConstValue^}.GetValueType() = NormalizeType(obj.GetType())
 		newCmds.Push(MCLine("mov",result,id))
 	}
 
@@ -41,7 +41,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			ob1 := ref fnc.Objects[it.var1]
 			ob2 := ref fnc.Objects[it.var2]
 
-			if ob1 is MCVariable and ob2 is MCVariable
+			if IsVarType(ob1) and IsVarType(ob2)
 			{
 				cnstId := toConstVar(ob2)
 				newCmds.Push(MCLine("mov",cnstId,it.var2))
@@ -55,7 +55,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			stLine := it
 			i += 1
 
-			if fnc.Objects[stLine.var2] is MCVariable
+			if IsVarType(fnc.Objects[stLine.var2])
 			{
 				cnstId := makeConstVar(stLine.var2)
 				newCmds.Push(MCLine("mov",cnstId,stLine.var2))
@@ -87,24 +87,43 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			if tbl.Contain(it.opcode)
 			{
 				inf := ref tbl[it.opcode]
+
+				thisLine := it
+
+				if (thisLine.opcode == "load_element" or thisLine.opcode == "llvm_getelementptr")
+					and IsVarType(fnc.Objects[thisLine.var2]) {
+
+					ob1 := ref fnc.Objects[thisLine.var2]
+
+					if ob1.GetType() is TypeClass {
+						cnst := toConstVar(ob1)
+						newCnst := ref newObjs[-1]&->{MCConstValue^}^
+						newCnst.GetValueType() = ob1.GetType().GetPoint()
+
+						newCmds.Push(MCLine("get_pointer",cnst,thisLine.var2))
+						thisLine.opcode = "llvm_getelementptr0"
+						thisLine.var2 = cnst
+					}
+				}
+
 				if inf.opcode == "noop"
 				{
-					newCmds.Push(it)
+					newCmds.Push(thisLine)
 				}else{
 					//TODO
 					
 					vars := int[5]
 					for i : 5
 					{
-						ob := ref fnc.Objects[it.var1&[i]]
+						ob := ref fnc.Objects[thisLine.var1&[i]]
 						if inf.var1&[i] != 0 and IsObjectVariable(ob)
 						{
-							vars[i] = makeConstVar(it.var1&[i])
+							vars[i] = makeConstVar(thisLine.var1&[i])
 						}else{
-							vars[i] = it.var1&[i]
+							vars[i] = thisLine.var1&[i]
 						}
 					}
-					newCmds.Push(MCLine(it.opcode,vars[0],vars[1],vars[2],vars[3],vars[4]))
+					newCmds.Push(MCLine(thisLine.opcode,vars[0],vars[1],vars[2],vars[3],vars[4]))
 				}
 			}else{
 				printf("LLVM there is no const use in table for opcode %s\n",it.opcode.ToCStr())
@@ -124,6 +143,15 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 
 OpcodeMustConstTable := AVLMap.{MCBaseOpcodes,MCLine}
 
+
+IsVarType := !(MCObject obj) -> bool
+{
+	if obj is MCVariable
+		return true
+	if obj is MCGlobalVariable
+		return true
+	return false
+}
 GenMCTable := !() -> void
 {
 	tbl := ref OpcodeMustConstTable
@@ -148,7 +176,12 @@ GenMCTable := !() -> void
 	tbl["div"] = MCLine("noop",0,1,1)
 	tbl["mod"] = MCLine("noop",0,1,1)
 
+	tbl["atomic_add"] = MCLine("noop",0,0,1)
+	tbl["atomic_sub"] = MCLine("noop",0,0,1)
+	tbl["atomic_xchg"] = MCLine("noop",0,0,1)
+
 	tbl["memset"] = MCLine("noop",1,1,1)
+	tbl["clean"] = MCLine("noop")
 
 	tbl["max"] = MCLine("noop",0,1,1)
 	tbl["min"] = MCLine("noop",0,1,1)
