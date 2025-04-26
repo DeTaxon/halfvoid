@@ -29,9 +29,21 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 			c2 := bCtx.CreateVar(GTypeSizeT)
 			newCmds.Push(MCLine("cast",c2,it.var4))
 
-			resB := bCtx.CreateVar(GTypeSizeT)
-			newCmds.Push(MCLine("sub",resB,c1,c2))
-			newCmds.Push(MCLine("cast",it.var1,resB))
+			resVal := bCtx.CreateVar(GTypeInt)
+			qLabel := bCtx.CreateLabel()
+
+			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(1))
+			res1 := HVB_ins_cmp_new(bCtx&,c1,">",c2)
+			HVB_ins_jump_if_bool(bCtx&,qLabel,res1)
+
+			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(-1))
+			res1 := HVB_ins_cmp_new(bCtx&,c1,"<",c2)
+			HVB_ins_jump_if_bool(bCtx&,qLabel,res1)
+
+			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(0))
+
+			HVB_ins_label(bCtx&,qLabel)
+			newCmds.Push(MCLine("cast",it.var1,resVal))
 		}else{
 
 			assert(false)

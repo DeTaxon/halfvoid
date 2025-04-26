@@ -13,7 +13,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	needPrint := base->{BoxFuncBody^}.OutputName == "EnterTaskThreadCycle"
 	//needPrint = true
-	//needPrint = false
+	needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
@@ -37,19 +37,45 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	dbgIsSet := false
 	currentDbgId := int
 
-	fncId := GetNewId()
-
-
-	printDebugEnd := () ==> {
-		if dbgIsSet
-			out << ", !dbg !" << currentDbgId
-		out << "\n"
-	}
-	
 	dbgList := AVLMap.{int,Tuple.{int,int}}
 	dbgFiles := AVLMap.{Str,int}
 	dbgBlocks := AVLMap.{int,int}
 
+
+	fncId := GetNewId()
+
+	haveDebugInfo := DebugMode
+
+	if base.bdy?.Line?.File != null {
+		ln := base.bdy.Line
+		currentDbgFileName := Str 
+		currentDbgFileName = "DummyFile"
+		currentDbgFileName = ln.File?.file?.GetPath() //TODO abs path
+
+		currentDbgFileId = GetNewId() 
+		dbgFiles[currentDbgFileName] = currentDbgFileId
+
+		blockId := GetNewId()
+
+		dbgBlocks[blockId] = currentDbgFileId
+		currentDbgBlockId = blockId
+
+		dbgIsSet = true
+
+		itId := GetNewId()
+
+		dbgList[itId] = !{currentDbgBlockId,ln.Line}
+
+		currentDbgId = itId
+	}
+
+	printDebugEnd := () ==> {
+		if dbgIsSet and haveDebugInfo
+			out << ", !dbg !" << currentDbgId
+		out << "\n"
+	}
+
+	
 	out << "define "
 	rTyp.PrintType(ctx)
 	if fType2.ResultRef
@@ -64,7 +90,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		out << " %Inp" << i
 	}
 	out << ")"
-	if DebugMode
+	if haveDebugInfo
 	{
 		out << " !dbg !" << fncId
 	}

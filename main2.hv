@@ -49,11 +49,7 @@ main := !(char^[] args) -> int
 
 main_c := !() -> void
 {
-	c := () ==> {
-		printf("yep\n")
-	}
-	c()
-	c()
+	printf("hello\n")
 }
 
 //TODO lazy class and fake fields
