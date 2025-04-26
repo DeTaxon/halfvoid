@@ -4,24 +4,14 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 	@once GenMCTable()
 	tbl := ref OpcodeMustConstTable
 
+	bCtx := MCBuildContext(fnc,true,false)
 
-	newObjs := List.{MCObject}
-	newCmds := List.{MCLine}
-
-	newObjs.Push(fnc.Objects[^])
-
-	makeConst := (Type^ tp) ==> int
-	{
-		result = newObjs.Size()
-		newObjs.Emplace()
-		obj := ref newObjs[-1]
-		obj->SetType(MCConstValue)
-		obj&->{MCConstValue^}.GetValueType() = NormalizeType(tp)
-	}
+	newObjs := ref bCtx.objects
+	newCmds := ref bCtx.lines
 
 	for it , i : fnc.Lines
 	{
-		if it.opcode != "cmp" or it.V3Cond() != "<=>"{
+		if it.opcode != "cmp" or it.V3Cond() != "<=>" {
 			newCmds.Push(it)
 			continue
 		}
@@ -34,12 +24,12 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 		if IsInt(ob1.GetType()) {
 			newCmds.Push(MCLine("sub",it.var1,it.var2,it.var4))
 		}else if IsPointLikeType(tp){
-			c1 := makeConst(GTypeSizeT)
+			c1 := bCtx.CreateVar(GTypeSizeT)
 			newCmds.Push(MCLine("cast",c1,it.var2))
-			c2 := makeConst(GTypeSizeT)
+			c2 := bCtx.CreateVar(GTypeSizeT)
 			newCmds.Push(MCLine("cast",c2,it.var4))
 
-			resB := makeConst(GTypeSizeT)
+			resB := bCtx.CreateVar(GTypeSizeT)
 			newCmds.Push(MCLine("sub",resB,c1,c2))
 			newCmds.Push(MCLine("cast",it.var1,resB))
 		}else{
@@ -48,10 +38,5 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 		}
 	}
 
-	newFunc := fnc.CreateBaseFunc() 
-
-	newFunc.Objects = newObjs.ToVector()
-	newFunc.Lines = newCmds.ToVector()
-
-	return newFunc
+	return bCtx.CreateMCFunction(false)
 }

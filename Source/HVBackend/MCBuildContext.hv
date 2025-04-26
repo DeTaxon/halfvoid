@@ -1,6 +1,5 @@
 MCBuildContext := class extend TGCObject
 {
-	codes := List.{MCLine}
 	objects := List.{MCObject}
 	lines := List.{MCLine}
 
@@ -10,11 +9,27 @@ MCBuildContext := class extend TGCObject
 	exitNodes := ContextExitNode
 	DeferObjects := HybridStack.{BoxExeObj^,20}
 
+	BaseFunction := BoxFuncBody^
+
 	ResultIndex := int
 	InputsIndxStart := int
 	InputsIndxCount := int
 
 	labels := AVLMap.{BoxLabel^,int}
+
+	this := !(MCFunction^ fnc, bool copyObjects, bool copyLines) -> void
+	{
+		BaseFunction = fnc.BaseFunction
+
+		ResultIndex = fnc.ResultIndex
+		InputsIndxStart = fnc.InputsIndxStart
+		InputsIndxCount = fnc.InputsIndxCount
+
+		if copyObjects
+			objects.Push(fnc.Objects[^])
+		if copyLines
+			lines.Push(fnc.Lines[^])
+	}
 
 	Init := !() -> void
 	{
@@ -172,18 +187,20 @@ MCBuildContext := class extend TGCObject
 		result = objects.Size()
 		objects.Push(setVal)
 	}
-	CreateMCFunction := !() -> MCFunction^
+	CreateMCFunction := !(bool computeStack = true) -> MCFunction^
 	{
-
 		result = new MCFunction
 
 		result.Objects = objects.ToVector()
 		result.Lines = lines.ToVector()
+
+		result.BaseFunction = BaseFunction
 		result.ResultIndex = this.ResultIndex
 		result.InputsIndxStart = this.InputsIndxStart
 		result.InputsIndxCount = this.InputsIndxCount
 
-		result.ComputeStackFrame()
+		if computeStack
+			result.ComputeStackFrame() //TODO remove it from here, it is called in ebery optiimzation
 	}
 	WriteExitPathsMC := !() -> void
 	{

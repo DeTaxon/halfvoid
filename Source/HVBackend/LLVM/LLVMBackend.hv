@@ -11,11 +11,12 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "CheckTimers"
+	needPrint := base->{BoxFuncBody^}.OutputName == "EnterTaskThreadCycle"
 	//needPrint = true
-	needPrint = false
+	//needPrint = false
 
 	if needPrint fnc.Print()
+	fnc = PassRemoveSpaceship(fnc)
 	//fnc = PassNormalizeTypes(fnc)
 	fnc = PassForceReturnConstValues(fnc)
 	fnc = PassRemoveReferences(fnc)
@@ -26,7 +27,6 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	if needPrint fnc.Print()
 	fnc = PassAddingCastForPtrMove(fnc)
 	if needPrint fnc.Print()
-	fnc = PassRemoveSpaceship(fnc)
 
 	fType2 := NormalizeFuncType(base.GetType()->{TypeFunc^})
 	rTyp := fType2.ResultType
