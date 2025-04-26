@@ -201,3 +201,21 @@ HVB_ins_va_arg := !(MCBuildContext^ ctx, s32 opr1,s32 opr2) -> void
 {
 	ctx.lines.Push(MCLine("va_arg",opr1,opr2))
 }
+
+HVB_ins_asm_start := !(MCBuildContext^ ctx, s32 opr1,s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("asm_start",opr1,opr2))
+}
+HVB_ins_load_var := !(MCBuildContext^ ctx,s32 opr1) -> void
+{
+	ctx.lines.Push(MCLine("load_var",opr1))
+}
+HVB_ins_clob_str := !(MCBuildContext^ ctx,s32 opr1) -> void
+{
+	ctx.lines.Push(MCLine("clob_str",opr1))
+}
+HVB_ins_asm_end := !(MCBuildContext^ ctx) -> void
+{
+	ctx.lines.Push(MCLine("asm_end"))
+}
+

@@ -229,6 +229,34 @@ BoxAssemblerInline := class extend BoxExeObj
 
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		//right now empty is fine
+		resVar := 0
+		if ResObj != null {
+			resVar = ResObj.WriteMC(ctx).CreatedId
+		}
+
+		result.CreatedId = resVar
+
+		ech := TEchoStream
+
+		for it ,i : AsmLines
+		{
+			if i != 0
+				ech << ";"
+			ech << it
+		}
+
+		newSt := ech.GetStr()
+
+		inpts := HybridQueue.{int,13}
+		
+		for it : CallObj
+		{
+			inpts.Push(it.WriteMC(ctx).CreatedId)
+		}
+
+		HVB_ins_asm_start(ctx,resVar,ctx.AddString(newSt->AsString))
+		HVB_ins_clob_str(ctx,ctx.AddString(ClobData[^]))
+		HVB_ins_load_var(ctx,inpts[^])
+		HVB_ins_asm_end(ctx)
 	}
 }

@@ -83,6 +83,40 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			newCmds.Push(MCLine("load_var",varConsts[^]))
 			newCmds.Push(MCLine("call_end"))
 			i += 1
+		case "asm_start"
+			stLine := it
+			i += 1
+
+			clobObjs := HybridQueue.{int,16}
+			varConsts := HybridQueue.{int,16}
+			while fnc.Lines[i].opcode != "asm_end"
+			{
+				vr := ref fnc.Lines[i]
+				if vr.opcode == "load_var"
+				{
+					obj := ref fnc.Objects[vr.var1]
+					if IsObjectVariable(obj)
+					{
+						cnstId := toConstVar(obj)
+						varConsts.Push(cnstId)
+						newCmds.Push(MCLine("mov",cnstId,vr.var1))
+					}else{
+						varConsts.Push(vr.var1)
+					}
+				}else if vr.opcode == "clob_str"{
+					clobObjs.Push(vr.var1)
+				}else{
+					assert(false)
+				}
+				i += 1
+			}
+			newCmds.Push(stLine)
+			for it : clobObjs
+				newCmds.Push(MCLine("clob_str",it))
+			for it : varConsts
+				newCmds.Push(MCLine("load_var",it))
+			newCmds.Push(MCLine("asm_end"))
+			i += 1
 		case void
 			if tbl.Contain(it.opcode)
 			{
@@ -194,6 +228,9 @@ GenMCTable := !() -> void
 	tbl["llvm_load"] = MCLine("noop")
 	tbl["llvm_getelementptr"] = MCLine("noop",0,1,1,1,1)
 	tbl["llvm_getelementptr0"] = MCLine("noop",0,1,1,1,1)
+
+	tbl["asm_start"] = MCLine("noop")
+	tbl["asm_end"] = MCLine("noop")
 
 	for it : tbl
 	{

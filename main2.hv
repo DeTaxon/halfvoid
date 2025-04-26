@@ -48,8 +48,15 @@ main := !(char^[] args) -> int
 //
 
 main_c := !() -> void
-{
-	printf("hello\n")
+{	
+	cc := () ==> {
+		printf("hello\n")
+	}
+	c2 := cc.Capture()
+
+	c2()
+	TSleep(1.0)
+	c2()
 }
 
 //TODO lazy class and fake fields

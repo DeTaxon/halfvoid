@@ -11,9 +11,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "EnterTaskThreadCycle"
+	needPrint := base->{BoxFuncBody^}.OutputName == "internalTuple_Compare"
 	//needPrint = true
-	needPrint = false
+	//needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
@@ -179,6 +179,68 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 			needComma := false
 			while fnc.Lines[indx].opcode != "call_end"
+			{
+				ln := ref fnc.Lines[indx]
+				ob := ref fnc.Objects[ln.var1]
+				if needComma
+					out << ","
+				ob.GetType().PrintType(ctx)
+				out << " %Var" << fnc.Lines[indx].var1
+				needComma = true
+				indx += 1
+			}
+			out << ")"
+			printDebugEnd()
+			indx += 1
+
+		}else if op.opcode == "asm_start"
+		{
+			indx += 1
+
+			asmObj := fnc.Objects[op.var2]
+
+			assert(asmObj is MCConstString)
+
+			resType := GTypeVoid
+			if op.var1 != 0 {
+				out << "	%Var" << op.var1 " = "
+				resType = fnc.Objects[op.var1].GetType()
+			}else{
+				out << "	"
+			}
+
+			out << "call "
+			resType.PrintType(ctx)
+			out << " asm sideeffect\""
+
+			out << asmObj&->{MCConstString^}.GetValue()
+			out << "\" , \""
+
+			needComma := false
+
+			while fnc.Lines[indx].opcode == "clob_str"
+			{
+				ln := ref fnc.Lines[indx]
+				ob := ref fnc.Objects[ln.var1]
+				if needComma
+					out << ","
+				needComma = true
+				out << ob&->{MCConstString^}.GetValue()
+				indx += 1
+			}
+			for it : !["~{dirflag}","~{fpsr}","~{flags}"]
+			{
+				if needComma
+					out << ","
+				needComma = true
+				out << it
+			}
+			out << "\""
+			out << "("
+
+			needComma = false
+
+			while fnc.Lines[indx].opcode == "load_var"
 			{
 				ln := ref fnc.Lines[indx]
 				ob := ref fnc.Objects[ln.var1]

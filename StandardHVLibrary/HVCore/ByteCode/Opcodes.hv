@@ -66,6 +66,12 @@ MCBaseOpcodes := enum extend u16
 	"debug_set_file",
 	"debug_set_line",
 
+	//assembler does not work in interperter, for .exe generators only, x86_64 only for now
+	"asm_start", // op1 result, op2 string of assembler text, op3 optional arch
+	//"load_var",
+	"clob_str",
+	"asm_end",
+
 
 	//DO NOT CREATE CODE WITH OPCODES BELOW!!!!
 	//opcodes below are backend specific
