@@ -32,7 +32,14 @@ HVB_ins_jump := !(MCBuildContext^ ctx,s32 labelId) -> void
 
 HVB_ins_cmp_new := !(MCBuildContext^ ctx , s32 obj1, char^ cmpOper, s32 obj2) -> int
 {
-	cmpRes := ctx.CreateVar(GTypeBool) 
+	cmpRes := int
+
+	if cmpOper == "<=>"
+	{
+		cmpRes = ctx.CreateVar(GTypeInt)
+	}else{
+		cmpRes = ctx.CreateVar(GTypeBool)
+	}
 	HVB_ins_cmp(ctx,cmpRes,obj1,cmpOper,obj2)
 	return cmpRes
 }

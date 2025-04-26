@@ -13,7 +13,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	needPrint := base->{BoxFuncBody^}.OutputName == "internalTuple_Compare"
 	//needPrint = true
-	//needPrint = false
+	needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)

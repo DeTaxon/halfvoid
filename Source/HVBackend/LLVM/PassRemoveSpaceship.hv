@@ -23,7 +23,7 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 
 		if IsInt(ob1.GetType()) {
 			newCmds.Push(MCLine("sub",it.var1,it.var2,it.var4))
-		}else if IsPointLikeType(tp){
+		}else if IsPointLikeType(tp) {
 			c1 := bCtx.CreateVar(GTypeSizeT)
 			newCmds.Push(MCLine("cast",c1,it.var2))
 			c2 := bCtx.CreateVar(GTypeSizeT)
@@ -44,8 +44,26 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 
 			HVB_ins_label(bCtx&,qLabel)
 			newCmds.Push(MCLine("cast",it.var1,resVal))
-		}else{
+		}else if IsFloat(tp) {
+			c1 := it.var2 
+			c2 := it.var4 
 
+			resVal := bCtx.CreateVar(GTypeInt)
+			qLabel := bCtx.CreateLabel()
+
+			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(1))
+			res1 := HVB_ins_cmp_new(bCtx&,c1,">",c2)
+			HVB_ins_jump_if_bool(bCtx&,qLabel,res1)
+
+			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(-1))
+			res1 := HVB_ins_cmp_new(bCtx&,c1,"<",c2)
+			HVB_ins_jump_if_bool(bCtx&,qLabel,res1)
+
+			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(0))
+
+			HVB_ins_label(bCtx&,qLabel)
+			newCmds.Push(MCLine("cast",it.var1,resVal))
+		}else{
 			assert(false)
 		}
 	}

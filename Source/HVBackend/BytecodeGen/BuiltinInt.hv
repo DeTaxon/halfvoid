@@ -183,6 +183,17 @@ AppendClass BuiltInPrimeStore
 		HVB_ins_move(ctx,var1.CreatedId,var2.CreatedId)
 	}
 }
+AppendClass BuiltInFloatSpaceship
+{
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	{
+		v1 := indexes[0].WriteMC(ctx).CreatedId
+		v2 := indexes[1].WriteMC(ctx).CreatedId
+
+		result.CreatedId = HVB_ins_cmp_new(ctx,v1,"<=>",v2)
+	}
+}
 AppendClass BuiltinSpaceShipUnsigned
 {
 	IsMCInlined := virtual true
