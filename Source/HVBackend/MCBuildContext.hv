@@ -25,10 +25,12 @@ MCBuildContext := class extend TGCObject
 		InputsIndxStart = fnc.InputsIndxStart
 		InputsIndxCount = fnc.InputsIndxCount
 
-		if copyObjects
+		if copyObjects {
 			objects.Push(fnc.Objects[^])
-		if copyLines
+		}
+		if copyLines {
 			lines.Push(fnc.Lines[^])
+		}
 	}
 
 	Init := !() -> void
