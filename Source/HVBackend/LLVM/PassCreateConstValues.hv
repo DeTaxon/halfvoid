@@ -33,10 +33,10 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 	i := 0
 	while i < fnc.Lines.Size()
 	{
-		it := ref fnc.Lines[i] //TODO iterator instead of O(n), or maybe generator for cycle
+		it := ref fnc.Lines[i]
 		switch it.opcode
 		{
-		case "mov" //TODO edge case
+		case "mov"
 
 			ob1 := ref fnc.Objects[it.var1]
 			ob2 := ref fnc.Objects[it.var2]
@@ -161,7 +161,6 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 				{
 					newCmds.Push(thisLine)
 				}else{
-					//TODO
 					
 					vars := int[5]
 					for i : 5

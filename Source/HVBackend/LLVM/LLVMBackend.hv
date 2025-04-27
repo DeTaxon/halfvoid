@@ -50,7 +50,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		ln := base.bdy.Line
 		currentDbgFileName := Str 
 		currentDbgFileName = "DummyFile"
-		currentDbgFileName = ln.File?.file?.GetPath() //TODO abs path
+		currentDbgFileName = ln.File?.file?.GetPath()
 
 		currentDbgFileId = GetNewId() 
 		dbgFiles[currentDbgFileName] = currentDbgFileId
@@ -316,7 +316,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 				ln := fnc.Objects[op.var1]&->{MCConstInteger^}.GetValue()
 
-				itId := GetNewId() //TODO ignore if file is not set
+				itId := GetNewId()
 
 				dbgList[itId] = !{currentDbgBlockId,ln}
 
@@ -696,7 +696,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << "	%Tmp" << tmpId << " = "
 
 				if IsInt(ob2.GetType()) {
-					out << "icmp sgt" //TODO LLVM variants
+					out << "icmp sgt"
 				}else if IsFloat(ob2.GetType()) {
 					out << "fcmp ugt"
 				}else {
