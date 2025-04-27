@@ -30,6 +30,10 @@ HVB_ins_jump := !(MCBuildContext^ ctx,s32 labelId) -> void
 	ctx.lines.Push(MCLine("jmp",labelId))
 }
 
+HVB_ins_switch_start := !(MCBuildContext^ ctx,s32 opr1) -> void { ctx.lines.Push(MCLine("switch_start",opr1)) }
+HVB_ins_switch_case := !(MCBuildContext^ ctx,s32 opr1,s32 labelId) -> void { ctx.lines.Push(MCLine("switch_case",opr1,labelId)) }
+HVB_ins_switch_end := !(MCBuildContext^ ctx) -> void { ctx.lines.Push(MCLine("switch_end")) }
+
 HVB_ins_cmp_new := !(MCBuildContext^ ctx , s32 obj1, char^ cmpOper, s32 obj2) -> int
 {
 	cmpRes := int

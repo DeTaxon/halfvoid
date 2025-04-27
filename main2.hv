@@ -23,40 +23,21 @@ main := !(char^[] args) -> int
 //TODO interlock add,xch for interpreter backend
 //TODO atomic add,xchg for float,unsginder int
 
-//"for" := !(int this) -> RangeIterator
-//{
-//	result.end = this
-//}
-//
-//RangeIterator := class //WARNING end value not included
-//{
-//	value := int
-//	end := int
-//	"()" := !() -> int
-//	{
-//		printf("hoy %p\n",this&)
-//		result = value
-//		value += 1
-//	}
-//	IsFinished := !() -> bool
-//	{
-//		printf("hey %p %i %i\n",this&,value,end)
-//		result = value > end
-//		printf("hey2 %p\n",this&)
-//	}
-//}
-//
-
 main_c := !() -> void
-{	
-	cc := () ==> {
-		printf("hello\n")
-	}
-	c2 := cc.Capture()
+{
+	c := tstEnum
 
-	c2()
-	TSleep(1.0)
-	c2()
+	c = "One"
+
+	switch c
+	{
+	case "One"
+		printf("hi\n")
+	case in !["Three","Two"]
+		printf("yep\n")
+	case void
+		printf("nope\n")
+	}
 }
 
 //TODO lazy class and fake fields

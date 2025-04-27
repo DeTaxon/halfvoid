@@ -238,4 +238,48 @@ BoxSwitchOnEnum := class extend BoxSwitch
 
 		quitNode?.PrintCode(ctx)
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		en := mainCall.GetType()->{TypeEnum^}.ToEnum
+
+		bsTyp := Type^
+		bsTyp = mainCall.GetType().Base
+
+		inVar := mainCall.WriteMC(ctx).CreatedId
+
+		ql := ctx.CreateLabel()
+
+
+		HVB_ins_switch_start(ctx,inVar)
+		for it : this.caseNodes
+		{
+			indX := int
+			if it.baseObj? is BoxExeString
+			{
+				en.GetEnumIndex(it.baseObj->{BoxExeString^}.Value,indX&)
+				HVB_ins_switch_case(ctx,ctx.AddInteger(indX),ctx.GetLabel(it.useNode))
+			}
+			for ec : it.extraConsts
+			{
+				if ec is not BoxExeString
+					continue
+				en.GetEnumIndex(ec->{BoxExeString^}.Value,indX&)
+				HVB_ins_switch_case(ctx,ctx.AddInteger(indX),ctx.GetLabel(it.useNode))
+			}
+		}
+		HVB_ins_switch_end(ctx)
+
+		defaultNode?.WriteMC(ctx)
+		HVB_ins_jump(ctx,ql)
+
+		for it : this.caseNodes
+		{
+			HVB_ins_label(ctx,ctx.GetLabel(it.useNode))
+			it.caseBody.WriteMC(ctx)
+			HVB_ins_jump(ctx,ql)
+		}
+
+		HVB_ins_label(ctx,ql)
+		
+	}
 }

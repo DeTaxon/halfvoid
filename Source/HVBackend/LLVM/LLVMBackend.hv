@@ -11,9 +11,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "internalTuple_Compare"
+	needPrint := base->{BoxFuncBody^}.OutputName == "main_c"
 	//needPrint = true
-	needPrint = false
+	//needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
@@ -253,6 +253,37 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			}
 			out << ")"
 			printDebugEnd()
+			indx += 1
+
+		}else if op.opcode == "switch_start"
+		{
+			indx += 1
+
+			obj := fnc.Objects[op.var1]
+			tp := obj.GetType()
+
+			tmpLbl := GetNewId()
+
+			out << "	switch "
+			tp.PrintType(ctx)
+			out << " "
+			LLVMPrintObjValue(ctx,obj,op.var1)
+			out << " , label %Tmp" << tmpLbl << " ["
+
+			while fnc.Lines[indx].opcode != "switch_end"
+			{
+				ln := ref fnc.Lines[indx]
+				ob := ref fnc.Objects[ln.var1]
+				tp.PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob,ln.var1)
+				out << " , label %Label" << ln.var2 << "\n"
+
+				indx += 1
+			}
+			out << "]"
+			printDebugEnd()
+			out << "Tmp" << tmpLbl << ":\n"
 			indx += 1
 
 		}else

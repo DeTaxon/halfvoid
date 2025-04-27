@@ -7,6 +7,11 @@ MCBaseOpcodes := enum extend u16
 	"jmp", // label
 	"jmp_if_bool", // label var_bool
 	//"jmp_if_op", // label operator var1 var2
+	//
+	"switch_start", // op1 - input value
+	"switch_case", // op1 - compare value, op2 - label to jump
+	"switch_end", 
+	// executions continue on default value
 
 	"clean", // op1
 	"mov", // op1 <- op2

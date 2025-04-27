@@ -83,6 +83,23 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			newCmds.Push(MCLine("load_var",varConsts[^]))
 			newCmds.Push(MCLine("call_end"))
 			i += 1
+		case "switch_start"
+			stLine := it
+			i += 1
+
+			if IsVarType(fnc.Objects[stLine.var1])
+			{
+				cnstId := makeConstVar(stLine.var1)
+				stLine.var1 = cnstId
+			}
+			newCmds.Push(stLine)
+			while fnc.Lines[i].opcode != "switch_end"
+			{
+				newCmds.Push(fnc.Lines[i])
+				i += 1
+			}
+			newCmds.Push(fnc.Lines[i])
+			i += 1
 		case "asm_start"
 			stLine := it
 			i += 1
