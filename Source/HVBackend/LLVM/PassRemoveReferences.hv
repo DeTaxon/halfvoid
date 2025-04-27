@@ -17,7 +17,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 	{
 		result = newObjs.Size()
 		newObjs.Emplace()
-		obj := ref newObjs[-1]
+		obj := ref newObjs.Back()
 		obj->SetType(MCConstValue)
 		obj&->{MCConstValue^}.GetValueType() = NormalizeType(tp)
 	}
@@ -33,7 +33,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 		result = newObjs.Size()
 		newObjs.Emplace()
-		obj := ref newObjs[-1]
+		obj := ref newObjs.Back()
 		obj->SetType(MCVariable)
 		obj&->{MCVariable^}.GetValueType() = NormalizeType(tp)
 
@@ -59,7 +59,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 		cnstId := newObjs.Size()
 		newObjs.Emplace()
 
-		newVar := ref newObjs[-1]&->{MCVariable^}^
+		newVar := ref newObjs.Back()&->{MCVariable^}^
 		newVar->SetType(MCVariable)
 
 		newVar.GetValueType() = it.GetType().GetPoint()

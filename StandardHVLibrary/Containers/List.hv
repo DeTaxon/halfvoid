@@ -259,7 +259,6 @@ List := class.{@T} extend TArrayView.{T}
 			end = newNode
 
 		itSize += 1
-		
 	}
 	DeleteAt := !(int index) -> bool
 	{
@@ -292,6 +291,11 @@ List := class.{@T} extend TArrayView.{T}
 	"for" := !() -> TListIterator.{T}
 	{
 		result.iter = start
+	}
+	Back := !() -> ref T
+	{
+		assert(itSize != 0)
+		return end.data
 	}
 }
 

@@ -340,7 +340,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				ob2 := ref fnc.Objects[op.var2]
 				resType := ob1.GetType()
 				inpType := ob2.GetType()
-				if IsInt(resType) and IsInt(inpType)
+				if IsIntLikeType(resType) and IsIntLikeType(inpType)
 				{
 					out <<	"	%Var" << op.var1 << " = "
 					
@@ -420,6 +420,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printDebugEnd()
 				}else {
 					printf("LLVM: unknown cast at %s %i\n",base.GetName(),indx)
+					printf("types are %s and %s\n",ob1.GetType().GetBADStr().Str(),ob2.GetType().GetBADStr().Str())
 					assert(false)
 				}
 			case "load_element"
@@ -915,4 +916,11 @@ IsPointLikeType := !(Type^ ptr) -> bool
 	if ptr is in TypeArrayView
 		return true
 	return false
+}
+
+IsIntLikeType := !(Type^ ptr) -> bool
+{
+	if IsInt(ptr)
+		return true
+	return ptr is TypeEnum
 }
