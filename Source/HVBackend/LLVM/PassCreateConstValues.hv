@@ -221,6 +221,15 @@ GenMCTable := !() -> void
 
 	tbl["cmp"] = MCLine("noop",0,1,0,1)
 
+	tbl["and"] = MCLine("noop",0,1,1)
+	tbl["or"] = MCLine("noop",0,1,1)
+	tbl["xor"] = MCLine("noop",0,1,1)
+	tbl["not"] = MCLine("noop",0,1)
+
+	tbl["shl"] = MCLine("noop",0,1,1)
+	tbl["sshr"] = MCLine("noop",0,1,1)
+	tbl["ushr"] = MCLine("noop",0,1,1)
+
 	tbl["add"] = MCLine("noop",0,1,1)
 	tbl["sub"] = MCLine("noop",0,1,1)
 	tbl["mul"] = MCLine("noop",0,1,1)

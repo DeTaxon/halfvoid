@@ -108,6 +108,10 @@ RetConstFuncTableInit := !() -> void
 	tbl.Insert("xor")
 	tbl.Insert("not")
 
+	tbl.Insert("shl")
+	tbl.Insert("sshr")
+	tbl.Insert("ushr")
+
 	tbl.Insert("add")
 	tbl.Insert("sub")
 	tbl.Insert("mul")

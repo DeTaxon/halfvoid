@@ -11,9 +11,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "main_c"
+	needPrint := base->{BoxFuncBody^}.OutputName == "CheckTemplateType"
 	//needPrint = true
-	//needPrint = false
+	needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
@@ -292,7 +292,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			{
 			case "clean"
 				ob1 := ref fnc.Objects[op.var1]
-				assert(ob1 is MCVariable)
+				//assert(ob1 is MCVariable)
 				out << "	store "
 				ob1.GetType().PrintType(ctx)
 				out << " zeroinitializer , "
@@ -527,6 +527,42 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					assert(false)
 				}
 
+			case in !["and","or","xor"]
+				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
+
+				out << "	%Var" << op.var1 << " = "
+				out << op.opcode.ToCStr() << " "
+				ob1.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob1,op.var1)
+				out << " , "
+				LLVMPrintObjValue(ctx,ob2,op.var2)
+				printDebugEnd()
+			case in !["shl","sshr","ushr"]
+				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
+
+				out << "	%Var" << op.var1 << " = "
+				out << op.opcode.ToCStr() << " "
+				ob1.GetType().PrintType(ctx)
+				out << " "
+				LLVMPrintObjValue(ctx,ob1,op.var1)
+				out << " , "
+				LLVMPrintObjValue(ctx,ob2,op.var2)
+				printDebugEnd()
+			case "not"
+				ob1 := ref fnc.Objects[op.var1]
+
+				if ob1.GetType() == GTypeBool {
+					out << "	%Var" << op.var1 << " = xor i1 1 ,"
+					LLVMPrintObjValue(ctx,ob1,op.var1)
+					printDebugEnd()
+
+				}else {
+					printf("LLVM: unknown type for opcode <not>\n")
+					assert(false)
+				}
 			case in !["add","sub","mul","div","mod"]
 				ob2 := ref fnc.Objects[op.var2]
 				ob3 := ref fnc.Objects[op.var3]
@@ -587,7 +623,6 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << " acquire"				
 				printDebugEnd()
 				
-
 			case "mov"
 				op1 := ref fnc.Objects[op.var1]
 				op2 := ref fnc.Objects[op.var2]
@@ -721,7 +756,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 				assert(res is MCConstValue)
 
-				if ob1 is MCVariable or ob1 is MCConstValue
+				if ob1 is MCVariable or ob1.IsConstant
 				{
 					if ob1.GetType().Base == null
 						printf("broken %i %s %s\n",indx,res.GetType().GetBADStr().Str(),base.GetName().Str())
@@ -743,7 +778,11 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printDebugEnd()
 
 				}else {
-					printf("LLVM: unknown llvm_getelementptr at %i\n",indx)
+					printf("LLVM: unknown llvm_getelementptr at %s %i\n",fnc.BaseFunction.GetName(),indx)
+					ob1 := ref fnc.Objects[op.var1]
+					ob2 := ref fnc.Objects[op.var2]
+					ob3 := ref fnc.Objects[op.var3]
+					printf("%s %s %s %s %s %s\n",ob1.UnitName,ob1.GetType().GetBADStr().Str(),ob2.UnitName,ob2.GetType().GetBADStr().Str(),ob3.UnitName,ob3.GetType().GetBADStr().Str())
 					assert(false)
 				}
 			case void

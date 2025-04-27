@@ -138,7 +138,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 						ob1 := ref fnc.Objects[op.var1]
 						ob2 := ref fnc.Objects[op.var2]
 
-						if ob2 is MCVariable
+						if IsVarType(ob2)
 						{
 							tp := ob1.GetType()
 
@@ -152,7 +152,8 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 						}else{
 							if not ob2.IsConstant and ob2 is not MCReference{
-								printf("LLVM: failed to remove reference from mov at %i, %i %i\n",indx,op.var1,op.var2)
+								printf("LLVM: failed to remove reference from mov at %s %i, %i %i\n",fnc.BaseFunction.GetName(),indx,op.var1,op.var2)
+								printf("mov type %s %s\n",ob1.UnitName,ob2.UnitName)
 								assert(false)
 							}
 							tp := fnc.Objects[op.var1].GetType()
