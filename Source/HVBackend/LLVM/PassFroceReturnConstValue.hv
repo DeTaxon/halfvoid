@@ -124,6 +124,11 @@ RetConstFuncTableInit := !() -> void
 
 	tbl.Insert("max")
 	tbl.Insert("min")
+	tbl.Insert("sqrt")
+	tbl.Insert("cos")
+	tbl.Insert("sin")
+
+	tbl.Insert("vec_scalar_mul")
 
 	tbl.Insert("llvm_getelementptr")
 	tbl.Insert("llvm_getelementptr0")

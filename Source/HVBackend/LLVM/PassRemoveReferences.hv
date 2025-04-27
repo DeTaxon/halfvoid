@@ -64,11 +64,10 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 		newVar.GetValueType() = it.GetType().GetPoint()
 
-		indx := 0
-
-		while indx < newCmds.Size()
+		iter := newCmds."for"()
+		while iter.HaveValue()
 		{
-			op := ref newCmds[indx]
+			op := ref iter()
 
 			varUsed := false
 
@@ -87,20 +86,20 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 
 					ln := MCLine("llvm_store",vr,cnst)
-					newCmds.InsertAfter(indx,ln)
+					newCmds.InsertAfter(iter,ln)
 
 					if op.opcode != "llvm_getelementptr0"
 						op.opcode = "llvm_getelementptr"
 					op.var1 = cnst
 
-					indx += 1
+					iter.Inc()
 				}else{
 
 					if (op.opcode == "load_element" or op.opcode == "llvm_getelementptr") and op.var2 == i {
 						tp := fnc.Objects[op.var2].GetType()
 						cnst := makeConst(tp.GetPoint())
 						vr := getVar(op.var2)
-						newCmds.InsertAfter(indx - 1,MCLine("llvm_load",cnst,vr))
+						newCmds.InsertBefore(iter,MCLine("llvm_load",cnst,vr))
 
 						//printf("hm %p\n",fnc.Objects[op.var2].GetType() is in TypeClass,tp is in TypeClass)
 
@@ -110,7 +109,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 							op.var2 = cnst
 						}else{
 							cnst2 := makeConst(tp)
-							newCmds.InsertAfter(indx,MCLine("llvm_load",cnst2,cnst))
+							newCmds.InsertAfter(iter,MCLine("llvm_load",cnst2,cnst))
 							op.opcode = "llvm_getelementptr"
 							op.var2 = cnst2
 						}
@@ -125,12 +124,12 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 						op.var1 = cnstVal
 
-						newCmds.InsertAfter(indx,MCLine("mov",cnstSet,vr))
-						newCmds.InsertAfter(indx+1,MCLine("llvm_store",cnstSet,cnstVal))
+						newCmds.InsertAfter(iter,MCLine("llvm_store",cnstSet,cnstVal))
+						newCmds.InsertAfter(iter,MCLine("mov",cnstSet,vr))
 					}
 					if op.opcode == "get_pointer" and op.var2 == i {
 						cnst := makeConst(fnc.Objects[op.var2].GetType().GetPoint())
-						newCmds.InsertAfter(indx-1,MCLine("llvm_load",cnst,getVar(op.var2)))
+						newCmds.InsertBefore(iter,MCLine("llvm_load",cnst,getVar(op.var2)))
 						op.opcode = "cast"
 						op.var2 = cnst
 					}else if op.opcode == "mov" and op.var1 == i {
@@ -146,13 +145,13 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 							cnstSet := makeConst(tp.GetPoint())
 							vr := getVar(op.var1)
 
-							newCmds.InsertAfter(indx - 1,MCLine("mov",cnstSet,vr))
+							newCmds.InsertBefore(iter,MCLine("mov",cnstSet,vr))
 							op.opcode = "llvm_store"
 							op.var1 = cnstSet
 
 						}else{
 							if not ob2.IsConstant and ob2 is not MCReference{
-								printf("LLVM: failed to remove reference from mov at %s %i, %i %i\n",fnc.BaseFunction.GetName(),indx,op.var1,op.var2)
+								printf("LLVM: failed to remove reference from mov at %s %i, %i %i\n",fnc.BaseFunction.GetName(),0,op.var1,op.var2)
 								printf("mov type %s %s\n",ob1.UnitName,ob2.UnitName)
 								assert(false)
 							}
@@ -162,7 +161,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 							cnstSet := makeConst(tp.GetPoint())
 							vr := getVar(op.var1)
 
-							newCmds.InsertAfter(indx - 1,MCLine("mov",cnstSet,vr))
+							newCmds.InsertBefore(iter,MCLine("mov",cnstSet,vr))
 							op.opcode = "llvm_store"
 							op.var1 = cnstSet
 						}
@@ -177,17 +176,17 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 							cnst2 := makeConst(tp.GetPoint())
 							cnst := makeConst(tp)
 							vr := getVar(op.var1&[j])
-							newCmds.InsertAfter(indx - 1,MCLine("llvm_load",cnst,cnst2))
-							newCmds.InsertAfter(indx - 1,MCLine("llvm_load",cnst2,vr))
+							newCmds.InsertBefore(iter,MCLine("llvm_load",cnst,cnst2))
+							newCmds.InsertBefore(iter,MCLine("llvm_load",cnst2,vr))
 							op.var1&[j] = cnst
 						}
 
 					}
-					indx += 1
+					iter.Inc()
 				}
 
 			}else{
-				indx += 1
+				iter.Inc()
 			}
 		}
 	}

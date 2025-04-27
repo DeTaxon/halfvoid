@@ -237,9 +237,15 @@ List := class.{@T} extend TArrayView.{T}
 	InsertAfter := !(int index,T value) -> void
 	{
 		if index < 0
+		{
 			PushFront(value)
+			return void
+		}
 		if index >= Size() - 1
+		{
 			Push(value)
+			return void
+		}
 
 		iter := start
 
@@ -296,6 +302,50 @@ List := class.{@T} extend TArrayView.{T}
 	{
 		assert(itSize != 0)
 		return end.data
+	}
+
+	InsertAfter := !(TListIterator.{T} iter,T value) -> void
+	{
+		if iter.iter == end {
+			Push(value)
+			return void
+		}
+
+		newNode := createNode()
+
+		newNode.data = value
+
+		newNode.next = iter.iter.next
+		newNode.next?.prev = newNode
+		iter.iter.next = newNode
+		newNode.prev = iter.iter
+
+		if iter.iter == end
+			end = newNode
+
+		itSize += 1
+	}
+	InsertBefore := !(TListIterator.{T} iter,T value) -> void
+	{
+		if iter.iter == start {
+			PushFront(value)
+			return void
+		}
+
+		newNode := createNode()
+
+		newNode.data = value
+
+		newNode.next = iter.iter
+		newNode.prev = iter.iter.prev
+
+		iter.iter.prev = newNode
+		newNode.prev?.next = newNode
+
+		if iter.iter == start
+			start = newNode
+
+		itSize += 1
 	}
 }
 

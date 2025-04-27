@@ -240,6 +240,13 @@ GenMCTable := !() -> void
 	tbl["atomic_sub"] = MCLine("noop",0,0,1)
 	tbl["atomic_xchg"] = MCLine("noop",0,0,1)
 
+	tbl["sqrt"] = MCLine("noop",0,1)
+	tbl["cos"] = MCLine("noop",0,1)
+	tbl["sin"] = MCLine("noop",0,1)
+
+
+	tbl["vec_scalar_mul"] = MCLine("noop",0,1,1)
+
 	tbl["memset"] = MCLine("noop",1,1,1)
 	tbl["clean"] = MCLine("noop")
 
