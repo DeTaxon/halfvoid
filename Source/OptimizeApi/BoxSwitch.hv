@@ -27,7 +27,6 @@ AppendClass BoxSwitch
 
 		if index mod 2 == 0
 		{
-			assert(curNode.cmpCheck!= null)
 			return curNode.cmpCheck
 		}else{
 			if curNode.caseBody == null //TODO maybe i need to create blank Block here?
