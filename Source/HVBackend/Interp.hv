@@ -999,8 +999,26 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
 			thisFrame.DebugFileLine = ptr1->{int^}^
 			cs += 1
+		case "switch_start"
+			switchValue := thisFrame.GetObjectPtr(opPtr[cs].var1)->{int^}^
+			cs += 1
+
+			while opPtr[cs].opcode != "switch_end"
+			{
+				objVal := thisFrame.GetObjectPtr(opPtr[cs].var1)->{int^}^
+
+				if objVal == switchValue {
+					cs = labelsPtr[opPtr[cs].var2]
+					break
+				}
+				cs += 1
+			}
+		case "switch_end"
+			cs += 1
+
 		case void
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)
+			assert(false)
 			cs += 1
 		}
 	}

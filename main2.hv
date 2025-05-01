@@ -3,7 +3,8 @@ tstEnum := enum
 {
 	"One",
 	"Two",
-	"Three"
+	"Three",
+	"Four"
 }
 
 main := !(char^[] args) -> int
@@ -20,14 +21,11 @@ main := !(char^[] args) -> int
 	main_c()
 }
 
-//TODO interlock add,xch for interpreter backend
-//TODO atomic add,xchg for float,unsginder int
-
 main_c := !() -> void
 {
 	c := tstEnum
 
-	c = "One"
+	c = "Three"
 
 	switch c
 	{
