@@ -11,8 +11,9 @@ TryParseEnum := !(Token^ tkn) -> BoxEnum^
 BoxEnum := class extend BoxUnit
 {
 	ItType := TypeEnum^
+	BaseType := TypeStandard^
 	ReadyState := THatch
-	Values := HybridQueue.{Tuple.{BoxExeString^,BoxEnumValue^},10}
+	Values := HybridQueue.{Tuple.{Str,BoxEnumValue^},10}
 	EnumToken := Token^
 	Parent := BoxEnum^
 
@@ -47,80 +48,127 @@ BoxEnum := class extend BoxUnit
 		SubWork(() ==>{
 
 			//TODO set CurrentWork
-			iter := EnumToken.Right
-
-			baseType := GTypeInt->{TypeStandard^}
-
-			if iter.GetValue() == "extend"
-			{
-				iter = iter.Right
-
-				exType := ParseType(iter)
-
-				if exType == null
-				{
-					CurrentWork?.SetErrorMessage(iter.MakeError("unknown extended type"))
-					return void
-				}
-
-				if IsInt(exType)
-				{
-					baseType = exType->{TypeStandard^}
-				}else if exType is TypeEnum{
-					asEnum := exType->{TypeEnum^}.ToEnum
-
-					asEnum.AwaitReadyState()
-					baseType = asEnum.ItType
-
-					for it : asEnum.Values
-					{
-						Values.Emplace(it.0,it.1)
-					}
-					Parent = asEnum
-				}else{
-					CurrentWork?.SetErrorMessage(iter.MakeError("unknown extended type"))
-					return void
-				}
-				
-
-				iter = iter.Right.Down
-			}else{
-				iter = iter.Down
-			}
-
-			while iter != null
-			{
-				if iter.GetValue() != ","
-				{
-					if iter is TokenString
-					{
-						Values.Emplace(GetExeString(iter->{TokenString^}.Value.GetString()),null->{BoxEnumValue^})
-					}else{
-						CurrentWork?.SetErrorMessage(iter.MakeError("Unknown use of enum"))
-						return void
-					}
-				}
-				iter = iter.Right
-			}
-			ItType.Base = baseType
-			ItType.IRName = baseType.IRName
-			ItType.MetaInfo = baseType.MetaInfo
-			ItType.ItSize  = baseType.ItSize
-			ItType.ItAlign = baseType.ItAlign
-
+			res := CheckObject(EnumToken)
+			ApplyObject(res)
 			ReadyState.Emit()
 		})
 	}
 	ReloadEnum := !(HotloadContext^ ctx, Token^ tstObj) -> void
 	{
-		//TODO check if enum realy changed
 		//TODO reload functions who use it
 		//TODO realod ToCStr Functions
-		ReadyState.Reset()
+
+		res := CheckObject(tstObj)
+
+		needSwap := false
+
+		if BaseType != res.BaseType
+			needSwap = true
+		if not needSwap
+		{
+			if res.Values.Size() != Values.Size()
+			{
+				needSwap = true
+			}else{
+				for it1 : Values , it2 : res.Values
+				{
+					if it1.0 != it2.0
+					{
+						needSwap = true
+						break
+					}
+				}
+			}
+		}
+
+		if not needSwap
+			return void
+
+		Values.Destroy()
 		EnumToken = tstObj
 		CStrTable = null
-		ParseBody()
+		ApplyObject(res)
+		ReadyState.Emit()
+	}
 
+	ApplyObject := !(CheckObjResult res) -> void
+	{
+		BaseType = res.BaseType
+
+		for it : res.Values
+		{
+			Values.Emplace(it.0,null->{BoxEnumValue^})
+		}
+
+		ItType.Base = BaseType
+		ItType.IRName = BaseType.IRName
+		ItType.MetaInfo = BaseType.MetaInfo
+		ItType.ItSize  = BaseType.ItSize
+		ItType.ItAlign = BaseType.ItAlign
+	}
+	CheckObject := !(Token^ enToken) -> CheckObjResult
+	{
+		iter := enToken.Right
+
+		baseType := GTypeInt->{TypeStandard^}
+
+		if iter.GetValue() == "extend"
+		{
+			iter = iter.Right
+
+			exType := ParseType(iter)
+
+			if exType == null
+			{
+				CurrentWork?.SetErrorMessage(iter.MakeError("unknown extended type"))
+				return void
+			}
+
+			if IsInt(exType)
+			{
+				baseType = exType->{TypeStandard^}
+			}else if exType is TypeEnum {
+				asEnum := exType->{TypeEnum^}.ToEnum
+
+				asEnum.AwaitReadyState()
+				baseType = asEnum.ItType
+
+				for it : asEnum.Values
+				{
+					Values.Emplace(it.0,it.1)
+				}
+				Parent = asEnum
+			}else{
+				CurrentWork?.SetErrorMessage(iter.MakeError("unknown extended type"))
+				return void
+			}
+			
+
+			iter = iter.Right.Down
+		}else{
+			iter = iter.Down
+		}
+
+		result.BaseType = baseType
+
+		i := 0
+
+		while iter != null
+		{
+			if iter.GetValue() != ","
+			{
+				if iter is TokenString
+				{
+					st := iter->{TokenString^}.Value
+					result.Values.Emplace(st,i)
+					i += 1
+				}else{
+					CurrentWork?.SetErrorMessage(iter.MakeError("Unknown use of enum"))
+					return void
+				}
+			}
+			iter = iter.Right
+		}
 	}
 
 	GetEnumIndex := !(String^ val,int^ res) -> bool
@@ -128,7 +176,7 @@ BoxEnum := class extend BoxUnit
 		AwaitReadyState()
 		for it,i : Values
 		{
-			if it.0.Value == val
+			if it.0 == val
 			{
 				if res != null
 					res^ = i
@@ -142,7 +190,7 @@ BoxEnum := class extend BoxUnit
 		AwaitReadyState()
 		for it,i : Values
 		{
-			if it.0.Value == val
+			if it.0 == val
 			{
 				if it.1 == null
 					it.1 = new BoxEnumValue(ItType,i)
@@ -159,6 +207,12 @@ BoxEnum := class extend BoxUnit
 			cmpFunc = new BuiltInIntBase(GetFuncType(![ItType,ItType],GTypeBool),"icmp eq")
 		return cmpFunc
 	}
+}
+
+CheckObjResult := class
+{
+	BaseType := TypeStandard^
+	Values := List.{Tuple.{Str,int}}
 }
 
 TypeEnum := class extend TypeStandard
@@ -227,7 +281,7 @@ enumGetCStrTable := !(Type^ enumType) -> BoxExeObj^
 		setArr := new ClassArray(globType)
 		for it : tp.Values
 		{
-			setArr.Value.Push(it.0)
+			setArr.Value.Push(GetExeString(it.0))
 		}
 		setArr.Value.Push(GObjNull)
 

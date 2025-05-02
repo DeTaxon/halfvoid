@@ -191,6 +191,7 @@ AppendClass BoxFile
 						newEnum = new BoxEnum(tstObj.Down)
 						typeVar = new TypeVar(name,newEnum.ItType)
 					}
+					FileEnums[name] = !{newEnum,typeVar}
 					ThisCodeSpace?.Types[name] = typeVar
 				}
 			}
