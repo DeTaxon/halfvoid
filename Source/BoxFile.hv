@@ -36,11 +36,14 @@ BoxFile := class extend BoxUnit
 	fileSize := int
 	fileName := Str
 
+	ThisCodeSpace := BoxCodeSpace^
+
 	loaded := THatch
 
 	FileClasses := List.{BoxClassBody^}
 	FileClassTemplates := List.{BoxClassTemplateBody^}
 	Functions := List.{BoxFuncTemplateBody^}
+	FileEnums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^}}
 
 	Typedefs := List.{Tuple.{TypedefTemplateVar^,u32}}
 
@@ -660,6 +663,9 @@ CWorkBaseFile := class extend CWorkUnit
 			{
 				if vr is TypeVar
 				{
+					if vr.Value is TypeEnum {
+						itFile.FileEnums[vr.Name] = !{vr.Value->{TypeEnum^}.ToEnum,vr}
+					}
 					CurrentCodeSpace.Types[vr->{TypeVar^}.Name] = vr
 				}else{
 					//CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)

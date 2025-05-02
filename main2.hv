@@ -4,7 +4,8 @@ tstEnum := enum
 	"One",
 	"Two",
 	"Three",
-	"Four"
+	"Four",
+	"Seven"
 }
 
 main := !(char^[] args) -> int
@@ -25,10 +26,12 @@ main_c := !() -> void
 {
 	c := tstEnum
 
-	c = "Three"
+	c = "One"
 
 	switch c
 	{
+	case "Seven"
+		printf("haha\n")
 	case "One"
 		printf("hi\n")
 	case in !["Three","Two"]

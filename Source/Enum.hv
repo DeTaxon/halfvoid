@@ -111,6 +111,17 @@ BoxEnum := class extend BoxUnit
 			ReadyState.Emit()
 		})
 	}
+	ReloadEnum := !(HotloadContext^ ctx, Token^ tstObj) -> void
+	{
+		//TODO check if enum realy changed
+		//TODO reload functions who use it
+		//TODO realod ToCStr Functions
+		ReadyState.Reset()
+		EnumToken = tstObj
+		CStrTable = null
+		ParseBody()
+
+	}
 
 	GetEnumIndex := !(String^ val,int^ res) -> bool
 	{

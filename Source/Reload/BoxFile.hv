@@ -20,6 +20,10 @@ AppendClass BoxFile
 		oldData.FileClassTemplates.Push(FileClassTemplates[^])
 		FileClassTemplates.Destroy()
 
+		for it,ind : FileEnums
+			oldData.Enums[ind] = it
+		FileEnums.Destroy()
+
 
 		oldData.Typedefs.Push(Typedefs[^])
 		Typedefs.Destroy()
@@ -35,6 +39,7 @@ AppendClass BoxFile
 		ParseTypedefs(oldData&)
 		ParseAppendClasses(oldData&)
 		ParseFunctions(oldData&)
+		ReloadGlobals(fileTokens,oldData&)
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
 	{
@@ -142,6 +147,57 @@ AppendClass BoxFile
 		}
 		
 	}
+	ReloadGlobals := !(Token^ root,ReloadFileOldData^ old) -> void
+	{
+		//TODO global variables themself
+		//YODO typedefs here?
+
+		itr := root.Down
+
+		while itr != null
+		{
+			if itr.Down?.Right?.GetValue() == ":=" and itr.Down.Right.Right != null
+			{
+				name := Str
+
+				if itr.Down is TokenIndent 
+				{
+					name = itr.Down->{TokenIndent^}.Value
+				}else if itr.Down is TokenString 
+				{
+					name = itr.Down->{TokenString^}.Value
+				}else
+				{
+					assert(false)
+				}
+
+				tstObj := itr.Down.Right.Right
+
+				if tstObj.Down?.GetValue() == "enum"
+				{
+					newEnum := BoxEnum^
+					typeVar := TypeVar^
+
+					if old?.Enums.Contain(name)
+					{
+						newEnum = old.Enums[name].0
+						typeVar = old.Enums[name].1
+
+						newEnum.ReloadEnum(old.ctx,tstObj.Down)
+					}
+
+					if newEnum == null
+					{
+						newEnum = new BoxEnum(tstObj.Down)
+						typeVar = new TypeVar(name,newEnum.ItType)
+					}
+					ThisCodeSpace?.Types[name] = typeVar
+				}
+			}
+			itr = itr.Right
+		}
+
+	}
 	DeleteFunction := !(BoxFuncTemplate^ delFunc) -> void
 	{
 		Functions.DeleteIf(@1 == delFunc)
@@ -163,6 +219,8 @@ ReloadFileOldData := class extend TGCObject
 	UsedFileClassTemplates := AVLSet.{BoxClassTemplateBody^}
 
 	ClassAppends := AVLMap.{Str,Tuple.{Token^,u32}}
+
+	Enums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^}}
 
 	Typedefs := List.{Tuple.{TypedefTemplateVar^,u32}}
 	UsedTypedefs := AVLSet.{TypedefTemplateVar^}

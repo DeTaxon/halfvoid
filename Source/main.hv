@@ -113,6 +113,7 @@ main := !(char^[] args) -> int
 					printf("file not found %s\n",it)
 				}
 				fileBox := new BoxFile(file)
+				fileBox.ThisCodeSpace = CodeSpaces[2000]&
 				CodeFiles.Push(fileBox)
 				CodeSpaces[2000].Files.Push(fileBox)
 			}
@@ -128,6 +129,7 @@ main := !(char^[] args) -> int
 					if nm.End == ".hv" or nm.End == osHVFile
 					{
 						fObj := new BoxFile(zFil)
+						fObj.ThisCodeSpace = CodeSpaces[num]&
 						CodeFiles.Push(fObj)
 						CodeSpaces[num].Files.Push(fObj)
 					}else if nm.End == ".clib" or nm.End == osCLIBFile
@@ -201,6 +203,7 @@ main := !(char^[] args) -> int
 						if nm.End == ".hv" or nm.End == osHVFile
 						{
 							fObj := new BoxFile(zFil)
+							fObj.ThisCodeSpace = CodeSpaces[num]&
 							CodeFiles.Push(fObj)
 							CodeSpaces[num].Files.Push(fObj)
 						}else if nm.End == ".clib" or nm.End == osCLIBFile
@@ -216,6 +219,7 @@ main := !(char^[] args) -> int
 				}else{
 					file := FSGetFile(args[i])
 					fileBox := new BoxFile(file)
+					fileBox.ThisCodeSpace = CodeSpaces[2000]&
 					CodeFiles.Push(fileBox)
 					CodeSpaces[2000].Files.Push(fileBox)
 				}
