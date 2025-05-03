@@ -13,7 +13,9 @@ ExchangeEnumFromConstString := class extend ExchangeUnit
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
 	{
-		return newType->{TypeEnum^}.ToEnum.GetEnum(obj->{BoxExeString^}.Value)
+		enm := newType->{TypeEnum^}.ToEnum
+		DB_EnumUsage.Add(CurrentFunc?,enm)
+		return enm.GetEnum(obj->{BoxExeString^}.Value)
 	}
 }
 ExchangeEnumToInt := class extend ExchangeUnit

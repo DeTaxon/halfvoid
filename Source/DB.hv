@@ -9,6 +9,7 @@ DB_VTableUsage := HVTable2.{BoxClass^, BoxFunc^}
 DB_ClassComposition := HVTable2.{BoxClass^, BoxClass^} // Left uses right
 DB_FieldUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_LocalVarUsage := HVTable2.{BoxFunc^,BoxClass^}
+DB_EnumUsage := HVTable2.{BoxFunc^,BoxEnum^}
 
 
 DB_ForgetFunction := !(BoxFunc^ fnc) -> void
@@ -19,7 +20,7 @@ DB_ForgetFunction := !(BoxFunc^ fnc) -> void
 	DB_TypeSizeUsage.Key.RemoveAll(fnc)
 	DB_FieldUsage.Key.RemoveAll(fnc)
 	DB_LocalVarUsage.Key.RemoveAll(fnc)
-
+	DB_EnumUsage.Key.RemoveAll(fnc)
 }
 
 DB_ForgetClass := !(HotloadContext^ ctx, BoxClass^ cls) -> void

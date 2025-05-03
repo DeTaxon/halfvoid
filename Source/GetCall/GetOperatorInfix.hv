@@ -162,6 +162,7 @@ innertTryGetCompareOverSpaceship := !(Str oper,CheckExeDownList lst,Token^ debug
 					res = innertTryGetCompareOverSpaceship(StringSpan(". not"),lst2,debugItem)
 					assert(res != null)
 				}
+				DB_EnumUsage.Add(CurrentFunc?,enm)
 				return res
 			}else if lst[1].GetType() == lst[0].GetType()
 			{

@@ -89,6 +89,11 @@ BoxEnum := class extend BoxUnit
 		CStrTable = null
 		ApplyObject(res)
 		ReadyState.Emit()
+
+		DB_EnumUsage.Value.Get(this&,x ==> {
+			ctx.AddFunction(x)
+		})
+
 	}
 
 	ApplyObject := !(CheckObjResult res) -> void
