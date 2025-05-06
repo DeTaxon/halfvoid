@@ -55,7 +55,6 @@ BoxEnum := class extend BoxUnit
 	}
 	ReloadEnum := !(HotloadContext^ ctx, Token^ tstObj) -> void
 	{
-		//TODO reload functions who use it
 		//TODO realod ToCStr Functions
 
 		res := CheckObject(tstObj)

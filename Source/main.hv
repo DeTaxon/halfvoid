@@ -470,6 +470,7 @@ WaitForParsingObjects := !() -> bool
 		if GHotloadCntx.HaveWork()
 		{
 			ReloadApply(GHotloadCntx&)
+			GInterpCntx.ReloadFunctions(GHotloadCntx&)
 			GHotloadCntx.Reset()
 		}
 
