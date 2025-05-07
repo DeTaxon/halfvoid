@@ -22,25 +22,18 @@ main := !(char^[] args) -> int
 	main_c()
 }
 
+printEn := !(tstEnum tst) -> void
+{
+	printf("hey %s\n",tst.ToCStr())
+}
+
 main_c := !() -> void
 {
 	c := tstEnum
 
 	c = "Seven"
-
-	printf("Yest %p\n",c)
-
-	switch c
-	{
-	case "Seven"
-		printf("haha\n")
-	case "One"
-		printf("hi\n")
-	case in !["Three","Two"]
-		printf("yep\n")
-	case void
-		printf("nope\n")
-	}
+	
+	printEn(c)
 }
 
 //TODO lazy class and fake fields

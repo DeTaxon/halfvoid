@@ -16,6 +16,7 @@ BoxEnum := class extend BoxUnit
 	Values := HybridQueue.{Tuple.{Str,BoxEnumValue^},10}
 	EnumToken := Token^
 	Parent := BoxEnum^
+	ToCStrFunction := BoxFuncBody^
 
 	CStrTable := GlobalVar2^
 
@@ -55,8 +56,6 @@ BoxEnum := class extend BoxUnit
 	}
 	ReloadEnum := !(HotloadContext^ ctx, Token^ tstObj) -> void
 	{
-		//TODO realod ToCStr Functions
-
 		res := CheckObject(tstObj)
 
 		needSwap := false
@@ -92,6 +91,7 @@ BoxEnum := class extend BoxUnit
 		DB_EnumUsage.Value.Get(this&,x ==> {
 			ctx.AddFunction(x)
 		})
+		ctx.AddFunction(ToCStrFunction?)
 
 	}
 
@@ -264,7 +264,16 @@ GetEnumMethodCall := !(Token^ itm,BoxExeObj^ vr,BoxExeObj^[] objs,BoxExeConstObj
 	itName := itm.Down.Right.Right->{TokenIndent^}.Value
 	if itName == "ToCStr"
 	{
-		return CreateFuncCall(StringSpan("internalEnumToCString"),![vr])
+		res := CreateFuncCall(StringSpan("internalEnumToCString"),![vr])
+
+		if res is in BoxFuncCall
+		{
+			enm := vr.GetType()->{TypeEnum^}.ToEnum
+			if res.callObj is in BoxFuncBody
+				enm.ToCStrFunction = res.callObj->{BoxFuncBody^}
+		}
+
+		return res
 	}
 }
 
