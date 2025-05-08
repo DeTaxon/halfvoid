@@ -1,6 +1,7 @@
 BoxCodeSpace := class
 {
 	Files := List.{BoxFile^}
+	Folders := List.{Str}
 
 	Templates := AVLMap.{Str,List.{BoxFuncTemplate^}}
 	Functions := AVLMap.{Str,List.{BoxFunc^}} //only for builtin functions

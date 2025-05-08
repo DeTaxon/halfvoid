@@ -15,7 +15,15 @@ vRepo := class extend TGCObject
 			if x == "." or x == ".."
 				return void
 
-			LocalPath := CreateString(p.GetString(),"/",x)
+			LocalPath := Str
+
+			if p == "."
+			{
+				LocalPath = x
+			}else{
+				LocalPath = CreateString(p.GetString(),"/",x)
+			}
+
 
 			if osIsFolder(LocalPath.Str())
 			{

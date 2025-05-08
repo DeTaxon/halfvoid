@@ -247,9 +247,29 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 		{
 			ReloadFile(hotload,foundFile)
 		}else{
-			HotloadStream << "File was created " << fName << "\n"
+			locPath := asFile.GetPath()
+
 			newFile := new BoxFile(asFile)
-			CodeSpaces[0].Files.Push(newFile) // TODO determine codespace number
+
+			spc := BoxCodeSpace^
+
+			for allspc,ind : CodeSpaces.Reverse
+			{
+				for it : allspc.Folders
+				{
+
+					if locPath.Start == it
+					{
+						spc = allspc&
+						break
+					}
+				}
+				if spc != null
+					break
+			}
+			if spc == null
+				spc = CodeSpaces[0]&
+			spc.Files.Push(newFile)
 		}
 
 		return void

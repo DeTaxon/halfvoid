@@ -58,7 +58,10 @@ inotify_wrapper_fd := class
 
 					node := ref iw_fd.fileNodes[ptr.wd]
 					sBuf := TEchoStream
-					sBuf << node.objectName << "/" << fileName
+
+					if node.objectName != "."
+						sBuf << node.objectName << "/" 
+					sBuf << fileName
 
 					fullPath := sBuf.GetStr()
 

@@ -40,9 +40,13 @@ StringView := class extend TGCObject
 			newSpan := StringSpan(NonNullStr(),otherSize)
 			return newSpan <=> toCmp
 		}
+		"<=>" := !(Str toCmp) -> int
+		{
+			return this.Start <=> toCmp.AsStringSpan()
+		}
 		"<=>" := !(char^ toCmp) -> int
 		{
-			return this.End <=> StringSpan(toCmp)
+			return this.Start <=> StringSpan(toCmp)
 		}
 	}
 	End := fake

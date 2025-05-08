@@ -120,6 +120,8 @@ main := !(char^[] args) -> int
 			for it : CompileSettings.UsedFolders
 			{
 				num := it.Level
+				CodeSpaces[num].Folders.PushUniq(it.FolderPath) //TODO check if exist
+
 				FSReadFolder(StringSpan(it.FolderPath),true,zObj ==> {
 					if zObj is not in File
 						return void
@@ -194,6 +196,9 @@ main := !(char^[] args) -> int
 				if StringSpan(args[i][0..2]) == "-C"
 				{
 					num := StrToInt(args[i][2..0])
+
+					CodeSpaces[num].Folders.PushUniq(args[i + 1]) //TODO check if exist
+
 					FSReadFolder(StringSpan(args[i+1]),true,zObj ==> {
 						if zObj is not in File
 							return void
