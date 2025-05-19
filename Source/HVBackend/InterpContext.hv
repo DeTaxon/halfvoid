@@ -167,7 +167,6 @@ MCInterpContext := class
 	{
 		if obj is BoxExeInt
 		{
-			printf("wha %p\n",mem)
 			obj->{BoxExeInt^}.Value = mem->{int^}^
 		}else{
 			assert(false)

@@ -197,7 +197,7 @@ main := !(char^[] args) -> int
 				{
 					num := StrToInt(args[i][2..0])
 
-					CodeSpaces[num].Folders.PushUniq(args[i + 1]) //TODO check if exist
+					CodeSpaces[num].Folders.PushUniq(args[i + 1])
 
 					FSReadFolder(StringSpan(args[i+1]),true,zObj ==> {
 						if zObj is not in File

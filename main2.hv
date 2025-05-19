@@ -1,40 +1,17 @@
 
-tstEnum := enum
-{
-	"One",
-	"Two",
-	"Three",
-	"Four",
-	"Seven"
+GlobTest := @{@C} int
+#{
+	#OnInit
+	{
+		this = RandInt(1..C)
+	}
 }
 
 main := !(char^[] args) -> int
 {
-	//c := tstEnum
-
-	//c = "Three"
-
-	//switch c
-	//{
-	//	case in !["One","Two"]
-	//		printf("yes\n")
-	//}
-	main_c()
+	printf("hey %i\n",GlobTest.{1000})
 }
 
-printEn := !(tstEnum tst) -> void
-{
-	printf("hey %s\n",tst.ToCStr())
-}
-
-main_c := !() -> void
-{
-	c := tstEnum
-
-	c = "Seven"
-	
-	printEn(c)
-}
 
 //TODO lazy class and fake fields
 //TODO lazy class in hotload
