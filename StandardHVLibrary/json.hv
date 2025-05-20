@@ -90,6 +90,8 @@ jsonNodeIterator := class
 	index := int
 	HaveValue := !() -> bool
 	{
+		if itNode == null
+			return false
 		return index < itNode.itSub.Size()
 	}
 	"()" := !(StringSpan^& indx) -> JsonNode^

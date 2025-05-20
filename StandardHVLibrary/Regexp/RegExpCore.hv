@@ -97,6 +97,7 @@ RegexpAsBlob := class extend Regexp
 					lastGoodTerm = isEndNode[nowPos]
 					lastGoodSize = nowSize
 				}
+				if nowSize + i >= siz break
 
 				nowChar := data[i + nowSize]
 				if nowChar >= 128 //TODO add support in compiler
