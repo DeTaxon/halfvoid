@@ -11,7 +11,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "CheckTemplateType"
+	needPrint := base->{BoxFuncBody^}.OutputName == "GetStr"
 	//needPrint = true
 	needPrint = false
 

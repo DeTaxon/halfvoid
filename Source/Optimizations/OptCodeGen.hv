@@ -22,7 +22,15 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	OptPrintGlobals(GInterpCntx&,ctx,c.WriteGlobals)
 	c.DeclareFunctions[^].PrintCode(ctx)
 
-	c.WriteFunctions[^].PrintCode(ctx)
+	if GTestCode 
+	{
+		for func : c.WriteFunctions
+		{
+			LLVMWriteBodyFunction(CodeCheckCtx.GetMCFunc(func),ctx)
+		}
+	}else{
+		c.WriteFunctions[^].PrintCode(ctx)
+	}
 
 	CodeSpaces[^].Files[^].PrintCode(ctx)
 	DummyFile?.PrintCode(ctx)

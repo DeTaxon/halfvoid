@@ -46,6 +46,8 @@ CompileSettings := SettingsSet^
 
 mainFuncName := "internalHVEntryPoint"
 
+GTestCode := false
+
 OutputFile := Str
 main := !(char^[] args) -> int
 {
@@ -167,6 +169,8 @@ main := !(char^[] args) -> int
 				i += 1
 				RunModeFuncName = args[i]
 				RunMode = true
+			case "-test"
+				GTestCode = true
 			case "-var"
 				i += 1
 				AddCompilerVars.Push(args[i])
@@ -369,7 +373,7 @@ main := !(char^[] args) -> int
 	ctx := LLVMWriteContext
 	ctx.writeStream = outFile
 
-	if OptimizeMode
+	if OptimizeMode or GTestCode
 	{
 		OptCodeGenLLVM(ctx&)
 	}else{

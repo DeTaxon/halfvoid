@@ -109,7 +109,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 							op.var2 = cnst
 						}else{
 							cnst2 := makeConst(tp)
-							newCmds.InsertAfter(iter,MCLine("llvm_load",cnst2,cnst))
+							newCmds.InsertBefore(iter,MCLine("llvm_load",cnst2,cnst))
 							op.opcode = "llvm_getelementptr"
 							op.var2 = cnst2
 						}
@@ -176,8 +176,8 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 							cnst2 := makeConst(tp.GetPoint())
 							cnst := makeConst(tp)
 							vr := getVar(op.var1&[j])
-							newCmds.InsertBefore(iter,MCLine("llvm_load",cnst,cnst2))
 							newCmds.InsertBefore(iter,MCLine("llvm_load",cnst2,vr))
+							newCmds.InsertBefore(iter,MCLine("llvm_load",cnst,cnst2))
 							op.var1&[j] = cnst
 						}
 

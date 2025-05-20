@@ -61,6 +61,9 @@ MainTarget: test
 test:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid $(flags) --vk vk.xml -g -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -o /tmp/out.ll
 	clang -g /tmp/out.ll -mfsgsbase -lm -o test
+comp:
+	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid -test $(flags) --vk vk.xml -g -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -o /tmp/out.ll
+	/home/max/clang+llvm-15.0.0-x86_64-linux-gnu-rhel-8.4/bin/clang -g /tmp/out.ll -mfsgsbase -lm -o test
 testground:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid $(flags) -g -O -C0 StandardHVLibrary -C0 ExperimentalLibrary TestGround.hv -o /tmp/out.ll
 	clang -g /tmp/out.ll -mfsgsbase -lm -o test
