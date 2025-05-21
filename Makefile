@@ -53,8 +53,12 @@ ifeq ($(exp),yes)
 	Exper := -C0 ExperimentalLibrary
 endif
 
+ifeq ($(test),yes)
+	Test := -test
+endif
 
-flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(tst)
+
+flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test)
 
 MainTarget: test
 

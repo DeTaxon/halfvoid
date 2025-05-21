@@ -1,15 +1,32 @@
 
-GlobTest := @{@C} int
-#{
-	#OnInit
+
+Test := class
+{
+	this := !() -> void {}
+	Func1 := virtual !() -> void
 	{
-		this = RandInt(1..C)
+
+	}
+	"=" := default
+}
+Test2 := class extends Test
+{
+	Func1 := virtual !() -> void
+	{
+
 	}
 }
 
 main := !(char^[] args) -> int
 {
-	printf("hey %i\n",GlobTest.{1000})
+	c := List.{Test}
+	c.Emplace()
+	c.Emplace()
+	c.Back()->SetType(Test2)
+	for it : c
+	{
+		printf("hmm %p\n",it& is not Test2)
+	}
 }
 
 

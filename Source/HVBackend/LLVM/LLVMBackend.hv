@@ -11,9 +11,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "GetStr"
+	needPrint := base->{BoxFuncBody^}.OutputName == "main_148"
 	//needPrint = true
-	needPrint = false
+	//needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
@@ -34,6 +34,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	currentDbgFileId := int
 	currentDbgBlockId := int
 
+	currentFile := Str
+	currentLine := int
+
 	dbgIsSet := false
 	currentDbgId := int
 
@@ -51,6 +54,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		currentDbgFileName := Str 
 		currentDbgFileName = "DummyFile"
 		currentDbgFileName = ln.File?.file?.GetPath()
+		
+		currentFile = currentDbgFileName
 
 		currentDbgFileId = GetNewId() 
 		dbgFiles[currentDbgFileName] = currentDbgFileId
@@ -121,6 +126,12 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	tmpLabelIter := 0
 
 	indx := 0
+
+	makeLoc := () ==> Str {
+		ech := TEchoStream
+		ech << " at " << currentFile << ":" << currentLine << " bytecode " << indx << " full name " << base.OutputName
+		return ech.GetStr()
+	}
 
 	while indx < fnc.Lines.Size()
 	{
@@ -302,6 +313,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			case "debug_set_file"
 				currentDbgFileName := fnc.Objects[op.var1]&->{MCConstString^}.GetValue().Str()
 
+				currentFile = currentDbgFileName
+
 				if not dbgFiles.Contain(currentDbgFileName) {
 					dbgFiles[currentDbgFileName] = GetNewId()
 				}
@@ -315,6 +328,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				dbgIsSet = true
 
 				ln := fnc.Objects[op.var1]&->{MCConstInteger^}.GetValue()
+				currentLine = ln
 
 				itId := GetNewId()
 
@@ -434,7 +448,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					ob1.GetType().PrintType(ctx)
 					printDebugEnd()
 				}else {
-					printf("LLVM: unknown cast at %s %i\n",base.GetName(),indx)
+					printf("LLVM: unknown cast at %s\n",makeLoc())
 					printf("types are %s and %s\n",ob1.GetType().GetBADStr().Str(),ob2.GetType().GetBADStr().Str())
 					assert(false)
 				}
@@ -539,7 +553,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					ob1.GetType().PrintType(ctx)
 					printDebugEnd()
 				}else{
-					printf("LLVM: unknown get at line %i\n",indx)
+					printf("LLVM: unknown get at %s\n",makeLoc())
 					assert(false)
 				}
 
@@ -683,7 +697,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					LLVMPrintObjValue(ctx,op2,op.var2)
 					printDebugEnd()
 				}else{
-					printf("LLVM: unknown move type at %s %i\n",base.GetName(),indx)
+					printf("LLVM: unknown move type at %s\n",makeLoc())
 					assert(false)
 				}
 			case in !["max","min"]

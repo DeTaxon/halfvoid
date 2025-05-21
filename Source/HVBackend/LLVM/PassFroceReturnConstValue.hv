@@ -19,6 +19,8 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 			usages[it.var1] += 2
 		if it.opcode == "get_pointer" and IsObjectVariable(fnc.Objects[it.var2])
 			usages[it.var2] += 2
+		if it.opcode == "clean" and IsObjectVariable(fnc.Objects[it.var1])
+			usages[it.var1] += 1
 		if not tbl.Contain(it.opcode)
 			continue
 		usages[it.var1] += 1
@@ -36,6 +38,9 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 
 		if tbl.Contain(it.opcode)
 		{
+			if it.opcode == "clean" {
+
+			}else
 			if usages[it.var1] == 1 and IsObjectVariable(fnc.Objects[it.var1])
 			{
 				newObjs[it.var1]->SetType(MCConstValue)

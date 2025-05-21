@@ -12,18 +12,28 @@ AppendClass IsSameTypeChecker
 
 		dwn := DownObj.WriteMC(ctx)
 
+		objId := dwn.CreatedId
+
+		tp := DownObj.GetType()
+		if tp is in TypeClass
+		{
+			newId := ctx.CreateVar(tp.GetPoint())
+			HVB_ins_get_pointer(ctx,newId,objId)
+			objId = newId
+		}
+
 		zeroPtr := ctx.AddPointer(null)
 
-		cmpZeroCheck := HVB_ins_cmp_new(ctx,dwn.CreatedId,"==",zeroPtr)
+		cmpZeroCheck := HVB_ins_cmp_new(ctx,objId,"==",zeroPtr)
 		HVB_ins_jump_if_bool(ctx,endLabel,cmpZeroCheck)
 
 		cpy := ctx.CreateVar(GTypeVoidP.GetPoint())
 
 		zero := ctx.AddInteger(0)
 
-		HVB_ins_cast(ctx,cpy,dwn.CreatedId)
+		HVB_ins_cast(ctx,cpy,objId)
 		tablRef := ctx.CreateReference(GTypeVoidP)
-		HVB_ins_load_element(ctx,tablRef,dwn.CreatedId,zero)
+		HVB_ins_load_element(ctx,tablRef,cpy,zero)
 
 		vr := ctx.GetGlobalVar(TargetType.ToClass.VTableValue)
 		vrPointer := ctx.CreateVar(GTypeVoidP)
