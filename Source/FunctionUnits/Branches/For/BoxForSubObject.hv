@@ -24,7 +24,7 @@ ForSubObjects := class
 	{
 		dwnRes := DownResult
 
-		if dwnRes.GetType() == GTypeInt and false
+		if dwnRes.GetType() == GTypeInt //TODO other ints, and maybe range
 		{
 			iterVar := new LocalVar(ValueName,GTypeInt,true,false)
 			CurrentFunc?.AddLocalVar(iterVar)

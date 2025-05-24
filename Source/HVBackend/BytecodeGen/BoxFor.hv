@@ -18,7 +18,7 @@ AppendClass BoxFor
 
 			it.ValueVar.WriteMC(ctx)
 			it.IndVar?.WriteMC(ctx)
-			it.CallGetValue.WriteMC(ctx)
+			it.CallGetValue?.WriteMC(ctx)
 
 			if it.IsFinished != null
 			{
