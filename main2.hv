@@ -1,31 +1,10 @@
 
 
-Test := class
-{
-	this := !() -> void {}
-	Func1 := virtual !() -> void
-	{
-
-	}
-	"=" := default
-}
-Test2 := class extends Test
-{
-	Func1 := virtual !() -> void
-	{
-
-	}
-}
-
 main := !(char^[] args) -> int
 {
-	c := List.{Test}
-	c.Emplace()
-	c.Emplace()
-	c.Back()->SetType(Test2)
-	for it : c
+	for i : 5
 	{
-		printf("hmm %p\n",it& is not Test2)
+		printf("test %i %p\n",i,i&)
 	}
 }
 

@@ -24,6 +24,30 @@ ForSubObjects := class
 	{
 		dwnRes := DownResult
 
+		if dwnRes.GetType() == GTypeInt and false
+		{
+			iterVar := new LocalVar(ValueName,GTypeInt,true,false)
+			CurrentFunc?.AddLocalVar(iterVar)
+			iv := iterVar.CreateVarCall()
+
+			endVar := ToLocalVar(dwnRes)
+			ev := endVar.CreateVarCall()
+
+			ValueVar = ToLocalVar(iv,ValueName)
+
+			iStep := new PackedExeObj
+			InitStep = iStep
+
+			iStep.preCalls.Push(iterVar)
+			iStep.preCalls.Push(endVar)
+			iStep.mainCall = CreateFuncCall("=",![iv,0hv])
+
+			IncFunc = CreateFuncCall("+=",![iv,1hv])
+			HaveValue = CreateFuncCall("<",![iv,ev])
+
+			return void
+		}
+
 		objs7 := CheckExeDownList
 		objs7.Push(dwnRes)
 		getForCall := BoxExeObj^
