@@ -5,7 +5,6 @@ VulkanGLFWInstance := class extend VulkanInstance
 
 	surfaceImages := Vector.{VkImage}^
 	surfaceImageViews := Vector.{VkImageView}^
-	surfaceFramebuffer := VkFramebuffer
 
 	SwapImageFormat := int
 	SwapImageColorSpace := int
@@ -99,7 +98,7 @@ VulkanGLFWInstance := class extend VulkanInstance
 		SwapImageColorSpace = formts[preferedFormatIndex].colorSpace
 		SwapImageMode = reqMod
 	}
-	CreateSwapchain := !(TRenderPass^ renPass,int inW,int inH) -> bool
+	CreateSwapchain := !(int inW,int inH) -> bool
 	{
 		oldSwapchain := itSwapchain
 
@@ -169,30 +168,6 @@ VulkanGLFWInstance := class extend VulkanInstance
 	
 			Funcs.vkCreateImageView(LogicalDevice,imgViewC&,null,surfaceImageViews^[i]&)
 		}
-
-		fbAtt := VkFramebufferAttachmentImageInfo()
-		fbAtt.width = inW
-		fbAtt.height = inH
-		fbAtt.layerCount = 1
-		fbAtt.viewFormatCount = 1
-		fbAtt.pViewFormats = SwapImageFormat&
-		fbAtt.usage = 0x00000010
-
-		fbAttCr := VkFramebufferAttachmentsCreateInfo()
-		fbAttCr.attachmentImageInfoCount = 1
-		fbAttCr.pAttachmentImageInfos = fbAtt&
-	
-		fbC := VkFramebufferCreateInfo()
-		fbC.pNext = fbAttCr&
-		fbC.renderPass = renPass.Get()
-		fbC.flags = VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT
-		fbC.attachmentCount = 1
-		fbC.pAttachments&->{void^^}^ = null
-		fbC.width = inW
-		fbC.height = inH
-		fbC.layers = 1
-	
-		Funcs.vkCreateFramebuffer(LogicalDevice,fbC&,null,surfaceFramebuffer&)
 
 		return true
 	}

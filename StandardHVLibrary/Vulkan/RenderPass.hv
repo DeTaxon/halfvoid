@@ -84,7 +84,6 @@ TRenderPass := class extend TGCObject
 			subpass.pDepthStencilAttachment&->{void^^}^ = attmRef2&
 			rpC.attachmentCount += 1
 		}
-
 		inst.Funcs.vkCreateRenderPass(inst.LogicalDevice,rpC&,null,itPass&)
 	}
 	CreateLayout := !(VKType[] vInput,TShaderSet^[] sets, TPushConstant^[] cnsts, int resImgCount) -> TShaderInput^

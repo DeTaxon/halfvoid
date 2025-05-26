@@ -1,0 +1,54 @@
+
+
+VulkanShaderLoader := class
+{
+	inputTypes := AVLMap.{Str,TShaderInput^}
+	shaderCompiler := ShaderCompiler
+
+    this := !() -> void
+    {
+        shaderCompiler."this"()
+    }
+	SetCacheFile := !(CacheFile^ cacheFile) -> void
+	{
+		shaderCompiler.SetCacheFile(cacheFile)
+	}
+	SetInput := !(Str name,TShaderInput^ model) -> void
+	{
+		inputTypes[name] = model
+	}
+	LoadShader := !(Str shaderInfo) -> vShader^
+	{
+		fil := FSGetFile(shaderInfo)
+		flMap := fil.GetMap()
+		js := new Json
+
+		js.ParseString(flMap.Get()->{char^},flMap.Size())
+
+		shaderType := TShaderInput^
+
+		vertName := StringSpan
+		fragName := StringSpan
+		for nd, nodeName : js^
+		{
+			switch nodeName
+			{
+				case "type"
+					if not inputTypes.Contain(nd.Value())
+						return null
+					shaderType = inputTypes[nd.Value()]
+				case "vertex"
+					vertName = nd.Value()
+				case "fragment"
+					fragName = nd.Value()
+				case void
+					assert(false) //TODO emit exception
+			}
+		}
+
+		vertBlob := shaderCompiler.Compile(fil.GetFile(vertName)).ResultShader
+		fragBlob := shaderCompiler.Compile(fil.GetFile(fragName)).ResultShader
+
+		return shaderType.CreateShader(vertBlob,fragBlob)
+	}
+}
