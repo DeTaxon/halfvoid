@@ -135,6 +135,7 @@ TShaderInput := class
 
 		paC1 := VkPipelineInputAssemblyStateCreateInfo()
 		paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+		paC1.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST
 
 		stts := VkDynamicState[2]
 		stts[0] = VK_DYNAMIC_STATE_VIEWPORT

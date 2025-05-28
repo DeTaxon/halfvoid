@@ -1,11 +1,22 @@
 
 
+
+TransferData := !(Blob dataView) -> void
+{
+	srcPtr := dataView.GetPointer()
+	assert(srcPtr != null)
+	if srcPtr != null {
+
+	}else{
+		for c : dataView
+			c += 1
+	}
+}
 main := !(char^[] args) -> int
 {
-	for i : 5
-	{
-		printf("test %i %p\n",i,i&)
-	}
+	c := Blob
+
+	TransferData(c)
 }
 
 

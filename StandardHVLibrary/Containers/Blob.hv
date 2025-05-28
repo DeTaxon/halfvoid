@@ -47,3 +47,8 @@ MakeBlob := !(s64 siz) -> Blob^
 {
 	return new BlobOnVector(siz)
 }
+
+"->{}" := !(Vector.{@T} vec) .{Blob} -> BlobSpan
+{
+	result."this"(vec.GetPointer(),vec.Size()*T->TypeSize)
+}

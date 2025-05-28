@@ -51,4 +51,22 @@ VulkanShaderLoader := class
 
 		return shaderType.CreateShader(vertBlob,fragBlob)
 	}
+	LoadComputeShader := !(VulkanDefaultInstance^ inst,TShaderInput^ pass,Str vertName) -> vShader^
+	{
+		vertBlob := shaderCompiler.Compile(FSGetFile(vertName)).ResultShader
+
+		shdr2 := LoadShaderModule3(inst,vertBlob)
+
+		cSS := VkPipelineShaderStageCreateInfo()
+		cSS.stage = VK_SHADER_STAGE_COMPUTE_BIT
+		cSS.module = shdr2.itModule
+		cSS.pName&->{void^^}^ = "main"
+
+		createInfo := VkComputePipelineCreateInfo()
+		createInfo.layout = pass.itLayout
+		memcpy(createInfo.stage&,cSS&,VkPipelineShaderStageCreateInfo->TypeSize)
+
+		result = new vShader
+		inst.Funcs.vkCreateComputePipelines(inst.LogicalDevice,null,1,createInfo&,null,result.itPipe&)
+	}
 }

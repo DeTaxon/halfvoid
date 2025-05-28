@@ -1,6 +1,6 @@
 AppendClass VulkanInstance
 {
-	CreateMesh := !(u8[] vertData, u8[] indexData,VKType indType) -> TVkMesh^
+	CreateMesh := !(Blob vertData, Blob indexData,VKType indType) -> TVkMesh^
 	{
 		result = new TVkMesh
 		result.itInstance = this&
@@ -16,7 +16,7 @@ TVkMesh := class
 	indexMemory := TVkMemBuffer^
 	indType := VKType
 	
-	Create := !(u8[] vertData, u8[] indexData,VKType inIndType) -> void
+	Create := !(Blob vertData, Blob indexData,VKType inIndType) -> void
 	{
 		vertexMemory = itInstance.CreateMemBufferObject(vertData.Size(),VK_BUFFER_USAGE_VERTEX_BUFFER_BIT or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT)
 		indexMemory = itInstance.CreateMemBufferObject(indexData.Size(),VK_BUFFER_USAGE_INDEX_BUFFER_BIT or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT)
@@ -25,7 +25,7 @@ TVkMesh := class
 		TransferData(vertData,indexData)
 	}
 
-	TransferData := !(u8[] vertData, u8[] indexData) -> void
+	TransferData := !(Blob vertData, Blob indexData) -> void
 	{
 		vertexMemory.TransferData(vertData)
 		indexMemory.TransferData(indexData)

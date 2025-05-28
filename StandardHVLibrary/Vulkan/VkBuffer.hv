@@ -19,7 +19,7 @@ TVkMemBuffer := class extend TVkMemoryObject
 	{
 		return itBuffer&
 	}
-	TransferData := !(u8[] dataView) -> void
+	TransferData := !(Blob dataView) -> void
 	{
 		assert(itMemInfo != null)
 
@@ -36,13 +36,8 @@ TVkMemBuffer := class extend TVkMemoryObject
 		assert(dataView.Size() <= gpuSize)
 
 		srcPtr := dataView.GetPointer()
-		if srcPtr != null
-		{
-			memcpy(ptr,srcPtr,dataView.Size())
-		}else{
-			for it, i : dataView
-				ptr[i] = it
-		}
+		assert(srcPtr != null)
+		memcpy(ptr,srcPtr,dataView.Size())
 		useMem.Unmap()
 
 		if useStage

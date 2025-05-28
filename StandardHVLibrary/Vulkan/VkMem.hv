@@ -14,6 +14,23 @@ AppendClass VulkanInstance
 		result = new TVkMemoryObject
 		result.CreateObject(this&,size,memType,false)
 	}
+	CreateMemBuffer := !(int size, Str flags) -> TVkMemBuffer^
+	{
+		memUsage := 0
+		for i : flags.Size()
+		{
+			switch flags[i] //TODO flg does not work
+			{
+			case 'v'
+				memUsage = memUsage or_b VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+			case 's'
+				memUsage = memUsage or_b VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+			case 'r'
+				memUsage = memUsage or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			}
+		}
+		return CreateMemBufferObject(size,memUsage)
+	}
 	CreateMemBufferObject := !(int size, int memUsage) -> TVkMemBuffer^
 	{
 		result = new TVkMemBuffer

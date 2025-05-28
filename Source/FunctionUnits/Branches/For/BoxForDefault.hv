@@ -68,7 +68,7 @@ BoxFor := class extend BoxExeObj
 		defer GDebugLineCallId = oldLineCall
 
 		CreatedIndex?.PrintCode(ctx)
-		values[^].InitStep.PrintDefaultUse(ctx)
+		values[^].InitStep?.PrintDefaultUse(ctx)
 		CheckStep.PrintCode(ctx)
 
 		for it : values
@@ -80,7 +80,7 @@ BoxFor := class extend BoxExeObj
 				it.NextCheck.PrintCode(ctx)
 			}
 
-			it.ValueVar.PrintCode(ctx)
+			it.ValueVar?.PrintCode(ctx)
 			it.IndVar?.PrintCode(ctx)
 			it.CallGetValue?.PrintDefaultUse(ctx)
 
