@@ -42,6 +42,8 @@ ShaderCompiler := class extend TGCObject
 			target = shaderc_task_shader
 		if flName.End == ".mesh"
 			target = shaderc_mesh_shader
+		if flName.End == ".comp"
+			target = shaderc_compute_shader
 
 		cmplr := shaderc_compiler_initialize()
 		res := shaderc_compile_into_spv(cmplr,blb.GetPointer()->{char^},blb.Size(),target,flName.Str(),"main",options)

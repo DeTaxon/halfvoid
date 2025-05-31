@@ -27,6 +27,8 @@ AppendClass VulkanInstance
 				memUsage = memUsage or_b VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 			case 'r'
 				memUsage = memUsage or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT
+			case void
+				assert(false)
 			}
 		}
 		return CreateMemBufferObject(size,memUsage)
