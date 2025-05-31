@@ -131,6 +131,7 @@ vShaderModule := class extend TGCObject
 vShader := class 
 {
 	itPipe := VkPipeline
+	itLayout := VkPipelineLayout
 	this := !() -> void {}
 
 	ApplyShaderToQueue := !(VulkanInstance^ inst,VkCommandBuffer itBuf,float surfWidth, float surfHeight) -> void

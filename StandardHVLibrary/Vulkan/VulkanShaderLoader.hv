@@ -67,6 +67,7 @@ VulkanShaderLoader := class
 		memcpy(createInfo.stage&,cSS&,VkPipelineShaderStageCreateInfo->TypeSize)
 
 		result = new vShader
+		result.itLayout = pass.itLayout
 		inst.Funcs.vkCreateComputePipelines(inst.LogicalDevice,null,1,createInfo&,null,result.itPipe&)
 	}
 }

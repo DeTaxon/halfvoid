@@ -595,6 +595,15 @@ TPushConstant := class extend TGCObject
 		return cnst&
 	}
 }
+TComputePushConstant := class extend TPushConstant
+{
+	this := !(int itSize) -> void
+	{
+		cnst.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT
+		cnst.offset = 0
+		cnst.size = itSize
+	}
+}
 TVertexPushConstant := class extend TPushConstant
 {
 	this := !(int itSize) -> void
