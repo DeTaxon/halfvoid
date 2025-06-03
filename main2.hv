@@ -1,22 +1,16 @@
 
 
 
-TransferData := !(Blob dataView) -> void
-{
-	srcPtr := dataView.GetPointer()
-	assert(srcPtr != null)
-	if srcPtr != null {
-
-	}else{
-		for c : dataView
-			c += 1
-	}
-}
 main := !(char^[] args) -> int
 {
-	c := Blob
+	c := vec3f
 
-	TransferData(c)
+	c.x = 14
+	c.y = -1.3
+
+	printf("test %s\n",c)
+
+	//printf("test %s\n",c)
 }
 
 

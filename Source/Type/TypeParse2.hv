@@ -166,6 +166,13 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		return fType
 
 	}
+	if tk.Down?.Right?.GetValue() == "->"
+	{
+		ob := TryGetMetaCall(tk)
+
+		if ob? is in Type
+			return ob->{Type^}
+	}
 	if tk.Down?.Right?.GetValue() == "?"
 	{
 		resType := CheckTemplateType(obj,null,tk.Down,resCnsts) //TODO non null value so it could work in template

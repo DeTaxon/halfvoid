@@ -22,3 +22,24 @@ internalVectorConstructor4 := !(@T& val,@K a, K b, K c, K d) -> void
 	val.z = c
 	val.w = d
 }
+
+internalVectorToStr := !(@T vec) -> Str
+{
+	echo := TEchoStream
+
+	v := vec
+
+	echo << "{"
+
+	for i : T->VecSize
+	{
+		if i != 0
+			echo << ", "
+
+		echo << !["x","y","z","w"][i]
+		echo << ": " << v&->{T->TypeBase^}[i] 
+	}
+	echo << "}"
+
+	result = echo.GetStr()
+}

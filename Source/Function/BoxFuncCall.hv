@@ -166,6 +166,19 @@ BoxFuncCall := class extend BoxExeObj
 				}else if tp == GTypeFloat
 				{
 					downs[i] = GetExchange(downs[i],GTypeDouble)
+				}else if tp is in TypeVector
+				{
+					downs[i] = CreateFuncCall("internalVectorToStr",![downs[i]])
+
+					stTyp := GTypeChar.GetPoint()
+					while downs[i] != null and downs[i].GetType() != stTyp
+					{
+						downs[i] = GetExchange(downs[i],stTyp)
+					}
+					if downs[i] == null
+					{
+						CurrentWork?.SetErrorMessage("somehow could not create string from vector")
+					}
 				}else if tp is in TypeClass or tp is TypeStr
 				{
 					stTyp := GTypeChar.GetPoint()

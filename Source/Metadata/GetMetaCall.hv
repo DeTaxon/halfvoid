@@ -184,6 +184,15 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return null
 		return GetExeInt(typ->{TypeArr^}.len)
 	}
+	if right.Value == "VecSize"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+			return null
+		if typ is not TypeVector
+			return null
+		return GetExeInt(typ->{TypeVector^}.vecElementCount)
+	}
 	if right.Value == "VTable"
 	{
 		typ := ParseType(obj.Down)
