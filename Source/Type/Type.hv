@@ -473,6 +473,15 @@ IsVecType := !(Type^ tp) -> bool
 	return false
 }
 
+ForEachVecType := !(!(TypeVector^)&-> void cb) -> void
+{
+	for i : 30
+	{
+		if TypeTable[i]? is TypeVector
+			cb(TypeTable[i]->{TypeVector^})
+	}
+}
+
 CreateStandardTypes := !() -> void
 {	
 	//u

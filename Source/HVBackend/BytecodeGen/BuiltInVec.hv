@@ -1,34 +1,4 @@
 
-AppendClass BuiltInVecOperOnFloat
-{
-	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
-	{
-		typ := indexes[0].GetType()
-		vecVal := indexes[0].WriteMC(ctx).CreatedId
-		fltVal := indexes[1].WriteMC(ctx).CreatedId
-		
-		siz := GetVecXTypeSize(typ)
-
-		newVec := ctx.CreateVar(typ)
-
-		HVB_ins_vec_build(ctx,newVec,fltVal,fltVal,fltVal,fltVal)
-
-		switch llvmOper
-		{
-		case "fadd"
-			HVB_ins_add(ctx,newVec,vecVal,newVec)
-		case "fsub"
-			HVB_ins_sub(ctx,newVec,vecVal,newVec)
-		case "fmul"
-			HVB_ins_mul(ctx,newVec,vecVal,newVec)
-		case "fdiv"
-			HVB_ins_div(ctx,newVec,vecVal,newVec)
-		}
-
-		result.CreatedId = newVec
-	}
-}
 AppendClass BuiltInVecScalarMult
 {
 	IsMCInlined := virtual true

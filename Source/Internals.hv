@@ -16,10 +16,12 @@ GInternalSetType := BoxFuncTemplate^
 ArrayViewCreateEmptyArray := BoxFuncTemplate^
 GZeroMemTemplate := BoxFuncTemplate^
 
-GVectorConstructor1 := BoxFuncTemplate^
 GVectorConstructor2 := BoxFuncTemplate^
 GVectorConstructor3 := BoxFuncTemplate^
 GVectorConstructor4 := BoxFuncTemplate^
+GVectorConstructor2Scalar := BoxFuncTemplate^
+GVectorConstructor3Scalar := BoxFuncTemplate^
+GVectorConstructor4Scalar := BoxFuncTemplate^
 
 
 GOperatorSetGC := BoxFuncTemplate^
@@ -69,10 +71,12 @@ InitInternals := !() -> void
 
 	GZeroMemTemplate = intGetTemplate("ZeroMem")
 
-	GVectorConstructor1 = intGetTemplate("internalVectorConstructor1")
 	GVectorConstructor2 = intGetTemplate("internalVectorConstructor2")
 	GVectorConstructor3 = intGetTemplate("internalVectorConstructor3")
 	GVectorConstructor4 = intGetTemplate("internalVectorConstructor4")
+	GVectorConstructor2Scalar = intGetTemplate("internalVectorConstructor2Scalar")
+	GVectorConstructor3Scalar = intGetTemplate("internalVectorConstructor3Scalar")
+	GVectorConstructor4Scalar = intGetTemplate("internalVectorConstructor4Scalar")
 
 }
 

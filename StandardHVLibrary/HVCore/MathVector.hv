@@ -1,9 +1,4 @@
 
-internalVectorConstructor1 := !(@T& val,@K a) -> void
-{
-	val.x = a
-}
-
 internalVectorConstructor2 := !(@T& val,@K a, K b) -> void
 {
 	val.x = a
@@ -21,6 +16,25 @@ internalVectorConstructor4 := !(@T& val,@K a, K b, K c, K d) -> void
 	val.y = b
 	val.z = c
 	val.w = d
+}
+
+internalVectorConstructor2Scalar := !(@T& val,@K a) -> void
+{
+	val.x = a
+	val.y = a
+}
+internalVectorConstructor3Scalar := !(@T& val,@K a) -> void
+{
+	val.x = a
+	val.y = a
+	val.z = a
+}
+internalVectorConstructor4Scalar := !(@T& val,@K a) -> void
+{
+	val.x = a
+	val.y = a
+	val.z = a
+	val.w = a
 }
 
 internalVectorToStr := !(@T vec) -> Str

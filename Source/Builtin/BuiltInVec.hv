@@ -250,7 +250,17 @@ BuiltInVecConstrTemplate := class extend BoxFuncTemplate
 		if tp.Params.Size() == 3
 			return GVectorConstructor2.CreateFunc(tp,consts)
 		if tp.Params.Size() == 2
-			return GVectorConstructor1.CreateFunc(tp,consts)
+		{
+			switch GetVecXTypeSize(tp.Params[0].ItType)
+			{
+			case 2
+				return GVectorConstructor2Scalar.CreateFunc(tp,consts)
+			case 3
+				return GVectorConstructor3Scalar.CreateFunc(tp,consts)
+			case 4
+				return GVectorConstructor4Scalar.CreateFunc(tp,consts)
+			}
+		}
 		assert(false)
 	}
 }
@@ -284,54 +294,29 @@ BuiltInVecScalarMult := class extend BoxFuncCommon
 	}
 }
 
-BuiltInVecOperOnFloat := class extend BoxFuncCommon
+BuiltInVecModifByScalar:= class extend BoxFuncCommon
 {
-	llvmOper := char^
-	this := !(TypeFunc^ tp, char^ itOper) -> void
+	operatorType := Str
+	this := !(TypeFunc^ fType,Str operType) -> void
 	{
-		llvmOper = itOper
-		SetType(tp)
+		SetType(fType)
+		operatorType = operType
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
-		f := ctx.writeStream
-		typ := lst[0].GetType()
+		base := objs[0].GetType()
 
-		typBase := lst[1].GetType()
-		siz := GetVecXTypeSize(typ)
-		lst[^].PrintPre(ctx)
+		locVar := new LocalVar("anon",base,true,false)
+		CurrentFunc?.AddLocalVar(locVar)
 
-		f^ << "%TempT" << resId << " =  insertelement "
-		typ.PrintType(ctx)
-		f^ << " undef, "
-		typBase.PrintType(ctx)
-		f^ << " "
-		lst[1].PrintUse(ctx)
-		f^ << " , i32 0"
-		f^ << "\n"
+		cCall := locVar.CreateVarCall()
+		constrObj := CreateFuncCall(". this",![cCall,objs[1]],![])
+		assert(constrObj != null)
+		locVar.extraWork.Push(constrObj?)
 
-		f^ << "%Temp" << resId << " = shufflevector "
-		typ.PrintType(ctx)
-		f^ << " %TempT" << resId
-		f^ << ", "
-		typ.PrintType(ctx)
-		f^ << " undef , <" << siz << " x i32> <"
-		for i : siz
-		{
-			if i != 0
-				f^ << ","
-			f^ << "i32 0"
-		}
-		f^ << ">\n"
+		scalarAsVec := new ConstructorCallWrapper(locVar,cCall)
 
-		f^ << "%T" << resId << " = " << llvmOper << " "
-		typ.PrintType(ctx)
-		f^ << " "
-		lst[0].PrintUse(ctx)
-		f^ << " , " << "%Temp" << resId
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		return CreateFuncCall(operatorType,![objs[0],scalarAsVec ])
 	}
 }
 
@@ -340,14 +325,10 @@ CreateBuiltInVec:= !() -> void
 	bSpace := CodeSpaces[-1]&
 
 	baseOfVec := GTypeFloat
-	for x : ![GTypeVec4f,GTypeVec3f,GTypeVec2f,GTypeQuantf]
+	for x : ![GTypeVec4f,GTypeVec3f,GTypeVec2f,GTypeQuantf] // float base
 	{
-		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
 		baseRefed := GetFuncType(![x,x],![true,false],x)
 		baseAdd := GetFuncType(![x,x],![false,false],x)
-		operOnFloat := GetFuncType(![x,baseOfVec],![false,false],x)
-
-		bSpace.Functions["="].Push(new BuiltInPrimeStore(storeType))
 
 		bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"fadd") )
 		bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"fsub") )
@@ -359,21 +340,12 @@ CreateBuiltInVec:= !() -> void
 		bSpace.Functions["/="].Push(new BuiltInIntEqAndOper(baseRefed,"fdiv") )
 
 		bSpace.Functions["<+>"].Push(new BuiltInVecScalarMult(GetFuncType(![x,x],GTypeFloat)) )
-
-		bSpace.Functions["+"].Push(new BuiltInVecOperOnFloat(operOnFloat,"fadd") )
-		bSpace.Functions["-"].Push(new BuiltInVecOperOnFloat(operOnFloat,"fsub") )
-		bSpace.Functions["*"].Push(new BuiltInVecOperOnFloat(operOnFloat,"fmul") )
-		bSpace.Functions["/"].Push(new BuiltInVecOperOnFloat(operOnFloat,"fdiv") )
 	}
-	for xIndex : ![23,24,25]
+	for xIndex : ![23,24,25] // int base
 	{
 		x := TypeTable[xIndex]
-		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
 		baseRefed := GetFuncType(![x,x],![true,false],x)
 		baseAdd := GetFuncType(![x,x],![false,false],x)
-		operOnInt := GetFuncType(![x,GTypeInt],![false,false],x)
-
-		bSpace.Functions["="].Push(new BuiltInPrimeStore(storeType))
 
 		bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"add") )
 		bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"sub") )
@@ -383,12 +355,24 @@ CreateBuiltInVec:= !() -> void
 		bSpace.Functions["-="].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
 		bSpace.Functions["*="].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
 		bSpace.Functions["/="].Push(new BuiltInIntEqAndOper(baseRefed,"div") )
-
-		bSpace.Functions["+"].Push(new BuiltInVecOperOnFloat(operOnInt,"add") )
-		bSpace.Functions["-"].Push(new BuiltInVecOperOnFloat(operOnInt,"sub") )
-		bSpace.Functions["*"].Push(new BuiltInVecOperOnFloat(operOnInt,"mul") )
-		bSpace.Functions["/"].Push(new BuiltInVecOperOnFloat(operOnInt,"div") )
 	}
+	ForEachVecType(x ==> {
+
+		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+		base := x.Base
+
+		bSpace.Functions["="].Push(new BuiltInPrimeStore(storeType))
+
+		infixScalar := GetFuncType(![x,base],![true,false],GTypeVoid)
+
+		for it : !["+=","-=","*=","/="]
+			bSpace.Functions[it].Push(new BuiltInVecModifByScalar(infixScalar,it))
+
+		oper2 := GetFuncType(![x,base],![false,false],x)
+		for it : !["+","-","*","/"]
+			bSpace.Functions[it].Push(new BuiltInVecModifByScalar(oper2,it))
+
+	})
 
 	bSpace.Templates["."].Push(new BuiltInGetVecTemplate())
 

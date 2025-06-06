@@ -219,9 +219,6 @@ BuiltInIntSuffixU := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeInt],GTypeU64))
 	}
-	//PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
-	//{
-	//}
 	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 1)

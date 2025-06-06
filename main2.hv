@@ -3,10 +3,13 @@
 
 main := !(char^[] args) -> int
 {
-	c := vec3f
+	c := vec3f(8.0)
 
-	c.x = 14
-	c.y = -1.3
+	c.x = 10
+
+	printf("before %s\n",c)
+
+	c = c + 15
 
 	printf("test %s\n",c)
 
