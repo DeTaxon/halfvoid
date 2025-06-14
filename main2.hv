@@ -1,18 +1,13 @@
 
 
+ManyInputs := !(int v1 = 0, int v2 = 0, int v3 = 0) -> void
+{
+	printf("test %i %i %i\n",v1,v2,v3)
+}
 
 main := !(char^[] args) -> int
 {
-	c := vec3f(8.0)
-
-	c.x = 10
-
-	printf("before %s\n",c)
-
-	c = c + 15
-
-	printf("test %s\n",c)
-
+	ManyInputs(v3 = 16,v1 = 3)
 	//printf("test %s\n",c)
 }
 

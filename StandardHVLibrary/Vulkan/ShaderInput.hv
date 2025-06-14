@@ -1,12 +1,3 @@
-AppendClass VulkanInstance
-{
-	CreateLayout := !(VKType[] vInput,TShaderSet^[] sets, TPushConstant^[] cnsts, int resImgCount) -> TShaderInput^
-	{
-		result = new TShaderInput
-		result.itInstance = this&
-		result.CreateInput(vInput,sets,cnsts,resImgCount)
-	}
-}
 
 
 TShaderInput := class 
