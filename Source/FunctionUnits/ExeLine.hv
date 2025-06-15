@@ -230,7 +230,16 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 
 }
 
+FuncInputObjects := class
+{
+	Objs := CheckExeDownList
+	NamedObjs := AVLMap.{Str,BoxExeObj^}
+}
 
+CheckFuncCallBrackets := !(Token^ itm) -> FuncInputObjects
+{
+	CheckFuncCallBrackets(itm,result.Objs,result.NamedObjs)
+}
 CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{Str,BoxExeObj^} namedInputs) -> bool
 {
 	SyntaxCompress(itm,PriorityData)
@@ -425,6 +434,10 @@ CreateFuncCall := !(Str name, BoxExeObj^[] Objs) -> BoxExeObj^
 }
 CreateFuncCall := !(Str name, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
 {
+	return CreateFuncCall(name,Objs,consts,null)
+}
+CreateFuncCall := !(Str name, BoxExeObj^[] Objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+{
 	callItem := BoxUnit^
 
 	GetItemLocal(name, x ==> {
@@ -445,12 +458,12 @@ CreateFuncCall := !(Str name, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> Box
 	if callItem == null
 	{
 		return TryRemoveAutoCast(null,Objs, (newVr,newObjs) ==> {
-			return CreateFuncCall(name,newObjs,consts)
+			return CreateFuncCall(name,newObjs,consts,iObjs)
 		})
 	}
-	return makeFuncCall(callItem,Objs,consts)
+	return makeFuncCall(callItem,Objs,consts,iObjs)
 }
-makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs = null) -> BoxExeObj^
 {
 	if callItem is ConstVar
 	{
@@ -467,7 +480,7 @@ makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts)
 	}
 	if callItem is in BoxFuncTemplate
 	{
-		return callItem->{BoxFuncTemplate^}.CreateFuncCall(Objs,consts)
+		return callItem->{BoxFuncTemplate^}.CreateFuncCall(Objs,consts,iObjs)
 	}
 	if callItem is in BoxFunc
 	{

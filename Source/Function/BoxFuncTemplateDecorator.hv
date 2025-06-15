@@ -41,7 +41,7 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 	{
 		baseTemplate.SetName(name)
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		buf := char[256]
 		memcpy(buf[0]&,decoratorToken.Value.NonNullStr(),decoratorToken.Value.Size())

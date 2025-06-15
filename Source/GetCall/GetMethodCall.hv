@@ -30,9 +30,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 	if vr == null return null
 
-	Objs := CheckExeDownList
-	namedInputs := AVLMap.{Str,BoxExeObj^} //TODO use variable
-	CheckFuncCallBrackets(itm.Down.Right.Right.Right,Objs,namedInputs)
+	iObjs := CheckFuncCallBrackets(itm.Down.Right.Right.Right)
 
 	if constsToken != null
 	{
@@ -42,7 +40,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 	if vr.GetType() is in TypeEnum
 	{
-		return GetEnumMethodCall(itm,vr,Objs,consts)?
+		return GetEnumMethodCall(itm,vr,iObjs.Objs,consts)?
 	}
 
 	gotName := false
@@ -60,7 +58,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 	if gotName
 	{
-		fnc := innerTryGetMethodCall(methodName,vr,Objs,consts)
+		fnc := innerTryGetMethodCall(methodName,vr,iObjs.Objs,consts,iObjs&)
 		if fnc != null
 			return fnc
 	}
@@ -70,7 +68,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		nm := itm.Down.Right.Right->{TokenIndent^}
 		objs2 := CheckExeDownList
 		objs2.Push(vr)
-		objs2.Push(Objs[^])
+		objs2.Push(iObjs.Objs[^])
 
 		newFnc := CreateFuncCall(nm.Value,objs2,consts)
 		return newFnc?
@@ -79,14 +77,14 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	ptrCall := innerTryGetFieldCall(vr,itm.Down.Right.Right)
 	if ptrCall != null
 	{
-		return innerTryGetPtrCall(ptrCall,Objs)?
+		return innerTryGetPtrCall(ptrCall,iObjs.Objs)?
 	}
 
 	CurrentWork?.SetErrorMessage(itm.MakeError("Method not found"))
 	return null
 }
 
-innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, BoxExeObj^[] sObjs,BoxExeConstObj^[] consts) -> BoxExeObj^
+innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, BoxExeObj^[] sObjs,BoxExeConstObj^[] consts, FuncInputObjects^ iObjs = null) -> BoxExeObj^
 {
 	if vr == null
 		return null
@@ -135,26 +133,26 @@ innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, BoxExeObj^[] sObjs,BoxExeCons
 		{
 			if callItem is in BoxFunc
 			{
-				return callItem->{BoxFunc^}.CreateCall(Objs)
+				return callItem->{BoxFunc^}.CreateCall(Objs,iObjs)
 			}
 			if callItem is in BoxFuncTemplate
 			{
-				return callItem->{BoxFuncTemplate^}.CreateFuncCall(Objs,consts)
+				return callItem->{BoxFuncTemplate^}.CreateFuncCall(Objs,consts,iObjs)
 			}
 			assert(false)
 		}
 		return TryRemoveAutoCast(vr,sObjs, (newVr,newObjs) ==> {
-			return innerTryGetMethodCall(name,newVr,newObjs,consts)
+			return innerTryGetMethodCall(name,newVr,newObjs,consts,iObjs)
 		})
 	}
 
 	if vr?.GetType() == GTypeStr
 	{
 		asSt := strAsString(vr)
-		return innerTryGetMethodCall(name,asSt,sObjs,consts)
+		return innerTryGetMethodCall(name,asSt,sObjs,consts,iObjs)
 	}
 	return TryRemoveAutoCast(vr,sObjs, (newVr,newObjs) ==> {
-		return innerTryGetMethodCall(name,newVr,newObjs,consts)
+		return innerTryGetMethodCall(name,newVr,newObjs,consts,iObjs)
 	})
 }
 

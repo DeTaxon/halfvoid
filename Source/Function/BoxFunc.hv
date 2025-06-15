@@ -134,6 +134,10 @@ BoxFunc := class extend BoxExeConstObj
 	}
 	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
 	{
+		return CreateCall(objs,null)
+	}
+	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^ //TODO remove above options with default values
+	{
 		if this.IsConstexpr
 		{
 			check := true
@@ -150,7 +154,7 @@ BoxFunc := class extend BoxExeConstObj
 				return Execute(objs)
 			}
 		}
-		fCall := new BoxFuncCall(this&,objs) //MUST BE NEW BOXFUNCCALL
+		fCall := new BoxFuncCall(this&,objs,iObjs) //MUST BE NEW BOXFUNCCALL
 
 		ft := GetType()->{TypeFunc^}
 

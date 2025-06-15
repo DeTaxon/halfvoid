@@ -302,7 +302,7 @@ BuiltInVecModifByScalar:= class extend BoxFuncCommon
 		SetType(fType)
 		operatorType = operType
 	}
-	CreateCall := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
+	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		base := objs[0].GetType()
 

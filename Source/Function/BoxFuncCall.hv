@@ -36,13 +36,23 @@ BoxFuncCall := class extend BoxExeObj
 
 		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,objs)
 	}
-	CheckInputs := !(TypeFunc^ fType,BoxFunc^ fnc, BoxExeObj^[] objs) -> void
+	this := !(BoxFunc^ fnc, BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> void //TODO default values for constructors
+	{
+		callObj = fnc
+		assert(callObj != null)
+
+		if callObj is in BoxFunc
+			callObj->{BoxFunc^}.ParseBody()
+
+		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,objs,iObjs)
+	}
+	CheckInputs := !(TypeFunc^ fType,BoxFunc^ fnc, BoxExeObj^[] objs,FuncInputObjects^ iObjs = null) -> void
 	{
 		itType := NormalizeFuncType(fType)
 
 		if (fType.ResultType.IsComplexReturn() and not fType.ResultRef) or fType.ExtraResults.Size() != 0
 		{
-			ResultVar = new LocalVar(StringSpan("anon"),itType.Params[0].ItType,true,false)
+			ResultVar = new LocalVar("anon",itType.Params[0].ItType,true,false)
 			CurrentFunc.AddLocalVar(ResultVar)
 			downs.Push(ResultVar.CreateVarCall())
 
@@ -69,35 +79,59 @@ BoxFuncCall := class extend BoxExeObj
 			{
 				assert(fnc != null)
 
-				defVal := fnc.GetDefaultValue(i - diffCount)
-				if defVal != null
+				createdObj := false
+
+				if fnc? is in BoxFuncBody
 				{
-					downs.Push(defVal)
-					continue
+					fBody := fnc->{BoxFuncBody^}
+					if i < fBody.InputVarNames.Size()
+					{
+						vName := fBody.InputVarNames[i]
+						if iObjs?.NamedObjs.Contain(vName)
+						{
+							downs.Push(iObjs.NamedObjs[vName])
+							createdObj = true
+						}
+					}
 				}
 
-				defToken := fnc.GetDefaultToken(i - diffCount)
-				assert(defToken != null)
-
-				if defToken.GetValue() == "static"
+				if not createdObj
 				{
-					if par.ItType != GTypeVoid
+					defVal := fnc.GetDefaultValue(i - diffCount)
+					if defVal != null
 					{
-						assert(par.IsRef)
-						glVar := CreateGlobalVar(StringSpan("anon"),par.ItType,false)
-						varCall := glVar.proxy&
-						downs.Push(varCall)
+						downs.Push(defVal)
+						createdObj = true
+					}
+				}
+
+				if not createdObj
+				{
+
+					defToken := fnc.GetDefaultToken(i - diffCount)
+					assert(defToken != null)
+
+					if defToken.GetValue() == "static"
+					{
+						if par.ItType != GTypeVoid
+						{
+							assert(par.IsRef)
+							glVar := CreateGlobalVar(StringSpan("anon"),par.ItType,false)
+							varCall := glVar.proxy&
+							downs.Push(varCall)
+						}else{
+							downs.Push(GVoidObj)
+						}
+						defToken = defToken.Right
 					}else{
-						downs.Push(GVoidObj)
+						newCall := TryGetExeCall(defToken)
+						if newCall == null
+						{
+							CurrentWork?.SetErrorMessage(defToken.MakeError("Could not execute default token, called function is incorrect"))
+						}
+						downs.Push(newCall)
 					}
-					defToken = defToken.Right
-				}else{
-					newCall := TryGetExeCall(defToken)
-					if newCall == null
-					{
-						CurrentWork?.SetErrorMessage(defToken.MakeError("Could not execute default token, called function is incorrect"))
-					}
-					downs.Push(newCall)
+					createdObj = true
 				}
 			}
 

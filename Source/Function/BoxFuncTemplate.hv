@@ -93,8 +93,12 @@ BoxFuncTemplate := class extend BoxExeConstObj
 	}
 	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> BoxExeObj^
 	{
+		return CreateFuncCall(objs,consts,null)
+	}
+	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+	{
 		fnc := GetFunc(objs,consts)
-		return fnc.CreateCall(objs)
+		return fnc.CreateCall(objs,iObjs)
 	}
 	GetHeaderHash := virtual !() -> u32
 	{
