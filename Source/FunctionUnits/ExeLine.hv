@@ -97,7 +97,7 @@ BoxExeLineSimple := class extend BoxUnit
 	Down := BoxUnit^
 	HaveQuestionCheckEscape := bool
 
-	MacroCycleMacro := List.{Tuple.{Token^,StringSpan,StringSpan}}
+	MacroCycleMacro := List.{Tuple.{Token^,Str,Str}}
 
 	this := !(Token^ itm,BoxUnit^ newObj) -> void
 	{

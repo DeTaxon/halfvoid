@@ -3,18 +3,31 @@
 
 cls := class
 {
+	this := !(int x = 15) -> void
+	{
+		printf("yep %i\n",x)
+	}
 
-	ManyInputs := !(int[] v1 = ![], int[] v2 = ![], int[] v3 = ![]) -> void
+	ManyInputs := virtual !(int[] v1 = ![], int[] v2 = ![], int[] v3 = ![]) -> void
 	{
 		printf("test %i %i %i\n",v1[^],v2[^],v3[^])
+	}
+}
+cls2 := class extends cls
+{
+	ManyInputs := virtual !(int[] v1 = ![], int[] v2 = ![], int[] v3 = ![]) -> void
+	{
+		printf("test2 %i %i %i\n",v1[^],v2[^],v3[^])
 	}
 }
 
 main := !(char^[] args) -> int
 {
-	c := cls
-	c.ManyInputs(v3 = ![16],v1 = ![3])
-	//printf("test %s\n",c)
+	c := new cls()
+	c.ManyInputs(v3 = ![7],v1 = ![3],v2 = ![12,4])
+
+	//c2 := cls2
+	//c2.ManyInputs()
 }
 
 //TODO emit error if named inptu provided but not used

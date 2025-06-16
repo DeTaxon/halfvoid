@@ -97,6 +97,19 @@ BuildInVirtualCall := class extend BoxFuncCommon
 
 		PrintFuncCallCommon(ctx,fncObj&,resId,newList)
 	}
+	GetDefaultValuesCount := virtual !() -> int
+	{
+		return wrappedFunc.GetDefaultValuesCount()
+	}
+
+	GetDefaultValue := virtual !(int i) -> BoxExeObj^
+	{
+		return wrappedFunc.GetDefaultValue(i)
+	}
+	GetDefaultToken := virtual !(int i) -> Token^
+	{
+		return wrappedFunc.GetDefaultToken(i)
+	}
 }
 
 virtualGetPointer := class extend BoxExeObj

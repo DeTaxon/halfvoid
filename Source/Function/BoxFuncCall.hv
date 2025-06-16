@@ -81,12 +81,23 @@ BoxFuncCall := class extend BoxExeObj
 
 				createdObj := false
 
-				if fnc? is in BoxFuncBody
+				bodyFnc := BoxFuncBody^
+
+				if fnc is in BoxFuncBody
 				{
-					fBody := fnc->{BoxFuncBody^}
-					if i < fBody.InputVarNames.Size()
+					bodyFnc = fnc->{BoxFuncBody^}
+				}else if fnc is in BuildInVirtualCall {
+					wFnc := fnc->{BuildInVirtualCall^}.wrappedFunc
+					if wFnc? is in BoxFuncBody {
+						bodyFnc = wFnc->{BoxFuncBody^}
+					}
+				}
+
+				if bodyFnc != null
+				{
+					if i < bodyFnc.InputVarNames.Size()
 					{
-						vName := fBody.InputVarNames[i]
+						vName := bodyFnc.InputVarNames[i]
 						if iObjs?.NamedObjs.Contain(vName)
 						{
 							downs.Push(iObjs.NamedObjs[vName])

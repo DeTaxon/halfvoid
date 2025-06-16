@@ -54,7 +54,7 @@ CheckMacroStep := !(Token^ itm) -> void
 		assert(CurrentLine != null)
 
 		indToken := itm.Down.Right.Down.Right
-		indName := StringSpan
+		indName := Str
 		if indToken != null
 		{
 			if not (indToken is TokenIndent)
@@ -64,8 +64,7 @@ CheckMacroStep := !(Token^ itm) -> void
 			}
 			indName = indToken->{TokenIndent^}.Value
 		}
-		//CurrentLine.MacroCycleMacro.Emplace(itm,GetCycleVarName(),indName)
-		CurrentLine.MacroCycleMacro.Emplace(itm,StringSpan("it"),indName)
+		CurrentLine.MacroCycleMacro.Emplace(itm,GetCycleVarName(),indName)
 	}
 }
 
@@ -90,31 +89,9 @@ TryGetUnitCall :=  !(Token^ itm) -> BoxUnit^
 	return new BoxExeLine(itm)
 }
 
-// GetMacroCycledObj := !(Token^ itm, int i) -> BoxUnit^
-// {
-// 	if i >= MacroCycleRemade.Size()
-// 		return innerTryGetUnitCall(itm)
-	
-// 	forItems := HybridQueue.{ForSubObjects,5}
-
-// 	el := ForSubObjects
-
-// 	el.DownToken = MacroCycleRemade[i].0.Down
-// 	el.ValueName = MacroCycleRemade[i].1
-// 	el.IndexName = MacroCycleRemade[i].2
-
-// 	forItems.Push(el)
-
-// 	return GetForParsed(itm,forItems, () ==> {
-// 		return GetMacroCycledObj(itm,i+1)
-// 	})
-// }
-
-//MacroCycleRemade := List.{Tuple.{Token^,StringSpan,StringSpan}}
-
-GetCycleVarName := !() -> StringSpan
+GetCycleVarName := !() -> Str
 {
 	buff := char[255]
 	sprintf(buff[0]&,"ItVar%i",GetNewId())
-	result = GetConstString(buff[0]&)
+	return buff[0]&
 }

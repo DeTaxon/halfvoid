@@ -96,10 +96,14 @@ NotHuffmanTree9 := class  extend TGCObject
 				continue
 			bw.ExpectBits(i)
 			itVal = bw.Get(i)
-			if extraNodes[i][^].0 == itVal
+
+			for it : extraNodes[i]
 			{
-				bw.Move(i)
-				return it.1
+				if it.0 == itVal
+				{
+					bw.Move(i)
+					return it.1
+				}
 			}
 		}
 		return -1
