@@ -10,7 +10,7 @@ internalHVNew := !() .{@T} -> T^
 	//	___tracy_emit_memory_alloc_callstack?(result,objSize,62,0)
 	//}
 }
-internalHVNewConstructed := !(@T^ obj, args...) -> T^
+internalHVNewConstructed := !(@T^ obj, args...) -> T^ //TODO delete after halfvoid updated
 {
 	//printf("internal func\n")
 	result = obj

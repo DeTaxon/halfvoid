@@ -236,9 +236,9 @@ FuncInputObjects := class
 	NamedObjs := AVLMap.{Str,BoxExeObj^}
 }
 
-CheckFuncCallBrackets := !(Token^ itm) -> FuncInputObjects
+CheckFuncCallBrackets := !(Token^ itm,FuncInputObjects^ res) -> bool
 {
-	CheckFuncCallBrackets(itm,result.Objs,result.NamedObjs)
+	return CheckFuncCallBrackets(itm,res.Objs,res.NamedObjs)
 }
 CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{Str,BoxExeObj^} namedInputs) -> bool
 {

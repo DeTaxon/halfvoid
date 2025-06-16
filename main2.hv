@@ -3,34 +3,46 @@
 
 cls := class
 {
+	val := int
 	this := !(int x = 15) -> void
 	{
 		printf("yep %i\n",x)
+		val = x
 	}
 
 	ManyInputs := virtual !(int[] v1 = ![], int[] v2 = ![], int[] v3 = ![]) -> void
 	{
+		printf("val %i\n",val)
 		printf("test %i %i %i\n",v1[^],v2[^],v3[^])
+	}
+	T2 := virtual !(int x = 199) -> void
+	{
+		printf("when %i\n",x)
 	}
 }
 cls2 := class extends cls
 {
-	ManyInputs := virtual !(int[] v1 = ![], int[] v2 = ![], int[] v3 = ![]) -> void
+	ManyInputs := virtual !(int[] v1, int[] v2, int[] v3) -> void
 	{
 		printf("test2 %i %i %i\n",v1[^],v2[^],v3[^])
 	}
+
+	T2 := virtual !(int x) -> void
+	{
+		printf("now %i\n",x)
+	}
+
 }
 
 main := !(char^[] args) -> int
 {
-	c := new cls()
-	c.ManyInputs(v3 = ![7],v1 = ![3],v2 = ![12,4])
-
-	//c2 := cls2
-	//c2.ManyInputs()
+	c2 := cls2
+	c2.ManyInputs(v3 = ![7],v1 = ![3],v2 = ![12,4])
+	c2.ManyInputs()
+	c2.T2()
 }
 
-//TODO emit error if named inptu provided but not used
+//TODO emit error if named input provided but not used
 //TODO class functions inherit virtual property, and default values
 //TODO lazy class and fake fields
 //TODO lazy class in hotload

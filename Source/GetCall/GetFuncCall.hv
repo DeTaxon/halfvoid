@@ -28,7 +28,9 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	}
 
 
-	iObjs := CheckFuncCallBrackets(brc)
+	iObjs := FuncInputObjects
+	if not CheckFuncCallBrackets(brc,iObjs&)
+		return null
 
 	Objs := ref iObjs.Objs
 

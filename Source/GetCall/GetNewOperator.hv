@@ -21,16 +21,18 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		if itm.Down.Right.Right?.GetValue() == "()"
 		{
 			objs.Push(resCall)
-			namedInputs := AVLMap.{Str,BoxExeObj^} //TODO use varaible
-			if not CheckFuncCallBrackets(itm.Down.Right.Right,objs,namedInputs)
+			iObjs := FuncInputObjects
+			if not CheckFuncCallBrackets(itm.Down.Right.Right,iObjs&)
 				return null
+
+			objs.Push(iObjs.Objs[^])
 
 			if tp is TypeClass
 			{
 				cls := tp->{TypeClass^}.ToClass
 				callFunc := BoxUnit^
 				zeroConsts := List.{BoxExeConstObj^}
-				cls.GetMethods(StringSpan("this"),x ==> {
+				cls.GetMethods("this",x ==> {
 					callFunc = GetBestFunc(x,objs,zeroConsts)
 				})
 				if callFunc == null
@@ -40,13 +42,15 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 				}
 				assert(callFunc is in BoxFunc)
 
-				fType := callFunc->{BoxFunc^}.GetType()->{TypeFunc^}
-				fType = FuncTypeSetParam(fType,0,tp.GetPoint(),false)
-				fType = FuncTypeSetResult(fType,tp.GetPoint(),false)
+				resVar := ToLocalVar(resCall)
 
-				fnc2 := TemplateInternalNewOneConstructed.GetFuncByType(fType,zeroConsts)
-				assert(fnc2 != null)
-				resCall = fnc2.CreateCall(objs)
+				objs[0] = resVar.CreateVarCall()
+				constrCall := callFunc->{BoxFunc^}.CreateCall(objs,iObjs&)
+				resVar.extraWork.Push(constrCall)
+
+				assert(constrCall != null)
+
+				resCall = new ConstructorCallWrapper(resVar,resVar.CreateVarCall())
 			}else{
 				assert(false)
 			}

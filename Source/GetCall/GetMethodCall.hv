@@ -30,7 +30,9 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 	if vr == null return null
 
-	iObjs := CheckFuncCallBrackets(itm.Down.Right.Right.Right)
+	iObjs := FuncInputObjects
+	if not CheckFuncCallBrackets(itm.Down.Right.Right.Right,iObjs&)
+		return null
 
 	if constsToken != null
 	{
