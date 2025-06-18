@@ -45,11 +45,11 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	cnstrCall := ParseType(itm.Down)
 	if cnstrCall != null
 	{
-		locVar := new LocalVar(StringSpan("anon"),cnstrCall,true,false)
+		locVar := new LocalVar("anon",cnstrCall,true,false)
 
 		cCall := locVar.CreateVarCall()
 
-		constrObj := innerTryGetMethodCall(StringSpan("this"),cCall,Objs,consts)
+		constrObj := innerTryGetMethodCall("this",cCall,Objs,consts)
 		if constrObj != null
 		{
 			locVar.extraWork.Push(constrObj)
@@ -177,7 +177,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 						fncs.Push(it)
 					}
 				}
-				resFunc := GetBestFunc(fncs,newObjs,consts,false)
+				resFunc := GetBestFunc(fncs,newObjs,consts,false,iObjs&)
 				if resFunc != null and resFunc is in BoxFunc
 					return resFunc->{BoxFunc^}.CreateCall(newObjs)
 
@@ -206,7 +206,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 				callItem := BoxUnit^
 				cls.GetMethods(asInd.Value,fncs ==> {
-					callItem = GetBestFunc(fncs,extraObjs,consts,false)
+					callItem = GetBestFunc(fncs,extraObjs,consts,false,iObjs&)
 				})
 				if callItem != null
 				{
@@ -238,7 +238,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 					callItem := BoxUnit^
 					cls.GetMethods(asInd.Value,fncs ==> {
-						callItem = GetBestFunc(fncs,extraObjs,consts,false)
+						callItem = GetBestFunc(fncs,extraObjs,consts,false,iObjs&)
 					})
 					if callItem != null
 					{

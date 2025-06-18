@@ -46,6 +46,7 @@ FunctionHeaderInfo := class
 	IsVargs := bool
 
 	ExtraResults := List.{FuncTemplateInput}
+	InputVarNames := List.{StringSpan}
 
 	IsVariadic := bool
 	VariadicName := StringSpan
@@ -132,6 +133,8 @@ FunctionHeaderInfo := class
 					name := indItm->{TokenIndent^}.Value.AsStringSpan()
 					if typ != null and IsComplexType(typ)
 						isRef = true
+
+					InputVarNames.Push(name)
 					
 					if bag.Size() >= 3
 					{

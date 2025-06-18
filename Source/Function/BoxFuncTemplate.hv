@@ -8,13 +8,13 @@ BoxFuncTemplate := class extend BoxExeConstObj
 
 	GetDefaultValuesCount := virtual !() -> int { return 0 }
 
-	GetPriority := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> int
+	GetPriority := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> int
 	{
 		fTyp := ToFuncType(objs,consts)
 
 		if fTyp == null
 			return CmpNoExchange
-		return CheckPriority(fTyp,objs,consts)
+		return CheckPriority(fTyp,objs,consts,iObjs)
 	}
 	GetFunc := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
@@ -22,7 +22,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 
 		assert(fTyp != null)
 
-		pri := CheckPriority(fTyp,objs,consts)
+		pri := CheckPriority(fTyp,objs,consts,null) //TODO iObjs instead of null
 
 		if pri == CmpNoExchange
 		{
@@ -69,7 +69,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 
 		return GetFuncType(tps, refs,GTypeVoid,false,false)
 	}
-	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> int
+	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> int
 	{
 		return CmpFuncPriorityAllExchange(tp,objs,GetDefaultValuesCount())
 	}

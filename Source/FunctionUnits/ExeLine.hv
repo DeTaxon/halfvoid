@@ -355,11 +355,11 @@ CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 }
 
 
-GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool expectExac = false) -> BoxUnit^
+GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool expectExac = false,FuncInputObjects^ iObjs = null) -> BoxUnit^
 {
 	priorityes := HybridQueue.{int,13}
 
-	CalculatePriorities(x,Objs,consts,priorityes)
+	CalculatePriorities(x,Objs,consts,priorityes,iObjs)
 
 	if priorityes.Size() == 0
 		return null
@@ -379,7 +379,7 @@ GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool ex
 		return null
 	return x[bestI]
 }
-CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,HybridQueue.{int,13} priorityes) -> void
+CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,HybridQueue.{int,13} priorityes,FuncInputObjects^ iObjs = null) -> void
 {
 	for checkObj : candidateObjects
 	{
@@ -394,14 +394,15 @@ CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeCon
 			cmpRes := 0
 			if fnc is in BoxFuncBody
 			{
-				cmpRes = CmpFuncPriority(fnc.GetType()->{TypeFunc^},Objs,fnc.GetDefaultValuesCount(),fnc->{BoxFuncBody^}.BlockedExchange)
+				bFnc := fnc->{BoxFuncBody^}
+				cmpRes = CmpFuncPriority(fnc.GetType()->{TypeFunc^},Objs,bFnc.GetDefaultValuesCount(),bFnc.BlockedExchange,iObjs,bFnc.InputVarNames&)
 			}else{
 				cmpRes = CmpFuncPriorityAllExchange(fnc.GetType()->{TypeFunc^},Objs,fnc.GetDefaultValuesCount())
 			}
 			priorityes.Push(cmpRes)
 		}else if h is in BoxFuncTemplate{
 			tmpl := h->{BoxFuncTemplate^}
-			cmpRes := tmpl.GetPriority(Objs,consts)
+			cmpRes := tmpl.GetPriority(Objs,consts,iObjs)
 			priorityes.Push(cmpRes)
 		}else if h is in GlobalVar2 {
 			priorityes.Push(CmpNoExchange) //todo?
@@ -415,7 +416,7 @@ CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeCon
 			if cn.Value is BoxFuncTemplateConst
 			{
 				tmpl := cn.Value->{BoxFuncTemplateConst^}.Value
-				cmpRes := tmpl.GetPriority(Objs,consts)
+				cmpRes := tmpl.GetPriority(Objs,consts,iObjs)
 				priorityes.Push(cmpRes)
 			}else{
 				priorityes.Push(CmpNoExchange)
@@ -441,14 +442,14 @@ CreateFuncCall := !(Str name, BoxExeObj^[] Objs,BoxExeConstObj^[] consts,FuncInp
 	callItem := BoxUnit^
 
 	GetItemLocal(name, x ==> {
-		callItem = GetBestFunc(x,Objs,consts)
+		callItem = GetBestFunc(x,Objs,consts,false,iObjs)
 	})
 
 
 	if callItem == null
 	{
 		GetItemGlobal(name, x ==>{
-			callItem = GetBestFunc(x,Objs,consts)
+			callItem = GetBestFunc(x,Objs,consts,false,iObjs)
 			if callItem == null
 				return false
 			return true
@@ -570,7 +571,10 @@ CmpFuncPriorityAllExchange := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaul
 	blockedExchange := AVLSet.{int}
 	return CmpFuncPriority(fncType,objs,defaults,blockedExchange)
 }
-CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults, AVLSet.{int} blockedExchange) -> int
+
+
+//TODO hide blockedExchange,names,defaults, in FunctionHeaderData
+CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults, AVLSet.{int} blockedExchange, FuncInputObjects^ iObjs = null,List.{StringSpan}^ names = null) -> int
 {
 	worstCase := 0
 
@@ -585,21 +589,39 @@ CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults, AVLSet.
 	if fncType.IsVargs
 		maxArgs = 20000000
 
-	if objs.Size() > maxArgs or objs.Size() < minArgs
+	if objs.Size() > maxArgs
 		return CmpNoExchange
 
-	count := min(fncType.Params.Size(),objs.Size())
-
 	yep := false
-	for i : count
+	for i : fncType.Params.Size()
 	{
-		if objs[i] == null
+		obj := BoxExeObj^
+
+		if i < objs.Size()
+		{
+			obj = objs[i]
+		}else{
+ 			if iObjs != null and i < names?^.Size()
+			{
+				vName := names^[i]
+				if iObjs.NamedObjs.Contain(vName)
+					obj = iObjs.NamedObjs[vName]
+			}
+			if obj == null
+			{
+				if i < minArgs
+					return CmpNoExchange
+				continue
+			}
+		}
+
+		if obj == null
 			return CmpNoExchange
 		toIsMem := fncType.Params[i].IsRef
 		if toIsMem
-			objs[i].NotifyMemUse()
-		frmType := objs[i].GetType()
-		frmIsMem := objs[i].IsMem()
+			obj.NotifyMemUse() //TODO make notify when function is used and not when notyfied
+		frmType := obj.GetType()
+		frmIsMem := obj.IsMem()
 		toType := fncType.Params[i].ItType
 
 		if frmType != toType and blockedExchange.Contain(i)
@@ -607,20 +629,20 @@ CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults, AVLSet.
 			return CmpNoExchange
 		}
 
-		thisCase := TypePriorCmp(objs[i],toType,toIsMem)
+		thisCase := TypePriorCmp(obj,toType,toIsMem)
 
 		if thisCase == CmpNoExchange
 		{
 			if objs[i] is BoxExeNull and toType is in TypePoint
 			{
 				thisCase = 1000
-			}else if objs[i] is BoxLambdaHolder and objs[i]->{BoxLambdaHolder^}.CanBeThisType(toType) {
+			}else if obj is BoxLambdaHolder and obj->{BoxLambdaHolder^}.CanBeThisType(toType) {
 				thisCase = 0
-			} else if objs[i] is BoxArrayHolder and ArrayHolderCheck(objs[i],toType)
+			} else if obj is BoxArrayHolder and ArrayHolderCheck(obj,toType)
 			{
 				thisCase = 0
 			}else{
-				excCheck := IsGonnaWorkExchange(objs[i],toType)
+				excCheck := IsGonnaWorkExchange(obj,toType)
 				if excCheck
 				{
 					thisCase = 1000
@@ -635,7 +657,6 @@ CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults, AVLSet.
 	}
 	return worstCase
 }
-
 ArrayHolderCheck := !(BoxExeObj^ ar,Type^ toType) -> bool
 {
 	array := ar->{BoxArrayHolder^}

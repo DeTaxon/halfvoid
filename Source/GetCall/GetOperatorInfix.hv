@@ -56,7 +56,7 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 		fightResult := TypeFight(t1,t2)
 
 		fncType := GetFuncType(2,![GCType.GetPoint(),GCType.GetPoint()],![true,false],GTypeVoid)
-		pri := GOperatorSetGC.GetPriority(tmpList,![])
+		pri := GOperatorSetGC.GetPriority(tmpList,![],null)
 		if fightResult == t1
 			//and pri != CmpNoExchange
 		{

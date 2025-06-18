@@ -377,7 +377,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		cnsts := List.{BoxExeConstObj^}
 		return GetFuncByType(resFuncTyp,cnsts)
 	}
-	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> int
+	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> int
 	{
 		if TemplateProperties.Contain("#FilterBeConst")
 		{
@@ -393,7 +393,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 				}
 			}
 		}
-		return CmpFuncPriority(tp,objs,GetDefaultValuesCount(),BlockedExchange)
+		return CmpFuncPriority(tp,objs,GetDefaultValuesCount(),BlockedExchange,iObjs,hData.InputVarNames&)
 	}
 	GetHeaderHash := virtual !() -> u32
 	{
