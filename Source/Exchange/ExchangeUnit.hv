@@ -42,5 +42,7 @@ ExchangeInit := !() -> void
 
 	ExchangeList.Push(new BoxFuncTemplateToBoxFunc)
 	ExchangeList.Push(new BoxFuncToPointer)
+
+	ExchangeList.Push(new ClassInitToObjExchange)
 }
 

@@ -1,0 +1,101 @@
+ClassInitHolder := class extend BoxExeObj
+{
+	Base := Token^
+	IsValid := bool
+
+	Names := AVLMap.{Str,BoxExeObj^}
+
+	this := !(Token^ tk) -> void
+	{
+		Base = tk 
+		ObjType = GTypeNone
+
+		SyntaxCompress(Base,PriorityData)
+
+		itr := tk.Down
+
+		while itr != null
+		{
+			if itr.GetValue() == ","
+			{
+				itr = itr.Right
+				continue
+			}
+
+			if itr.GetValue() == "."
+			{
+				itr = itr.Right
+				if itr == null
+					return void
+			}
+
+			if itr.Down?.Right?.GetValue() != "="
+				return void
+
+			if itr.Down is not TokenIndent //TODO emit error
+				return void
+
+			obj := TryGetExeCall(itr.Down.Right.Right)
+
+			if obj == null
+				return void
+
+			name := itr.Down->{TokenIndent^}.Value
+
+			Names[name] = obj
+
+			itr = itr.Right
+		}
+
+		IsValid = true
+	}
+}
+
+
+ClassInitToObjExchange := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if obj is not ClassInitHolder
+			return CmpNoExchange
+		if newType is not in TypeClass
+			return CmpNoExchange
+
+		holder := obj->{ClassInitHolder^}
+		cls := newType->{TypeClass^}.ToClass
+
+		for it,ind : holder.Names
+		{
+			if cls.GetField(ind) == null
+				return CmpNoExchange
+		}
+
+
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		holder := obj->{ClassInitHolder^}
+		cls := expType->{TypeClass^}.ToClass
+		
+		newVar := new LocalVar("",expType,true,false)
+		CurrentFunc.AddLocalVar(newVar)
+
+		vCall := newVar.CreateVarCall()
+
+		for obj,ind : holder.Names
+		{
+			pth := cls.GetField(ind)
+			getCall := pth.CreateCall(![vCall])
+			assert(getCall != null)
+
+			initField := CreateFuncCall("=",![getCall,obj])
+			assert(initField != null)
+
+			newVar.extraWork.Push(initField)
+
+		}
+
+		return new ConstructorCallWrapper(newVar,vCall)
+	}
+}

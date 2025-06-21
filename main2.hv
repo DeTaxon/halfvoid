@@ -1,16 +1,35 @@
 
 
-ManyInputs := !(int v1 = 16) -> void
+ManyInputs := !(@T v1 = 16) -> void
 {
 	printf("test2 %i\n",v1)
 }
 
-main := !(char^[] args) -> int
+TstClass := class
 {
-	ManyInputs(v1 = 8)
+	arr := float[]
+	extra := int
 }
 
+TestInput := !(TstClass inp) -> void
+{
+	if inp.arr != null
+	for it : inp.arr //TODO inp.arr? does not work
+	{
+		printf("hello %f\n",it)
+	}
 
+	printf("count %i\n",inp.extra)
+}
+
+main := !(char^[] args) -> int
+{
+	//ManyInputs(v1 = 8)
+	
+	TestInput({ extra = 16 ,  .arr = ![5,6,10] })
+}
+
+//TODO x := int[Str]
 //TODO !({.Objs = ![] }). c like struct creation
 //TODO named input + template, !(@T^ x = null)
 //TODO emit error if named input provided but not used

@@ -289,7 +289,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{Str,BoxExeO
 					
 				}
 			}else{
-				if itr.Down?.Right?.GetValue() == "="
+				if itr.Down?.Right?.GetValue() == "=" and itr.GetValue() != "{}"
 				{
 					if itr.Down is not TokenIndent
 					{
@@ -298,6 +298,7 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{Str,BoxExeO
 					}
 					name := itr.Down->{TokenIndent^}.Value
 					obj := TryGetExeCall(itr.Down.Right.Right)
+					obj = checkForCHolder(obj,itr)
 					if obj == null
 					{
 						CurrentWork?.SetErrorMessage(itr.Down.Right.Right.MakeError("Could not parse"))
@@ -312,6 +313,8 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{Str,BoxExeO
 					}else{
 
 						obj := TryGetExeCall(itr)
+						obj = checkForCHolder(obj,itr)
+
 						if obj == null
 						{
 							return false
@@ -325,6 +328,21 @@ CheckFuncCallBrackets := !(Token^ itm, CheckExeDownList Objs,AVLMap.{Str,BoxExeO
 	}
 	return true
 }
+checkForCHolder := !(BoxExeObj^ obj, Token^ tkn) -> BoxExeObj^
+{
+	if obj != null
+		return obj
+	
+	if tkn?.GetValue() == "{}"
+	{
+		res := new ClassInitHolder(tkn)
+		if res.IsValid
+			return res
+		return null
+	}
+	return obj
+}
+
 CheckFuncCallConsts := !(Token^ itm, List.{BoxExeConstObj^} consts) -> void
 {
 	iter := itm.Down
