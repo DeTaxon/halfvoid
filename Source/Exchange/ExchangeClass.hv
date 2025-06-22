@@ -87,3 +87,116 @@ ExchangeRefClassToArrayView := class extend ExchangeUnit
 		return new UnrefFuncCall(obj)
 	}
 }
+
+ClassFromExchangeSet := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+
+		if GetFunc(obj,newType) != null
+			return 0
+		return CmpNoExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		resFunc := GetFunc(obj,expType)
+
+		newVar := new LocalVar("",expType,true,false)
+
+		CurrentFunc?.AddLocalVar(newVar)
+
+		varCall := newVar.CreateVarCall()
+
+		obj2 := GetExchange(obj,resFunc.GetType()->{TypeFunc^}.Params[1].ItType,false)
+
+		resCall := resFunc.CreateCall(![varCall,obj2])
+
+		newVar.extraWork.Push(resCall)
+
+		return new ConstructorCallWrapper(newVar,varCall)
+	}
+
+	GetFunc := !(BoxExeObj^ obj,Type^ newType) -> BoxFunc^
+	{
+		if newType is not in TypeClass
+			return null
+		cls := newType->{TypeClass^}.ToClass
+
+		expFunc := BoxFunc^
+
+		cls.GetMethods("{}<-", funcs ==> {
+			for it : funcs
+			{
+				if it is not in BoxFunc
+					continue
+				fType := it.GetType()->{TypeFunc^}
+
+				assert(fType is in TypeFunc)
+
+				if fType.Params.Size() != 2
+					continue
+
+				if CanExchange(obj,fType.Params[1].ItType)
+				{
+					expFunc = it->{BoxFunc^}
+				}
+
+			}
+		})
+
+		return expFunc
+	}
+}
+ClassFromExchangeType := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if GetFunc(obj,newType) != null
+			return 0
+		return CmpNoExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		resTempl := GetFunc(obj,expType)
+
+		newVar := new LocalVar("",expType,true,false)
+
+		CurrentFunc?.AddLocalVar(newVar)
+
+		varCall := newVar.CreateVarCall()
+
+		resFunc := resTempl.GetFunc(![varCall],![obj->{Type^}])
+
+		resCall := resFunc.CreateCall(![varCall])
+
+		newVar.extraWork.Push(resCall)
+
+		return new ConstructorCallWrapper(newVar,varCall)
+	}
+
+	GetFunc := !(BoxExeObj^ obj,Type^ newType) -> BoxFuncTemplate^
+	{
+		if newType is not in TypeClass
+			return null
+		cls := newType->{TypeClass^}.ToClass
+
+		expFunc := BoxFuncTemplate^
+
+		cls.GetMethods("{}<-", funcs ==> {
+
+			thisObj := BlankObjectExe(newType,true)
+			for it : funcs
+			{
+				if it is not in BoxFuncTemplate
+					continue
+
+				if it->{BoxFuncTemplate^}.GetPriority(![thisObj&],![obj->{Type^}],null) != 0
+					continue
+
+				expFunc = it->{BoxFuncTemplate^}
+			}
+		})
+
+		return expFunc
+	}
+}

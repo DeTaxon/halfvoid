@@ -7,8 +7,17 @@ ManyInputs := !(@T v1 = 16) -> void
 
 TstClass := class
 {
-	arr := float[]
+	arr := int[]
 	extra := int
+
+	"{}<-" := !(int[] setArr) -> void
+	{
+		arr = setArr
+	}
+	"{}<-" := !() .{@T} -> void
+	{
+		extra = T->TypeSize
+	}
 }
 
 TestInput := !(TstClass inp) -> void
@@ -16,17 +25,20 @@ TestInput := !(TstClass inp) -> void
 	if inp.arr != null
 	for it : inp.arr //TODO inp.arr? does not work
 	{
-		printf("hello %f\n",it)
+		printf("hello %i\n",it)
 	}
 
 	printf("count %i\n",inp.extra)
 }
 
+"->{}" := !(int[] car) .{TestInput} -> TestInpunt
+{
+	result.arr = cat
+}
+
 main := !(char^[] args) -> int
 {
-	//ManyInputs(v1 = 8)
-	
-	TestInput({ extra = 16 ,  .arr = ![5,6,10] })
+	TestInput(float)
 }
 
 //TODO x := int[Str]

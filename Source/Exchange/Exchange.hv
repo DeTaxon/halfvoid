@@ -37,7 +37,7 @@ CanExchange := !(BoxExeObj^ obj, Type^ toType) -> bool
 	test := GetExchange(obj,toType)
 	if test != null
 	{
-		delete test
+		//delete test
 		return true
 	}
 	return false
