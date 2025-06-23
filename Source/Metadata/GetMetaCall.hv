@@ -94,6 +94,64 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			return GBoolTrue
 		return GBoolFalse
 	}
+	if right.Value in !["IsInt","IsSInt","IsUInt"]
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+		{
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for IsInt must have a type"))
+			return null
+		}
+
+		isUInt := IsUInt(typ)
+
+		if not IsInt(typ)
+			return GBoolFalse
+		if right.Value == "IsSInt" and isUInt
+			return GBoolTrue
+		if right.Value == "IsUInt" and not isUInt
+			return GBoolTrue
+		return GBoolTrue
+	}
+	if right.Value == "IsFloat"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+		{
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for IsFloat must have a type"))
+			return null
+		}
+
+		if not IsFloat(typ)
+			return GBoolFalse
+		return GBoolTrue
+	}
+	if right.Value == "IsStaticArray"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+		{
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for IsStaticArray must have a type"))
+			return null
+		}
+
+		if typ is not TypeArr
+			return GBoolFalse
+		return GBoolTrue
+	}
+	if right.Value == "IsVector"
+	{
+		typ := getMetaDownType(obj.Down)
+		if typ == null
+		{
+			CurrentWork?.SetErrorMessage(obj.Down.MakeError("Object for IsVector must have a type"))
+			return null
+		}
+
+		if typ is not TypeVector
+			return GBoolFalse
+		return GBoolTrue
+	}
 	if right.Value == "Type"
 	{
 		dwnObj := TryGetExeCall(obj.Down)

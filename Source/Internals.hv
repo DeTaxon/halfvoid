@@ -22,7 +22,6 @@ GVectorConstructor2Scalar := BoxFuncTemplate^
 GVectorConstructor3Scalar := BoxFuncTemplate^
 GVectorConstructor4Scalar := BoxFuncTemplate^
 
-
 GOperatorSetGC := BoxFuncTemplate^
 GFuncGCSetNull := BoxFunc^
 
@@ -30,6 +29,8 @@ TemplateInternalCreateTuple := BoxFuncTemplate^
 GDefaultSetTemplate := BoxFuncTemplate^
 GDefaultCompareTemplate := BoxFuncTemplate^
 TemplateInternalTupleConstructor := BoxFuncTemplate^
+
+GMapType := TypedefTemplateConst^
 
 InitInternals := !() -> void
 {
@@ -76,6 +77,7 @@ InitInternals := !() -> void
 	GVectorConstructor3Scalar = intGetTemplate("internalVectorConstructor3Scalar")
 	GVectorConstructor4Scalar = intGetTemplate("internalVectorConstructor4Scalar")
 
+	GMapType = intGetTypedef("internalHVMap")?.Value
 }
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^
@@ -116,3 +118,11 @@ intGetGlobalVar := !(char^ name) -> GlobalVar2^
 	return res
 }
 
+intGetTypedef:= !(Str name) -> TypedefTemplateVar^
+{
+	obj := GetTypeObjByName(name)
+
+	if obj? is in TypedefTemplateVar
+		return obj->{TypedefTemplateVar^}
+	return null
+}

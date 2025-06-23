@@ -1,5 +1,28 @@
 
 
+TShaderInputVertexInfo := class
+{
+	VertTypes := VKType[]
+
+	inputObjs := HybridQueue.{VKType,20} //TODOTODOTODO SOMEHOW CLEANUP THIS
+
+
+	"{}<-" := !(VKType[] vInputs) -> void
+	{
+		VertTypes = vInputs
+
+	}
+	"{}<-" := !().{@Cls} -> void
+	{
+		c := Cls
+		for it : c->#AllFields
+		{
+			inputObjs.Push(VKTypeFromType().{it->Type})
+		}
+		VertTypes = inputObjs
+	}
+}
+
 TShaderInput := class 
 {
 	itInstance := VulkanInstance^
@@ -15,11 +38,11 @@ TShaderInput := class
 		return itLayout
 	}
 
-	CreateInput := !(VKType[] vInput,TShaderSet^[] sets,TPushConstant^[] cnsts,int outputImageCount) -> void
+	CreateInput := !(TShaderInputVertexInfo vInput,TShaderSet^[] sets,TPushConstant^[] cnsts,int outputImageCount) -> void
 	{
 		resultImageCount = outputImageCount
 
-		for it : vInput
+		for it : vInput.VertTypes
 			vertexInput.Push(it)
 		for it : sets
 			it.Create(itInstance)

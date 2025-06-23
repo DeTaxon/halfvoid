@@ -10,6 +10,8 @@ TstClass := class
 	arr := int[]
 	extra := int
 
+	"=" := default
+
 	"{}<-" := !(int[] setArr) -> void
 	{
 		arr = setArr
@@ -38,11 +40,20 @@ TestInput := !(TstClass inp) -> void
 
 main := !(char^[] args) -> int
 {
-	TestInput(float)
+	c := int[Str]
+
+	c["hi"] = 100
+
+	for it ,ind : c
+	{
+		printf("test %i %s\n",it,ind)
+	}
+
+	r := TstClass
+	r = vec4f
+	TestInput(r)
 }
 
-//TODO x := int[Str]
-//TODO !({.Objs = ![] }). c like struct creation
 //TODO named input + template, !(@T^ x = null)
 //TODO emit error if named input provided but not used
 //TODO class functions inherit virtual property, and default values

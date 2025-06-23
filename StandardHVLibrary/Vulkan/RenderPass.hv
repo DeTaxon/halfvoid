@@ -86,7 +86,7 @@ TRenderPass := class extend TGCObject
 		}
 		inst.Funcs.vkCreateRenderPass(inst.LogicalDevice,rpC&,null,itPass&)
 	}
-	CreateLayout := !(VKType[] input = ![],TShaderSet^[] sets = ![], TPushConstant^[] pushConstants = ![], int resultImageCount = 0) -> TShaderInput^
+	CreateLayout := !(TShaderInputVertexInfo input = ![],TShaderSet^[] sets = ![], TPushConstant^[] pushConstants = ![], int resultImageCount = 0) -> TShaderInput^
 	{
 		result = new TShaderInput
 		result.itInstance = itInstance

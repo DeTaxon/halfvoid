@@ -380,6 +380,10 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 			num := cnstVal->{BoxExeInt^}.Value
 			return dTyp.GetArray(num)
 		}
+		if cnstVal is in Type and GMapType != null
+		{
+			return GMapType.GetType(![cnstVal,dTyp])
+		}
 		return null
 	}
 	if tk.Down?.Right?.GetValue() == "^"

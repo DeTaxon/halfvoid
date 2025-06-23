@@ -1,3 +1,6 @@
+
+internalHVMap := type.{@Key,@Value} AVLMap.{Key,Value}
+
 internalHVSetType := !(@T^ x) .{@ToType} -> void
 {
 	x->{void^}->{ToType^}->VTable = ToType->VTable
