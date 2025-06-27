@@ -333,6 +333,7 @@ CreateBuiltInVec:= !() -> void
 		bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"fadd") )
 		bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"fsub") )
 		bSpace.Functions["*"].Push(new BuiltInIntBase(baseAdd,"fmul") )
+		bSpace.Functions["/"].Push(new BuiltInIntBase(baseAdd,"fdiv") )
 
 		bSpace.Functions["+="].Push(new BuiltInIntEqAndOper(baseRefed,"fadd") )
 		bSpace.Functions["-="].Push(new BuiltInIntEqAndOper(baseRefed,"fsub") )
@@ -350,6 +351,7 @@ CreateBuiltInVec:= !() -> void
 		bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"add") )
 		bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"sub") )
 		bSpace.Functions["*"].Push(new BuiltInIntBase(baseAdd,"mul") )
+		bSpace.Functions["/"].Push(new BuiltInIntBase(baseAdd,"div") )
 
 		bSpace.Functions["+="].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
 		bSpace.Functions["-="].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
