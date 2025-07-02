@@ -216,6 +216,9 @@ MCInterpFuncFrame := class extend TGCObject
 			}else if itType == GTypeU8{
 				valuesPtr[i] = GetObjectPtr(it)
 				valuesTypes[i] = ffi_type_uint8
+			}else if itType == GTypeChar {
+				valuesPtr[i] = GetObjectPtr(it)
+				valuesTypes[i] = ffi_type_uint8
 			}else{
 				printf("unknown type %s\n",itType.GetBADStr().Str())
 				assert(false)

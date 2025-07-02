@@ -23,6 +23,13 @@ TShaderInputVertexInfo := class
 	}
 }
 
+VkInputTopology := enum
+{
+	"None", //for errors
+	"Triangles",
+	"Points"
+}
+
 TShaderInput := class 
 {
 	itInstance := VulkanInstance^
@@ -33,14 +40,17 @@ TShaderInput := class
 	itSets := Vector.{TShaderSet^}
 	resultImageCount := int
 
+	topology := VkInputTopology
+
 	Get := !() -> VkPipelineLayout
 	{
 		return itLayout
 	}
 
-	CreateInput := !(TShaderInputVertexInfo vInput,TShaderSet^[] sets,TPushConstant^[] cnsts,int outputImageCount) -> void
+	CreateInput := !(TShaderInputVertexInfo vInput,TShaderSet^[] sets,TPushConstant^[] cnsts,int outputImageCount,VkInputTopology top) -> void
 	{
 		resultImageCount = outputImageCount
+		topology = top
 
 		for it : vInput.VertTypes
 			vertexInput.Push(it)
@@ -149,7 +159,14 @@ TShaderInput := class
 
 		paC1 := VkPipelineInputAssemblyStateCreateInfo()
 		paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
-		paC1.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST
+
+		switch topology
+		{
+		case "Points"
+			paC1.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST
+		case "Triangles"
+			paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+		}
 
 		stts := VkDynamicState[2]
 		stts[0] = VK_DYNAMIC_STATE_VIEWPORT
