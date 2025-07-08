@@ -365,6 +365,7 @@ main := !(char^[] args) -> int
 
 
 		CompileAndRunCode(toRun->{BoxFuncBody^})
+	FinilizeCache()
 		return 0
 	}
 

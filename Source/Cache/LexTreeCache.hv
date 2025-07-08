@@ -59,8 +59,6 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 	resToken := Token^
 
 	stSize := s32
-	spn := StringSpan
-	dbl := double
 
 	switch x
 	{
@@ -69,7 +67,7 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 		case 101
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
 			resToken = new TokenDecor(spn)
 		case 102
 			resToken = new TokenData
@@ -94,12 +92,12 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 		case 108
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
 			resToken = new TokenSuffix(spn)
 		case 115
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
 			strm.Read(stSize&,4)
 			strm.Read(x&,4)
 			preRes := new TokenSkobSymbol(spn,stSize)
@@ -109,34 +107,35 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 		case 109
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
 			strm.Read(stSize&,4)
 			resToken = new TokenSymbol(spn,stSize)
 		case 110
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = StringSpan(buf,stSize)
+			spn := StringSpan(buf,stSize)
 			resToken = new TokenIndent(spn)
 		case 111
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
 			resToken = new TokenTemplateType(spn)
 		case 112
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
 			resToken = new TokenString(spn.GetString())
 		case 113
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
+			dbl := double
 			strm.Read(dbl&,8)
 			resToken = new TokenDouble(spn,dbl)
 		case 114
 			strm.Read(stSize&,4)
 			strm.Read(buf,stSize)
-			spn = GetConstStringSpan(StringSpan(buf,stSize))
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
 			strm.Read(stSize&,4)
 			resToken = new TokenInt(spn,stSize)
 		case void
@@ -152,25 +151,29 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 	subs := s32
 	strm.Read(subs&,4)
 
-
 	resToken.Line = nowLine
-
-	subTokens := HybridQueue.{Token^,40}
-	for i : subs
-	{
-		subToken := LoadCachedTokensInner(strm,setFile,nowLine,buf)
-		subTokens.Push(subToken)
-		subToken.Up = resToken
-	}
 
 	if subs != 0
 	{
-		resToken.Down = subTokens[0]
-		for i : (subs - 1)
+
+		firstNode := Token^
+		prevNode := Token^
+		nowNode := Token^
+		for i : subs
 		{
-			subTokens[i].Right = subTokens[i+1]
-			subTokens[i+1].Left = subTokens[i]
+			nowNode = LoadCachedTokensInner(strm,setFile,nowLine,buf)
+			nowNode.Up = resToken
+
+			if firstNode == null
+				firstNode = nowNode
+
+			prevNode?.Right = nowNode
+			nowNode.Left = prevNode
+			
+			prevNode = nowNode
 		}
+
+		resToken.Down = firstNode
 	}
 	return resToken
 }
