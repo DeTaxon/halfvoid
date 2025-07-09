@@ -195,16 +195,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			CurrentWork?.SetErrorMessage(obj.MakeError("Can not get type"))
 			return null
 		}
-		if itType8 is TypeClass
-		{
-			cls := itType8->{TypeClass^}.ToClass
-			if cls is BoxClassBody
-			{
-				cls.AwaitVTableStep()
-				return GetExeInt(cls->{BoxClassBody^}.VTableId)
-			}
-		}
-		return GetExeInt(0)
+		return TypeIdObjFromType(itType8)
 	}
 	if right.Value == "TypeSize"
 	{

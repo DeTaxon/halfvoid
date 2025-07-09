@@ -1,5 +1,3 @@
-TableIdIter := int
-
 AppendClass BoxClass
 {
 	PreVTableVars := AVLMap.{Str,VTableEntry^}
@@ -28,8 +26,7 @@ AppendClass BoxClass
 	{
 		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
 		{
-			TableIdIter += 1
-			VTableId = TableIdIter
+			VTableId = TypeIdFromType(ItType)
 
 			arrHolder := BoxArrayHolder(GTypeInt,true,null)
 			GetVTableIds(arrHolder)

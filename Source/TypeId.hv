@@ -1,0 +1,84 @@
+
+
+
+DB_TypeId := HVTable2.{Type^,int}
+TypeIdIter := int
+
+TypeIdFromType := !(Type^ tp) -> int
+{
+	if DB_TypeId.Key.ContainSome(tp)
+		return DB_TypeId.Key.GetOne(tp)
+
+	TypeIdIter += 1
+	DB_TypeId.Add(tp,TypeIdIter)
+	return TypeIdIter
+}
+
+TypeIdObjFromType := !(Type^ tp) -> BoxExeObj^
+{
+	id := TypeIdFromType(tp)
+	res := new BoxExeInt(id)
+	res.ObjType = GTypeTypeId
+	return res
+}
+
+ExchangeIntToTypeId := class extends ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if newType != GTypeTypeId
+			return CmpNoExchange
+		if obj is not in Type
+			return CmpNoExchange
+		if expectResultRef
+			return CmpNoExchange
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		return TypeIdObjFromType(obj->{Type^})
+	}
+}
+
+AddTypeIdExchange := !() -> void
+	#Mark("ExchangeUnit")
+{
+	ExchangeList.Push(new ExchangeIntToTypeId)
+}
+
+TemplateTypeIdCmp := class extends BoxFuncTemplate
+{
+	setType := TypeFunc^
+	this := !() -> void
+	{
+		setType = GetFuncType(![GTypeTypeId,GTypeTypeId],GTypeBool)
+	}
+	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
+	{
+		if objs.Size() != 2 or consts.Size() != 0
+			return null
+		if objs[0].GetType() != GTypeTypeId and objs[1].GetType() != GTypeTypeId
+			return null
+		return setType
+	}
+
+	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	{
+		return new BuiltInIntBase(tp,"icmp eq")
+	}
+
+}
+
+CreateBuiltInTypeId := !() -> void
+{
+	bSpace := ref CodeSpaces[-1]
+
+	x := GTypeTypeId
+
+	storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+	cmpType := GetFuncType(![x,x],GTypeBool)
+
+	bSpace.Functions["="].Push(new BuiltInPrimeStore(storeType) )
+	bSpace.Templates["=="].Push(new TemplateTypeIdCmp() )
+
+}

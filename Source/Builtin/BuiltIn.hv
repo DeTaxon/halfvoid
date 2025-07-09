@@ -10,4 +10,5 @@ CreateBuiltins := !() -> void
 	CreateBuiltInVoid()
 	CreateBuiltinsArrayViews()
 	CreateBuildInEnum()
+	CreateBuiltInTypeId()
 }

@@ -1,13 +1,22 @@
 
-
+SomeTest := !(TypeId tst) -> void
+{
+	c := int
+	c = tst
+	r := TypeId
+	r = tst
+	printf("yep %i %i %i\n",tst,c,tst == int)
+}
 
 main := !(char^[] args) -> int
 {
-	a := vec4f(5.0)
-	b := vec4f(1.0,2.0,3.0)
-	c := vec4f(3.0,2.0,1.0,1.0)
-
-	printf("test %s\n",b)
+	SomeTest(int)
+	SomeTest(float)
+	SomeTest(int)
+	SomeTest(int)
+	SomeTest(float)
+	SomeTest(vec3f)
+	SomeTest(vec3f)
 }
 
 //TODO named input + template, !(@T^ x = null)

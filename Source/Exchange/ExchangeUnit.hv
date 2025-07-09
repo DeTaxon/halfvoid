@@ -46,5 +46,8 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ClassInitToObjExchange)
 	ExchangeList.Push(new ClassFromExchangeSet)
 	ExchangeList.Push(new ClassFromExchangeType)
+
+	for it : #MarkedFunctions("ExchangeUnit")
+		it()
 }
 

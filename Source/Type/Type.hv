@@ -408,6 +408,8 @@ GTypeQuantf := Type^
 GTypeVec3f := Type^
 GTypeVec2f := Type^
 
+GTypeTypeId := Type^
+
 
 ForEachIntType := !(!(Type^,bool)&-> void cb) -> void
 {
@@ -518,10 +520,14 @@ CreateStandardTypes := !() -> void
 	TypeTable[24] = new TypeVector("<3 x i32>","vec3i",TypeTable[6],3,16)
 	TypeTable[25] = new TypeVector("<2 x i32>","vec2i",TypeTable[6],2,8)
 
-	TypeTable[26] = new TypeInteger("i8","char","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)
-
 	for it : ![23,24,25]
 		TypeTable[it].Base = TypeTable[6]
+
+	TypeTable[26] = new TypeInteger("i8","char","!DIBasicType(name: \"char\", size: 8, align: 8,encoding: DW_ATE_signed_char)",1,1)
+
+
+	//TypeTable[27] = new TypeInteger("i64","TypeId","!DIBasicType(name: \"char\", size: 64, align: 64,encoding: DW_ATE_unsigned)",8,8)
+	TypeTable[27] = new TypeInteger("i32","TypeId","!DIBasicType(name: \"TypeId\", size: 32, align: 32,encoding: DW_ATE_unsigned)",4,4)
 
 	GTypeNone = TypeTable[22]
 	GTypeBool =   TypeTable[8]
@@ -542,6 +548,8 @@ CreateStandardTypes := !() -> void
 	GTypeQuantf = TypeTable[18]
 	GTypeVec3f = TypeTable[19]
 	GTypeVec2f = TypeTable[20]
+
+	GTypeTypeId = TypeTable[27]
 
 	GTypeVoidP->SetType(TypeVoidPoint)
 
@@ -590,12 +598,12 @@ CreateStandardTypes := !() -> void
 	DefsTable[25] = new TypeDef("vec3i",TypeTable[24])
 	DefsTable[26] = new TypeDef("vec2i",TypeTable[25])
 
+	DefsTable[27] = new TypeDef("TypeId",GTypeTypeId)
+
 	GTypeQuantf.Base = GTypeFloat
 	GTypeVec2f.Base = GTypeFloat
 	GTypeVec3f.Base = GTypeFloat
 	GTypeVec4f.Base = GTypeFloat
-
-	//DefsTable[26] reserved by Str
 }
 
 
