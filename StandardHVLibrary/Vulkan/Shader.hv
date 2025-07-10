@@ -1,23 +1,10 @@
 
-VType_Void := 0
-VType_UInt8 := 100
-VType_UInt16 := 101
-VType_UInt32 := 102
-VType_UInt64 := 103
-VType_Int8 := 200
-VType_Int16 := 201
-VType_Int32 := 202
-VType_Int64 := 203
-VType_Half := 400
-VType_Float := 401
-VType_Double := 402
-
 VKType := class
 {
-	BaseType := s16
+	BaseType := TypeId
 	TypeCount := s16
 	
-	this := !(int itType,int itCount) -> void
+	this := !(TypeId itType,int itCount) -> void
 	{
 		BaseType = itType
 		TypeCount = itCount
@@ -34,7 +21,7 @@ VKType := class
 	}
 	GetVKType := !() -> int
 	{
-		if BaseType == VType_Float
+		if BaseType == float
 		{
 			assert(TypeCount >= 2 and TypeCount <= 4)
 			switch TypeCount
@@ -44,7 +31,7 @@ VKType := class
 				case 4 return VK_FORMAT_R32G32B32A32_SFLOAT
 			}
 		}
-		if BaseType == VType_UInt8
+		if BaseType == u8
 		{
 			assert(TypeCount >= 2 and TypeCount <= 4)
 			switch TypeCount
@@ -54,7 +41,7 @@ VKType := class
 				case 4 return VK_FORMAT_R8G8B8A8_UNORM
 			}
 		}
-		if BaseType == VType_Half
+		if BaseType == half
 		{
 			assert(TypeCount >= 2 and TypeCount <= 4)
 			switch TypeCount
@@ -72,8 +59,8 @@ VKType := class
 		switch BaseType
 		{
 			//case VType_UInt8 return VK_INDEX_TYPE_UINT8_KHR //NOT SUPPORTED BY DEFAULT
-			case VType_UInt16 return VK_INDEX_TYPE_UINT16
-			case VType_UInt32 return VK_INDEX_TYPE_UINT32
+			case u16 return VK_INDEX_TYPE_UINT16
+			case u32 return VK_INDEX_TYPE_UINT32
 		}
 		assert(false)
 		return 0
@@ -81,16 +68,16 @@ VKType := class
 	GetSize := !() -> int
 	{
 		itTypeSize := 0
-		if BaseType == VType_Float itTypeSize = 4
-		if BaseType == VType_Half itTypeSize = 2
-		if BaseType == VType_Int8 itTypeSize = 1
-		if BaseType == VType_Int16 itTypeSize = 2
-		if BaseType == VType_Int32 itTypeSize = 4
-		if BaseType == VType_Int64 itTypeSize = 8
-		if BaseType == VType_UInt8 itTypeSize = 1
-		if BaseType == VType_UInt16 itTypeSize = 2
-		if BaseType == VType_UInt32 itTypeSize = 4
-		if BaseType == VType_UInt64 itTypeSize = 8
+		if BaseType == float itTypeSize = 4
+		if BaseType == half itTypeSize = 2
+		if BaseType == s8 itTypeSize = 1
+		if BaseType == s16 itTypeSize = 2
+		if BaseType == s32 itTypeSize = 4
+		if BaseType == s64 itTypeSize = 8
+		if BaseType == u8 itTypeSize = 1
+		if BaseType == u16 itTypeSize = 2
+		if BaseType == u32 itTypeSize = 4
+		if BaseType == u64 itTypeSize = 8
 		assert(itTypeSize != 0)
 		return itTypeSize*TypeCount
 	}
@@ -106,13 +93,13 @@ VKTypeFromType := !().{@T} -> VKType
 		switch T->TypeSize
 		{
 		case 1
-			result.BaseType = VType_SInt8
+			result.BaseType = s8
 		case 2
-			result.BaseType = VType_SInt16
+			result.BaseType = s16
 		case 4
-			result.BaseType = VType_SInt32
+			result.BaseType = s32
 		case 8
-			result.BaseType = VType_SInt64
+			result.BaseType = s64
 		}
 
 		if T->IsSInt
@@ -122,11 +109,11 @@ VKTypeFromType := !().{@T} -> VKType
 		switch T->TypeSize
 		{
 		case 2
-			result.BaseType = VType_Half
+			result.BaseType = half
 		case 4
-			result.BaseType = VType_Float
+			result.BaseType = float
 		case 8
-			result.BaseType = VType_Double
+			result.BaseType = double
 		}
 
 		result.TypeCount = 1
