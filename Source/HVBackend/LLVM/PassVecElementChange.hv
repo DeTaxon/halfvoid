@@ -1,0 +1,31 @@
+
+PassSimplifyVectors := !(MCFunction^ fnc) ->MCFunction^
+{
+	bCtx := MCBuildContext(fnc,true,false)
+
+	newObjs := ref bCtx.objects
+	newCmds := ref bCtx.lines
+
+	for it , i : fnc.Lines
+	{
+		if it.opcode != "load_element" {
+			newCmds.Push(it)
+			continue
+		}
+
+		ob2 := fnc.Objects[it.var2]
+
+		if ob2.GetType() is not TypeVector {
+			newCmds.Push(it)
+			continue
+		}
+
+		vecPtr := bCtx.CreateVar(ob2.GetType().GetPoint())
+		floatPtr := bCtx.CreateVar(ob2.GetType().Base.GetPoint())
+
+		HVB_ins_get_pointer(bCtx&,vecPtr,it.var2)
+		HVB_ins_cast(bCtx&,floatPtr,vecPtr)
+		HVB_ins_load_element(bCtx&,it.var1,floatPtr,it.var3)
+	}
+	return bCtx.CreateMCFunction(false)
+}

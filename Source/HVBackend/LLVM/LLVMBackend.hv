@@ -11,12 +11,13 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "main_148"
+	needPrint := base->{BoxFuncBody^}.OutputName == "main_145"
 	//needPrint = true
-	//needPrint = false
+	needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
+	fnc = PassSimplifyVectors(fnc)
 	//fnc = PassNormalizeTypes(fnc)
 	fnc = PassForceReturnConstValues(fnc)
 	fnc = PassRemoveReferences(fnc)

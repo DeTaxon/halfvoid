@@ -1,22 +1,9 @@
 
-SomeTest := !(TypeId tst) -> void
-{
-	c := int
-	c = tst
-	r := TypeId
-	r = tst
-	printf("yep %i %i %i\n",tst,c,tst == int)
-}
-
 main := !(char^[] args) -> int
 {
-	SomeTest(int)
-	SomeTest(float)
-	SomeTest(int)
-	SomeTest(int)
-	SomeTest(float)
-	SomeTest(vec3f)
-	SomeTest(vec3f)
+	a := vec4f
+	a.z = 10.0f
+	printf("test %f\n",a.z)
 }
 
 //TODO named input + template, !(@T^ x = null)

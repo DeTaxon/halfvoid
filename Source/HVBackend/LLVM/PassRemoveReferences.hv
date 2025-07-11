@@ -81,9 +81,9 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 				{
 					tp := it.GetType()
 					tp = tp.GetPoint()
+
 					cnst := makeConst(tp)
 					vr := getVar(op.var1)
-
 
 					ln := MCLine("llvm_store",vr,cnst)
 					newCmds.InsertAfter(iter,ln)
