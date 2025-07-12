@@ -1,0 +1,57 @@
+
+PassRemoveVoidParams:= !(MCFunction^ fnc) ->MCFunction^
+{
+	bCtx := MCBuildContext(fnc,false,false)
+
+	newObjs := ref bCtx.objects
+
+	removeNodes := AVLSet.{int}
+
+	for it , i : fnc.Objects
+	{
+		if i == 0
+		{
+			newObjs.Push(it)
+			continue
+		}
+
+		if it is MCVariable and it.GetType() == GTypeVoid
+		{
+			setVal := MCVariable
+			setVal.GetValueType() = GTypeInt
+			newObjs.Push(setVal)
+
+			removeNodes.Insert(i)
+		}else{
+			newObjs.Push(it)
+		}
+	}
+
+	newCmds := ref bCtx.lines
+
+	for it , i : fnc.Lines
+	{
+		needRemove := false
+		for j : 5
+		{
+			c := it.var1&[j]
+
+			if removeNodes.Contain(c) {
+				needRemove = true
+				if it.var1 != 0
+					removeNodes.Insert(c)
+			}
+		}
+		if needRemove
+			continue
+
+		if it.opcode == "get_pointer" and it.var2 == 0
+		{
+			nullPtr := bCtx.AddPointer(null)
+			HVB_ins_move(bCtx&,it.var1,nullPtr)
+		}else{
+			newCmds.Push(it)
+		}
+	}
+	return bCtx.CreateMCFunction(false)
+}

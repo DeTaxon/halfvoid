@@ -58,7 +58,6 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			if IsVarType(fnc.Objects[stLine.var2])
 			{
 				cnstId := makeConstVar(stLine.var2)
-				newCmds.Push(MCLine("mov",cnstId,stLine.var2))
 				stLine.var2 = cnstId
 			}
 

@@ -1,9 +1,25 @@
 
+
+en := enum {
+"a","b"
+}
+
+
+
 main := !(char^[] args) -> int
 {
-	a := vec4f
-	a.z = 10.0f
-	printf("test %f\n",a.z)
+	k := en
+
+	for kk : ![k,k]
+	switch k
+	{
+	case "a"
+		printf("a")
+	case "b"
+		printf("a")
+	}
+	return 0
+
 }
 
 //TODO named input + template, !(@T^ x = null)

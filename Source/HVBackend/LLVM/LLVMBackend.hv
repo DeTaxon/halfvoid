@@ -11,15 +11,17 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "main_145"
+	needPrint := base->{BoxFuncBody^}.OutputName == "MCInterpFunction_5966"
 	//needPrint = true
 	needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
 	fnc = PassSimplifyVectors(fnc)
+	fnc = PassRemoveVoidParams(fnc)
 	//fnc = PassNormalizeTypes(fnc)
 	fnc = PassForceReturnConstValues(fnc)
+	if needPrint fnc.Print()
 	fnc = PassRemoveReferences(fnc)
 	if needPrint fnc.Print()
 	fnc = PassForceReturnConstValues(fnc)
@@ -107,8 +109,10 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	{
 		if var is not MCVariable
 			continue
+		tp := var.GetType()
+
 		out << "	%Var" << i << " = alloca "
-		var.GetType().PrintType(ctx)
+		tp.PrintType(ctx)
 		out << "\n"
 	}
 	for i : fnc.InputsIndxCount
@@ -575,7 +579,16 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				ob2 := ref fnc.Objects[op.var2]
 
 				out << "	%Var" << op.var1 << " = "
-				out << op.opcode.ToCStr() << " "
+				switch op.opcode
+				{
+				case "shl"
+					out << "shl"
+				case "sshr"
+					out << "ashr"
+				case "ushr"
+					out << "lshr"
+				}
+				out << " "
 				ob1.GetType().PrintType(ctx)
 				out << " "
 				LLVMPrintObjValue(ctx,ob1,op.var1)
@@ -659,7 +672,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 				assert(IsFloat(tp))
 
-				out << "	%Var" << op.var1 << " =  call @llvm."
+				out << "	%Var" << op.var1 << " =  call "
+				tp.PrintType(ctx)
+				out << " @llvm."
 				out << op.opcode.ToCStr() << ".f" << (tp.GetSize()*8) << "("
 				tp.PrintType(ctx)
 				out << " "
@@ -806,15 +821,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				LLVMPrintObjValue(ctx,ob3,op.var3)
 				printDebugEnd()
 
-				out << "	%Var" << op.var1 << " =  fast float @llvm.vector.reduce.fadd.f32.v"
+				out << "	%Var" << op.var1 << " =  call float @llvm.vector.reduce.fadd.f32.v" //TODO type
 				out << siz << "f32(float -0.0,<" << siz << " x float> %Temp" << op.var1 << ")"
 
-				out << " "
-				ob2.GetType().PrintType(ctx)
-				out << " "
-				LLVMPrintObjValue(ctx,ob2,op.var2)
-				out << " , "
-				LLVMPrintObjValue(ctx,ob3,op.var3)
 				printDebugEnd()
 			case in !["llvm_getelementptr","llvm_getelementptr0"]
 				v1 := op.var2
@@ -827,10 +836,16 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 				if ob1 is MCVariable or ob1.IsConstant
 				{
-					if ob1.GetType().Base == null
-						printf("broken %i %s %s\n",indx,res.GetType().GetBADStr().Str(),base.GetName().Str())
+					bType := ob1.GetType()
+
+					if bType == GTypeVoidP 
+					{
+						bType = GTypeU8
+					}else{
+						bType = bType.Base
+					}
 					out << "	%Var" << op.var1 << " = getelementptr "
-					ob1.GetType().Base.PrintType(ctx)
+					bType.PrintType(ctx)
 					out << " , "
 					ob1.GetType().PrintType(ctx)
 					out << " "
@@ -972,6 +987,9 @@ LLVMPrintObjValue := !(LLVMWriteContext^ ctx,MCObject obj, int id) -> void
 				sprintf(r[0]&,"%p",obj.GetValue())
 				out << r[0]&
 			}
+	case void
+		printf("unknown object to print %s\n",obj.UnitName)
+		//assert(false)
 	}
 }
 
