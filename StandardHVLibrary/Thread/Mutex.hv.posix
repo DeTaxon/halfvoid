@@ -1,7 +1,7 @@
 
 Mutex := class extend TGCObject
 {
-	itBuffer := char[1024]
+	itBuffer := u8[1024]
 	//tracyCtx := void^
 	this := !() -> void
 	{

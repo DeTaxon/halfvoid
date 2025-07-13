@@ -164,7 +164,8 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 					vars := int[5]
 					for i : 5
 					{
-						ob := ref fnc.Objects[thisLine.var1&[i]]
+						assert(thisLine.var1&[i] < newObjs.Size())
+						ob := ref newObjs[thisLine.var1&[i]]
 						if inf.var1&[i] != 0 and IsObjectVariable(ob)
 						{
 							vars[i] = makeConstVar(thisLine.var1&[i])

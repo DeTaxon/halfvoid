@@ -11,9 +11,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "MCInterpFunction_5966"
+	needPrint := base->{BoxFuncBody^}.OutputName == "main_145"
 	//needPrint = true
-	needPrint = false
+	//needPrint = false
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
@@ -453,8 +453,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					ob1.GetType().PrintType(ctx)
 					printDebugEnd()
 				}else {
-					printf("LLVM: unknown cast at %s\n",makeLoc())
-					printf("types are %s and %s\n",ob1.GetType().GetBADStr().Str(),ob2.GetType().GetBADStr().Str())
+					//printf("LLVM: unknown cast at %s\n",makeLoc())
+					//printf("types are %s and %s\n",ob1.GetType().GetBADStr().Str(),ob2.GetType().GetBADStr().Str())
 					assert(false)
 				}
 			case "load_element"
@@ -1021,7 +1021,7 @@ LLVMPrintObjValue := !(LLVMWriteContext^ ctx,MCObject obj, int id) -> void
 				out << r[0]&
 			}
 	case void
-		printf("unknown object to print %s\n",obj.UnitName)
+		//printf("unknown object to print %s\n",obj.UnitName)
 		//assert(false)
 	}
 }

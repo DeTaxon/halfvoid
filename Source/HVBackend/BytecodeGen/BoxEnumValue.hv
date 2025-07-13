@@ -2,6 +2,12 @@ AppendClass BoxEnumValue
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		result.CreatedId = ctx.AddInteger(ItValue)
+		en := GetType()->{TypeEnum^}.ToEnum
+
+		res := ctx.AddInteger(ItValue)
+		resVar := ctx.CreateVar(en.BaseType)
+		HVB_ins_cast(ctx,resVar,res)
+
+		result.CreatedId = resVar
 	}
 }

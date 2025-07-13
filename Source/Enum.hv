@@ -229,12 +229,25 @@ TypeEnum := class extend TypeStandard
 	GetAlign := virtual !() -> int
 	{
 		ToEnum.AwaitReadyState()
+		if Base != null
+			return Base.GetAlign()
 		return super()
 	}
 	GetSize := virtual !() -> int
 	{
 		ToEnum.AwaitReadyState()
+		if Base != null
+			return Base.GetSize()
 		return super()
+	}
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		if ToEnum?.BaseType != null
+		{
+			ToEnum.BaseType.PrintType(ctx)
+		}else{
+			super(ctx)
+		}
 	}
 }
 
