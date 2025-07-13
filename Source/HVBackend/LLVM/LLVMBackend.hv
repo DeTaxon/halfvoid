@@ -565,18 +565,20 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			case in !["and","or","xor"]
 				ob1 := ref fnc.Objects[op.var1]
 				ob2 := ref fnc.Objects[op.var2]
+				ob3 := ref fnc.Objects[op.var3]
 
 				out << "	%Var" << op.var1 << " = "
 				out << op.opcode.ToCStr() << " "
 				ob1.GetType().PrintType(ctx)
 				out << " "
-				LLVMPrintObjValue(ctx,ob1,op.var1)
-				out << " , "
 				LLVMPrintObjValue(ctx,ob2,op.var2)
+				out << " , "
+				LLVMPrintObjValue(ctx,ob3,op.var3)
 				printDebugEnd()
 			case in !["shl","sshr","ushr"]
 				ob1 := ref fnc.Objects[op.var1]
 				ob2 := ref fnc.Objects[op.var2]
+				ob3 := ref fnc.Objects[op.var3]
 
 				out << "	%Var" << op.var1 << " = "
 				switch op.opcode
@@ -591,16 +593,17 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << " "
 				ob1.GetType().PrintType(ctx)
 				out << " "
-				LLVMPrintObjValue(ctx,ob1,op.var1)
-				out << " , "
 				LLVMPrintObjValue(ctx,ob2,op.var2)
+				out << " , "
+				LLVMPrintObjValue(ctx,ob3,op.var3)
 				printDebugEnd()
 			case "not"
 				ob1 := ref fnc.Objects[op.var1]
+				ob2 := ref fnc.Objects[op.var2]
 
 				if ob1.GetType() == GTypeBool {
 					out << "	%Var" << op.var1 << " = xor i1 1 ,"
-					LLVMPrintObjValue(ctx,ob1,op.var1)
+					LLVMPrintObjValue(ctx,ob2,op.var2)
 					printDebugEnd()
 
 				}else {
@@ -612,24 +615,29 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				ob3 := ref fnc.Objects[op.var3]
 
 				out << "	%Var" << op.var1 << " = "
+
+				operType := ob2.GetType()
+				if operType is TypeVector
+					operType = operType.Base
+
 				switch op.opcode
 				{
 				case "add"
-					if IsInt(ob2.GetType()) out << "add" else out << "fadd"
+					if IsInt(operType) out << "add" else out << "fadd"
 				case "sub"
-					if IsInt(ob2.GetType()) out << "sub" else out << "fsub"
+					if IsInt(operType) out << "sub" else out << "fsub"
 				case "mul"
-					if IsInt(ob2.GetType()) out << "mul" else out << "fmul"
+					if IsInt(operType) out << "mul" else out << "fmul"
 				case "div"
-					if IsInt(ob2.GetType()) {
-						if IsUInt(ob2.GetType())
+					if IsInt(operType) {
+						if IsUInt(operType)
 							out << "udiv"
 						else
 							out << "sdiv"
 					}else out << "fdiv"
 				case "mod"
-					if IsInt(ob2.GetType()) {
-						if IsUInt(ob2.GetType())
+					if IsInt(operType) {
+						if IsUInt(operType)
 							out << "urem"
 						else
 							out << "srem"
@@ -977,6 +985,31 @@ LLVMPrintObjValue := !(LLVMWriteContext^ ctx,MCObject obj, int id) -> void
 				sprintf(r[0]&,"%p",obj.GetValue())
 				out << r[0]&
 			}
+	case MCConstBlob
+	
+			baseBlob := BoxRawData^
+			stPtr := obj.GetValue()
+			for it : blobDatas
+			{
+				if it.ItBlob.GetPointer() == stPtr
+				{
+					baseBlob = it
+					break
+				}
+			}
+			if baseBlob == null 
+			{
+				for it : EmbeddedObjects[^]
+				{
+					if it.rawData.ItBlob.GetPointer() == stPtr
+					{
+						baseBlob = it.rawData
+						break
+					}
+				}
+			}
+			assert(baseBlob != null)
+			baseBlob.PrintUse(ctx)
 	case MCConstPointerTyped
 			ptr := obj.GetValue()
 			if ptr == null

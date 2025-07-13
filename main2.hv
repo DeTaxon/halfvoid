@@ -1,23 +1,16 @@
 
 
-en := enum {
-"a","b"
-}
-
-
-
 main := !(char^[] args) -> int
 {
-	k := en
-
-	for kk : ![k,k]
-	switch k
-	{
-	case "a"
-		printf("a")
-	case "b"
-		printf("a")
-	}
+		jMachine := #Regexp(
+			"\"((\\\\ [^]) | [^\"\\\\])*\"",1,
+			"[0-9]+(.[0-9]+)?",2,
+			"0x[0-9a-fA-F]+([0-9a-fA-F]+)?",2,
+			" true | false | null",3,
+			"\\{ | \\} | \\, | \\: | \\[ | \\]",4,
+			"\\ | \\t | \\n",5
+		)
+	#File("main2.hv")
 	return 0
 
 }

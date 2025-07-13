@@ -119,6 +119,16 @@ MCConstPointer := class extend MCObject
 	PrintObject := virtual !() -> void { printf("Pointer \"%p\"",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeVoidP }
 }
+MCConstBlob := class extend MCObject
+{
+	IsConstant := virtual true
+
+	GetValue := !() -> ref void^ { return Value&->{void^^}^}
+	GetSize := !() -> ref u64 { return Value2&->{u64^}^}
+
+	PrintObject := virtual !() -> void { printf("Blob \"%p\" %i",GetValue(),GetSize()) }
+	GetType := virtual !() -> Type^ { return GTypeVoidP }
+}
 MCConstPointerTyped := class extend MCObject
 {
 	IsConstant := virtual true

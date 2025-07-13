@@ -163,6 +163,14 @@ MCBuildContext := class extend TGCObject
 		result = objects.Size()
 		objects.Push(setVal)
 	}
+	AddBlob := !(void^ value,u64 bSize) -> int
+	{
+		setVal := MCConstBlob
+		setVal.GetSize() = bSize
+		setVal.GetValue() = value
+		result = objects.Size()
+		objects.Push(setVal)
+	}
 	AddS64 := !(s64 value) -> int
 	{
 		setVal := MCConstS64
