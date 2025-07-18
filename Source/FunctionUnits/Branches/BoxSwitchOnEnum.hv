@@ -32,9 +32,9 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 
 	cases := HybridQueue.{SwitchCase^,13}
 
-	checkCase := () ==> {
+	checkCase := () ==> bool {
 		if currentCase == null
-			return void
+			return true
 
 		thisCaseBlock := BoxBlock^
 
@@ -51,7 +51,7 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 		{
 			//todo if too much default cases
 			defaultNode = thisCaseBlock
-			return void
+			return true
 		}
 		checkRes := BoxExeObj^
 
@@ -95,7 +95,7 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 		if caseCheck == null
 		{
 			CurrentWork?.SetErrorMessage(currentCase.MakeError("Could not get case object"))
-			return void
+			return false
 		}
 		if caseCheck is BoxExeString
 		{
@@ -103,7 +103,7 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 			if not asEn.GetEnumIndex(caseCheck->{BoxExeString^}.Value,null)
 			{
 				CurrentWork?.SetErrorMessage(caseVal.MakeError("Enumeration does not contain this value"))
-				return void
+				return false
 			}
 		}else if caseCheck is BoxArrayHolder
 		{
@@ -128,7 +128,7 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 		if checkRes == null and not allConsts
 		{
 			CurrentWork?.SetErrorMessage(currentCase.MakeError("Can not compare case object with switch statement"))
-			return void
+			return false
 		}
 
 		newNode := new SwitchCase()
@@ -140,13 +140,15 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 
 		cases.Push(newNode)
 
+		return true
 	}
 
 	while itr != null
 	{
 		if itr.Down?.GetValue() == "case"
 		{
-			checkCase()
+			if not checkCase()
+				return null
 			currentCase = itr
 			startNode = null
 			startNodeCount = 0
@@ -159,7 +161,8 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 	}
 	if currentCase != null
 	{
-		checkCase()
+		if not checkCase()
+			return null
 	}
 
 	resSwitch := new BoxSwitch(mainCall,mainVar,cases,defaultNode)
@@ -173,7 +176,6 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 	{
 		resSwitch.defaultLabel = new BoxLabel()
 		resSwitch->SetType(BoxSwitchOnEnum)
-
 	}
 	return resSwitch
 }

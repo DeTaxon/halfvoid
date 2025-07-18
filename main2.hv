@@ -1,23 +1,8 @@
 
 
-tst := enum extend u16
-{
-"a","b"
-}
-
-cls := class
-{
-	opcode := tst
-	var1 := u16
-	var2 := u16
-}
 
 main := !(char^[] args) -> int
 {
-	c := cls
-	c.var1 = 23
-	c.opcode = "a"
-	printf("test %i\n",c.var1)
 	return 0
 
 }
@@ -29,9 +14,6 @@ main := !(char^[] args) -> int
 //TODO lazy class in hotload
 //TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
 //TODO allow !(ref int x) , in functions and function types, lambdas
-
-
-//TODO switch on enum compiles even if one of the lements does not exist
 
 
 //ThisIsError := !() -> void

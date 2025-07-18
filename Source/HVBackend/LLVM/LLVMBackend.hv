@@ -912,43 +912,46 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	out << "}\n"
 
-	flId := base.bdy.Line.File.fileId
+	if DebugMode
+	{
+		flId := base.bdy.Line.File.fileId
 
-	out << "!" << fncId << " = distinct !DISubprogram(name:\""
-	base.PrintName(ctx)
-	out << "\","
-	out << "linkageName:\""
-	base.PrintName(ctx)
-	out << "\","
-	out << "scope: !" << flId << " , file: !" << flId 
-	out << ",type: !" << base.GetType().MetaId
-	if base.bdy.Line != null
-	{
-		out << ", line:" << base.bdy.Line.Line
-		out << ", scopeLine:" << base.bdy.Line.Line
-	}
-	out << ", unit: !" << cuId
-	out << ", flags: DIFlagPrototyped"
-	out << ", spFlags: DISPFlagDefinition"
-	//if tmplId != -1
-	//	f << ", templateParams:!"<<tmplId
-	out << ")\n"
-
-	for fileId, pth : dbgFiles
-	{
-		out << "!" << fileId  << " = !DIFile(filename: \"" 
-		out << pth << "\", directory: \""
-		out <<  "/" <<"\")\n"
-	}
-	for it, ind : dbgBlocks
-	{
-		out << "!" << ind << " = !DILexicalBlock(scope: !" 
-		out << fncId << ", file: !" << flId
+		out << "!" << fncId << " = distinct !DISubprogram(name:\""
+		base.PrintName(ctx)
+		out << "\","
+		out << "linkageName:\""
+		base.PrintName(ctx)
+		out << "\","
+		out << "scope: !" << flId << " , file: !" << flId 
+		out << ",type: !" << base.GetType().MetaId
+		if base.bdy.Line != null
+		{
+			out << ", line:" << base.bdy.Line.Line
+			out << ", scopeLine:" << base.bdy.Line.Line
+		}
+		out << ", unit: !" << cuId
+		out << ", flags: DIFlagPrototyped"
+		out << ", spFlags: DISPFlagDefinition"
+		//if tmplId != -1
+		//	f << ", templateParams:!"<<tmplId
 		out << ")\n"
-	}
-	for it, ind : dbgList
-	{
-		out << "!" << ind  << " = !DILocation(line:" << it.1 << ",column:1, scope:!" << it.0 << ")\n"
+
+		for fileId, pth : dbgFiles
+		{
+			out << "!" << fileId  << " = !DIFile(filename: \"" 
+			out << pth << "\", directory: \""
+			out <<  "/" <<"\")\n"
+		}
+		for it, ind : dbgBlocks
+		{
+			out << "!" << ind << " = !DILexicalBlock(scope: !" 
+			out << fncId << ", file: !" << flId
+			out << ")\n"
+		}
+		for it, ind : dbgList
+		{
+			out << "!" << ind  << " = !DILocation(line:" << it.1 << ",column:1, scope:!" << it.0 << ")\n"
+		}
 	}
 }
 
