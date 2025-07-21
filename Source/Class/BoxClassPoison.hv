@@ -13,7 +13,13 @@ BoxClassPoison := class extend BoxClass
 			if not it.1
 			{
 				newFunc := TryParseFunction(it.0)
-				assert(newFunc != null) //TODO error
+				if newFunc == null 
+				{
+					st := TEchoStream
+					st << "Failed to create function for class " << Name
+					MakeErrorMsg(it.0,st.GetStr())
+					return void
+				}
 				assert(newFunc is in BoxFuncTemplateBody)
 				asTmpl := newFunc->{BoxFuncTemplateBody^}
 				asTmpl.SetName(ind)
@@ -23,7 +29,14 @@ BoxClassPoison := class extend BoxClass
 				if not PreVTableFuncs.Contain(ind)
 				{
 					newFunc := TryParseFunction(it.0)
-					assert(newFunc != null) //TODO error
+					if newFunc == null 
+					{
+						st := TEchoStream
+						st << "Failed to create function for class " << Name
+						MakeErrorMsg(it.0,st.GetStr())
+						return void
+					}
+
 					assert(newFunc is in BoxFuncTemplate)
 					newFunc2 := newFunc->{BoxFuncTemplate^}.GetOneFunc()->{BoxFuncBody^}
 					assert(newFunc2 is in BoxFuncBody)

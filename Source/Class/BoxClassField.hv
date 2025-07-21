@@ -35,8 +35,8 @@ AppendClass BoxClass
 		if VTable.Size() != 0
 		{
 			posOffset += 1
-			posMemOffset = 8 //TODO unconst
-			ItAlign = max(ItAlign,8)
+			posMemOffset = GArchByteSize
+			ItAlign = max(ItAlign,GArchByteSize)
 		}
 
 		assert(Parents.Size() <= 1)
@@ -292,8 +292,8 @@ AppendClass BoxClass
 		if VTable.Size() != 0
 		{
 			posOffset += 1
-			posMemOffset = 8 //TODO unconst
-			ItAlign = max(ItAlign,8)
+			posMemOffset = GArchByteSize
+			ItAlign = max(ItAlign,GArchByteSize)
 		}
 
 		assert(Parents.Size() <= 1)

@@ -35,7 +35,7 @@ BuiltInPointSpaceship := class extend BoxFuncCommon
 
 		f^ << "%TA" << resId << " = ptrtoint i8* "
 		lst[0].PrintUse(ctx)
-		f^ << " to i64\n" //TODO Arch
+		f^ << " to i" << GArchBitSize << "\n"
 
 		f^ << "%TB" << resId << " = ptrtoint i8* "
 		lst[1].PrintUse(ctx)
