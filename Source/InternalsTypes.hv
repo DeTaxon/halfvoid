@@ -1,7 +1,6 @@
 
 ArrayViewTemplate := BoxClassTemplate^
 OptionalTemplate := BoxClassTemplate^
-GCType := Type^
 
 GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
@@ -14,9 +13,6 @@ GRepoFileType := Type^
 
 InitInternalsTypes := !() -> void
 {
-	GCType = intGetClass2("TGCObject").ItType
-	assert(GCType != null)
-
 	ArrayViewTemplate = intGetClassTemplate2("TArrayView")
 	OptionalTemplate = intGetClassTemplate2("Optional")
 

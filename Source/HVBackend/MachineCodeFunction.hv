@@ -146,7 +146,7 @@ MCLabel := class extend MCObject
 	PrintObject := virtual !() -> void { printf("Label") }
 }
 
-MCFunction := class //extend TGCObject
+MCFunction := class
 {
 	BaseFunction := BoxFuncBody^
 

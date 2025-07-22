@@ -128,7 +128,8 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 		{
 			newCase := new SwitchCase()
 
-			StackCheckpoint()
+			chp := StackCheckpoint()
+			defer chp.RestoreStack()
 
 			newVar := BoxExeObj^
 			if canSwapNames //and tpCheck is IsSameTypeChecker

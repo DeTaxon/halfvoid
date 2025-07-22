@@ -70,7 +70,7 @@ AppendClass BoxFuncBody
 
 				it.createVar.Push(fnc.CreateCall(objs))
 
-				if IsGCClass(tp)
+				if false //IsGCClass(tp)
 				{
 					noObjs := CheckExeDownList
 					destrCall := innerTryGetMethodCall(StringSpan("Destroy"),access,noObjs,cnsts)
@@ -105,7 +105,7 @@ AppendClass BoxFuncBody
 
 			it.createVar.Push(fnc.CreateCall(objs))
 
-			if IsGCClass(tp)
+			if false // IsGCClass(tp)
 			{
 				if LocalVarsToDeferGuard.Contain(it)
 				{
@@ -135,7 +135,7 @@ AppendClass BoxFuncBody
 			}
 
 		}
-		if IsGCPtr(tp) and not it.isReference
+		if false //IsGCPtr(tp) and not it.isReference
 		{
 			if LocalVarsToDeferGuard.Contain(it)
 			{
@@ -170,7 +170,7 @@ AppendClass BoxFuncBody
 	AddLocalVar := !(LocalVar^ lVar) -> void
 	{
 		LocalVars.Push(lVar)
-		if NeedGuardLocalVar
+		if false // NeedGuardLocalVar
 		{
 			tp := lVar.GetBaseType()
 			if IsGCClass(tp) or IsGCPtr(tp)

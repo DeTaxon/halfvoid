@@ -398,12 +398,13 @@ TypePointComplex := class extend TypePoint
 	}
 	IsComplexReturn := virtual !() -> bool
 	{
-		assert(GCType != null)
-		cls := Base->{TypeClass^}.ToClass
-		if cls is BoxClassTuple
-			Base->{TypeClass^}.ToClass.AwaitTypeState()
-		isGC := TypeFight(Base,GCType) == GCType
-		return isGC
+		return false
+		//assert(GCType != null)
+		//cls := Base->{TypeClass^}.ToClass
+		//if cls is BoxClassTuple
+		//	Base->{TypeClass^}.ToClass.AwaitTypeState()
+		//isGC := TypeFight(Base,GCType) == GCType
+		//return isGC
 	}
 }
 

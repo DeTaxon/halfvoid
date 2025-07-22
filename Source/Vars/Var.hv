@@ -244,8 +244,6 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 
 			if vr == null
 			{
-				isGC := IsGCPtr(exeObj.GetType())
-
 				if exeObj.GetType() == GTypeVoid
 				{
 					vr = new FuncLocalVoidParam()
@@ -277,10 +275,6 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 				mVar.Inits.Push(exeObj)
 			}
 
-			if not refVar and mVar is in LocalVar and IsGCPtr(mVar->{LocalVar^}.GetType())
-			{
-				mVar->{LocalVar^}.isSetCreated = true
-			}
 			return mVar
 		}else{
 			assert(false)

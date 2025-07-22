@@ -232,7 +232,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		StartParseHeader()
 
 
-		StackCheckpoint()
+		chp := StackCheckpoint()
+		defer chp.RestoreStack()
+
 		ScopePutConstants()
 
 		datas := HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10}
@@ -279,7 +281,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		//TODO completly replace stack, not add
 
 
-		StackCheckpoint()
+		chp := StackCheckpoint()
+		defer chp.RestoreStack()
+
 		ScopePutConstants()
 
 		fTyps := Type^[100]

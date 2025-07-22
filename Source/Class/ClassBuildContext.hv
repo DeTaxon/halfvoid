@@ -1,4 +1,4 @@
-ClassBuildContext := class extend TGCObject
+ClassBuildContext := class
 {
 	MemParents := HybridQueue.{BoxClass^,5}
 	FieldsParents := HybridQueue.{BoxClass^,5}

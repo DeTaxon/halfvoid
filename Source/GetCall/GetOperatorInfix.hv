@@ -49,38 +49,38 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 			return res
 	}
 
-	if oper == "=" and IsGCPtr(tmpList[0].GetType()) and IsGCPtr(tmpList[1].GetType()) and tmpList[0].IsMem()
-	{
-		t1 := tmpList[0].GetType()
-		t2 := tmpList[1].GetType()
-		fightResult := TypeFight(t1,t2)
+	//if oper == "=" and IsGCPtr(tmpList[0].GetType()) and IsGCPtr(tmpList[1].GetType()) and tmpList[0].IsMem()
+	//{
+	//	t1 := tmpList[0].GetType()
+	//	t2 := tmpList[1].GetType()
+	//	fightResult := TypeFight(t1,t2)
 
-		fncType := GetFuncType(2,![GCType.GetPoint(),GCType.GetPoint()],![true,false],GTypeVoid)
-		pri := GOperatorSetGC.GetPriority(tmpList,![],null)
-		if fightResult == t1
-			//and pri != CmpNoExchange
-		{
-			setFunc := GOperatorSetGC.GetFuncByType(fncType,![])
-			return setFunc.CreateCall(tmpList)
-		}else{
-			return TryRemoveAutoCast(null,tmpList,(newVr,newObjs) ==> {
-				tt1 := newObjs[0].GetType()
-				tt2 := newObjs[1].GetType()
-				fightResult := TypeFight(tt1,tt2)
-				if fightResult == tt1
-				{
-					return GOperatorSetGC.GetFuncByType(fncType,![]).CreateCall(newObjs)
-				}
-				return null->{BoxExeObj^}
-			})?
+	//	fncType := GetFuncType(2,![GCType.GetPoint(),GCType.GetPoint()],![true,false],GTypeVoid)
+	//	pri := GOperatorSetGC.GetPriority(tmpList,![],null)
+	//	if fightResult == t1
+	//		//and pri != CmpNoExchange
+	//	{
+	//		setFunc := GOperatorSetGC.GetFuncByType(fncType,![])
+	//		return setFunc.CreateCall(tmpList)
+	//	}else{
+	//		return TryRemoveAutoCast(null,tmpList,(newVr,newObjs) ==> {
+	//			tt1 := newObjs[0].GetType()
+	//			tt2 := newObjs[1].GetType()
+	//			fightResult := TypeFight(tt1,tt2)
+	//			if fightResult == tt1
+	//			{
+	//				return GOperatorSetGC.GetFuncByType(fncType,![]).CreateCall(newObjs)
+	//			}
+	//			return null->{BoxExeObj^}
+	//		})?
 
-			//if tmpList[0] is in LocalVarProxy and tmpList[0]->{LocalVarProxy^}.baseVar.isSetCreated
-			//{
-			//	printf("here %s\n",tmpList[0]->{LocalVarProxy^}.baseVar.itName)
-			//}
-			return null
-		}
-	}
+	//		//if tmpList[0] is in LocalVarProxy and tmpList[0]->{LocalVarProxy^}.baseVar.isSetCreated
+	//		//{
+	//		//	printf("here %s\n",tmpList[0]->{LocalVarProxy^}.baseVar.itName)
+	//		//}
+	//		return null
+	//	}
+	//}
 
 	res1 := innerTryGetInfixCall(oper,tmpList,itm)
 	if res1 != null

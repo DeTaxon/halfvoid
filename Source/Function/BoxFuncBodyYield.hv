@@ -42,8 +42,8 @@ AppendClass BoxFuncBody
 
 				if it.GetBaseType() == GTypeStr
 				{
-					objs[0] = new PtrRefExchange(objs[0],GCType.GetPoint())
-					objs[1] = new PtrExchange(objs[1],GCType.GetPoint())
+					objs[0] = new PtrRefExchange(objs[0],GTypeVoidP)
+					objs[1] = new PtrExchange(objs[1],GTypeVoidP)
 				}
 				setVar := CreateFuncCall("=",objs)
 				assert(setVar != null)

@@ -52,7 +52,7 @@ CompilerWork := class
 	
 }
 
-CWorkUnit := class extend TGCObject
+CWorkUnit := class
 {
 	UnitName := poison virtual #ThisClass()->TypeName
 	

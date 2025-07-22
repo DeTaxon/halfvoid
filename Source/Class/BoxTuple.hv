@@ -31,32 +31,16 @@ BoxClassTuple := class extend BoxClassPoison
 
 		hvClass.baseClass = this&
 
-		needGC := false
-
 		for it,i : types //todo remove i
 		{
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))
 
-			if not simpleTuple
-			{
-				if IsGCPtr(it) or IsGCType(it)
-				{
-					needGC = true
-				}	
-			}
 			if it == GTypeVoid
 			{
 				assert(false)
 			}
 		}
 
-
-		if needGC
-		{
-			assert(GCType != null)
-			Parents.Push(GCType->{TypeClass^}.ToClass)
-		}
-		
 
 		SubWork(() ==> {
 			//InternalsHatch.Await()

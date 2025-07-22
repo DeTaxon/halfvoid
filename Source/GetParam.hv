@@ -308,10 +308,6 @@ GetParamCaptureVar := !(BoxExeObj^ preRes,Str varName,BoxUnit^ par,HybridQueue.{
 
 	isRef := true
 
-	if IsGCPtr(capCall.GetType())
-		isRef = false
-
-
 	while metLambdas.Size() != 0
 	{
 		lambd := metLambdas.Pop()

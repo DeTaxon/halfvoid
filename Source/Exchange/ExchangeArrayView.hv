@@ -8,8 +8,7 @@ ExchangeArrayViewToGC := class extend ExchangeUnit
 	
 		if to is in TypePoint
 		{
-			if to.Base != GCType
-				return CmpNoExchange
+			return CmpNoExchange
 		}else
 		{
 			return CmpNoExchange

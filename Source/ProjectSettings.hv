@@ -1,4 +1,4 @@
-ProjectSettingsType := class extends TGCObject
+ProjectSettingsType := class
 {
 	itFile := File^
 
@@ -50,7 +50,7 @@ ProjectSettingsType := class extends TGCObject
 	}
 }
 
-SettingsUsedFolders := class extends TGCObject
+SettingsUsedFolders := class
 {
 	Level := int
 	FolderPath := Str
@@ -63,7 +63,7 @@ SettingsUsedFolders := class extends TGCObject
 	"=" := default
 }
 
-SettingsSet := class extends TGCObject
+SettingsSet := class
 {
 	Name := Str
 

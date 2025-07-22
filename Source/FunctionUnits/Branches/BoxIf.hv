@@ -63,7 +63,9 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 
 	if true
 	{
-		StackCheckpoint()
+		chp := StackCheckpoint()
+		defer chp.RestoreStack()
+
 		UnitStack.PushFront(onTrueVars[^])
 		UnitStack.PushFront(truHolder&)
 		tru = new BoxBlock(tryToken)
@@ -74,7 +76,9 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 
 	if flsToken != null
 	{
-		StackCheckpoint()
+		chp := StackCheckpoint()
+		defer chp.RestoreStack()
+
 		UnitStack.PushFront(onFalseVars[^])
 		UnitStack.PushFront(truHolder.postVars[^])
 		fls = new BoxBlock(flsToken)

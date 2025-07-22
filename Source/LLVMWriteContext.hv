@@ -87,7 +87,7 @@ LLVMWriteContext := class
 	}
 }
 
-ContextExitNode := class extend TGCObject
+ContextExitNode := class
 {
 	subNodes := AVLMap.{BoxExeObj^,ContextExitNode}
 	exitLabel := BoxLabel^
