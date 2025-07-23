@@ -1,4 +1,4 @@
-HotloadContext := class extend TGCObject
+HotloadContext := class
 {
 	ChangedFunctions := List.{BoxFuncBody^}
 	ChangedVirtualFunctions := List.{BoxFuncBody^}

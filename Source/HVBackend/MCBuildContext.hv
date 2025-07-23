@@ -1,4 +1,4 @@
-MCBuildContext := class extend TGCObject
+MCBuildContext := class
 {
 	objects := List.{MCObject}
 	lines := List.{MCLine}

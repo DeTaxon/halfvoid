@@ -165,7 +165,7 @@ AppendClass BoxClassBody
 }
 
 
-ClassReloadOldData := class extend TGCObject
+ClassReloadOldData := class
 {
 	ctx := HotloadContext^
 

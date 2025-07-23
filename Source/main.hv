@@ -9,8 +9,6 @@ LexHVInputVars := PriorityBagOld^
 loadLex2 := !(File^ pri,PriorityBagOld^^ res) -> void 
 {
 	fileMap := pri.GetMap()
-	fileMap.IncRef()
-	pri.IncRef()
 	res^ = new PriorityBagOld(fileMap.Get()->{char^},fileMap.Size())
 }
 
@@ -66,8 +64,6 @@ main := !(char^[] args) -> int
 	}
 
 	TracyZone("MainFunc")
-
-	CodeSpaces.IncRef()
 
 	files := new List.{char^}
 

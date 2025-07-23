@@ -22,9 +22,6 @@ GVectorConstructor2Scalar := BoxFuncTemplate^
 GVectorConstructor3Scalar := BoxFuncTemplate^
 GVectorConstructor4Scalar := BoxFuncTemplate^
 
-GOperatorSetGC := BoxFuncTemplate^
-GFuncGCSetNull := BoxFunc^
-
 TemplateInternalCreateTuple := BoxFuncTemplate^
 GDefaultSetTemplate := BoxFuncTemplate^
 GDefaultCompareTemplate := BoxFuncTemplate^
@@ -36,10 +33,6 @@ InitInternals := !() -> void
 {
 	GetAnyFile()	
 	//TracyZone("Internal functions")
-
-	GOperatorSetGC = intGetTemplate("internalGCSetVal")
-	GFuncGCSetNull = intGetFunc("internalGC_SetNull")
-	assert(GFuncGCSetNull != null)
 
 	TemplateInternalCreateTuple = intGetTemplate("internalTuple_Create")
 	assert(TemplateInternalCreateTuple != null)

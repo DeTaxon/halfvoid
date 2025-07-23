@@ -1,5 +1,7 @@
-HVModule := class extend TGCObject
+HVModule := class
 {
 	DebugMode := bool
 	Functions := MCFunction^[]
+
+	makeVirtual := virtual !() -> void {}
 }
