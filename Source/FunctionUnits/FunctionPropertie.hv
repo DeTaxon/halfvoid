@@ -1,4 +1,4 @@
-FunctionPropertie := class //TODO why can't i extend TGCObject
+FunctionPropertie := class
 {
 	makeVirutal := virtual !() -> void {}
 }
