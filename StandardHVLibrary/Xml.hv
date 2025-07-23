@@ -1,4 +1,4 @@
-XML := class extend TGCObject
+XML := class
 {
 	RootNode := XMLNode^
 

@@ -1,6 +1,6 @@
 
 
-UVLoop := class extend TGCObject
+UVLoop := class
 {
 	loopData := u8[0]
 	Destroy := virtual !() -> void

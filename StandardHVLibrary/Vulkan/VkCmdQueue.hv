@@ -53,7 +53,7 @@ AppendClass VulkanInstance
 	}
 }
 
-TVkCommandBufferPool := class extend TGCObject
+TVkCommandBufferPool := class
 {
 	itInstance := VulkanInstance^
 	itCmdPool := VkCommandPool
@@ -73,7 +73,7 @@ TVkCommandBufferPool := class extend TGCObject
 	}
 }
 
-TVkCommandBuffer := class extend TGCObject
+TVkCommandBuffer := class
 {
 	itCmdBuf := VkCommandBuffer
 	itCmdPool2 := TVkCommandBufferPool^

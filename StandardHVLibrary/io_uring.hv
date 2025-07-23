@@ -88,7 +88,7 @@ io_uring_enter := !(int fd,int to_submit,int min_complete,int flags) -> int
 	return syscall(__NR_io_uring_enter,fd,to_submit,min_complete,flags,null,0)
 }
 
-URing := class extend TGCObject
+URing := class
 {
 	ring_fd := int
 

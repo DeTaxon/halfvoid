@@ -1,6 +1,6 @@
 
 
-JavaMethod := class extend TGCObject
+JavaMethod := class
 {
 	IsStatic := bool
 
@@ -46,7 +46,7 @@ JavaMethod := class extend TGCObject
 	}
 }
 
-JavaMethodAttrBase := class extend TGCObject
+JavaMethodAttrBase := class
 {
 	Write := virtual !(Stream strm) -> void
 	{

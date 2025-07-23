@@ -141,7 +141,7 @@ vShaderVertexOptions := class
 	"=" := default
 }
 
-vShaderModule := class extend TGCObject
+vShaderModule := class
 {
 	itModule := VkShaderModule
 

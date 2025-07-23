@@ -8,7 +8,7 @@ AppendClass VulkanInstance
 	}
 }
 
-TRenderPass := class extend TGCObject
+TRenderPass := class
 {
 	itInstance := VulkanInstance^
 	itPass := VkRenderPass

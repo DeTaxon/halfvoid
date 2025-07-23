@@ -1,5 +1,5 @@
 
-JavaClass := class extend TGCObject
+JavaClass := class
 {
 	Consts := List.{JavaConstBase^}
 	Methods := List.{JavaMethod^}

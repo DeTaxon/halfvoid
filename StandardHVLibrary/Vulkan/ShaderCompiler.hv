@@ -7,7 +7,7 @@ ShaderCompiler_CompileResult := class
 	ErrorMessage := Str
 }
 
-ShaderCompiler := class extend TGCObject
+ShaderCompiler := class
 {
 	cacheFile := CacheFile^
 	cacheFileModule := CacheFileModule^

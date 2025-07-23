@@ -470,7 +470,7 @@ LoadShaderModule3 := !(VulkanInstance^ inst,Blob^ fil) -> vShaderModule^
 	result.LoadShaderModule(inst,fil.GetPointer(),fil.Size())
 }
 
-TShaderSet := class extend TGCObject
+TShaderSet := class
 {
 	itSet := VkDescriptorSetLayout
 	Get := !() -> VkDescriptorSetLayout
@@ -618,13 +618,15 @@ TImageSet := class extend TShaderSet
 	GetPoolScale := virtual !() -> int { return imgCount}
 }
 
-TPushConstant := class extend TGCObject
+TPushConstant := class
 {
 	cnst := VkPushConstantRange
 	Get := !() -> VkPushConstantRange^
 	{
 		return cnst&
 	}
+
+	makeItVirtual := virtual !() -> void {}
 }
 TComputePushConstant := class extend TPushConstant
 {
@@ -654,7 +656,7 @@ TMeshPushConstant := class extend TPushConstant
 	}
 }
 
-TDescriptorPool := class extend TGCObject
+TDescriptorPool := class
 {
 	baseLayout := TShaderInput^
 	vPool := VkDescriptorPool

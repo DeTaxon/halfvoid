@@ -36,7 +36,7 @@ ACC_PUBLIC := 0x001
 //JAVACONST_MethodType := 16
 //JAVACONST_InvokeDynamic := 18
 
-JavaConstBase := class extend TGCObject
+JavaConstBase := class
 {
 	Write := virtual !(Stream strm) -> void {}
 
