@@ -16,7 +16,7 @@ GUILayoutInfo := class
 	"=" := default
 }
 
-GUIObject := class extend TGCObject
+GUIObject := class
 {
 	thisLayout := GUILayoutInfo
 	drawSize := vec2f

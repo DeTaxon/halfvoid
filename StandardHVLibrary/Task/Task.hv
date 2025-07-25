@@ -2,7 +2,7 @@ taskIdIterator := 1
 taskNames := AVLMap.{int,Tuple.{char[20],bool}}
 taskNamesFree := 0
 
-Task := class extend TGCObject
+Task := class
 {
 	taskLocalData := internalHVTaskLocalTuple
 	itTaskWorker := TaskWorker^

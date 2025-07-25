@@ -11,7 +11,7 @@ AtomicMutex := class
 	}
 }
 
-MutexCondPoolType := class extend TGCObject
+MutexCondPoolType := class
 {
 	freedMtx := List.{Mutex^}
 	mutexMutex := AtomicMutex

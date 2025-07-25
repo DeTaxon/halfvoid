@@ -32,7 +32,6 @@ internalInitThread := !() -> void
 	voidVal := calloc(1,Task->TypeSize)
 	internalHVInitClass(voidVal->{Task^}^)
 	CurrentTask = voidVal->{Task^}
-	CurrentTask.DecRef()
 }
 
 internalGlobalsDestroy := !() -> void
@@ -55,7 +54,7 @@ internalGlobalsDestroy := !() -> void
 }
 internalThreadDestructor := !() -> void
 {
-	CurrentTask = null
+	//CurrentTask = null
 }
 
 

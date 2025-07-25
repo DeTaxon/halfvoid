@@ -1,5 +1,5 @@
 
-Mutex := class extend TGCObject
+Mutex := class
 {
 	itBuffer := u8[1024]
 	//tracyCtx := void^
@@ -42,7 +42,7 @@ Mutex := class extend TGCObject
 	}
 }
 
-ConVar := class extend TGCObject
+ConVar := class
 {
 	itBuffer := char[1024]
 	this := !() -> void

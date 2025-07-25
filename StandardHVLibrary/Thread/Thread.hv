@@ -10,7 +10,7 @@ _threadProxyFuncInner := !(void^ x) -> void
 	asThread.Call()
 }
 
-Thread := class extend TGCObject
+Thread := class
 {
 	lmb := !()&->void
 	this := !(!()&->void lambd) ->	void

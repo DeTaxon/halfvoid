@@ -1,4 +1,4 @@
-Event := class extend TGCObject
+Event := class
 {
     evId := int
     this := !() -> void

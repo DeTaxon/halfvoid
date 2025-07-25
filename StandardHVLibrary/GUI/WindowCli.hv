@@ -1,4 +1,4 @@
-WindowCli := class extend TGCObject
+WindowCli := class
 {
 	mainGUIObject := GUIObject^
 

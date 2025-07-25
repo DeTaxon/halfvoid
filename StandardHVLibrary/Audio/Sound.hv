@@ -1,4 +1,4 @@
-Sound := class extend TGCObject
+Sound := class
 {
 	data := Blob^
 	format := int

@@ -1,4 +1,4 @@
-SoundEngine := class extend TGCObject
+SoundEngine := class
 {
 	quit := bool
 	pollTask := Task^

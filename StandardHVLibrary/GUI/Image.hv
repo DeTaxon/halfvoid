@@ -4,7 +4,7 @@ ImageColorTypeEnum := enum
 	"RGBA"
 }
 
-Image := class extend TGCObject
+Image := class
 {
 	Data := u8^
 	ColorType := ImageColorTypeEnum

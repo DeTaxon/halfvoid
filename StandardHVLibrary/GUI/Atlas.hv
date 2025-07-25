@@ -1,4 +1,4 @@
-FontAtlas := class extend TGCObject
+FontAtlas := class
 {
 	packContext := stbtt_pack_context
 	atlasTexture := TVkTexture^
@@ -60,7 +60,7 @@ Font := class
 	}
 }
 
-ImageAtlas := class extend TGCObject
+ImageAtlas := class
 {
 	atlasTexture := TVkTexture^
 	atlasW := int
