@@ -1,6 +1,5 @@
 
 
-
 main := !(char^[] args) -> int
 {
 	printf("hello world\n")

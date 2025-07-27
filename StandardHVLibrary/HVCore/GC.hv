@@ -11,20 +11,20 @@ TGCObject := class
 		RefValue -= 1
 		if RefValue == 0
 		{
-			Destroy()
-			postDestroy()
-			SelfDelete()
+			//Destroy()
+			//postDestroy()
+			//SelfDelete()
 		}
 	}
 	Destroy := virtual !() -> void {}
 	SelfDelete := virtual !() -> void
 	{
-		delete this&
+		//delete this&
 	}
 
 	postDestroy := poison virtual !() -> void
 	{
-		internalGCClearClass(this)
+		//internalGCClearClass(this)
 	}
 }
 
@@ -52,19 +52,20 @@ internalGCSetVal := !(@T^& itm1,T^ itm2) -> void
 
 internalGCClearClass := !(@T itm) -> void
 {
-	for it,ind : itm->AllFields
-	{
-		if it->Type >= TGCObject
-		{
-			it.Destroy()
-		}
-		if it->IsGCPointer
-		{
-			it = null
-		}
-	}
+	//for it,ind : itm->AllFields
+	//{
+	//	if it->Type >= TGCObject
+	//	{
+	//		it.Destroy()
+	//	}
+	//	if it->IsGCPointer
+	//	{
+	//		it = null
+	//	}
+	//}
 }
 internalGC_SetNull := !(TGCObject^& arg0) -> void
 {
-	arg0 = null->{TGCObject^}
+	//arg0 = null->{TGCObject^}
+
 }
