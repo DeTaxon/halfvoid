@@ -9,7 +9,7 @@ Blob := class extend TGCObject
 	}
 }
 
-BlobOnVector := class extend Blob
+BlobOnVector := class extends Blob
 {
 	itData := void^
 	itSize := s64
@@ -30,7 +30,7 @@ BlobOnVector := class extend Blob
 		itSize = 0
 	}
 }
-BlobSpan := class extend Blob
+BlobSpan := class extends Blob
 {
 	itData := void^
 	itSize := s64

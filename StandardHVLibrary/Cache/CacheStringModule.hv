@@ -1,4 +1,4 @@
-CacheStringModule := class extend TGCObject
+CacheStringModule := class
 {
 	base := CacheFile^
 	moduleName := String^

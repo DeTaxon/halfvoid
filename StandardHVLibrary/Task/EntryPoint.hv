@@ -36,21 +36,6 @@ internalInitThread := !() -> void
 
 internalGlobalsDestroy := !() -> void
 {
-	for it,ind : $GlobalVariables
-	{
-		if it->Type >= TGCObject
-		{
-			it.Destroy()
-		}
-		if it->TypeGroup == "Array"
-		{
-			if it->TypeBase->IsGCPointer
-			{
-				for c : it
-					c = null
-			}
-		}
-	}
 }
 internalThreadDestructor := !() -> void
 {

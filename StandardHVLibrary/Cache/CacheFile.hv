@@ -1,4 +1,4 @@
-CacheFile := class extend TGCObject
+CacheFile := class
 {
 	zipFile := ZipFile^
 

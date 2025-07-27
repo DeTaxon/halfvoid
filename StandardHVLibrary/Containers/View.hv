@@ -1,4 +1,12 @@
-TArrayView := class .{@T} extend TGCObject
+TCommonView := class
+{
+	Destroy := virtual !() -> void
+	{
+
+	}
+}
+
+TArrayView := class .{@T} extends TCommonView
 {
 	Size := virtual !() -> int {}
 	"[]" := virtual !(int i) -> ref T { assert(false) }
@@ -9,7 +17,7 @@ TArrayView := class .{@T} extend TGCObject
 	GetPointer := virtual !() -> T^ { return null }
 	Clear := virtual !() -> void
 	{
-		Destroy()
+		//Destroy()
 	}
 
 	ContainIf := virtual !(!(T)&->bool cb) -> bool
@@ -30,7 +38,7 @@ TArrayView := class .{@T} extend TGCObject
 	}
 }
 
-ViewIterator := class.{@T} extend TGCObject
+ViewIterator := class.{@T}
 {
 	ViewPtr := void^
 	indx := int
@@ -46,7 +54,7 @@ ViewIterator := class.{@T} extend TGCObject
 		return ViewPtr->{TArrayView.{T}^}^[i]
 	}
 }
-ViewIteratorReverse := class.{@T} extend TGCObject
+ViewIteratorReverse := class.{@T}
 {
 	ViewPtr := void^
 	indx := int
