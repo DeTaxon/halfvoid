@@ -1,4 +1,4 @@
-TILambda := class extend TGCObject
+TILambda := class
 {
 	IsFinished := virtual !() -> bool
 	{
@@ -7,7 +7,7 @@ TILambda := class extend TGCObject
 	getGCVars := virtual !() -> void^ { return null }
 }
 
-TLambda := class .{@FuncPtr} extend TILambda
+TLambda := class .{@FuncPtr} extends TILambda
 {
 	callFunc := FuncPtr
 	//"()" := !(args...)
@@ -19,7 +19,7 @@ TLambda := class .{@FuncPtr} extend TILambda
 		return null
 	}
 }
-TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extend TLambda.{FuncPtr}
+TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extends TLambda.{FuncPtr}
 {
 	capturedVars := CaptureTuple
 	yieldState := int

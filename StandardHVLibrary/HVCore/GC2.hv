@@ -1,0 +1,58 @@
+
+
+GCMemObject := class
+{
+	markGeneration := u32
+	blockSize := u32
+}
+
+GCFreeBlock := class
+{
+	blockSize := u32
+}
+
+
+GCMemory := class
+{
+	//always aligned to 16 bytes
+	AllocMem := !(u32 memSize) -> void^
+	{
+
+	}
+
+	// allows free, eben GC in full controll
+	// double free allowed, but makes warning in debug
+	// ignores if if pointer is in area it didn't alloce, allow to free global/stack objects
+	FreeMem := !(void^ obj) -> void
+	{
+
+	}
+
+
+	//MUST BE FAST, HASH MAP LIKE FAST
+	//null if not found
+	//return pointer even if is pointed in the middle of object
+	FindMemoryUser := !(void^ ptr) -> GCMemObject^
+	{
+		
+	}
+
+
+
+	//set current generation to all reachable objects
+	MarkMemory := !(void^ ptr, u32 memSize) -> void
+	{
+		
+	}
+
+	//remove objects where they are X generations older
+	SweepMemory := !() -> void
+	{
+
+	}
+
+	IterateGeneration := !() -> void
+	{
+	}
+}
+

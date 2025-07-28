@@ -1,5 +1,4 @@
-
-MappedFile := class extend TGCObject
+MappedFile := class
 {
 	hndl := RawFileStream
 	fileSize  := u64

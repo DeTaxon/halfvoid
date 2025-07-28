@@ -1,5 +1,5 @@
 
-MappedFile := class extend TGCObject
+MappedFile := class
 {
 	fileStream := RawFileStream
 	point := u8^

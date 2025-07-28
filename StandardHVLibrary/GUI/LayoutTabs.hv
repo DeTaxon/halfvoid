@@ -18,7 +18,7 @@ LayoutTab := class extend GUIObject
 }
 
 
-TabObjDataType := class extend TGCObject
+TabObjDataType := class
 {
 	Object := GUIObject^
 	Offset := vec2f
