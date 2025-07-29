@@ -1,7 +1,7 @@
 AVLMap := type.{@KEY,@VALUE} ContainerCommonMap.{AVLTree,KEY,VALUE}
 RBMap := type.{@KEY,@VALUE} ContainerCommonMap.{RBTree,KEY,VALUE}
 
-ContainerCommonMap := class .{@TreeType,@KEY,@VALUE} extend TGCObject
+ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 {
 	itTree := TreeType.{BadPair.{KEY,VALUE}}
 	itSize := int
