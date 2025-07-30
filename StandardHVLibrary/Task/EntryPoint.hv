@@ -39,7 +39,8 @@ internalGlobalsDestroy := !() -> void
 }
 internalThreadDestructor := !() -> void
 {
-	//CurrentTask = null
+	delete CurrentTask
+	CurrentTask = null
 }
 
 
@@ -100,7 +101,6 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	}
 
 	TaskContextDestructor()
-	TaskMainTaskWorker = null
 	
 	//ur_exit(gTaskIORing)
 	//ur_destroy(gTaskIORing)

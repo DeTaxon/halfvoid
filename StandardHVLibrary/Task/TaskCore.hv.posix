@@ -6,11 +6,11 @@ TaskOSInit := !() -> void
 	TaskPollSize = 1
 	TaskPollList[0].fd = TaskMainEvent.Get()
 	TaskPollList[0].events = POLLIN
-	//TaskPollFunctions[0] = TaskMainEventCB
 }
 TaskOSDestroy := !() -> void
 {
-	TaskMainEvent = null
+	TaskMainEvent.Destroy()
+	delete TaskMainEvent
 }
 
 TaskMainEvent := Event^

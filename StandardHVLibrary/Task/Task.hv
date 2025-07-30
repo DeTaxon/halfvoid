@@ -55,10 +55,7 @@ Task := class
 			}
 		}
 
-		//TODO remove locks, taskLambda = null which causes to call TLock
-		TaskCheckMutex.Unlock() 
-		taskLambda = null
-		TaskCheckMutex.Lock()
+		delete taskLambda
 
 		CurrentThread.DeleteTasks.Push(this&)
 		finishedWork.EmitInner()
@@ -77,15 +74,6 @@ Task := class
 	{
 
 		OSDestroy()
-		taskLambda = null
-
-		for fld : this.taskLocalData->AllFields
-		{
-			if fld->TypeGroup == "Pointer"
-			{
-				fld = null
-			}
-		}
 	}
 	AwaitCompletion := virtual !() -> void
 	{

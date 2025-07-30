@@ -9,5 +9,6 @@ InitTaskContext := !() -> void
 TaskContextDestructor := !() -> void
 {
 	TaskOSDestroy()
-	TaskCheckMutex = null
+	TaskCheckMutex.Destroy()
+	delete TaskCheckMutex
 }
