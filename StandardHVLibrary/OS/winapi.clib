@@ -42,7 +42,7 @@
 		"GetTickCount64" : "u64",
 
 		"LoadLibraryW" : "void^,u16^",
-		"LoadLibraryA" : "void^,u8^",
+		"LoadLibraryA" : "void^,char^",
 		"GetProcAddress" : "void^,void^,char^", 
 		"FreeLibrary" : "void,void^",
 
