@@ -5,7 +5,7 @@ HVB_VariableObjectType := enum
 }
 
 
-HVB_FunctionEditor := class extend TGCObject
+HVB_FunctionEditor := class
 {
 	GetVariablesCount := virtual !() -> int { return 0 }
 	//GetVariableObjType := virtual !(int index) -> HVB_VariableObjectType { return "Error" }
