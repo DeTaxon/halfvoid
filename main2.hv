@@ -1,8 +1,14 @@
 
 
+
+
+
 main := !(char^[] args) -> int
 {
-	printf("hello world\n")
+	c := StringSpan("0.15")
+	d := strtod("15",null)
+	g := 0.2
+	printf("c %i %i %f\n",12,1,d)
 	return 0
 }
 

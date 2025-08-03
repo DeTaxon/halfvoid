@@ -13,7 +13,7 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 			delTask := ct.DeleteTasks.Pop()
 			ct.AllTasks.Remove(delTask)
 			delTask.Destroy()
-			delete delTask
+			//delete delTask //TODO delete it, and better api
 			continue
 		}
 
