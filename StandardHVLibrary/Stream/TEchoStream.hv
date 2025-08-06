@@ -5,7 +5,8 @@ TEchoStream := class extend Stream
 	redData := int
 	pages := List.{char^}
 
-	this := !() -> void {
+	this := !() -> void
+	{
 	}
 	Read := virtual !(void^ data, s64 size) -> s64
 	{

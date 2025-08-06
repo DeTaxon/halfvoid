@@ -6,7 +6,6 @@ MCBuildContext_x86_64 := class
 
 	Compile := !(MCFunction^ fnc) -> void
 	{
-
 		ResultData << "\x55" // push $rbp
 		ResultData << "\x48\x89\xF8" // mov $rdi,$rax
 
@@ -15,4 +14,31 @@ MCBuildContext_x86_64 := class
 	}
 }
 
+CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
+{
+	result = new InterpWork(CurrentTask)
+	oldWork := CurrentWork
+	CurrentWork = result
+
+	ctx := MCBuildContext_x86_64
+
+	fnc := GInterpCntx.GetMCFunc(funcToRun)
+	fnc.Print()
+
+	ctx.Compile(fnc)
+
+	bigMem := PageMemory
+	bigMem.Create(16*1024,"rwe") //TODO unconst
+
+	ptr := bigMem.GetPointer()
+	memset(ptr,0,bigMem.Size())
+
+	ctx.ResultData.Read(ptr,ctx.ResultData.Size())
+
+	createdFunc := ptr->{!()^->void}
+	createdFunc()
+
+	CurrentWork->{InterpWork^}.isDone = true
+	CurrentWork = oldWork
+}
 

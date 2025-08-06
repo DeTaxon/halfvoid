@@ -1,14 +1,26 @@
 
 
 
+TestAllocator := class
+{
+	AllocMem := !(int size) -> void^
+	{
+		printf("yep %i\n",size)
+	}
+	FreeMem := !(void^ mem) -> void
+	{
+		printf("free %p\n",mem)
+	}
+}
 
 
 main := !(char^[] args) -> int
 {
-	c := StringSpan("0.15")
-	d := strtod("15",null)
-	g := 0.2
-	printf("c %i %i %f\n",12,1,d)
+	printf("hello world\n")
+	//alc := TestAllocator
+
+	//c := alc.new int
+	//alc.delete c
 	return 0
 }
 

@@ -48,6 +48,8 @@ mainFuncName := "internalHVEntryPoint"
 
 GTestCode := false
 
+FastestRunner := false
+
 OutputFile := Str
 main := !(char^[] args) -> int
 {
@@ -190,6 +192,8 @@ main := !(char^[] args) -> int
 				targetWindows = true
 				osHVFile = ".hv.win32"
 				osCLIBFile = ".clib.win32"
+			case "-fastest-runner"
+				FastestRunner = true
 			case "-g"
 				DebugMode = true
 			case "-o"
@@ -363,8 +367,13 @@ main := !(char^[] args) -> int
 			exit(0)
 
 
-		CompileAndRunCode(toRun->{BoxFuncBody^})
-	FinilizeCache()
+		if FastestRunner
+		{
+			CompileAndRunCode_x86_64(toRun->{BoxFuncBody^})
+		}else{
+			CompileAndRunCode(toRun->{BoxFuncBody^})
+		}
+		FinilizeCache()
 		return 0
 	}
 
