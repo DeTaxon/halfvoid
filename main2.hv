@@ -16,8 +16,12 @@ TestAllocator := class
 
 main := !(char^[] args) -> int
 {
-	x := 9
-	printf("yep, this is works %i\n",x * 6)
+	i := 0
+	while i < 10
+	{
+		printf("yep, this is works %i\n",i)
+		i += 1
+	}
 	//alc := TestAllocator
 
 	//c := alc.new int

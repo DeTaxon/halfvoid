@@ -61,7 +61,7 @@ MCBuildContext_x86_64 := class
 	{
 		for lbl,id : labelTarget
 		{
-			diff := labelPos[id] - lbl
+			diff := labelPos[id] - (lbl + 4) // 4 - size of int, ptr offset
 			ptr->{u8^}[lbl]&->{int^}^ = diff
 		}
 	
@@ -91,6 +91,23 @@ MCBuildContext_x86_64 := class
 			case "debug_set_file"
 			case "debug_set_line"
 
+			case "cmp"
+				Mov(fnc,"rdx",line.var2)
+				Mov(fnc,"rax",line.var4)
+				ResultData << "\x48\x3B\xD0" //cmp
+
+				switch line.V3Cond()
+				{
+					case "==" ResultData << "\x0F\x94"
+					case "!=" ResultData << "\x0F\x95"
+					case "<=" ResultData << "\x0F\x9E"
+					case "<" ResultData << "\x0F\x9C"
+					case ">=" ResultData << "\x0F\x9D"
+					case ">" ResultData << "\x0F\x9F"
+				}
+				ResultData << "\xC0"
+				Mov(fnc,line.var1,"rax")
+
 			case in !["add","sub","mul"] //TODO size aware, signes aware
 				Mov(fnc,"rax",line.var2)
 				Mov(fnc,"rdx",line.var3)
@@ -103,10 +120,18 @@ MCBuildContext_x86_64 := class
 				}
 				Mov(fnc,line.var1,"rax")
 
+			case "jmp_if_bool"
+				Mov(fnc,"rax",line.var2)
+				x := 0
+				ResultData << "\x3C" // cmp al and 0
+				ResultData.Write(x&,1)
+				ResultData << "\x0F\x85" 
+				labelTarget[line.var1] = strm.Size()->{int}
+				ResultData.Write(x&,4)
 			case "jmp"
-				labelTarget[line.var1] = strm.Size()
 				ResultData << "\xE9"
 				x := 0
+				labelTarget[line.var1] = strm.Size()->{int}
 				ResultData.Write(x&,4)
 			case "label"
 				labelPos[line.var1] = strm.Size()
@@ -123,7 +148,7 @@ MCBuildContext_x86_64 := class
 
 					tp := objs[vr.var1].GetType()
 
-					if IsInt(tp) or tp is in TypePoint {
+					if IsInt(tp) or tp is in TypePoint or tp == GTypeBool {
 						if (usedInts < 6) {
 							switch usedInts
 							{
