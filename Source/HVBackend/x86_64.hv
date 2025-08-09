@@ -1,19 +1,4 @@
 
-
-MCBuildContext_x86_64 := class
-{
-	ResultData := TEchoStream
-
-	Compile := !(MCFunction^ fnc) -> void
-	{
-		ResultData << "\x55" // push $rbp
-		ResultData << "\x48\x89\xF8" // mov $rdi,$rax
-
-		ResultData << "\x5D" // pop $rbp
-		ResultData << "\xC3" // ret
-	}
-}
-
 CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 {
 	result = new InterpWork(CurrentTask)
@@ -35,10 +20,266 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 
 	ctx.ResultData.Read(ptr,ctx.ResultData.Size())
 
+	ctx.FixLabels(ptr)
+
 	createdFunc := ptr->{!()^->void}
+	//assert(false)
 	createdFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
 	CurrentWork = oldWork
 }
+
+
+MCBuildContext_x86_64 := class
+{
+	ResultData := TEchoStream
+
+	labelTarget := AVLMap.{int,int} // left, target, right
+	labelPos := AVLMap.{int,int}
+
+	Compile := !(MCFunction^ fnc) -> void
+	{
+		fnc.ComputeStackFrame()
+		stackSize := fnc.StackFrameSize
+
+		Push("rbp")
+		//ResultData << "\x48\x89\xF8" // mov $rdi,$rax
+
+		ResultData << "\x48\x81\xec" // sub %rsp,stackSize
+		ResultData.Write(stackSize&,4)
+
+		X86WriteBody(ResultData,fnc)
+
+		ResultData << "\x48\x81\xc4" // add %rsp,stackSize
+		ResultData.Write(stackSize&,4)
+
+		Pop("rbp")
+		ResultData << "\xC3" // ret
+	}
+	FixLabels := !(void^ ptr) -> void
+	{
+		for lbl,id : labelTarget
+		{
+			diff := labelPos[id] - lbl
+			ptr->{u8^}[lbl]&->{int^}^ = diff
+		}
+	
+	}
+	getObjsStackOffset := !(MCFunction^ fnc, int index) -> s32
+	{
+		assert(fnc.StackOffsets != null)
+
+		plainOffset := fnc.StackOffsets[index]
+		return plainOffset - fnc.StackFrameSize
+		
+	}
+	X86WriteBody := !(TEchoStream strm, MCFunction^ fnc) -> void
+	{
+		objs := fnc.Objects.GetPointer()
+		lines := fnc.Lines.GetPointer()
+	
+		assert(objs != null and lines != null)
+	
+	
+		for i : fnc.Lines.Size()
+		{
+			line := lines[i]
+	
+			switch line.opcode
+			{
+			case "debug_set_file"
+			case "debug_set_line"
+
+			case in !["add","sub","mul"] //TODO size aware, signes aware
+				Mov(fnc,"rax",line.var2)
+				Mov(fnc,"rdx",line.var3)
+				ResultData << "\x48"
+				switch line.opcode
+				{
+				case "add" ResultData << "\x01\xD0"
+				case "sub" ResultData << "\x29\xD0"
+				case "mul" ResultData << "\x0F\xAF\xC2"
+				}
+				Mov(fnc,line.var1,"rax")
+
+			case "jmp"
+				labelTarget[line.var1] = strm.Size()
+				ResultData << "\xE9"
+				x := 0
+				ResultData.Write(x&,4)
+			case "label"
+				labelPos[line.var1] = strm.Size()
+
+			case "call_start"
+				fncId := line.var2
+				i += 1
+
+				usedInts := 0
+				while lines[i].opcode != "call_end"
+				{
+					vr := lines[i]
+					assert(vr.opcode == "load_var")
+
+					tp := objs[vr.var1].GetType()
+
+					if IsInt(tp) or tp is in TypePoint {
+						if (usedInts < 6) {
+							switch usedInts
+							{
+							case 0 Mov(fnc,"rdi",vr.var1)
+							case 1 Mov(fnc,"rsi",vr.var1)
+							case 2 Mov(fnc,"rdx",vr.var1)
+							case 3 Mov(fnc,"rcx",vr.var1)
+							}
+							//Mov(fnc,!["rdi","rsi","rdx","rcx","R8","R9"][usedInts],vr.var1)
+
+							usedInts += 1
+						}else {
+							assert(false) //TODO
+						}
+					}else {
+						assert(false) //TODO floats
+					}
+
+					i += 1
+				}
+				MovU64ToReg(fnc,"rax",0) //TODO if variadic, number of FLOAT args must be sent
+
+				//TODO return value
+
+				fncObj := objs[fncId]
+
+				if fncObj is MCConstFunction {
+					Push("rax")
+					fncHV := fncObj.GetValue()
+					ptr := GInterpCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^})
+					MovPtrToReg(fnc,"rcx",ptr) //TODO use R10 register
+					ResultData << "\xFF\xD1" // call *rcx
+					Pop("rax")
+				}else {
+					assert(false) //TODO function pointers
+				}
+
+			case "mov"
+				Mov(fnc,"rax",line.var2)
+				Mov(fnc,line.var1,"rax")
+			
+			case "cast"
+				tpTo := objs[line.var1].GetType()
+				tpFrom := objs[line.var2].GetType()
+
+				if tpTo is in TypePoint and tpFrom is in TypePoint
+				{
+					MovStackToRax(fnc,line.var2)
+					MovRaxToStack(fnc,line.var1)
+				}else if IsInt(tpTo) and IsInt(tpFrom) {
+					if tpTo == GTypeS64 and tpFrom == GTypeInt {
+						Mov(fnc,"rax",line.var2)
+						ResultData << "\x48\x98"
+						Mov(fnc,line.var1,"rax")
+					}else{ 
+						printf("x86_64, unsupported integer cast\n")
+						assert(false)
+					}
+				}else{
+					printf("x86_64, unsupported cast\n")
+					assert(false)
+				}
+			case "get_pointer"
+				assert(objs[line.var2] is MCVariable)
+				strm << "\x48\x8D\x85"
+				x := getObjsStackOffset(fnc,line.var2)
+				strm.Write(x&,4)
+				MovRaxToStack(fnc,line.var1)
+
+			case "memset"
+				Mov(fnc,"rcx",line.var3)
+				Mov(fnc,"rax",line.var2)
+				Mov(fnc,"rdi",line.var1)
+				strm << "\xF3\xAA" // rep stob
+				
+				
+	
+			case void
+				printf("x86_64, unsupported opcode %s\n",line.opcode.ToCStr())
+				assert(false)
+	
+			}
+		}
+	}
+	Push := !(X86Register reg) -> void
+	{
+		dt := "\x50"[0] + reg->{int}
+		ResultData.Write(dt&,1)
+	}
+	Pop := !(X86Register reg) -> void
+	{
+		dt := "\x58"[0] + reg->{int}
+		ResultData.Write(dt&,1)
+	}
+	MovRaxToStack := !(MCFunction^ fnc,int indx) -> void
+	{
+		Mov(fnc,indx,"rax")
+	}
+	MovStackToRax := !(MCFunction^ fnc,int indx) -> void
+	{
+		Mov(fnc,"rax",indx)
+	}
+	Mov := !(MCFunction^ fnc,int indx,X86Register reg) -> void { Mov(fnc,false,reg,indx) }
+	Mov := !(MCFunction^ fnc,X86Register reg,int indx) -> void { Mov(fnc,true,reg,indx) }
+	Mov := !(MCFunction^ fnc,bool toReg,X86Register reg, int indx) -> void
+	{
+		obj := ref fnc.Objects[indx]
+
+		datas := char[3]
+		memcpy(datas[0]&,"\x48\x8B\x85"[0]&,3)
+		datas[2] += (reg->{int} shl 3)
+
+		if obj is MCVariable {
+			datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
+
+			ResultData.Write(datas[0]&,3)
+			x := getObjsStackOffset(fnc,indx)
+			ResultData.Write(x&,4)
+		}else if obj is MCConstInteger {
+			assert(toReg)
+
+			datas[1] = "\xC7"[0]
+			datas[2] = "\xC0"[0] + reg->{int}
+
+			ResultData.Write(datas[0]&,3)
+			x := obj&->{MCConstInteger^}.GetValue()
+			ResultData.Write(x&,4)
+
+		}else if obj is MCConstString {
+			assert(toReg)
+			MovPtrToReg(fnc,reg,obj&->{MCConstString^}.GetValue().CStr())
+		}else{
+			assert(false)
+		}
+	}
+	MovU64ToReg := !(MCFunction^ fnc,X86Register reg, u64 val) -> void
+	{
+		MovPtrToReg(fnc,reg,val&->{void^^}^)
+	}
+	MovPtrToReg := !(MCFunction^ fnc,X86Register reg, void^ ptr) -> void
+	{
+		datas := char[2]
+		datas[0] = "\x48"[0]
+		datas[1] = "\xB8"[0] + reg->{int}
+		ResultData.Write(datas[0]&,2)
+		ResultData.Write(ptr&,8)
+	}
+}
+
+X86Register := enum
+{
+	"rax","rcx","rdx","rbx","rsp","rbp","rsi","rdi",
+	"r8","r9","r10","r11","r12","r13","r14","r15",
+
+	"xmm0","xmm1","xmm2","xmm3","xmm4","xmm5","xmm7",
+	"xmm8","xmm9","xmm10","xmm11","xmm12","xmm13","xmm14","xmm15"
+}
+
 

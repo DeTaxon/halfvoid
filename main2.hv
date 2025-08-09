@@ -16,7 +16,8 @@ TestAllocator := class
 
 main := !(char^[] args) -> int
 {
-	printf("hello world\n")
+	x := 9
+	printf("yep, this is works %i\n",x * 6)
 	//alc := TestAllocator
 
 	//c := alc.new int
@@ -24,6 +25,9 @@ main := !(char^[] args) -> int
 	return 0
 }
 
+
+//TODO optimize enum on int consts
+//TODO '\x12'
 //TODO named input + template, !(@T^ x = null)
 //TODO emit error if named input provided but not used
 //TODO class functions inherit virtual property, and default values
@@ -31,6 +35,7 @@ main := !(char^[] args) -> int
 //TODO lazy class in hotload
 //TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
 //TODO allow !(ref int x) , in functions and function types, lambdas
+//TODO enum{"a","b","c"} Func(!["a","b"][2]) maybe make it work
 
 
 //ThisIsError := !() -> void
