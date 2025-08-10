@@ -216,7 +216,7 @@ MCFunction := class
 		for it,i : Objects
 		{
 			typ := Type^
-			if it& is MCVariable
+			if it& is MCVariable or it& is MCConstValue
 				typ = it&->{MCVariable^}.GetType()
 			if it& is MCReference
 				typ = GTypeVoidP

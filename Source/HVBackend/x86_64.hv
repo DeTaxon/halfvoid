@@ -8,7 +8,6 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	ctx := MCBuildContext_x86_64
 
 	fnc := GInterpCntx.GetMCFunc(funcToRun)
-	fnc.Print()
 
 	ctx.Compile(fnc)
 
@@ -40,13 +39,20 @@ MCBuildContext_x86_64 := class
 
 	Compile := !(MCFunction^ fnc) -> void
 	{
+		fnc = PassRemoveSpaceship(fnc)
+		fnc = PassSimplifyVectors(fnc)
+		fnc = PassRemoveVoidParams(fnc)
+		fnc = PassRemoveReferences(fnc)
+
+		fnc.Print()
+
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
 
 		Push("rbp")
-		//ResultData << "\x48\x89\xF8" // mov $rdi,$rax
+		ResultData << "\x48\x89\xE5" // mov $rbo,$rsp
 
-		ResultData << "\x48\x81\xec" // sub %rsp,stackSize
+		ResultData << "\x48\x81\xEC" // sub %rsp,stackSize
 		ResultData.Write(stackSize&,4)
 
 		X86WriteBody(ResultData,fnc)
@@ -91,6 +97,43 @@ MCBuildContext_x86_64 := class
 			case "debug_set_file"
 			case "debug_set_line"
 
+			case "llvm_getelementptr"
+				tp := objs[line.var2].GetType()
+
+				if tp is in TypePoint {
+					tpSize := tp.Base.GetSize()
+					MovU64ToReg(fnc,"rax",tpSize)
+					Mov(fnc,"rdx",line.var3)
+					ResultData << "\x48\x0F\xAF\xC2"
+					Mov(fnc,"rdx",line.var2)
+					ResultData << "\x48\x01\xD0"
+					Mov(fnc,line.var1,"rax")
+
+				}else{
+					assert(false)
+				}
+			case "llvm_store"
+
+				if objs[line.var1].GetType() == objs[line.var2].GetType() {
+					Mov(fnc,"rax",line.var2)
+					Mov(fnc,line.var1,"rax")
+				}else{
+					ResultData << "\x90"
+					Mov(fnc,"rcx",line.var1)
+					Mov(fnc,"rax",line.var2)
+					ResultData << "\x48\x89\x01"
+				}
+			case "llvm_load"
+
+				if objs[line.var1].GetType() == objs[line.var2].GetType() {
+					Mov(fnc,"rax",line.var2)
+					Mov(fnc,line.var1,"rax")
+				}else{
+					Mov(fnc,"rcx",line.var2)
+					ResultData << "\x48\x8B\x01"
+					Mov(fnc,line.var1,"rax")
+				}
+
 			case "cmp"
 				Mov(fnc,"rdx",line.var2)
 				Mov(fnc,"rax",line.var4)
@@ -108,7 +151,7 @@ MCBuildContext_x86_64 := class
 				ResultData << "\xC0"
 				Mov(fnc,line.var1,"rax")
 
-			case in !["add","sub","mul"] //TODO size aware, signes aware
+			case in !["add","sub","mul"] //TODO signes aware
 				Mov(fnc,"rax",line.var2)
 				Mov(fnc,"rdx",line.var3)
 				ResultData << "\x48"
@@ -176,12 +219,10 @@ MCBuildContext_x86_64 := class
 				fncObj := objs[fncId]
 
 				if fncObj is MCConstFunction {
-					Push("rax")
 					fncHV := fncObj.GetValue()
 					ptr := GInterpCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^})
 					MovPtrToReg(fnc,"rcx",ptr) //TODO use R10 register
 					ResultData << "\xFF\xD1" // call *rcx
-					Pop("rax")
 				}else {
 					assert(false) //TODO function pointers
 				}
@@ -204,8 +245,8 @@ MCBuildContext_x86_64 := class
 						ResultData << "\x48\x98"
 						Mov(fnc,line.var1,"rax")
 					}else{ 
-						printf("x86_64, unsupported integer cast\n")
-						assert(false)
+						//printf("x86_64, unsupported integer cast\n")
+						//assert(false)
 					}
 				}else{
 					printf("x86_64, unsupported cast\n")
@@ -219,10 +260,15 @@ MCBuildContext_x86_64 := class
 				MovRaxToStack(fnc,line.var1)
 
 			case "memset"
-				Mov(fnc,"rcx",line.var3)
-				Mov(fnc,"rax",line.var2)
+				//Mov(fnc,"rcx",line.var3)
+				//Mov(fnc,"rax",line.var2)
+				//Mov(fnc,"rdi",line.var1)
+				//strm << "\xF3\xAA" // rep stob
 				Mov(fnc,"rdi",line.var1)
-				strm << "\xF3\xAA" // rep stob
+				Mov(fnc,"rsi",line.var2)
+				Mov(fnc,"rdx",line.var3)
+				MovPtrToReg(fnc,"rcx",memset)
+				ResultData << "\xFF\xD1" // call *rcx
 				
 				
 	
@@ -261,7 +307,7 @@ MCBuildContext_x86_64 := class
 		memcpy(datas[0]&,"\x48\x8B\x85"[0]&,3)
 		datas[2] += (reg->{int} shl 3)
 
-		if obj is MCVariable {
+		if obj is MCVariable or obj is MCConstValue {
 			datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
 
 			ResultData.Write(datas[0]&,3)
