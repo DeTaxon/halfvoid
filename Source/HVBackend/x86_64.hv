@@ -118,10 +118,18 @@ MCBuildContext_x86_64 := class
 					Mov(fnc,"rax",line.var2)
 					Mov(fnc,line.var1,"rax")
 				}else{
-					ResultData << "\x90"
 					Mov(fnc,"rcx",line.var1)
 					Mov(fnc,"rax",line.var2)
-					ResultData << "\x48\x89\x01"
+					size := objs[line.var2].GetType().GetSize()
+
+					switch size
+					{
+					case 1 ResultData << "\x48\x88\x01"
+					case 2 ResultData << "\x48\x89\x01" //TODO
+					case 4 ResultData << "\x48\x89\x01" //TODO
+					case 8 ResultData << "\x48\x89\x01" //TODO
+					}
+					
 				}
 			case "llvm_load"
 
@@ -240,14 +248,16 @@ MCBuildContext_x86_64 := class
 					MovStackToRax(fnc,line.var2)
 					MovRaxToStack(fnc,line.var1)
 				}else if IsInt(tpTo) and IsInt(tpFrom) {
-					if tpTo == GTypeS64 and tpFrom == GTypeInt {
+					//if tpTo == GTypeS64 and tpFrom == GTypeInt {
+					//	Mov(fnc,"rax",line.var2)
+					//	ResultData << "\x48\x98"
+					//	Mov(fnc,line.var1,"rax")
+					//}else{ 
 						Mov(fnc,"rax",line.var2)
-						ResultData << "\x48\x98"
 						Mov(fnc,line.var1,"rax")
-					}else{ 
 						//printf("x86_64, unsupported integer cast\n")
 						//assert(false)
-					}
+					//}
 				}else{
 					printf("x86_64, unsupported cast\n")
 					assert(false)
@@ -303,12 +313,22 @@ MCBuildContext_x86_64 := class
 	{
 		obj := ref fnc.Objects[indx]
 
+		size := obj.GetType().GetSize()
+
 		datas := char[3]
 		memcpy(datas[0]&,"\x48\x8B\x85"[0]&,3)
 		datas[2] += (reg->{int} shl 3)
 
 		if obj is MCVariable or obj is MCConstValue {
-			datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
+
+			switch size
+			{
+			case 1 datas[1] = "\x8A\x88"[toReg ?: 0 : 1]
+			case 2 datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
+			case 4 datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
+			case 8 datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
+			}
+			
 
 			ResultData.Write(datas[0]&,3)
 			x := getObjsStackOffset(fnc,indx)
