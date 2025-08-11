@@ -53,6 +53,7 @@ AppendClass BoxFuncBody
 				ResultVar.SetCall(access)
 
 				createCall := new FuncLocalVarCleanup(access)
+				createCall.baseVar = ResultVar
 				ResultVar.createVar.Push(createCall)
 
 				printResultVar = true

@@ -44,7 +44,7 @@ MCBuildContext_x86_64 := class
 		fnc = PassRemoveVoidParams(fnc)
 		fnc = PassRemoveReferences(fnc)
 
-		fnc.Print()
+		//fnc.Print()
 
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
@@ -104,9 +104,9 @@ MCBuildContext_x86_64 := class
 					tpSize := tp.Base.GetSize()
 					MovU64ToReg(fnc,"rax",tpSize)
 					Mov(fnc,"rdx",line.var3)
-					ResultData << "\x48\x0F\xAF\xC2"
+					ResultData << "\x48\x0F\xAF\xC2" // imul 
 					Mov(fnc,"rdx",line.var2)
-					ResultData << "\x48\x01\xD0"
+					ResultData << "\x48\x01\xD0" // add rax rdx
 					Mov(fnc,line.var1,"rax")
 
 				}else{
@@ -124,9 +124,9 @@ MCBuildContext_x86_64 := class
 
 					switch size
 					{
-					case 1 ResultData << "\x48\x88\x01"
-					case 2 ResultData << "\x48\x89\x01" //TODO
-					case 4 ResultData << "\x48\x89\x01" //TODO
+					case 1 ResultData << "\x88\x01"
+					case 2 ResultData << "\x89\x01" //TODO
+					case 4 ResultData << "\x89\x01" //TODO
 					case 8 ResultData << "\x48\x89\x01" //TODO
 					}
 					
@@ -137,8 +137,16 @@ MCBuildContext_x86_64 := class
 					Mov(fnc,"rax",line.var2)
 					Mov(fnc,line.var1,"rax")
 				}else{
+					size := objs[line.var2].GetType().GetSize()
+
 					Mov(fnc,"rcx",line.var2)
-					ResultData << "\x48\x8B\x01"
+					switch size
+					{
+					case 1 ResultData << "\x48\x8A\x01"
+					case 2 ResultData << "\x48\x8B\x01" //TODO
+					case 4 ResultData << "\x48\x8B\x01" //TODO
+					case 8 ResultData << "\x48\x8B\x01" //TODO
+					}
 					Mov(fnc,line.var1,"rax")
 				}
 
@@ -170,6 +178,18 @@ MCBuildContext_x86_64 := class
 				case "mul" ResultData << "\x0F\xAF\xC2"
 				}
 				Mov(fnc,line.var1,"rax")
+			case "div"
+				Mov(fnc,"rax",line.var2)
+				Mov(fnc,"rcx",line.var3)
+				MovU64ToReg(fnc,"rdx",0)
+				ResultData << "\x48\xF7\xF9"
+				Mov(fnc,line.var1,"rax")
+			case "mod"
+				Mov(fnc,"rax",line.var2)
+				Mov(fnc,"rcx",line.var3)
+				MovU64ToReg(fnc,"rdx",0)
+				ResultData << "\x48\xF7\xF9"
+				Mov(fnc,line.var1,"rdx")
 
 			case "jmp_if_bool"
 				Mov(fnc,"rax",line.var2)
@@ -189,6 +209,7 @@ MCBuildContext_x86_64 := class
 
 			case "call_start"
 				fncId := line.var2
+				resId := line.var1
 				i += 1
 
 				usedInts := 0
@@ -235,6 +256,11 @@ MCBuildContext_x86_64 := class
 					assert(false) //TODO function pointers
 				}
 
+				if resId != 0
+				{
+					Mov(fnc,resId,"rax")
+				}
+
 			case "mov"
 				Mov(fnc,"rax",line.var2)
 				Mov(fnc,line.var1,"rax")
@@ -269,7 +295,13 @@ MCBuildContext_x86_64 := class
 				strm.Write(x&,4)
 				MovRaxToStack(fnc,line.var1)
 
+			case "clean"
+				assert(objs[line.var1] is MCVariable)
+
+				MovU64ToReg(fnc,"rax",0)
+				Mov(fnc,line.var1,"rax")
 			case "memset"
+
 				//Mov(fnc,"rcx",line.var3)
 				//Mov(fnc,"rax",line.var2)
 				//Mov(fnc,"rdi",line.var1)
@@ -315,7 +347,7 @@ MCBuildContext_x86_64 := class
 
 		size := obj.GetType().GetSize()
 
-		datas := char[3]
+		datas := char[4]
 		memcpy(datas[0]&,"\x48\x8B\x85"[0]&,3)
 		datas[2] += (reg->{int} shl 3)
 
@@ -328,9 +360,21 @@ MCBuildContext_x86_64 := class
 			case 4 datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
 			case 8 datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
 			}
-			
-
-			ResultData.Write(datas[0]&,3)
+		
+			if size == 1 and toReg{
+				datas[1] = "\x0F"[0]
+				datas[2] = "\xBE"[0]
+				datas[3] = "\x85"[0] + (reg->{int} shl 3)
+				ResultData.Write(datas[0]&,4)
+			} else if size == 4 and toReg{
+				datas[1] = "\x63"[0]
+				datas[2] = "\x85"[0] + (reg->{int} shl 3)
+				ResultData.Write(datas[0]&,3)
+			}else if not toReg and size == 1{
+				ResultData.Write(datas[1]&,2)
+			}else{
+				ResultData.Write(datas[0]&,3)
+			}
 			x := getObjsStackOffset(fnc,indx)
 			ResultData.Write(x&,4)
 		}else if obj is MCConstInteger {
