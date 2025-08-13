@@ -37,6 +37,8 @@ MCBuildContext_x86_64 := class
 	labelTarget := AVLMap.{int,int} // left, target, right
 	labelPos := AVLMap.{int,int}
 
+	doubleValues := List.{Tuple.{double,int,int}} // value, mov position, value position
+
 	Compile := !(MCFunction^ fnc) -> void
 	{
 		fnc = PassRemoveSpaceship(fnc)
@@ -44,7 +46,7 @@ MCBuildContext_x86_64 := class
 		fnc = PassRemoveVoidParams(fnc)
 		fnc = PassRemoveReferences(fnc)
 
-		//fnc.Print()
+		fnc.Print()
 
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
@@ -62,6 +64,8 @@ MCBuildContext_x86_64 := class
 
 		Pop("rbp")
 		ResultData << "\xC3" // ret
+
+		PrintValues()
 	}
 	FixLabels := !(void^ ptr) -> void
 	{
@@ -69,6 +73,11 @@ MCBuildContext_x86_64 := class
 		{
 			diff := labelPos[id] - (lbl + 4) // 4 - size of int, ptr offset
 			ptr->{u8^}[lbl]&->{int^}^ = diff
+		}
+		for it : doubleValues
+		{
+			diff := it.2 - it.1 - 4
+			ptr->{u8^}[it.1]&->{int^}^ = diff 
 		}
 	
 	}
@@ -125,7 +134,7 @@ MCBuildContext_x86_64 := class
 					switch size
 					{
 					case 1 ResultData << "\x88\x01"
-					case 2 ResultData << "\x89\x01" //TODO
+					case 2 ResultData << "\x66\x89\x01"
 					case 4 ResultData << "\x89\x01" //TODO
 					case 8 ResultData << "\x48\x89\x01" //TODO
 					}
@@ -143,7 +152,7 @@ MCBuildContext_x86_64 := class
 					switch size
 					{
 					case 1 ResultData << "\x48\x8A\x01"
-					case 2 ResultData << "\x48\x8B\x01" //TODO
+					case 2 ResultData << "\x48\x0F\xBF\x01" //TODO
 					case 4 ResultData << "\x48\x8B\x01" //TODO
 					case 8 ResultData << "\x48\x8B\x01" //TODO
 					}
@@ -213,6 +222,7 @@ MCBuildContext_x86_64 := class
 				i += 1
 
 				usedInts := 0
+				usedFloats := 0
 				while lines[i].opcode != "call_end"
 				{
 					vr := lines[i]
@@ -235,15 +245,17 @@ MCBuildContext_x86_64 := class
 						}else {
 							assert(false) //TODO
 						}
-					}else {
+					}else  if tp == GTypeFloat or tp == GTypeDouble {
+						//TODO disable float to double cast
+						Mov(fnc,"xmm0",vr.var1) //TODO other registers
+						usedFloats += 1
+					}else{
 						assert(false) //TODO floats
 					}
 
 					i += 1
 				}
-				MovU64ToReg(fnc,"rax",0) //TODO if variadic, number of FLOAT args must be sent
-
-				//TODO return value
+				MovU64ToReg(fnc,"rax",usedFloats)
 
 				fncObj := objs[fncId]
 
@@ -258,12 +270,21 @@ MCBuildContext_x86_64 := class
 
 				if resId != 0
 				{
+					//TODO return float value
 					Mov(fnc,resId,"rax")
 				}
 
 			case "mov"
-				Mov(fnc,"rax",line.var2)
-				Mov(fnc,line.var1,"rax")
+
+				tp := objs[line.var2].GetType()
+
+				if tp == GTypeFloat or tp == GTypeDouble {
+					Mov(fnc,"xmm0",line.var2)
+					Mov(fnc,line.var1,"xmm0")
+				}else{
+					Mov(fnc,"rax",line.var2)
+					Mov(fnc,line.var1,"rax")
+				}
 			
 			case "cast"
 				tpTo := objs[line.var1].GetType()
@@ -321,6 +342,15 @@ MCBuildContext_x86_64 := class
 			}
 		}
 	}
+	PrintValues := !() -> void
+	{
+		for it,i : doubleValues
+		{
+			x := it.0
+			it.2 = ResultData.Size()
+			ResultData.Write(x&,8)
+		}
+	}
 	Push := !(X86Register reg) -> void
 	{
 		dt := "\x50"[0] + reg->{int}
@@ -347,9 +377,13 @@ MCBuildContext_x86_64 := class
 
 		size := obj.GetType().GetSize()
 
+		regIndx := reg->{int} mod 8
+
+		isFloatReg := reg->{int} >= 16
+
 		datas := char[4]
 		memcpy(datas[0]&,"\x48\x8B\x85"[0]&,3)
-		datas[2] += (reg->{int} shl 3)
+		datas[2] += (regIndx->{int} shl 3)
 
 		if obj is MCVariable or obj is MCConstValue {
 
@@ -366,6 +400,11 @@ MCBuildContext_x86_64 := class
 				datas[2] = "\xBE"[0]
 				datas[3] = "\x85"[0] + (reg->{int} shl 3)
 				ResultData.Write(datas[0]&,4)
+			} else if size == 2 and toReg{
+				datas[1] = "\x0F"[0]
+				datas[2] = "\xBF"[0]
+				datas[3] = "\x85"[0] + (reg->{int} shl 3)
+				ResultData.Write(datas[0]&,4)
 			} else if size == 4 and toReg{
 				datas[1] = "\x63"[0]
 				datas[2] = "\x85"[0] + (reg->{int} shl 3)
@@ -373,7 +412,15 @@ MCBuildContext_x86_64 := class
 			}else if not toReg and size == 1{
 				ResultData.Write(datas[1]&,2)
 			}else{
-				ResultData.Write(datas[0]&,3)
+				if isFloatReg {
+					datas[0] = "\xF2"[0]
+					datas[1] = "\x0F"[0]
+					datas[2] = "\x10\x11"[toReg ?: 0 : 1]
+					datas[3] = "\x85"[0]
+					ResultData.Write(datas[0]&,4)
+				}else{
+					ResultData.Write(datas[0]&,3)
+				}
 			}
 			x := getObjsStackOffset(fnc,indx)
 			ResultData.Write(x&,4)
@@ -387,12 +434,26 @@ MCBuildContext_x86_64 := class
 			x := obj&->{MCConstInteger^}.GetValue()
 			ResultData.Write(x&,4)
 
+		}else if obj is MCConstDouble {
+			assert(toReg)
+			assert(reg >= 16) // float register
+
+			regPos := reg->{int} - 16
+			
+			ResultData << "\xF2\x0F\x10\x05"
+
+			doubleValues.Emplace(obj.GetValue(),ResultData.Size(),0)
+
+			x := s32
+			ResultData.Write(x&,4)
+
 		}else if obj is MCConstString {
 			assert(toReg)
 			MovPtrToReg(fnc,reg,obj&->{MCConstString^}.GetValue().CStr())
 		}else{
 			assert(false)
 		}
+
 	}
 	MovU64ToReg := !(MCFunction^ fnc,X86Register reg, u64 val) -> void
 	{

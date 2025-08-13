@@ -16,28 +16,10 @@ TestAllocator := class
 
 main := !(char^[] args) -> int
 {
-//	nums := char[10]
-//	i := 0
-//	while i < 10
-//	{
-//		nums[i] = 2
-//		//printf("hey %i\n",nums[i])
-//		i += 1
-//	}
-//	i = 0
-//	while i < 10
-//	{
-//		printf("hey %i\n",nums[i])
-//		nums[i] *= 20
-//		printf("hey %i\n",nums[i])
-//		i += 1
-//	}
-//	//c := malloc(10)->{int^}
-//	//resultPTr := malloc(nums + 1)->{u8^}
-//	//printf("test %p %p\n",resultPTr,c)
-//}
-//tst := !() -> int {
-	nums := 5000
+	printf("yep %f\n",3.3)
+}
+tst := !() -> int {
+	nums := 1_000_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}
@@ -45,7 +27,6 @@ main := !(char^[] args) -> int
 	resultPtr := malloc(nums + 1)->{u8^}
 	memset(resultPtr,0,nums + 1)
 	//resultPtrPtr[nums] = 0
-	//
 
 	i := 0
 	while i < bigNums
@@ -56,6 +37,7 @@ main := !(char^[] args) -> int
 	i = 0
 	while i < nums
 	{
+		// printf("step %10i %10i\n",i, i * 10000 div nums)
 		j := 0
 		while j < bigNums
 		{
