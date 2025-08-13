@@ -16,8 +16,10 @@ TestAllocator := class
 
 main := !(char^[] args) -> int
 {
-	printf("yep %f\n",3.3)
+	c := 'ы'
+	printf("test %c\n",c)
 }
+
 tst := !() -> int {
 	nums := 1_000_000
 

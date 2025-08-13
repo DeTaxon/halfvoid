@@ -177,7 +177,40 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 					{
 						case 't' newVal = 9
 						case 'n' newVal = 10
+						case 'x'
+							i := 2
+							while i < tok.Size() and tok[i] != '\''
+							{
+								newVal *= 16
+								switch tok[i]
+								{
+									case in '0'..'9'
+										newVal += tok[i] - '0'
+									case in 'a'..'f'
+										newVal += tok[i] - 'a' + 10
+									case in 'A'..'F'
+										newVal += tok[i] - 'A' + 10
+								}
+								i += 1
+							}
 						case void newVal = tok[2]
+					}
+				}else if tok[1] >= 128 {
+					c := tok[1]
+					byteSize := 2
+					mask := 0x3F
+					if c >= 0xE0 { byteSize = 3 mask = 0x1F }
+					if c >= 0xF0 { byteSize = 4 mask = 0x0F }
+
+					newVal = c and_b mask
+
+					//TODO check if correct utf-8 symbol
+
+					for j : (byteSize - 1)
+					{
+						newVal = newVal shl 6
+						c = tok[2 + j]
+						newVal = newVal or_b (c and_b 0x3F)
 					}
 				}else{
 					newVal = tok[1]
