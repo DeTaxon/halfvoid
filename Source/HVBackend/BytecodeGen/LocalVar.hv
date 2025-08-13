@@ -16,7 +16,7 @@ AppendClass FuncLocalVarCleanup
 
 		if baseType is in TypeStandard or baseType is in TypePoint
 		{
-			obj := ctx.GetLocalVar(baseVar)
+			obj := ctx.AddLocalVar(baseVar)
 			HVB_ins_clean(ctx,obj)
 		}else{
 			obj := getVal.WriteMC(ctx).CreatedId

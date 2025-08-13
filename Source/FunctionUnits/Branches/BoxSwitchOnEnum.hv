@@ -283,7 +283,7 @@ BoxSwitchOnEnum := class extend BoxSwitch
 		for it : this.caseNodes
 		{
 			HVB_ins_label(ctx,ctx.GetLabel(it.useNode))
-			it.caseBody.WriteMC(ctx)
+			it.caseBody?.WriteMC(ctx)
 			HVB_ins_jump(ctx,ql)
 		}
 
