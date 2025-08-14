@@ -112,6 +112,20 @@ CollectFunctionsCtx := class
 		}
 		
 	}
+
+	checkClass := !(BoxClass^ cls) -> void
+	{
+		if cls not in checkedClasses
+		{
+			checkedClasses.Insert(cls)
+			checkClasses.PushFront(cls)
+
+			for cnst : cls.Constants?.Constants
+			{
+				checkConstant(cnst)
+			}
+		}
+	}
 	checkType := !(Type^ tp) -> void
 	{
 
@@ -130,17 +144,7 @@ CollectFunctionsCtx := class
 		if tp is TypeClass
 		{
 			cls := tp->{TypeClass^}.ToClass
-
-			if cls not in checkedClasses
-			{
-				checkedClasses.Insert(cls)
-				checkClasses.PushFront(cls)
-
-				for cnst : cls.Constants?.Constants
-				{
-					checkConstant(cnst)
-				}
-			}
+			checkClass(cls)
 		}
 
 		if tp is TypeFunc
@@ -188,6 +192,11 @@ CollectFunctionsCtx := class
 		checkGlobals.PushFront(glb)
 
 		varType := glb.GetType()
+
+		//TODO it should be working by analizing memory of object
+		VirtualTables.Value.Get(glb, x ==> {
+			checkClass(x)
+		})
 
 		if varType != null
 			checkGlobVal(varType,GInterpCntx.GetGlobalVarMem(glb))

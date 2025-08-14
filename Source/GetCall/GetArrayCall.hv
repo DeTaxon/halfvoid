@@ -179,6 +179,7 @@ BoxArrayHolder := class extend BoxExeObj
 	}
 
 }
+
 IsViewType := !(Type^ tp) -> bool
 {
 	if not (tp is in TypePoint)

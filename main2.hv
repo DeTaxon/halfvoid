@@ -14,10 +14,20 @@ TestAllocator := class
 }
 
 
+Firsts := enum
+{
+	"1","one"
+}
+
+fnc := !(Firsts vals) -> void
+{
+	printf("yep %s\n",vals.ToCStr())
+}
+
 main := !(char^[] args) -> int
 {
-	c := 'ы'
-	printf("test %c\n",c)
+	for i : 3
+		fnc(!["1","one","1"][i])
 }
 
 tst := !() -> int {

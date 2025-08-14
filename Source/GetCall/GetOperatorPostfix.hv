@@ -91,6 +91,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		Objs := CheckExeDownList
 		
 		dObj := TryGetExeCall(itm.Down)
+		baseObj := dObj
 		if dObj? is BoxArrayHolder
 		{
 			dObj = dObj->{BoxArrayHolder^}.CreateDefaultUse()
@@ -106,6 +107,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		namedInputs := AVLMap.{Str,BoxExeObj^} //TODO use varaible
 		if not CheckFuncCallBrackets(itm.Down.Right,Objs,namedInputs)
 			return null
+
 
 		cnsts := List.{BoxExeConstObj^}
 		return CreateFuncCallOperator(StringSpan("[]"),Objs,cnsts)?
