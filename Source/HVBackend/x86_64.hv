@@ -305,6 +305,14 @@ MCBuildContext_x86_64 := class
 						//printf("x86_64, unsupported integer cast\n")
 						//assert(false)
 					//}
+				}else if tpTo == GTypeFloat and tpFrom == GTypeDouble{
+					Mov(fnc,"xmm0",line.var2)
+					ResultData << "\xF2\x0F\x5A\xC8"
+					Mov(fnc,line.var1,"xmm1")
+				}else if tpTo == GTypeDouble and tpFrom == GTypeFloat{
+					Mov(fnc,"xmm0",line.var2)
+					ResultData << "\xF3\x0F\x5A\xC8"
+					Mov(fnc,line.var1,"xmm1")
 				}else{
 					printf("x86_64, unsupported cast\n")
 					assert(false)
@@ -406,17 +414,25 @@ MCBuildContext_x86_64 := class
 				datas[3] = "\x85"[0] + (reg->{int} shl 3)
 				ResultData.Write(datas[0]&,4)
 			} else if size == 4 and toReg{
-				datas[1] = "\x63"[0]
-				datas[2] = "\x85"[0] + (reg->{int} shl 3)
-				ResultData.Write(datas[0]&,3)
-			}else if not toReg and size == 1{
+				if isFloatReg {
+					datas[0] = "\xF3\xF2"[size == 4 ?: 0 : 1]
+					datas[1] = "\x0F"[0]
+					datas[2] = "\x10\x11"[toReg ?: 0 : 1]
+					datas[3] = "\x85"[0] + (regIndx->{int} shl 3)
+					ResultData.Write(datas[0]&,4)
+				}else{
+					datas[1] = "\x63"[0]
+					datas[2] = "\x85"[0] + (reg->{int} shl 3)
+					ResultData.Write(datas[0]&,3)
+				}
+			}else if not toReg and size == 1 {
 				ResultData.Write(datas[1]&,2)
 			}else{
 				if isFloatReg {
-					datas[0] = "\xF2"[0]
+					datas[0] = "\xF3\xF2"[size == 4 ?: 0 : 1]
 					datas[1] = "\x0F"[0]
 					datas[2] = "\x10\x11"[toReg ?: 0 : 1]
-					datas[3] = "\x85"[0]
+					datas[3] = "\x85"[0] + (regIndx->{int} shl 3)
 					ResultData.Write(datas[0]&,4)
 				}else{
 					ResultData.Write(datas[0]&,3)
