@@ -22,7 +22,7 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	ctx.FixLabels(ptr)
 
 	createdFunc := ptr->{!()^->void}
-	//assert(false)
+	assert(false)
 	createdFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
@@ -45,6 +45,8 @@ MCBuildContext_x86_64 := class
 		fnc = PassSimplifyVectors(fnc)
 		fnc = PassRemoveVoidParams(fnc)
 		fnc = PassRemoveReferences(fnc)
+		//fnc = PassOptimizeJumpX86(fnc)
+		//fnc = PassApplyRegistersX86(fnc)
 
 		fnc.Print()
 
@@ -208,6 +210,25 @@ MCBuildContext_x86_64 := class
 				ResultData << "\x0F\x85" 
 				labelTarget[line.var1] = strm.Size()->{int}
 				ResultData.Write(x&,4)
+			case "jmp_if_op"
+
+				//TODO cmp floats
+				Mov(fnc,"rdx",line.var2)
+				Mov(fnc,"rax",line.var4)
+				ResultData << "\x48\x3B\xD0" //cmp
+
+				switch line.V3Cond()
+				{
+					case "==" ResultData << "\x0F\x84"
+					case "!=" ResultData << "\x0F\x85"
+					case "<=" ResultData << "\x0F\x86"
+					case "<" ResultData << "\x0F\x82"
+					case ">=" ResultData << "\x0F\x8D"
+					case ">" ResultData << "\x0F\x8F"
+				}
+				labelTarget[line.var1] = strm.Size()->{int}
+				x := 0
+				ResultData.Write(x&,4)
 			case "jmp"
 				ResultData << "\xE9"
 				x := 0
@@ -292,8 +313,8 @@ MCBuildContext_x86_64 := class
 
 				if tpTo is in TypePoint and tpFrom is in TypePoint
 				{
-					MovStackToRax(fnc,line.var2)
-					MovRaxToStack(fnc,line.var1)
+					Mov(fnc,"rax",line.var2)
+					Mov(fnc,line.var1,"rax")
 				}else if IsInt(tpTo) and IsInt(tpFrom) {
 					//if tpTo == GTypeS64 and tpFrom == GTypeInt {
 					//	Mov(fnc,"rax",line.var2)
@@ -322,7 +343,7 @@ MCBuildContext_x86_64 := class
 				strm << "\x48\x8D\x85"
 				x := getObjsStackOffset(fnc,line.var2)
 				strm.Write(x&,4)
-				MovRaxToStack(fnc,line.var1)
+				Mov(fnc,line.var1,"rax")
 
 			case "clean"
 				assert(objs[line.var1] is MCVariable)
@@ -368,14 +389,6 @@ MCBuildContext_x86_64 := class
 	{
 		dt := "\x58"[0] + reg->{int}
 		ResultData.Write(dt&,1)
-	}
-	MovRaxToStack := !(MCFunction^ fnc,int indx) -> void
-	{
-		Mov(fnc,indx,"rax")
-	}
-	MovStackToRax := !(MCFunction^ fnc,int indx) -> void
-	{
-		Mov(fnc,"rax",indx)
 	}
 	Mov := !(MCFunction^ fnc,int indx,X86Register reg) -> void { Mov(fnc,false,reg,indx) }
 	Mov := !(MCFunction^ fnc,X86Register reg,int indx) -> void { Mov(fnc,true,reg,indx) }
@@ -494,4 +507,15 @@ X86Register := enum
 	"xmm8","xmm9","xmm10","xmm11","xmm12","xmm13","xmm14","xmm15"
 }
 
+MCConstRegisterX86 := class extend MCObject
+{
+	IsConstant := virtual true
+
+	GetValue := !() -> ref X86Register { return Value&->{X86Register^}^}
+
+	PrintObject := virtual !() -> void { printf("Register \"%s\"",GetValue().ToCStr()) }
+	GetType := virtual !() -> Type^ { return Value2&->{Type^^}^ }
+
+	SetType := virtual !(Type^ newType) -> Type^ { Value2&->{Type^^}^ = newType }
+}
 

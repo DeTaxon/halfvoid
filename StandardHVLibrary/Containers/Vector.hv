@@ -20,6 +20,12 @@ Vector := class .{@T} extend TArrayView.{T}
 		if count == itSize
 			return void
 
+		if count < itSize
+		{
+			itSize = count
+			return void
+		}
+
 		newPointer := calloc(count,T->TypeSize)->{T^}
 
 
@@ -38,7 +44,6 @@ Vector := class .{@T} extend TArrayView.{T}
 
 		pointer = newPointer
 		itSize = count
-
 	}
 
 

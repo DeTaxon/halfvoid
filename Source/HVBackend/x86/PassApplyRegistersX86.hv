@@ -1,0 +1,39 @@
+
+PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
+{
+	bCtx := MCBuildContext(fnc,true,false)
+
+	objs := new Vector.{MCObject}
+	o := fnc.Objects.Size()
+	objs.Resize(o*6)
+	oPtr := objs.GetPointer()
+	memcpy(oPtr,fnc.Objects.GetPointer(),o*MCObject->TypeSize)
+
+	cmds := new Vector.{MCLine}
+	c := 0
+	cmds.Resize(fnc.Lines.Size()*4)
+	cPtr := cmds.GetPointer()
+
+	for it , i : fnc.Lines
+	{
+		switch it.opcode
+		{
+		case void
+			cPtr[c] = it
+			c += 1
+		}
+	}
+
+	objs.Resize(o)
+	cmds.Resize(c)
+
+	result = new MCFunction
+
+	result.Objects = objs
+	result.Lines = cmds
+
+	result.BaseFunction = fnc.BaseFunction
+	result.ResultIndex = fnc.ResultIndex
+	result.InputsIndxStart = fnc.InputsIndxStart
+	result.InputsIndxCount = fnc.InputsIndxCount
+}

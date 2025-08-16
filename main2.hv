@@ -22,13 +22,16 @@ fnc := !(Firsts vals) -> void
 
 main := !(char^[] args) -> int
 {
-	c := float
-	c = 1.3
-	printf("test %f\n",c)
+	if 1 < 3
+	{
+		printf("true\n")
+	}else{
+		printf("false\n")
+	}
 }
 
 tst := !() -> int {
-	nums := 1_000_000
+	nums := 3_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

@@ -1,0 +1,64 @@
+
+PassOptimizeJumpX86 := !(MCFunction^ fnc) ->MCFunction^
+{
+	bCtx := MCBuildContext(fnc,true,false)
+
+	objs := new Vector.{MCObject}
+	o := fnc.Objects.Size()
+	objs.Resize(o*6)
+	oPtr := objs.GetPointer()
+	memcpy(oPtr,fnc.Objects.GetPointer(),o*MCObject->TypeSize)
+
+	cmds := new Vector.{MCLine}
+	c := 0
+	cmds.Resize(fnc.Lines.Size()*4)
+	cPtr := cmds.GetPointer()
+
+	iPtr := fnc.Lines.GetPointer()
+	iSize := fnc.Lines.Size()
+
+	usedTimes := Vector.{int}(fnc.Objects.Size())
+
+	for j : iSize
+	{
+		line := iPtr[j]
+		for k : 5
+		{
+			obj := line.var1&[k]
+			usedTimes[obj] += 1
+		}
+	}
+
+	i := 0
+	while i < (iSize - 1)
+	{
+		line := iPtr[i]
+		next := iPtr[i+1]
+
+		if line.opcode == "cmp" and next.opcode == "jmp_if_bool" 
+			and line.var1 == next.var2 and usedTimes[line.var1] == 2
+		{
+			cPtr[c] = MCLine("jmp_if_op",next.var1,line.var2,line.var3,line.var4)
+			c += 1
+			i += 2
+		}else{
+			cPtr[c] = line
+			c += 1
+			i += 1
+		}
+	}
+	cPtr[c] = iPtr[iSize - 1]
+
+	objs.Resize(o)
+	cmds.Resize(c)
+
+	result = new MCFunction
+
+	result.Objects = objs
+	result.Lines = cmds
+
+	result.BaseFunction = fnc.BaseFunction
+	result.ResultIndex = fnc.ResultIndex
+	result.InputsIndxStart = fnc.InputsIndxStart
+	result.InputsIndxCount = fnc.InputsIndxCount
+}

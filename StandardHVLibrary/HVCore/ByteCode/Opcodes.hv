@@ -6,7 +6,6 @@ MCBaseOpcodes := enum extend u16
 	"label",
 	"jmp", // label
 	"jmp_if_bool", // label var_bool
-	//"jmp_if_op", // label operator var1 var2
 	//
 	"switch_start", // op1 - input value
 	"switch_case", // op1 - compare value, op2 - label to jump
@@ -90,6 +89,10 @@ MCBaseOpcodes := enum extend u16
 	"llvm_getelementptr",
 	"llvm_getelementptr0"
 	//"llvm_copy_const" // var1 alias to var2
+	//
+	
+	//BACKEND x86
+	"jmp_if_op", // label operator var1 var2,   jump if var1 >= var2 , TODO interpreter/LLVM support
 }
 
 MCJumpIfConditions := enum extend u16
