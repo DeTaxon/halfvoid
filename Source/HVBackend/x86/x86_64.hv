@@ -22,7 +22,7 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	ctx.FixLabels(ptr)
 
 	createdFunc := ptr->{!()^->void}
-	assert(false)
+	// assert(false)
 	createdFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
@@ -45,7 +45,7 @@ MCBuildContext_x86_64 := class
 		fnc = PassSimplifyVectors(fnc)
 		fnc = PassRemoveVoidParams(fnc)
 		fnc = PassRemoveReferences(fnc)
-		//fnc = PassOptimizeJumpX86(fnc)
+		fnc = PassOptimizeJumpX86(fnc)
 		//fnc = PassApplyRegistersX86(fnc)
 
 		fnc.Print()

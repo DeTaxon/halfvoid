@@ -48,6 +48,7 @@ PassOptimizeJumpX86 := !(MCFunction^ fnc) ->MCFunction^
 		}
 	}
 	cPtr[c] = iPtr[iSize - 1]
+	c += 1
 
 	objs.Resize(o)
 	cmds.Resize(c)
