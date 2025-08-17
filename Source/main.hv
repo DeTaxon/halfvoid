@@ -515,6 +515,8 @@ WaitForParsingObjects := !() -> bool
 
 WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 {
+	AttrDB.PrintGlobal(ctx.writeStream)
+
 	PrintDeclares(ctx)
 	if DebugMode
 		PrintDebugMeta(ctx)
@@ -597,10 +599,6 @@ PrintDeclares := !(LLVMWriteContext^ ctx) -> void
 	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v4f32(float %start_value, <4 x float> %a)\n"
 	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v3f32(float %start_value, <3 x float> %a)\n"
 	f^ << "declare float @llvm.vector.reduce.v2.fadd.f32.v2f32(float %start_value, <2 x float> %a)\n"
-	f^ << "attributes #0 = { nounwind \"target-cpu\"=\"x86-64\"  }\n"
-	f^ << "attributes #1 = { nounwind }\n"
-	f^ << "attributes #2 = { nounwind readnone}\n"
-	f^ << "attributes #3 = { nounwind noreturn}\n"
 	f^ << "%OpaqType = type {i1}\n"
 	f^ << "%Vec4f = type <4 x float>\n"
 	f^ << "%Vec3f = type <3 x float>\n"

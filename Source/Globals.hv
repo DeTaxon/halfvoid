@@ -24,6 +24,7 @@ TryCatchUsed := bool
 
 NeedGuardLocalVar := task_local bool
 
+AttrDB := AttributeDBType
 
 OptimizeMode := bool
 DebugMode := bool

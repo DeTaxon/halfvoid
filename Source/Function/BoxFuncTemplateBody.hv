@@ -231,7 +231,6 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 	{
 		StartParseHeader()
 
-
 		chp := StackCheckpoint()
 		defer chp.RestoreStack()
 
@@ -261,6 +260,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		newFunc.DefaultValues[ind] = hData.DefaultValues[^ind]
 		newFunc.ParentScope = ParentScope
 		newFunc.TemplateParent = this&
+		newFunc.AttrId = AttrDB.GetId(this&)
 
 		newFunc.headerHash = this.headerHash
 		newFunc.hash = this.hash
@@ -408,3 +408,5 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		return hash
 	}
 }
+
+

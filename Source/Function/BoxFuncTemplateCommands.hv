@@ -22,6 +22,9 @@ CheckTemplateBodyCommandsSingle := !(BoxFuncTemplateBody^ fnc, Token^ cmd) -> vo
 			}else{
 				//TODO emit error
 			}
+		case "#Attr"
+			//TODO error check
+			fnc.TemplateProperties["#Attr"].Push(new FuncAttributePropertie(cmd.Down.Right.Down->{TokenString^}.Value))
 		case "#TemplateResist"
 			fnc.Properties["#TemplateResist"] = null
 		case "#AddAutoCast"
@@ -93,4 +96,13 @@ FilterBeConstPropertie := class extend FunctionPropertie
 {
 	InputIndex := int
 	ExpectBeConst := bool
+}
+FuncAttributePropertie := class extends FunctionPropertie
+{
+	Attribute := Str
+
+	this := !(Str val) -> void
+	{
+		Attribute = val
+	}
 }

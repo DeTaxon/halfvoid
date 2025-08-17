@@ -1,0 +1,55 @@
+
+AttributeDBType := class
+{
+	values := AVLMap.{Str,int}
+	idIter := int
+
+	GetId := !(BoxFuncTemplateBody^ fnc) -> int
+	{
+		if fnc.TemplateProperties.Size() == 0 or not fnc.TemplateProperties.Contain("#Attr")
+			return getIdByStr("")
+
+		vals := AVLSet.{Str}
+
+		for it : fnc.TemplateProperties["#Attr"]
+		{
+			if it is not FuncAttributePropertie
+				continue
+			att := it->{FuncAttributePropertie^}.Attribute
+			vals.Insert(att)
+		}
+
+		echo := TEchoStream
+
+		for it,i : vals
+		{
+			echo << " " << it
+		}
+
+		res := echo.GetStr()
+
+		return getIdByStr(res)
+	}
+
+	getIdByStr := !(Str id) -> int
+	{
+		if values.Contain(id)
+			return values[id]
+
+		newId := idIter
+		idIter += 1
+		values[id] = newId
+
+		return newId
+	}
+	PrintGlobal := !(Stream st) -> void
+	{
+		for id,it : values
+		{
+			st << "attributes #" << id << " = {"
+			st << "nounwind "
+			st << """ "target-cpu"="x86-64" "target-features"="+cmov,+cx8,+fxsr,+mmx,+sse,+sse2,+x87" """
+			st  << it << "}\n"
+		}
+	}
+}

@@ -98,6 +98,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		out << " %Inp" << i
 	}
 	out << ")"
+	if base.AttrId.IsSet()
+		out << " #" << base.AttrId.Get()
 	if haveDebugInfo
 	{
 		out << " !dbg !" << fncId

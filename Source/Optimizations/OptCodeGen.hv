@@ -14,6 +14,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 
 	ctx.ClassIgnoresVTable = true
 
+	AttrDB.PrintGlobal(ctx.writeStream)
 	PrintDebugMeta(ctx)
 	PrintDeclares(ctx)
 	
