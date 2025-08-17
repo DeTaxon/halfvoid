@@ -25,6 +25,7 @@ fiber_context_x64 := class
 }
 
 get_context_x64 := !(fiber_context_x64^ ctx) -> void
+	#Attr("noinline")
 {
 	asm(
 		"movq %0, %%rdi;"
@@ -55,6 +56,7 @@ get_context_x64 := !(fiber_context_x64^ ctx) -> void
 	)
 }
 set_context_x64 := !(fiber_context_x64^ ctx) -> void
+	#Attr("noinline")
 {
 	asm(
 		"movq 8*0(%%rdi),%%r8"
@@ -76,6 +78,7 @@ set_context_x64 := !(fiber_context_x64^ ctx) -> void
 	)
 }
 swap_context_x64 := !(fiber_context_x64^ thisContext,fiber_context_x64^ newContext) -> void
+	#Attr("noinline")
 {
 	asm(
 		"movq %0, %%rdi;"
