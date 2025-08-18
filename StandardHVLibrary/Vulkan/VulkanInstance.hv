@@ -108,23 +108,32 @@ VulkanInstance := class
 		logDevice.ppEnabledExtensionNames = usingPhysExts.GetPointer()->{char^}
 		logDevice.pEnabledFeatures = zeroFeature&
 
+		iter := logDevice&->{void^^}
+
+		pushIter := (void^ newObj) ==>
+		{
+			iter[1] = newObj
+			iter = newObj->{void^^}
+		}
+
 		imagelessFrame := VkPhysicalDeviceImagelessFramebufferFeatures()
 		imagelessFrame.imagelessFramebuffer = 1
-		logDevice.pNext = imagelessFrame&
+
+		pushIter(imagelessFrame&)
 
 		dynamicRender := VkPhysicalDeviceDynamicRenderingFeatures()
 		dynamicRender.dynamicRendering = VK_TRUE
-		imagelessFrame.pNext = dynamicRender&
+		pushIter(dynamicRender&)
 
 		meshFeature := VkPhysicalDeviceMeshShaderFeaturesEXT()
 		meshFeature.meshShader = 1
 		meshFeature.taskShader = 1
 		if useMeshShader
-			dynamicRender.pNext = meshFeature&
+			pushIter(meshFeature&)
 
 		maintn4 := VkPhysicalDeviceMaintenance4Features()
 		maintn4.maintenance4 = 1
-		meshFeature.pNext = maintn4&
+		pushIter(maintn4&)
 
 
 		res11 := Funcs.vkCreateDevice(PhysicalDevice,logDevice&,null,LogicalDevice&)
@@ -140,7 +149,7 @@ VulkanInstance := class
 	itStageMemory := TVkMemBuffer^
 	initCreateStageMemory := !() -> void
 	{
-    		stSize := 0x4c4c00
+		stSize := 0x4c4c00
 		itStageMemory = CreateTransferMemBuffer(stSize)
 	}
 
