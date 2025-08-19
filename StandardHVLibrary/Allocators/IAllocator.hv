@@ -1,0 +1,10 @@
+
+IAllocator := class
+{
+	AllocMem := virtual !(int size, bool dirty = false) -> void^
+	{
+	}
+	FreeMem := virtual !(void^ mem) -> void
+	{
+	}
+}

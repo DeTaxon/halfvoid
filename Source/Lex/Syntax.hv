@@ -124,6 +124,9 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 				case "#CallDecoratorCall"
 					if RuleUseReverse(begin,"DecObj",RuleDecoratorCall) 
 							return true
+				case "#NewDelete"
+					if RuleUse(begin,"~d",RuleNewDelete) 
+							return true
 				case "#FunctionBody"
 					if RuleUse(begin,"~d",RuleFunctionBody)
 						return true
@@ -329,6 +332,36 @@ RuleClass := !(void^ itr) -> int
 	return size + 1
 }
 
+RuleNewDelete := !(void^ itr) -> int
+{
+	size := 0
+	It := itr->{Token^}
+
+	if It == null return 0
+
+	if InDataR(It)
+	{
+		It = It.Right
+
+		if It == null return 0
+		if It.GetValue() != "." return 0
+
+		It = It.Right
+		if It == null return 0
+
+		size += 2
+	}
+
+	if It.GetValue() != "new" and It.GetValue() != "delete"
+		return 0
+
+	It = It.Right
+	if It == null return 0
+
+	if not InDataR(It) return 0
+
+	return size + 2
+}
 RuleFunctionBody := !(void^ itr) -> int
 {
 	size := 0

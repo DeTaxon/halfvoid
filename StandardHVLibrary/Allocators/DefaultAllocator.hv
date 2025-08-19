@@ -1,0 +1,17 @@
+
+DefaulAllocator := class extends IAllocator
+{
+	AllocMem := virtual !(int size,bool dirty) -> void^
+	{
+		if dirty
+		{
+			return malloc(size)
+		}else{
+			return calloc(1,size)
+		}
+	}
+	FreeMem := virtual !(void^ mem) -> void
+	{
+		free(mem)
+	}
+}

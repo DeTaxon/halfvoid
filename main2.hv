@@ -1,27 +1,17 @@
 
 
 
-TestAllocator := class
-{
-	AllocMem := !(int size) -> void^
-	{
-		printf("yep %i\n",size)
-	}
-	FreeMem := !(void^ mem) -> void
-	{
-		printf("free %p\n",mem)
-	}
-}
-
-
-
-fnc := !(Firsts vals) -> void
-{
-	printf("yep %s\n",vals.ToCStr())
-}
 
 main := !(char^[] args) -> int
 {
+	GC := DefaultAllocator
+
+	r := GC.new int
+
+	printf("created %p %i\n",r,r^)
+
+	GC.delete r
+
 	printf("true\n")
 }
 

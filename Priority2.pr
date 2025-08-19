@@ -25,7 +25,7 @@
 "d and_b d" "d or_b d" "d xor_b d"
 "not d"
 "d and d" "d or d" "d xor d"
-"new d" "delete d"
+#NewDelete
 "throw d" 
 "d << d" "d >> d"
 "d <-"

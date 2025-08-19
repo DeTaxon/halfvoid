@@ -3,29 +3,76 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 	if itm.Down == null
 		return null
 
-	if itm.Down.GetValue() == "new"
+	objPos := itm.Down
+	allocObj := BoxExeObj^
+
+	if objPos.GetValue() not in !["new","delete"]
 	{
-		tp := ParseType(itm.Down.Right)
-		if tp == null
+		if objPos.Right?.GetValue() == "." 
+			and objPos.Right.Right?.GetValue() in !["new","delete"]
 		{
-			CurrentWork?.SetErrorMessage(itm.MakeError("Unknown type"))
+			allocObj = TryGetExeCall(itm.Down)
+			if allocObj == null
+				return null
+			objPos = objPos.Right.Right
+		}else{
 			return null
 		}
-		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(tp)
-		objs := CheckExeDownList
-		fnc := TemplateInternalNewOne.GetFunc(objs,cnsts)
-		assert(fnc != null)
-		resCall := fnc.CreateCall(objs)
+	}
 
-		if itm.Down.Right.Right?.GetValue() == "()"
+	if allocObj == null
+	{
+		allocObj = CreateFuncCall("GetAllocator",![])
+	}
+
+	assert(allocObj != null)
+
+	if objPos.GetValue() == "new"
+	{
+		resObj := new PackedExeObj
+
+		tp := ParseType(objPos.Right)
+		if tp == null
 		{
-			objs.Push(resCall)
-			iObjs := FuncInputObjects
-			if not CheckFuncCallBrackets(itm.Down.Right.Right,iObjs&)
+			CurrentWork?.SetErrorMessage(objPos.Right.MakeError("Unknown type"))
+			return null
+		}
+
+		resCall := BoxExeObj^
+		resVar := LocalVar^
+
+		typeSize := GetExeInt(tp.GetSize())
+
+		if allocObj != null
+		{
+			createCall := innerTryGetMethodCall("AllocMem",allocObj,![typeSize,GBoolFalse],![])
+
+			if createCall == null
 				return null
 
-			objs.Push(iObjs.Objs[^])
+			resVar = ToLocalVar(GetExchange2(createCall,tp.GetPoint(),false))
+
+			//resVar.extraWork.Push(CreateFuncCall("memset",![resVar.CreateVarCall(),0hv,typeSize]))
+
+			if tp is in TypeClass //TODO only if virtual?
+			{
+				initer := CreateFuncCall("internalHVInitClass",![new PtrToRef(resVar.CreateVarCall())])
+				resVar.extraWork.Push(initer)
+			}
+
+		}else{
+			fnc := TemplateInternalNewOne.GetFunc(![],![tp])
+			assert(fnc != null)
+			resCall = fnc.CreateCall(![])
+			resVar = ToLocalVar(resCall)
+		}
+
+		if objPos.Right.Right?.GetValue() == "()"
+		{
+			iObjs := FuncInputObjects
+			iObjs.Objs.Push(resVar.CreateVarCall())
+			if not CheckFuncCallBrackets(objPos.Right.Right,iObjs&)
+				return null
 
 			if tp is TypeClass
 			{
@@ -33,40 +80,37 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 				callFunc := BoxUnit^
 				zeroConsts := List.{BoxExeConstObj^}
 				cls.GetMethods("this",x ==> {
-					callFunc = GetBestFunc(x,objs,zeroConsts)
+					callFunc = GetBestFunc(x,iObjs.Objs,zeroConsts)
 				})
 				if callFunc == null
 				{
-					CurrentWork?.SetErrorMessage(itm.MakeError("Constructor not found"))
+					CurrentWork?.SetErrorMessage(objPos.Right.Right.MakeError("Constructor not found"))
 					return null
 				}
 				assert(callFunc is in BoxFunc)
 
-				resVar := ToLocalVar(resCall)
-
-				objs[0] = resVar.CreateVarCall()
-				constrCall := callFunc->{BoxFunc^}.CreateCall(objs,iObjs&)
+				constrCall := callFunc->{BoxFunc^}.CreateCall(iObjs.Objs,iObjs&)
 				resVar.extraWork.Push(constrCall)
 
 				assert(constrCall != null)
 
-				resCall = new ConstructorCallWrapper(resVar,resVar.CreateVarCall())
 			}else{
 				assert(false)
 			}
 		}
-		return resCall
+		return new ConstructorCallWrapper(resVar,resVar.CreateVarCall())
 	}
-	if itm.Down.GetValue() == "delete"
+	if objPos.GetValue() == "delete"
 	{
-		dwn := TryGetExeCall(itm.Down.Right)
+		dwn := TryGetExeCall(objPos.Right)
 		if dwn == null
 			return null
 
-		objs := CheckExeDownList
-		objs.Push(dwn)
-		cnsts := List.{BoxExeConstObj^}
-		//fnc := TemplateInternalDelete.GetFunc(objs,cnsts)
-		return FunctionInternalDelete.CreateCall(objs)
+		if allocObj != null
+		{
+			return innerTryGetMethodCall("FreeMem",allocObj,![dwn],![])
+		}
+
+		return FunctionInternalDelete.CreateCall(![dwn])
 	}
 }

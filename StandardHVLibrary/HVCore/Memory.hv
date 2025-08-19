@@ -25,3 +25,10 @@ internalHVDelete := !(void^ x) -> void
 	//}
 	free(x)
 }
+
+GetAllocator := !() -> IAllocator^
+{
+	return defAlloc&
+}
+
+defAlloc := DefaulAllocator
