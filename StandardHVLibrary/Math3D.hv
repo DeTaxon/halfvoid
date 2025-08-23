@@ -21,6 +21,14 @@
 	preR.z = a.x*b.y - a.y*b.x
 	return preR
 }
+"<*>" := !(vec3f a, vec3f b) -> vec3f
+{
+	preR := vec3f
+	preR.x = a.y*b.z - a.z*b.y
+	preR.y = a.z*b.x - a.x*b.z
+	preR.z = a.x*b.y - a.y*b.x
+	return preR
+}
 Length := !(vec4f this) -> float { return sqrt(this<+>this) }
 Length := !(vec3f this) -> float { return sqrt(this<+>this) }
 Length := !(vec2f this) -> float { return sqrt(this<+>this) }

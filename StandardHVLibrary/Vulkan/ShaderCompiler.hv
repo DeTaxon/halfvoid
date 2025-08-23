@@ -32,6 +32,15 @@ ShaderCompiler := class
 	}
 	Compile := !(File^ fl) -> ShaderCompiler_CompileResult
 	{
+		baseRes := ref result
+		result.ResultShader = cacheFileModule.GetCacheValue(fl,() ==> {
+			res := CompileInner(fl)
+			baseRes.ErrorMessage = res.ErrorMessage
+			return res.ResultShader
+		})
+	}
+	CompileInner := !(File^ fl) -> ShaderCompiler_CompileResult
+	{
 		blb := fl.GetBlob()
 		flName := fl.GetName().GetString()
 

@@ -181,6 +181,7 @@ MCFunction := class
 			printf("\n")
 		}
 		printf("-------- Assembly\n")
+
 		for it, i : Lines
 		{
 			printf("%7i %20s: %6i %6i %6i %6i %6i\n",i,it.opcode.ToCStr(),it.var1,it.var2,it.var3,it.var4,it.var5)

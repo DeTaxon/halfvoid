@@ -28,7 +28,7 @@ internalHVDelete := !(void^ x) -> void
 
 GetAllocator := !() -> IAllocator^
 {
+	defAlloc := static DefaultAllocator
 	return defAlloc&
 }
 
-defAlloc := DefaulAllocator

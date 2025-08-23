@@ -4,19 +4,17 @@
 
 main := !(char^[] args) -> int
 {
-	GC := DefaultAllocator
-
-	r := GC.new int
-
-	printf("created %p %i\n",r,r^)
-
-	GC.delete r
-
-	printf("true\n")
-}
-
-tst := !() -> int {
+// 	c := int
+//
+// 	c = 201
+// 	d := c div 5
+//
+// 	printf("true %i\n",d)
+// }
+//
+// tst := !() -> int {
 	nums := 10_000
+	nums = 1_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

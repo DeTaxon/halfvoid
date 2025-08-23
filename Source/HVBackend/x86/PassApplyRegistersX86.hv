@@ -9,6 +9,18 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 	oPtr := objs.GetPointer()
 	memcpy(oPtr,fnc.Objects.GetPointer(),o*MCObject->TypeSize)
 
+	pushReg := (X86Register reg, Type^ regType) ==> int
+	{
+		newReg := MCConstRegisterX86
+
+		newReg.GetValue() = reg
+		newReg.SetType(regType)
+
+		oPtr[o] = newReg
+		result = o
+		o += 1
+	}
+
 	cmds := new Vector.{MCLine}
 	c := 0
 	cmds.Resize(fnc.Lines.Size()*4)
@@ -18,6 +30,60 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 	{
 		switch it.opcode
 		{
+		case "debug_set_file"
+		case "debug_set_line" // delete debug info
+
+		case in !["div","mod","mul"]
+			
+			tp := oPtr[it.var1].GetType()
+			reg1 := pushReg("rax",tp)
+			reg2 := pushReg("rcx",tp)
+
+			cPtr[c] = MCLine("mov",reg1,it.var2)
+			cPtr[c+1] = MCLine("mov",reg2,it.var3)
+
+			cPtr[c+2] = MCLine("div",reg1,reg2) //NOTE, EDX used as well
+			if it.opcode == "mul"
+				cPtr[c+2].opcode = "mul"
+
+			outReg := reg1
+			if it.opcode == "mod"  {
+				outReg = pushReg("rdx",tp)
+			}
+			cPtr[c+3] = MCLine("mov",it.var1,outReg)
+
+			c += 4
+
+		case in !["add","sub"]
+			v1 := ref oPtr[it.var2] //TODO float
+			v2 := ref oPtr[it.var3]
+			res := ref oPtr[it.var1]
+
+			tp := v1.GetType()
+
+			reg1 := pushReg("rax",tp)
+			reg2 := pushReg("rdx",tp)
+
+			cPtr[c] = MCLine("mov",reg1,it.var2)
+			cPtr[c+1] = MCLine("mov",reg2,it.var3)
+			cPtr[c+2] = MCLine(it.opcode,reg1,reg2)
+			cPtr[c+3] = MCLine("mov",it.var1,reg1)
+			
+			c += 4
+
+		case "get_pointer"
+			v1 := ref oPtr[it.var1]
+			if v1 is MCConstRegisterX86
+			{
+				cPtr[c] = it
+				c += 1
+			}else{
+				newReg := pushReg("rax",v1.GetType())
+				cPtr[c] = it
+				cPtr[c].var1 = newReg
+				cPtr[c + 1] = MCLine("mov",it.var1,newReg)
+				c += 2
+			}
 		case void
 			cPtr[c] = it
 			c += 1
