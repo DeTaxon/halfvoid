@@ -4,15 +4,10 @@
 
 main := !(char^[] args) -> int
 {
-// 	c := int
-//
-// 	c = 201
-// 	d := c div 5
-//
-// 	printf("true %i\n",d)
-// }
-//
-// tst := !() -> int {
+ 	printf("true %x %i\n",2.1 <= 2.1,1 < 3)
+}
+
+tst := !() -> int {
 	nums := 10_000
 	nums = 1_000
 

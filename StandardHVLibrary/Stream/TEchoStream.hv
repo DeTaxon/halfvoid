@@ -74,6 +74,10 @@ TEchoStream := class extend Stream
 		}
 		return sLen
 	}
+	WriteByte := !(int inp) -> void
+	{
+		Write(inp&,1)
+	}
 	Size := !() -> size_t
 	{
 		BufSize := 4096

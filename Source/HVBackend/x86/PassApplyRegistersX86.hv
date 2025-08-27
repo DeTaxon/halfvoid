@@ -71,6 +71,42 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			
 			c += 4
 
+		case "cmp"
+
+			tp := oPtr[it.var2].GetType()
+			assert(oPtr[it.var4].GetType() == tp)
+			assert(oPtr[it.var1].GetType() == GTypeBool)
+
+			r1 := X86Register
+			r1 = "rax"
+			r2 := r1
+			r2 = "rdx"
+
+			if IsFloat(tp)
+			{
+				r1 = "xmm0"
+				r2 = "xmm1"
+			}
+
+			reg1 := pushReg(r1,tp)
+			reg2 := pushReg(r2,tp)
+			res := pushReg("rcx",GTypeBool)
+
+			cPtr[c] = MCLine("mov",reg1,it.var2)
+			cPtr[c+1] = MCLine("mov",reg2,it.var4)
+
+			if it.V3Cond() == ">" {
+				cPtr[c+2] = MCLine("cmp",res,reg2,"<=",reg1)
+			}else if it.V3Cond() == ">=" {
+				cPtr[c+2] = MCLine("cmp",res,reg2,"<",reg1)
+			}else {
+				cPtr[c+2] = MCLine("cmp",res,reg1,it.V3Cond(),reg2)
+			}
+
+			cPtr[c+3] = MCLine("mov",it.var1,res)
+
+			c += 4
+
 		case "get_pointer"
 			v1 := ref oPtr[it.var1]
 			if v1 is MCConstRegisterX86

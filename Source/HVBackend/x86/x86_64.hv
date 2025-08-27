@@ -17,7 +17,8 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	ptr := bigMem.GetPointer()
 	memset(ptr,0,bigMem.Size())
 
-	ctx.ResultData.Read(ptr,ctx.ResultData.Size())
+	funcSize := ctx.ResultData.Size()
+	ctx.ResultData.Read(ptr,funcSize)
 
 	ctx.FixLabels(ptr)
 
@@ -162,21 +163,59 @@ MCBuildContext_x86_64 := class
 				}
 
 			case "cmp"
-				Mov(fnc,"rdx",line.var2)
-				Mov(fnc,"rax",line.var4)
-				ResultData << "\x48\x3B\xD0" //cmp
+				//Mov(fnc,"rdx",line.var2)
+				//Mov(fnc,"rax",line.var4)
+				reg1 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
+				reg2 := objs[line.var4]&->{MCConstRegisterX86^}.GetValue()
+				resReg := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
+				//ResultData << "\x48\x3B\xD0" //cmp
+				
 
-				switch line.V3Cond()
+				if reg1 >= 16
 				{
-					case "==" ResultData << "\x0F\x94"
-					case "!=" ResultData << "\x0F\x95"
-					case "<=" ResultData << "\x0F\x9E"
-					case "<" ResultData << "\x0F\x9C"
-					case ">=" ResultData << "\x0F\x9D"
-					case ">" ResultData << "\x0F\x9F"
+					assert(resReg < 16)
+					assert(reg2 >= 16)
+					r1 := reg1 - 16
+					r2 := reg2 - 16
+					if objs[line.var2].GetType() == GTypeDouble
+					{
+						ResultData << "\xF2\x0F\xC2"
+					}else{
+						ResultData << "\xF3\x0F\xC2"
+					}
+					ResultData.WriteByte("\xC0"[0] + (r1 shl 3) + r2)
+
+					switch line.V3Cond()
+					{
+						case "==" ResultData.WriteByte(0)
+						case "!=" ResultData << "\x04"
+						case "<=" ResultData << "\x02"
+						case "<" ResultData << "\x01"
+						case ">=" ResultData << "\x05"
+						case ">" ResultData << "\x06"
+					}
+					ResultData << "\x66\x0F\x7E" // movd rax xmm0
+					ResultData.WriteByte(0xC0 + (r1 shl 3) + resReg)
+
+					ResultData << "\x80" // and ax 0x1
+					ResultData.WriteByte(0xE0 + resReg)
+					ResultData.WriteByte(0x01)
+				}else{
+					ResultData << "\x48\x3B"
+					ResultData.WriteByte(0xC0 + (reg1 shl 3) + reg2)
+
+					switch line.V3Cond()
+					{
+						case "==" ResultData << "\x0F\x94"
+						case "!=" ResultData << "\x0F\x95"
+						case "<=" ResultData << "\x0F\x9E"
+						case "<" ResultData << "\x0F\x9C"
+						case ">=" ResultData << "\x0F\x9D"
+						case ">" ResultData << "\x0F\x9F"
+					}
+					ResultData.WriteByte(0xC0 + resReg)
 				}
-				ResultData << "\xC0"
-				Mov(fnc,line.var1,"rax")
+
 
 			case in !["add","sub"] //TODO signes aware
 				
@@ -506,7 +545,8 @@ MCBuildContext_x86_64 := class
 
 			regPos := reg->{int} - 16
 			
-			ResultData << "\xF2\x0F\x10\x05"
+			ResultData << "\xF2\x0F\x10"
+			ResultData.WriteByte("\x05"[0] + (regPos shl 3) )
 
 			doubleValues.Emplace(obj.GetValue(),ResultData.Size(),0)
 
