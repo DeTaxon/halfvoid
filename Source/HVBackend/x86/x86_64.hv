@@ -222,43 +222,89 @@ MCBuildContext_x86_64 := class
 				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
 				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
 
-				assert(reg1 < 16 and reg2 < 16)
-
-				datas := char[3]
-				datas[0] = "\x48"[0]
-				switch line.opcode
+				if reg1 >= 16
 				{
-				case "add" datas[1] = "\x01"[0]
-				case "sub" datas[1] = "\x29"[0]
-				}
-				datas[2] = "\xC0"[0] + (reg2 shl 3) + reg1
+					r1 := reg1 - 16
+					r2 := reg2 - 16
 
-				ResultData.Write(datas[0]&,3)
+					if objs[line.var1].GetType() == GTypeDouble
+					{
+						ResultData.WriteByte(0xF2)
+					}else{
+						ResultData.WriteByte(0xF3)
+					}
+					ResultData.WriteByte(0x0F)
+
+					if line.opcode == "add"
+					{
+						ResultData.WriteByte(0x58)
+					}else{
+						ResultData.WriteByte(0x5C)
+					}
+
+					ResultData.WriteByte(0xC0 + (r1 shl 3) + r2)
+
+				}else{
+					datas := char[3]
+					datas[0] = 0x48
+					switch line.opcode
+					{
+					case "add" datas[1] = "\x01"[0]
+					case "sub" datas[1] = "\x29"[0]
+					}
+					datas[2] = "\xC0"[0] + (reg2 shl 3) + reg1
+
+					ResultData.Write(datas[0]&,3)
+				}
+
 			case in !["div","mul"]
 				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
 				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
 
-				assert(reg1 == "rax")
+				tp := objs[line.var1].GetType()
 
-				code := 0
-				if line.opcode == "div" {
-					code = 7 // 6 if unsigned
-					MovU64ToReg(fnc,"rdx",0) // TODO, 0xFFFFFF if rax negative
-				}else{
-					assert(line.opcode == "mul")
-					code = 5 // 4 if unsigned
+				if IsFloat(tp) {
+					assert(reg1 >= 16 and reg2 >= 16)
+
+					ri1 := reg1 - 16
+					ri2 := reg2 - 16
+					
+					if tp == GTypeDouble{
+						ResultData.WriteByte(0xF2)
+					}else{
+						ResultData.WriteByte(0xF3)
+					}
+					ResultData.WriteByte(0x0F)
+
+					if line.opcode == "div" {
+						ResultData.WriteByte(0x5E)
+					}else{
+						ResultData.WriteByte(0x59)
+					}
+
+					ResultData.WriteByte(0xC0 + (ri1 shl 3) + ri2)
+
+				}else {
+
+					assert(reg1 == "rax")
+
+					code := 0
+					if line.opcode == "div" {
+						code = 7 // 6 if unsigned
+						MovU64ToReg(fnc,"rdx",0) // TODO, 0xFFFFFF if rax negative
+					}else{
+						assert(line.opcode == "mul")
+						code = 5 // 4 if unsigned
+					}
+					code = code shl 3
+
+					datas := char[3]
+					datas[0] = 0x48
+					datas[1] = 0xF7
+					datas[2] = 0xC0 + reg2 + code
+
+					ResultData.Write(datas[0]&,3)
 				}
-				code = code shl 3
-
-				//Mov(fnc,"rax",line.var2)
-				//Mov(fnc,"rcx",line.var3)
-				datas := char[3]
-				datas[0] = "\x48"[0]
-				datas[1] = "\xF7"[0]
-				datas[2] = "\xC0"[0] + reg2 + code
-
-				ResultData.Write(datas[0]&,3)
-				//Mov(fnc,line.var1,"rax")
 			case "mod"
 				assert(false)
 
@@ -524,7 +570,12 @@ MCBuildContext_x86_64 := class
 					datas[3] = "\x85"[0] + (regIndx->{int} shl 3)
 					ResultData.Write(datas[0]&,4)
 				}else{
-					ResultData.Write(datas[0]&,3)
+					if size == 4
+					{
+						ResultData.Write(datas[1]&,2)
+					}else{
+						ResultData.Write(datas[0]&,3)
+					}
 				}
 			}
 			x := getObjsStackOffset(fnc,indx)

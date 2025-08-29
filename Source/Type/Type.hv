@@ -194,7 +194,11 @@ TypeVector := class extend TypeStandard
 	vecElementCount := int
 	this := !(char^ Name,char^ goodName,Type^ bType, int count,int sAlign) -> void
 	{
-		super(Name,goodName,"",bType.GetSize()*count,sAlign)
+		alignedCount := count
+		if alignedCount == 3
+			alignedCount = 4
+
+		super(Name,goodName,"",bType.GetSize()*alignedCount,sAlign)
 		vecElementCount = count
 		base = bType
 	}

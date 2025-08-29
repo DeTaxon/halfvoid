@@ -36,8 +36,19 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		case in !["div","mod","mul"]
 			
 			tp := oPtr[it.var1].GetType()
-			reg1 := pushReg("rax",tp)
-			reg2 := pushReg("rcx",tp)
+
+			r1 := X86Register
+			r2 := X86Register
+			r1 = "rax"
+			r2 = "rcx"
+
+			if IsFloat(tp) {
+				r1 = "xmm0"
+				r2 = "xmm1"
+			}
+
+			reg1 := pushReg(r1,tp)
+			reg2 := pushReg(r2,tp)
 
 			cPtr[c] = MCLine("mov",reg1,it.var2)
 			cPtr[c+1] = MCLine("mov",reg2,it.var3)
@@ -61,8 +72,19 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 			tp := v1.GetType()
 
-			reg1 := pushReg("rax",tp)
-			reg2 := pushReg("rdx",tp)
+			r1 := X86Register
+			r2 := X86Register
+
+			if tp == GTypeFloat or tp == GTypeDouble {
+				r1 = "xmm0"
+				r2 = "xmm1"
+			}else{
+				r1 = "rax"
+				r2 = "rdx"
+			}
+
+			reg1 := pushReg(r1,tp)
+			reg2 := pushReg(r2,tp)
 
 			cPtr[c] = MCLine("mov",reg1,it.var2)
 			cPtr[c+1] = MCLine("mov",reg2,it.var3)
@@ -70,6 +92,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c+3] = MCLine("mov",it.var1,reg1)
 			
 			c += 4
+
 
 		case "cmp"
 

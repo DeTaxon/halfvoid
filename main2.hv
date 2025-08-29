@@ -4,7 +4,10 @@
 
 main := !(char^[] args) -> int
 {
- 	printf("true %x %i\n",2.1 <= 2.1,1 < 3)
+	for i : 5
+	{
+		printf("hi %i\n",i)
+	}
 }
 
 tst := !() -> int {
