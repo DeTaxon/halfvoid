@@ -530,56 +530,71 @@ MCBuildContext_x86_64 := class
 
 		if obj is MCVariable or obj is MCConstValue {
 
-			switch size
+			if isFloatReg 
 			{
-			case 1 datas[1] = "\x8A\x88"[toReg ?: 0 : 1]
-			case 2 datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
-			case 4 datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
-			case 8 datas[1] = "\x8B\x89"[toReg ?: 0 : 1]
-			}
-		
-			if size == 1 and toReg{
-				datas[1] = "\x0F"[0]
-				datas[2] = "\xBE"[0]
-				datas[3] = "\x85"[0] + (reg->{int} shl 3)
-				ResultData.Write(datas[0]&,4)
-			} else if size == 2 and toReg{
-				datas[1] = "\x0F"[0]
-				datas[2] = "\xBF"[0]
-				datas[3] = "\x85"[0] + (reg->{int} shl 3)
-				ResultData.Write(datas[0]&,4)
-			} else if size == 4 and toReg{
-				if isFloatReg {
+				if toReg {
 					datas[0] = "\xF3\xF2"[size == 4 ?: 0 : 1]
 					datas[1] = "\x0F"[0]
 					datas[2] = "\x10\x11"[toReg ?: 0 : 1]
 					datas[3] = "\x85"[0] + (regIndx->{int} shl 3)
 					ResultData.Write(datas[0]&,4)
 				}else{
-					datas[1] = "\x63"[0]
-					datas[2] = "\x85"[0] + (reg->{int} shl 3)
-					ResultData.Write(datas[0]&,3)
+					datas[0] = "\xF3\xF2"[size == 4 ?: 0 : 1]
+					datas[1] = "\x0F"[0]
+					datas[2] = "\x10\x11"[toReg ?: 0 : 1]
+					datas[3] = "\x85"[0] + (regIndx->{int} shl 3)
+					ResultData.Write(datas[0]&,4)
 				}
-			}else if not toReg and size == 1 {
-				ResultData.Write(datas[1]&,2)
+
 			}else{
-				if isFloatReg {
-					datas[0] = "\xF3\xF2"[size == 4 ?: 0 : 1]
-					datas[1] = "\x0F"[0]
-					datas[2] = "\x10\x11"[toReg ?: 0 : 1]
-					datas[3] = "\x85"[0] + (regIndx->{int} shl 3)
-					ResultData.Write(datas[0]&,4)
-				}else{
-					if size == 4
-					{
-						ResultData.Write(datas[1]&,2)
+
+				if toReg {
+					
+					if IsUInt(obj.GetType()) {
+						switch size
+						{
+						case 1
+							WriteData(0x48,0x0F,0xB6,0x85 + (reg shl 3))
+						case 2
+							WriteData(0x48,0x0F,0xB7,0x85 + (reg shl 3))
+						case 4
+							WriteData(0x8B,0x85 + (reg shl 3))
+						case 8
+							WriteData(0x48,0x8B,0x85 + (reg shl 3))
+						}
+
 					}else{
-						ResultData.Write(datas[0]&,3)
+						switch size
+						{
+						case 1
+							WriteData(0x48,0x0F,0xBE,0x85 + (reg shl 3))
+						case 2
+							WriteData(0x48,0x0F,0xBF,0x85 + (reg shl 3))
+						case 4
+							WriteData(0x48,0x63,0x85 + (reg shl 3))
+						case 8
+							WriteData(0x48,0x8B,0x85 + (reg shl 3))
+						}
 					}
+
+				}else{
+					switch size
+					{
+					case 1
+						WriteData(0x88,0x85 + (reg shl 3))
+					case 2
+						WriteData(0x66,0x89,0x85 + (reg shl 3))
+					case 4
+						WriteData(0x89,0x85 + (reg shl 3))
+					case 8
+						WriteData(0x48,0x89,0x85 + (reg shl 3))
+					}
+
 				}
+		
+				x := getObjsStackOffset(fnc,indx)
+				ResultData.Write(x&,4)
 			}
-			x := getObjsStackOffset(fnc,indx)
-			ResultData.Write(x&,4)
 		}else if obj is MCConstInteger {
 			assert(toReg)
 
@@ -623,6 +638,29 @@ MCBuildContext_x86_64 := class
 		datas[1] = "\xB8"[0] + reg->{int}
 		ResultData.Write(datas[0]&,2)
 		ResultData.Write(ptr&,8)
+	}
+
+	WriteData := !(int x) -> void
+	{
+		ResultData.Write(x&,1)
+	}
+	WriteData := !(int x,int y) -> void
+	{
+		ResultData.Write(x&,1)
+		ResultData.Write(y&,1)
+	}
+	WriteData := !(int x,int y,int z) -> void
+	{
+		ResultData.Write(x&,1)
+		ResultData.Write(y&,1)
+		ResultData.Write(z&,1)
+	}
+	WriteData := !(int x,int y,int z,int w) -> void
+	{
+		ResultData.Write(x&,1)
+		ResultData.Write(y&,1)
+		ResultData.Write(z&,1)
+		ResultData.Write(w&,1)
 	}
 }
 

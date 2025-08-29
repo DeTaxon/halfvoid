@@ -4,13 +4,15 @@
 
 main := !(char^[] args) -> int
 {
-	for i : 5
-	{
-		printf("hi %i\n",i)
-	}
-}
-
-tst := !() -> int {
+// 	i := 6
+// 	printf("test %i\n",i)
+// 	//for i : 5
+// 	//{
+// 	//	printf("hi %i\n",i)
+// 	//}
+// }
+//
+// tst := !() -> int {
 	nums := 10_000
 	nums = 1_000
 
