@@ -213,7 +213,7 @@ MCBuildContext_x86_64 := class
 						case ">=" ResultData << "\x0F\x9D"
 						case ">" ResultData << "\x0F\x9F"
 					}
-					ResultData.WriteByte(0xC0 + resReg)
+					WriteData(0xC0 + resReg)
 				}
 
 
@@ -229,32 +229,29 @@ MCBuildContext_x86_64 := class
 
 					if objs[line.var1].GetType() == GTypeDouble
 					{
-						ResultData.WriteByte(0xF2)
+						WriteData(0xF2)
 					}else{
-						ResultData.WriteByte(0xF3)
+						WriteData(0xF3)
 					}
-					ResultData.WriteByte(0x0F)
+					WriteData(0x0F)
 
 					if line.opcode == "add"
 					{
-						ResultData.WriteByte(0x58)
+						WriteData(0x58)
 					}else{
-						ResultData.WriteByte(0x5C)
+						WriteData(0x5C)
 					}
 
-					ResultData.WriteByte(0xC0 + (r1 shl 3) + r2)
+					WriteData(0xC0 + (r1 shl 3) + r2)
 
 				}else{
-					datas := char[3]
-					datas[0] = 0x48
+					WriteData(0x48)
 					switch line.opcode
 					{
-					case "add" datas[1] = "\x01"[0]
-					case "sub" datas[1] = "\x29"[0]
+					case "add" WriteData(0x01)
+					case "sub" WriteData(0x29)
 					}
-					datas[2] = "\xC0"[0] + (reg2 shl 3) + reg1
-
-					ResultData.Write(datas[0]&,3)
+					WriteData(0xC0 + (reg2 shl 3) + reg1)
 				}
 
 			case in !["div","mul"]
@@ -270,19 +267,19 @@ MCBuildContext_x86_64 := class
 					ri2 := reg2 - 16
 					
 					if tp == GTypeDouble{
-						ResultData.WriteByte(0xF2)
+						WriteData(0xF2)
 					}else{
-						ResultData.WriteByte(0xF3)
+						WriteData(0xF3)
 					}
-					ResultData.WriteByte(0x0F)
+					WriteData(0x0F)
 
 					if line.opcode == "div" {
-						ResultData.WriteByte(0x5E)
+						WriteData(0x5E)
 					}else{
-						ResultData.WriteByte(0x59)
+						WriteData(0x59)
 					}
 
-					ResultData.WriteByte(0xC0 + (ri1 shl 3) + ri2)
+					WriteData(0xC0 + (ri1 shl 3) + ri2)
 
 				}else {
 
@@ -298,12 +295,7 @@ MCBuildContext_x86_64 := class
 					}
 					code = code shl 3
 
-					datas := char[3]
-					datas[0] = 0x48
-					datas[1] = 0xF7
-					datas[2] = 0xC0 + reg2 + code
-
-					ResultData.Write(datas[0]&,3)
+					WriteData(0x48,0xF7,0xC0 + reg2 + code)
 				}
 			case "mod"
 				assert(false)
@@ -311,9 +303,9 @@ MCBuildContext_x86_64 := class
 			case "jmp_if_bool"
 				Mov(fnc,"rax",line.var2)
 				x := 0
-				ResultData << "\x3C" // cmp al and 0
+				WriteData(0x3C) // cmp al and 0
 				ResultData.Write(x&,1)
-				ResultData << "\x0F\x85" 
+				WriteData(0x0F,0x85)
 				labelTarget[line.var1] = strm.Size()->{int}
 				ResultData.Write(x&,4)
 			case "jmp_if_op"
