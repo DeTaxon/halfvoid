@@ -9,11 +9,10 @@ SubFunc := !() -> void
 
 main := !(char^[] args) -> int
 {
-	//SubFunc()
-	printf("subfunc\n")
- }
+	SubFunc()
+}
 
- tst := !() -> int {
+tst := !() -> int {
 	nums := 10_000
 	nums = 1_000
 

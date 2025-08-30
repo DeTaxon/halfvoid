@@ -25,41 +25,65 @@ x86FuncData := class
 MCBuildContext_x86_64 := class
 {
 	bigMem := PageMemory
+	memIter := void^
 
 	functions := x86FuncData[BoxFuncBody^]
+
+	funcsToCompile := List.{BoxFuncBody^}
 
 	this := !() -> void
 	{
 		bigMem.Create(16*1024*1024,"rwe") //TODO unconst
+		memIter = bigMem.GetPointer()
 	}
 
-	GetFunctionPtr := !(BoxFuncBody^ fnc) -> ref void^
+	GetFunctionPtr := !(BoxFuncBody^ fnc) -> void^
 	{
-		if functions.Contain(fnc)
-			return functions[fnc].funcPtr
+		if not functions.Contain(fnc)
+		{
+			funcsToCompile.PushFront(fnc)
+			CompileFuncs()
+		}
+		return functions[fnc].funcPtr
+	}
 
-		bc := GInterpCntx.GetMCFunc(fnc)
-		
-		ctx2 := MCBuildFuncContext_x86_64
+	GetFuncPromise := !(BoxFuncBody^ fnc) -> void^^
+	{
+		if not functions.Contain(fnc)
+			funcsToCompile.PushFront(fnc)
+		return functions[fnc].funcPtr&
+	}
 
-		ctx2.Compile(bc)
+	CompileFuncs := !() -> void 
+	{
+		while funcsToCompile.Size() != 0
+		{
+			fnc := funcsToCompile.Pop()
 
-		ptr := bigMem.GetPointer()
+			bc := GInterpCntx.GetMCFunc(fnc)
+			
+			ctx2 := MCBuildFuncContext_x86_64
+			ctx2.eng = this&
 
-		funcSize := ctx2.ResultData.Size()
-		ctx2.ResultData.Read(ptr,funcSize)
+			ctx2.Compile(bc)
 
-		ctx2.FixLabels(ptr)
+			funcSize := ctx2.ResultData.Size()
+			ctx2.ResultData.Read(memIter,funcSize)
 
-		dat := ref functions[fnc]
-		dat.funcPtr = ptr
+			ctx2.FixLabels(memIter)
 
-		return dat.funcPtr
+			functions[fnc].funcPtr = memIter
+
+			funcSize = (funcSize + 15) shr 4 shl 4
+			memIter = memIter->{u8^}[funcSize]&
+		}
 	}
 }
 
 MCBuildFuncContext_x86_64 := class
 {
+	eng := MCBuildContext_x86_64^
+
 	ResultData := TEchoStream
 
 	labelTarget := AVLMap.{int,int} // left, target, right
@@ -405,9 +429,19 @@ MCBuildFuncContext_x86_64 := class
 
 				if fncObj is MCConstFunction {
 					fncHV := fncObj.GetValue()
-					ptr := GInterpCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^})
-					MovPtrToReg(fnc,"rcx",ptr) //TODO use R10 register
-					ResultData << "\xFF\xD1" // call *rcx
+
+					if fncHV is BoxFuncDeclare {
+						ptr := GInterpCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^})
+						MovPtrToReg(fnc,"rcx",ptr) //TODO use R10 register
+						ResultData << "\xFF\xD1" // call *rcx
+					}else if fncHV is in BoxFuncBody {
+						ptr2 := eng.GetFuncPromise(fncHV)
+						MovPtrToReg(fnc,"rcx",ptr2) //TODO use wachy registers
+						WriteData(0x48,0x8B,0x01) // mov rax, (rcx)
+						WriteData(0xFF,0xD0) // call rax
+					} else {
+						assert(false)
+					}
 				}else {
 					assert(false) //TODO function pointers
 				}
@@ -650,10 +684,7 @@ MCBuildFuncContext_x86_64 := class
 	}
 	MovPtrToReg := !(MCFunction^ fnc,X86Register reg, void^ ptr) -> void
 	{
-		datas := char[2]
-		datas[0] = "\x48"[0]
-		datas[1] = "\xB8"[0] + reg->{int}
-		ResultData.Write(datas[0]&,2)
+		WriteData(0x48,0xB8 + reg)
 		ResultData.Write(ptr&,8)
 	}
 
