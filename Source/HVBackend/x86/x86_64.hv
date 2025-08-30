@@ -5,24 +5,9 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	oldWork := CurrentWork
 	CurrentWork = result
 
-	ctx := MCBuildContext_x86_64
+	ctx := MCBuildContext_x86_64()
 
-	fnc := GInterpCntx.GetMCFunc(funcToRun)
-
-	ctx.Compile(fnc)
-
-	bigMem := PageMemory
-	bigMem.Create(16*1024,"rwe") //TODO unconst
-
-	ptr := bigMem.GetPointer()
-	memset(ptr,0,bigMem.Size())
-
-	funcSize := ctx.ResultData.Size()
-	ctx.ResultData.Read(ptr,funcSize)
-
-	ctx.FixLabels(ptr)
-
-	createdFunc := ptr->{!()^->void}
+	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!()^->void}
 	// assert(false)
 	createdFunc()
 
@@ -31,7 +16,49 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 }
 
 
+
+x86FuncData := class
+{
+	funcPtr := void^
+}
+
 MCBuildContext_x86_64 := class
+{
+	bigMem := PageMemory
+
+	functions := x86FuncData[BoxFuncBody^]
+
+	this := !() -> void
+	{
+		bigMem.Create(16*1024*1024,"rwe") //TODO unconst
+	}
+
+	GetFunctionPtr := !(BoxFuncBody^ fnc) -> ref void^
+	{
+		if functions.Contain(fnc)
+			return functions[fnc].funcPtr
+
+		bc := GInterpCntx.GetMCFunc(fnc)
+		
+		ctx2 := MCBuildFuncContext_x86_64
+
+		ctx2.Compile(bc)
+
+		ptr := bigMem.GetPointer()
+
+		funcSize := ctx2.ResultData.Size()
+		ctx2.ResultData.Read(ptr,funcSize)
+
+		ctx2.FixLabels(ptr)
+
+		dat := ref functions[fnc]
+		dat.funcPtr = ptr
+
+		return dat.funcPtr
+	}
+}
+
+MCBuildFuncContext_x86_64 := class
 {
 	ResultData := TEchoStream
 
@@ -197,9 +224,7 @@ MCBuildContext_x86_64 := class
 					ResultData << "\x66\x0F\x7E" // movd rax xmm0
 					ResultData.WriteByte(0xC0 + (r1 shl 3) + resReg)
 
-					ResultData << "\x80" // and ax 0x1
-					ResultData.WriteByte(0xE0 + resReg)
-					ResultData.WriteByte(0x01)
+					WriteData(0x80,0xE0 + resReg,0x01)// and ax 0x1
 				}else{
 					ResultData << "\x48\x3B"
 					ResultData.WriteByte(0xC0 + (reg1 shl 3) + reg2)

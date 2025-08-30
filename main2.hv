@@ -1,18 +1,19 @@
 
 
 
+SubFunc := !() -> void
+{
+	printf("subfunc\n")
+}
+
 
 main := !(char^[] args) -> int
 {
-// 	i := 6
-// 	printf("test %i\n",i)
-// 	//for i : 5
-// 	//{
-// 	//	printf("hi %i\n",i)
-// 	//}
-// }
-//
-// tst := !() -> int {
+	//SubFunc()
+	printf("subfunc\n")
+ }
+
+ tst := !() -> int {
 	nums := 10_000
 	nums = 1_000
 
