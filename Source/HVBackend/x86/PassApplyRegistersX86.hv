@@ -20,6 +20,17 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		result = o
 		o += 1
 	}
+	pushVar := (int offset, Type^ varType) ==> int
+	{
+		newVar := MCConstVarX86
+
+		newVar.GetValue() = offset
+		newVar.SetType(varType)
+
+		oPtr[o] = newVar
+		result = o
+		o += 1
+	}
 
 	cmds := new Vector.{MCLine}
 	c := 0
@@ -30,6 +41,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		fTyp := NormalizeFuncType(fnc.BaseFunction.GetType()->{TypeFunc^})
 		redInts := 0
 		redFloats := 0
+		stackIter := 16
 
 		for i : fnc.InputsIndxCount
 		{
@@ -37,6 +49,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			indx := i + fnc.InputsIndxStart
 
 			reg := X86Register
+
+			loadFromStack := false
 
 			if IsFloat(tp) {
 				reg = "xmm0"
@@ -56,14 +70,23 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				case 4 reg = "r8"
 				case 5 reg = "r9"
 				case void
-					assert(false)
+					loadFromStack = true
 				}
 				redInts += 1
 			}
-			rt := pushReg(reg,tp)
 
-			cPtr[c] = MCLine("mov",indx,rt)
-			c += 1
+			if loadFromStack
+			{
+				newVar := pushVar(stackIter,tp)
+				stackIter += 8
+				cPtr[c] = MCLine("mov",indx,newVar)
+				c += 1
+			}else{
+				rt := pushReg(reg,tp)
+
+				cPtr[c] = MCLine("mov",indx,rt)
+				c += 1
+			}
 		}
 	}
 

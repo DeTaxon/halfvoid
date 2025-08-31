@@ -7,9 +7,9 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 
 	ctx := MCBuildContext_x86_64()
 
-	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!()^->void}
+	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!(int,int,int,int,int,int,int,int,int)^->void}
 	// assert(false)
-	createdFunc()
+	createdFunc(1,2,3,5,8,13,21,34,45)
 
 	CurrentWork->{InterpWork^}.isDone = true
 	CurrentWork = oldWork
@@ -100,7 +100,7 @@ MCBuildFuncContext_x86_64 := class
 		fnc = PassOptimizeJumpX86(fnc)
 		fnc = PassApplyRegistersX86(fnc)
 
-		fnc.Print()
+		//fnc.Print()
 
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
@@ -136,6 +136,11 @@ MCBuildFuncContext_x86_64 := class
 	}
 	getObjsStackOffset := !(MCFunction^ fnc, int index) -> s32
 	{
+		obj := ref fnc.Objects[index]
+		if obj is MCConstVarX86
+			return obj.GetValue()
+
+
 		assert(fnc.StackOffsets != null)
 
 		plainOffset := fnc.StackOffsets[index]
@@ -583,7 +588,7 @@ MCBuildFuncContext_x86_64 := class
 		memcpy(datas[0]&,"\x48\x8B\x85"[0]&,3)
 		datas[2] += (regIndx->{int} shl 3)
 
-		if obj is MCVariable or obj is MCConstValue {
+		if obj is MCVariable or obj is MCConstValue or obj is MCConstVarX86 {
 
 			if isFloatReg 
 			{
@@ -603,6 +608,9 @@ MCBuildFuncContext_x86_64 := class
 				x := getObjsStackOffset(fnc,indx)
 				ResultData.Write(x&,4)
 			}else{
+				regIndx := reg mod 8
+				extCode := reg >= 8 ?: 4 : 0
+					
 
 				if toReg {
 					
@@ -610,26 +618,28 @@ MCBuildFuncContext_x86_64 := class
 						switch size
 						{
 						case 1
-							WriteData(0x48,0x0F,0xB6,0x85 + (reg shl 3))
+							WriteData(0x48 + extCode,0x0F,0xB6,0x85 + (regIndx shl 3))
 						case 2
-							WriteData(0x48,0x0F,0xB7,0x85 + (reg shl 3))
+							WriteData(0x48 + extCode,0x0F,0xB7,0x85 + (regIndx shl 3))
 						case 4
-							WriteData(0x8B,0x85 + (reg shl 3))
+							if extCode != 0
+								WriteData(0x40 + extCode)
+							WriteData(0x8B,0x85 + (regIndx shl 3))
 						case 8
-							WriteData(0x48,0x8B,0x85 + (reg shl 3))
+							WriteData(0x48 + extCode,0x8B,0x85 + (regIndx shl 3))
 						}
 
 					}else{
 						switch size
 						{
 						case 1
-							WriteData(0x48,0x0F,0xBE,0x85 + (reg shl 3))
+							WriteData(0x48 + extCode,0x0F,0xBE,0x85 + (regIndx shl 3))
 						case 2
-							WriteData(0x48,0x0F,0xBF,0x85 + (reg shl 3))
+							WriteData(0x48 + extCode,0x0F,0xBF,0x85 + (regIndx shl 3))
 						case 4
-							WriteData(0x48,0x63,0x85 + (reg shl 3))
+							WriteData(0x48 + extCode,0x63,0x85 + (regIndx shl 3))
 						case 8
-							WriteData(0x48,0x8B,0x85 + (reg shl 3))
+							WriteData(0x48 + extCode,0x8B,0x85 + (regIndx shl 3))
 						}
 					}
 
@@ -637,13 +647,19 @@ MCBuildFuncContext_x86_64 := class
 					switch size
 					{
 					case 1
-						WriteData(0x88,0x85 + (reg shl 3))
+						if extCode != 0
+							WriteData(0x40 + extCode)
+						WriteData(0x88,0x85 + (regIndx shl 3))
 					case 2
-						WriteData(0x66,0x89,0x85 + (reg shl 3))
+						if extCode != 0
+							WriteData(0x40 + extCode)
+						WriteData(0x66,0x89,0x85 + (regIndx shl 3))
 					case 4
-						WriteData(0x89,0x85 + (reg shl 3))
+						if extCode != 0
+							WriteData(0x40 + extCode)
+						WriteData(0x89,0x85 + (regIndx shl 3))
 					case 8
-						WriteData(0x48,0x89,0x85 + (reg shl 3))
+						WriteData(0x48 + extCode,0x89,0x85 + (regIndx shl 3))
 					}
 
 				}
@@ -750,3 +766,14 @@ MCConstRegisterX86 := class extend MCObject
 	SetType := virtual !(Type^ newType) -> Type^ { Value2&->{Type^^}^ = newType }
 }
 
+MCConstVarX86 := class extend MCObject
+{
+	IsConstant := virtual true
+
+	GetValue := !() -> ref int { return Value&->{int^}^ }
+
+	PrintObject := virtual !() -> void { printf("Value \"%i\"",GetValue()) }
+	GetType := virtual !() -> Type^ { return Value2&->{Type^^}^ }
+
+	SetType := virtual !(Type^ newType) -> Type^ { Value2&->{Type^^}^ = newType }
+}
