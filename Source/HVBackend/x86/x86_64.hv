@@ -432,13 +432,13 @@ MCBuildFuncContext_x86_64 := class
 
 					if fncHV is BoxFuncDeclare {
 						ptr := GInterpCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^})
-						MovPtrToReg(fnc,"rcx",ptr) //TODO use R10 register
-						ResultData << "\xFF\xD1" // call *rcx
+						MovPtrToReg(fnc,"r10",ptr)
+						WriteData(0x41,0xFF,0xD2) // call *r10
 					}else if fncHV is in BoxFuncBody {
 						ptr2 := eng.GetFuncPromise(fncHV)
-						MovPtrToReg(fnc,"rcx",ptr2) //TODO use wachy registers
-						WriteData(0x48,0x8B,0x01) // mov rax, (rcx)
-						WriteData(0xFF,0xD0) // call rax
+						MovPtrToReg(fnc,"r10",ptr2)
+						WriteData(0x4D,0x8B,0x12) // mov r10, (r10)
+						WriteData(0x41,0xFF,0xD2) // call *r10
 					} else {
 						assert(false)
 					}
@@ -684,7 +684,11 @@ MCBuildFuncContext_x86_64 := class
 	}
 	MovPtrToReg := !(MCFunction^ fnc,X86Register reg, void^ ptr) -> void
 	{
-		WriteData(0x48,0xB8 + reg)
+		regIndx := reg mod 8
+		
+		ext := reg >= 8 ?: 1 : 0
+
+		WriteData(0x48 + ext,0xB8 + regIndx)
 		ResultData.Write(ptr&,8)
 	}
 
