@@ -1,17 +1,17 @@
 
 
 
-SubFunc := !() -> void
+SubFunc := !(int x,int y,float z,double w) -> void
 {
-	printf("subfunc\n")
+	printf("subfunc %i %i %f %f\n",x,y,z, w)
 }
 
 
 main := !(char^[] args) -> int
 {
-	SubFunc()
-	SubFunc()
-	SubFunc()
+	SubFunc(2,0,3.5f,4.8)
+	SubFunc(8,19,3.5f,4.8)
+	SubFunc(16,4,3.5f,4.8)
 }
 
 tst := !() -> int {

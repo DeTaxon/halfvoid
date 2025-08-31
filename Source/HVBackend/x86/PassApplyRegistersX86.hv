@@ -23,8 +23,49 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 	cmds := new Vector.{MCLine}
 	c := 0
-	cmds.Resize(fnc.Lines.Size()*4)
+	cmds.Resize(fnc.Lines.Size()*4 + 100)
 	cPtr := cmds.GetPointer()
+
+	{// load inputs
+		fTyp := NormalizeFuncType(fnc.BaseFunction.GetType()->{TypeFunc^})
+		redInts := 0
+		redFloats := 0
+
+		for i : fnc.InputsIndxCount
+		{
+			tp := fTyp.Params[i].ItType
+			indx := i + fnc.InputsIndxStart
+
+			reg := X86Register
+
+			if IsFloat(tp) {
+				reg = "xmm0"
+				if redFloats < 8 {
+					reg&->{int^}^ += redFloats
+					redFloats += 1
+				}else{
+					assert(false)
+				}
+			}else{
+				switch redInts
+				{
+				case 0 reg = "rdi"
+				case 1 reg = "rsi"
+				case 2 reg = "rdx"
+				case 3 reg = "rcx"
+				case 4 reg = "r8"
+				case 5 reg = "r9"
+				case void
+					assert(false)
+				}
+				redInts += 1
+			}
+			rt := pushReg(reg,tp)
+
+			cPtr[c] = MCLine("mov",indx,rt)
+			c += 1
+		}
+	}
 
 	for it , i : fnc.Lines
 	{

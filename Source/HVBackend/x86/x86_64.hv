@@ -106,9 +106,8 @@ MCBuildFuncContext_x86_64 := class
 		stackSize := fnc.StackFrameSize
 
 		Push("rbp")
-		ResultData << "\x48\x89\xE5" // mov $rbo,$rsp
-
-		ResultData << "\x48\x81\xEC" // sub %rsp,stackSize
+		WriteData(0x48,0x89,0xE5) // mov $rbo,$rsp
+		WriteData(0x48,0x81,0xEC) // sub %rsp,stackSize
 		ResultData.Write(stackSize&,4)
 
 		X86WriteBody(ResultData,fnc)
@@ -414,9 +413,14 @@ MCBuildFuncContext_x86_64 := class
 							assert(false) //TODO
 						}
 					}else  if tp == GTypeFloat or tp == GTypeDouble {
-						//TODO disable float to double cast
-						Mov(fnc,"xmm0",vr.var1) //TODO other registers
-						usedFloats += 1
+
+						if usedFloats < 8 {
+							reg := X86Register
+							reg = "xmm0"
+							reg&->{int^}^ += usedFloats
+							Mov(fnc,reg,vr.var1) //TODO other registers
+							usedFloats += 1
+						}
 					}else{
 						assert(false) //TODO floats
 					}
@@ -584,19 +588,20 @@ MCBuildFuncContext_x86_64 := class
 			if isFloatReg 
 			{
 				if toReg {
-					datas[0] = "\xF3\xF2"[size == 4 ?: 0 : 1]
-					datas[1] = "\x0F"[0]
-					datas[2] = "\x10\x11"[toReg ?: 0 : 1]
-					datas[3] = "\x85"[0] + (regIndx->{int} shl 3)
-					ResultData.Write(datas[0]&,4)
+					if size == 4 {
+						WriteData(0x66,0x0F,0x6E,0x85 + (regIndx shl 3))
+					}else{
+						WriteData(0x66,0x48,0x0F,0x6E,0x85 + (regIndx shl 3))
+					}
 				}else{
-					datas[0] = "\xF3\xF2"[size == 4 ?: 0 : 1]
-					datas[1] = "\x0F"[0]
-					datas[2] = "\x10\x11"[toReg ?: 0 : 1]
-					datas[3] = "\x85"[0] + (regIndx->{int} shl 3)
-					ResultData.Write(datas[0]&,4)
+					if size == 4 {
+						WriteData(0x66,0x0F,0x7E,0x85 + (regIndx shl 3))
+					}else{
+						WriteData(0x66,0x48,0x0F,0x7E,0x85 + (regIndx shl 3))
+					}
 				}
-
+				x := getObjsStackOffset(fnc,indx)
+				ResultData.Write(x&,4)
 			}else{
 
 				if toReg {
@@ -713,6 +718,14 @@ MCBuildFuncContext_x86_64 := class
 		ResultData.Write(y&,1)
 		ResultData.Write(z&,1)
 		ResultData.Write(w&,1)
+	}
+	WriteData := !(int x,int y,int z,int w,int q) -> void
+	{
+		ResultData.Write(x&,1)
+		ResultData.Write(y&,1)
+		ResultData.Write(z&,1)
+		ResultData.Write(w&,1)
+		ResultData.Write(q&,1)
 	}
 }
 
