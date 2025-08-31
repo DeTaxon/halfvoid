@@ -10,7 +10,11 @@ main := !(char^[] args) -> int
 {
 }
 
-RunFunc := !(int a1,int a2,int a3,int a4,int a5,int a6,int a7,int a8,int a9) -> void
+RunFunc := !() -> void
+{
+	RunFunc2(1,2,3,5,8,13,21,34,45)
+}
+RunFunc2 := !(int a1,int a2,int a3,int a4,int a5,int a6,int a7,int a8,int a9) -> void
 {
 	printf("test %i\n",a1)
 	printf("test %i\n",a2)

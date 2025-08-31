@@ -58,7 +58,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 					reg&->{int^}^ += redFloats
 					redFloats += 1
 				}else{
-					assert(false)
+					loadFromStack = true
 				}
 			}else{
 				switch redInts

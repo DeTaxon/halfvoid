@@ -7,9 +7,13 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 
 	ctx := MCBuildContext_x86_64()
 
-	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!(int,int,int,int,int,int,int,int,int)^->void}
+	///createdFunc := ctx.GetFunctionPtr(funcToRun)->{!(int,int,int,int,int,int,int,int,int)^->void}
+	///// assert(false)
+	///createdFunc(1,2,3,5,8,13,21,34,45)
+	
+	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!()^->void}
 	// assert(false)
-	createdFunc(1,2,3,5,8,13,21,34,45)
+	createdFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
 	CurrentWork = oldWork
@@ -104,6 +108,9 @@ MCBuildFuncContext_x86_64 := class
 
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
+
+		//align up to 16 byte
+		stackSize = (stackSize + 0xF) and_b 0xFFFFFF0 //todo add extra F
 
 		Push("rbp")
 		WriteData(0x48,0x89,0xE5) // mov $rbo,$rsp
@@ -395,6 +402,9 @@ MCBuildFuncContext_x86_64 := class
 
 				usedInts := 0
 				usedFloats := 0
+				stackPassed := HybridStack.{int,20}
+
+
 				while lines[i].opcode != "call_end"
 				{
 					vr := lines[i]
@@ -410,12 +420,13 @@ MCBuildFuncContext_x86_64 := class
 							case 1 Mov(fnc,"rsi",vr.var1)
 							case 2 Mov(fnc,"rdx",vr.var1)
 							case 3 Mov(fnc,"rcx",vr.var1)
+							case 4 Mov(fnc,"r8",vr.var1)
+							case 5 Mov(fnc,"r9",vr.var1)
 							}
-							//Mov(fnc,!["rdi","rsi","rdx","rcx","R8","R9"][usedInts],vr.var1)
 
 							usedInts += 1
 						}else {
-							assert(false) //TODO
+							stackPassed.PushFront(vr.var1)
 						}
 					}else  if tp == GTypeFloat or tp == GTypeDouble {
 
@@ -423,14 +434,23 @@ MCBuildFuncContext_x86_64 := class
 							reg := X86Register
 							reg = "xmm0"
 							reg&->{int^}^ += usedFloats
-							Mov(fnc,reg,vr.var1) //TODO other registers
+							Mov(fnc,reg,vr.var1)
 							usedFloats += 1
+						}else{
+							stackPassed.PushFront(vr.var1)
 						}
 					}else{
 						assert(false) //TODO floats
 					}
 
 					i += 1
+				}
+				if stackPassed.Size() mod 2 != 0
+					Push("rax")
+				for it : stackPassed //TODO not aligned to 16 byte case
+				{
+					Mov(fnc,"rax",it)
+					Push("rax")
 				}
 				MovU64ToReg(fnc,"rax",usedFloats)
 
@@ -460,6 +480,16 @@ MCBuildFuncContext_x86_64 := class
 					//TODO return float value
 					Mov(fnc,resId,"rax")
 				}
+
+				callSize := stackPassed.Size() * 8
+				if stackPassed.Size() mod 2 != 0
+					callSize += 8
+				if callSize != 0
+				{
+					WriteData(0x48,0x81,0xc4) // add %rsp,callSize
+					ResultData.Write(callSize&,4)
+				}
+
 
 			case "mov"
 
