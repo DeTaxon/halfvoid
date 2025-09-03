@@ -8,11 +8,20 @@ SubFunc := !(int x,int y,float z,double w) -> void
 
 main := !(char^[] args) -> int
 {
+	tst()
 }
 
+
+glb := int
 RunFunc := !() -> void
 {
-	RunFunc2(1,2,3,5,8,13,21,34,45)
+	glb = 37
+	printf("test %i\n",glb)
+	func2()
+}
+func2 := !() -> void
+{
+	printf("test %i\n",glb)
 }
 RunFunc2 := !(int a1,int a2,int a3,int a4,int a5,int a6,int a7,int a8,int a9) -> void
 {
@@ -29,7 +38,7 @@ RunFunc2 := !(int a1,int a2,int a3,int a4,int a5,int a6,int a7,int a8,int a9) ->
 
 tst := !() -> int {
 	nums := 10_000
-	nums = 1_000
+	nums = 3_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

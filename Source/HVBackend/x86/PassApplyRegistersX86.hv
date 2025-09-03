@@ -207,6 +207,41 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c + 1] = MCLine("mov",it.var1,newReg)
 				c += 2
 			}
+		case "llvm_store"
+			ob1 := oPtr[it.var1]
+			ob2 := oPtr[it.var2]
+
+			tp := ob1.GetType()
+
+			if ob1.GetType() == ob2.GetType() {
+				reg := pushReg("rax",tp)
+
+				cPtr[c] = MCLine("mov",reg,it.var2)
+				cPtr[c+1] = MCLine("mov",it.var1,reg)
+				c += 2
+			}else{
+				reg1 := pushReg("rcx",ob1.GetType())
+				reg2 := pushReg("rax",ob2.GetType())
+
+				cPtr[c] = MCLine("mov",reg1,it.var1)
+				cPtr[c+1] = MCLine("mov",reg2,it.var2)
+				cPtr[c+2] = MCLine("llvm_store",reg1,reg2)
+				c += 3
+
+			}
+		case "mov"
+			ob1 := oPtr[it.var1]
+			if ob1 is MCGlobalVariable {
+				r1 := pushReg("rax",ob1.GetType().GetPoint())
+				r2 := pushReg("rcx",oPtr[it.var2].GetType())
+				cPtr[c] = MCLine("get_pointer",r1,it.var1)
+				cPtr[c+1] = MCLine("mov",r2,it.var2)
+				cPtr[c+2] = MCLine("llvm_store",r1,r2)
+				c += 3
+			}else{
+				cPtr[c] = it
+				c += 1
+			}
 		case void
 			cPtr[c] = it
 			c += 1

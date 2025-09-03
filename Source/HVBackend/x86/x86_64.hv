@@ -104,7 +104,7 @@ MCBuildFuncContext_x86_64 := class
 		fnc = PassOptimizeJumpX86(fnc)
 		fnc = PassApplyRegistersX86(fnc)
 
-		//fnc.Print()
+		fnc.Print()
 
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
@@ -183,27 +183,66 @@ MCBuildFuncContext_x86_64 := class
 					ResultData << "\x48\x01\xD0" // add rax rdx
 					Mov(fnc,line.var1,"rax")
 
+				}else if tp is TypeClass and objs[line.var2] is MCVariable {
+					x := getObjsStackOffset(fnc,line.var2)
+
+					assert(objs[line.var3] is MCConstInteger)
+					indx := objs[line.var3]&->{MCConstInteger^}.GetValue()
+
+					cls := tp->{TypeClass^}.ToClass
+
+					offst := cls.GetFieldByIndexRaw(indx).MemOffset
+					offst += x
+
+					WriteData(0x48,0x8D,0x85) // lea 
+					ResultData.Write(offst&,4)
+					Mov(fnc,line.var1,"rax")
+
+
+				}else{
+					//printf("test %s %i\n",tp.GetBADStr().Str(),objs[line.var2] is MCVariable)
+					assert(false)
+				}
+			case "llvm_getelementptr0"
+				tpPtr := objs[line.var2].GetType()
+				assert(tpPtr is in TypePoint)
+				tp := tpPtr.Base
+
+				if tp is TypeClass {
+					assert(objs[line.var3] is MCConstInteger)
+					indx := objs[line.var3]&->{MCConstInteger^}.GetValue()
+
+					cls := tp->{TypeClass^}.ToClass
+
+					offst := cls.GetFieldByIndexRaw(indx).MemOffset
+
+					Mov(fnc,"rax",line.var2)
+					MovU64ToReg(fnc,"rdx",offst)
+					WriteData(0x48,0x01,0xD0) //add rax rdx
+					Mov(fnc,line.var1,"rax")
+
 				}else{
 					assert(false)
 				}
+
+
 			case "llvm_store"
 
-				if objs[line.var1].GetType() == objs[line.var2].GetType() {
-					Mov(fnc,"rax",line.var2)
-					Mov(fnc,line.var1,"rax")
-				}else{
-					Mov(fnc,"rcx",line.var1)
-					Mov(fnc,"rax",line.var2)
-					size := objs[line.var2].GetType().GetSize()
+				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
+				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
 
-					switch size
-					{
-					case 1 ResultData << "\x88\x01"
-					case 2 ResultData << "\x66\x89\x01"
-					case 4 ResultData << "\x89\x01" //TODO
-					case 8 ResultData << "\x48\x89\x01" //TODO
-					}
-					
+				size := objs[line.var2].GetType().GetSize()
+
+				assert(reg1 < 8 and reg2 < 8)
+
+				regData := reg1 + (reg2 shl 3)
+
+				switch size
+				{
+				case 1 WriteData(0x88,regData)
+				case 2 WriteData(0x66,0x89, regData)
+				case 4 WriteData(0x89, regData)
+				case 8 WriteData(0x48,0x89, regData)
 				}
 			case "llvm_load"
 
@@ -471,7 +510,13 @@ MCBuildFuncContext_x86_64 := class
 					} else {
 						assert(false)
 					}
-				}else {
+				}else if fncObj is MCVariable or fncObj is MCConstValue{
+					tp := fncObj.GetType()
+					assert(tp is in TypePoint)
+					Mov(fnc,"r10",fncId)
+					//WriteData(0x4D,0x8B,0x12) // mov r10, (r10)
+					WriteData(0x41,0xFF,0xD2) // call *r10
+				}else{
 					assert(false) //TODO function pointers
 				}
 
@@ -547,15 +592,26 @@ MCBuildFuncContext_x86_64 := class
 					assert(false)
 				}
 			case "get_pointer"
-				assert(objs[line.var2] is MCVariable)
-				assert(objs[line.var1] is MCConstRegisterX86)
-				reg := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
-				assert(reg < 16)
-				strm << "\x48\x8D"
-				c := "\x85"[0] + (reg shl 3)
-				ResultData.Write(c&,1)
-				x := getObjsStackOffset(fnc,line.var2)
-				strm.Write(x&,4)
+				if objs[line.var2] is MCGlobalVariable {
+					obj := ref objs[line.var2]
+
+					assert(objs[line.var1] is MCConstRegisterX86)
+
+					glb := obj&->{MCGlobalVariable^}.GetValueObject()
+					memPtr := GInterpCntx.GetGlobalVarMem(glb)
+					MovPtrToReg(fnc,objs[line.var1]&->{MCConstRegisterX86^}.GetValue(),memPtr)
+					//WriteData(0x48,0x8B,0x12) // mov r10, (rax)
+				}else{
+					assert(objs[line.var2] is MCVariable)
+					assert(objs[line.var1] is MCConstRegisterX86)
+					reg := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
+					assert(reg < 16)
+					strm << "\x48\x8D"
+					c := "\x85"[0] + (reg shl 3)
+					ResultData.Write(c&,1)
+					x := getObjsStackOffset(fnc,line.var2)
+					strm.Write(x&,4)
+				}
 
 			case "clean"
 				assert(objs[line.var1] is MCVariable)
@@ -720,11 +776,22 @@ MCBuildFuncContext_x86_64 := class
 
 			x := s32
 			ResultData.Write(x&,4)
-
+		}else if obj is MCGlobalVariable {
+			assert(reg < 8)
+			glb := obj.GetValueObject()
+			memPtr := GInterpCntx.GetGlobalVarMem(glb)
+			MovPtrToReg(fnc,reg,memPtr)
+			WriteData(0x48,0x8B,reg + (reg shl 3)) // mov reg, (reg)
+			
 		}else if obj is MCConstString {
 			assert(toReg)
 			MovPtrToReg(fnc,reg,obj&->{MCConstString^}.GetValue().CStr())
+		}else if obj is MCConstBool {
+			assert(toReg)
+			MovU64ToReg(fnc,reg,obj&->{MCConstBool^}.GetValue() ?: 1 : 0)
 		}else{
+			obj.PrintObject()
+			printf("\n")
 			assert(false)
 		}
 
