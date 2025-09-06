@@ -10,18 +10,14 @@ main := !(char^[] args) -> int
 {
 	tst()
 }
+cc := class
+{
+	tr := int^
+}
 
-
-glb := int
 RunFunc := !() -> void
 {
-	glb = 37
-	printf("test %i\n",glb)
-	func2()
-}
-func2 := !() -> void
-{
-	printf("test %i\n",glb)
+	printf("test %f\n",3->{float})
 }
 RunFunc2 := !(int a1,int a2,int a3,int a4,int a5,int a6,int a7,int a8,int a9) -> void
 {

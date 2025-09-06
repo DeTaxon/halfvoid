@@ -102,6 +102,7 @@ MCBuildFuncContext_x86_64 := class
 		fnc = PassRemoveVoidParams(fnc)
 		fnc = PassRemoveReferences(fnc)
 		fnc = PassOptimizeJumpX86(fnc)
+		fnc.Print()
 		fnc = PassApplyRegistersX86(fnc)
 
 		fnc.Print()
@@ -160,7 +161,10 @@ MCBuildFuncContext_x86_64 := class
 		lines := fnc.Lines.GetPointer()
 	
 		assert(objs != null and lines != null)
-	
+
+		fileName := Str
+		fileName = ""
+		fileLine := int
 	
 		for i : fnc.Lines.Size()
 		{
@@ -168,8 +172,10 @@ MCBuildFuncContext_x86_64 := class
 	
 			switch line.opcode
 			{
-			case "debug_set_file"
+			case "debug_set_file"	
+				fileName = objs[line.var1]&->{MCConstString^}.GetValue()
 			case "debug_set_line"
+				fileLine = objs[line.var1]&->{MCConstInteger^}.GetValue()
 
 			case "llvm_getelementptr"
 				tp := objs[line.var2].GetType()
@@ -216,12 +222,37 @@ MCBuildFuncContext_x86_64 := class
 
 					offst := cls.GetFieldByIndexRaw(indx).MemOffset
 
-					Mov(fnc,"rax",line.var2)
+					r := X86Register
+
+					if objs[line.var2] is MCConstRegisterX86 {
+						r = objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
+						assert(r != "rdx")
+					}else{
+						r = "rax"
+						Mov(fnc,"rax",line.var2) // TODO remove
+					}
+
 					MovU64ToReg(fnc,"rdx",offst)
-					WriteData(0x48,0x01,0xD0) //add rax rdx
+					WriteData(0x48,0x01,0xD0 + r) //add r rdx
 					Mov(fnc,line.var1,"rax")
 
-				}else{
+				}else if tp is in TypePoint {
+
+					assert(objs[line.var2] is MCConstRegisterX86)
+					reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
+
+					assert(reg2 == "rcx")
+
+					tpSize := tp.GetSize()
+					MovU64ToReg(fnc,"rax",tpSize)
+					Mov(fnc,"rdx",line.var3)
+					WriteData(0x48,0x0F,0xAF,0xC2) // imul 
+					//Mov(fnc,"rdx",line.var2)
+					WriteData(0x48,0x8B,0x09) // mov rcx, (rcx)
+					WriteData(0x48,0x01,0xC8) // add rax rcx
+					Mov(fnc,line.var1,"rax")
+				}else {
+					printf("wut %s %s %i\n",tp.GetBADStr().CStr(),fileName,fileLine)
 					assert(false)
 				}
 
@@ -451,7 +482,7 @@ MCBuildFuncContext_x86_64 := class
 
 					tp := objs[vr.var1].GetType()
 
-					if IsInt(tp) or tp is in TypePoint or tp == GTypeBool {
+					if IsInt(tp) or tp is in TypePoint or tp == GTypeBool or tp == GTypeStr {
 						if (usedInts < 6) {
 							switch usedInts
 							{
@@ -479,7 +510,8 @@ MCBuildFuncContext_x86_64 := class
 							stackPassed.PushFront(vr.var1)
 						}
 					}else{
-						assert(false) //TODO floats
+						printf("unknown call type %s\n",tp.UnitName)
+						assert(false)
 					}
 
 					i += 1
@@ -587,8 +619,28 @@ MCBuildFuncContext_x86_64 := class
 					Mov(fnc,"xmm0",line.var2)
 					ResultData << "\xF3\x0F\x5A\xC8"
 					Mov(fnc,line.var1,"xmm1")
+				}else if IsFloat(tpFrom) and IsInt(tpTo) {
+					Mov(fnc,"xmm0",line.var2)
+
+					if tpFrom == GTypeFloat {
+						WriteData(0xF3)
+					}else{
+						WriteData(0xF2)
+					}
+					WriteData(0x48,0x0F,0x2C,0xC0)
+					Mov(fnc,line.var1,"rax")
+				}else if IsInt(tpFrom) and IsFloat(tpTo) {
+					Mov(fnc,"rax",line.var2)
+
+					if tpTo == GTypeFloat {
+						WriteData(0xF3)
+					}else{
+						WriteData(0xF2)
+					}
+					WriteData(0x48,0x0F,0x2A,0xC0)
+					Mov(fnc,line.var1,"xmm0")
 				}else{
-					printf("x86_64, unsupported cast\n")
+					printf("x86_64, unsupported cast %s to %s\n",tpFrom.GetBADStr().Str(),tpTo.GetBADStr().Str())
 					assert(false)
 				}
 			case "get_pointer"
@@ -765,23 +817,42 @@ MCBuildFuncContext_x86_64 := class
 
 		}else if obj is MCConstDouble {
 			assert(toReg)
-			assert(reg >= 16) // float register
 
-			regPos := reg->{int} - 16
-			
-			ResultData << "\xF2\x0F\x10"
-			ResultData.WriteByte("\x05"[0] + (regPos shl 3) )
+			if reg < 16 {
+				c := obj.GetValue()
+				MovU64ToReg(fnc,reg,c&->{u64^}^)
+			}else{
+				assert(reg >= 16) // float register
 
-			doubleValues.Emplace(obj.GetValue(),ResultData.Size(),0)
+				regPos := reg->{int} - 16
+				
+				ResultData << "\xF2\x0F\x10"
+				ResultData.WriteByte("\x05"[0] + (regPos shl 3) )
 
-			x := s32
-			ResultData.Write(x&,4)
+				doubleValues.Emplace(obj.GetValue(),ResultData.Size(),0)
+
+				x := s32
+				ResultData.Write(x&,4)
+			}
 		}else if obj is MCGlobalVariable {
-			assert(reg < 8)
+
 			glb := obj.GetValueObject()
 			memPtr := GInterpCntx.GetGlobalVarMem(glb)
-			MovPtrToReg(fnc,reg,memPtr)
-			WriteData(0x48,0x8B,reg + (reg shl 3)) // mov reg, (reg)
+			if reg >= 16 {
+				regIndx := reg mod 8
+				MovPtrToReg(fnc,"r10",memPtr)
+				if obj.GetType() == GTypeDouble {
+					WriteData(0x66,0x49,0x0F,0x6E,(regIndx shl 3) + 2) // mov reg, (r10)
+				}else if obj.GetType() == GTypeFloat {
+					WriteData(0x66,0x41,0x0F,0x6E,(regIndx shl 3) + 2) // mov reg, (r10)
+				}else{
+					assert(false)
+				}
+			}else{
+				assert(reg < 8)
+				MovPtrToReg(fnc,reg,memPtr)
+				WriteData(0x48,0x8B,reg + (reg shl 3)) // mov reg, (reg)
+			}
 			
 		}else if obj is MCConstString {
 			assert(toReg)
@@ -840,6 +911,15 @@ MCBuildFuncContext_x86_64 := class
 		ResultData.Write(w&,1)
 		ResultData.Write(q&,1)
 	}
+	WriteData := !(int x,int y,int z,int w,int q,int rr) -> void
+	{
+		ResultData.Write(x&,1)
+		ResultData.Write(y&,1)
+		ResultData.Write(z&,1)
+		ResultData.Write(w&,1)
+		ResultData.Write(q&,1)
+		ResultData.Write(rr&,1)
+	}
 }
 
 X86Register := enum
@@ -857,7 +937,7 @@ MCConstRegisterX86 := class extend MCObject
 
 	GetValue := !() -> ref X86Register { return Value&->{X86Register^}^}
 
-	PrintObject := virtual !() -> void { printf("Register \"%s\"",GetValue().ToCStr()) }
+	PrintObject := virtual !() -> void { printf("Register \"%s\" with type %s",GetValue().ToCStr(), GetType().GetBADStr().CStr()) }
 	GetType := virtual !() -> Type^ { return Value2&->{Type^^}^ }
 
 	SetType := virtual !(Type^ newType) -> Type^ { Value2&->{Type^^}^ = newType }

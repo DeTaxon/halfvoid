@@ -94,8 +94,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 	{
 		switch it.opcode
 		{
-		case "debug_set_file"
-		case "debug_set_line" // delete debug info
+		//case "debug_set_file"
+		//case "debug_set_line" // delete debug info
 
 		case in !["div","mod","mul"]
 			
@@ -228,6 +228,19 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c+2] = MCLine("llvm_store",reg1,reg2)
 				c += 3
 
+			}
+		case "llvm_getelementptr"
+		
+			obj1 := oPtr[it.var2]
+			if obj1 is MCGlobalVariable {
+				r := pushReg("rcx",obj1.GetType().GetPoint())
+
+				cPtr[c] = MCLine("get_pointer",r,it.var2)
+				cPtr[c+1] = MCLine("llvm_getelementptr0",it.var1,r,it.var3)
+				c += 2
+			}else{
+				cPtr[c] = it
+				c += 1
 			}
 		case "mov"
 			ob1 := oPtr[it.var1]
