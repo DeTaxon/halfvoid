@@ -52,7 +52,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 			loadFromStack := false
 
-			if IsFloat(tp) {
+			if IsFloat(tp) or tp is TypeVector {
 				reg = "xmm0"
 				if redFloats < 8 {
 					reg&->{int^}^ += redFloats
@@ -106,7 +106,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			r1 = "rax"
 			r2 = "rcx"
 
-			if IsFloat(tp) {
+			if IsFloat(tp) or tp is TypeVector {
 				r1 = "xmm0"
 				r2 = "xmm1"
 			}
@@ -139,7 +139,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			r1 := X86Register
 			r2 := X86Register
 
-			if tp == GTypeFloat or tp == GTypeDouble {
+			if tp == GTypeFloat or tp == GTypeDouble or tp is TypeVector {
 				r1 = "xmm0"
 				r2 = "xmm1"
 			}else{

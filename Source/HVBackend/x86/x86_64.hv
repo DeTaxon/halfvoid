@@ -102,7 +102,7 @@ MCBuildFuncContext_x86_64 := class
 		fnc = PassRemoveVoidParams(fnc)
 		fnc = PassRemoveReferences(fnc)
 		fnc = PassOptimizeJumpX86(fnc)
-		fnc.Print()
+		// fnc.Print()
 		fnc = PassApplyRegistersX86(fnc)
 
 		fnc.Print()
@@ -348,16 +348,39 @@ MCBuildFuncContext_x86_64 := class
 
 
 			case in !["add","sub"] //TODO signes aware
-				
+			
+				tp := objs[line.var1].GetType()
+
 				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
 				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
 
-				if reg1 >= 16
+				
+				if tp is TypeVector
+				{
+					r1 := reg1 mod 8
+					r2 := reg2 mod 8
+
+					if tp.Base == GTypeDouble
+					{
+						WriteData(0x66)
+					}
+					WriteData(0x0F)
+
+					if line.opcode == "add"
+					{
+						WriteData(0x58)
+					}else{
+						WriteData(0x5C)
+					}
+
+					WriteData(0xC0 + (r1 shl 3) + r2)
+
+				}else if reg1 >= 16
 				{
 					r1 := reg1 - 16
 					r2 := reg2 - 16
 
-					if objs[line.var1].GetType() == GTypeDouble
+					if tp == GTypeDouble
 					{
 						WriteData(0xF2)
 					}else{
@@ -390,7 +413,26 @@ MCBuildFuncContext_x86_64 := class
 
 				tp := objs[line.var1].GetType()
 
-				if IsFloat(tp) {
+				if tp is TypeVector {
+					assert(reg1 >= 16 and reg2 >= 16)
+
+					ri1 := reg1 - 16
+					ri2 := reg2 - 16
+					
+					if tp == GTypeDouble{
+						WriteData(0x66)
+					}
+					WriteData(0x0F)
+
+					if line.opcode == "div" {
+						WriteData(0x5E)
+					}else{
+						WriteData(0x59)
+					}
+
+					WriteData(0xC0 + (ri1 shl 3) + ri2)
+
+				}else if IsFloat(tp) {
 					assert(reg1 >= 16 and reg2 >= 16)
 
 					ri1 := reg1 - 16
@@ -465,6 +507,35 @@ MCBuildFuncContext_x86_64 := class
 			case "label"
 				labelPos[line.var1] = strm.Size()
 
+			case "vec_shuffle_begin"
+				res := lines[i].var1
+				target := lines[i].var2
+
+				Mov(fnc,"xmm0",target)
+
+				vecSize := objs[target].GetType()->{TypeVector^}.vecElementCount
+
+				indx := int
+				j := 0
+
+				i += 1
+				while lines[i].opcode != "vec_shuffle_end"
+				{
+					assert(lines[i].opcode  == "vec_shuffle_index")
+					obj := ref objs[lines[i].var1]
+					assert(obj is MCConstInteger)
+					val := obj&->{MCConstInteger^}.GetValue()
+					assert(val < vecSize) //TODO .0
+					indx = indx + (val shl j*2)
+					j += 1
+					i += 1
+				}
+
+				WriteData(0x66,0x0F,0x70,0xC0)
+				WriteData(indx)
+
+				Mov(fnc,res,"xmm0")
+
 			case "call_start"
 				fncId := line.var2
 				resId := line.var1
@@ -498,7 +569,7 @@ MCBuildFuncContext_x86_64 := class
 						}else {
 							stackPassed.PushFront(vr.var1)
 						}
-					}else  if tp == GTypeFloat or tp == GTypeDouble {
+					}else  if tp == GTypeFloat or tp == GTypeDouble or tp is TypeVector {
 
 						if usedFloats < 8 {
 							reg := X86Register
@@ -584,10 +655,11 @@ MCBuildFuncContext_x86_64 := class
 						assert(not isReg1)
 						Mov(fnc,line.var1,o2&->{MCConstRegisterX86^}.GetValue())
 					}
-				}else if tp == GTypeFloat or tp == GTypeDouble {
+				}else if tp == GTypeFloat or tp == GTypeDouble or tp is TypeVector{
 					Mov(fnc,"xmm0",line.var2)
 					Mov(fnc,line.var1,"xmm0")
 				}else{
+					
 					Mov(fnc,"rax",line.var2)
 					Mov(fnc,line.var1,"rax")
 				}
@@ -668,22 +740,24 @@ MCBuildFuncContext_x86_64 := class
 			case "clean"
 				assert(objs[line.var1] is MCVariable)
 
-				MovU64ToReg(fnc,"rax",0)
-				Mov(fnc,line.var1,"rax")
+				tp := objs[line.var1].GetType()
+
+				if tp is TypeVector or IsFloat(tp) {
+					WriteData(0x0F,0x57,0xC0) // xor xmm0 ,xmm0 ; xmm0 = 0
+					Mov(fnc,line.var1,"xmm0")
+				}else{
+					MovU64ToReg(fnc,"rax",0)
+					Mov(fnc,line.var1,"rax")
+				}
+
 			case "memset"
 
-				//Mov(fnc,"rcx",line.var3)
-				//Mov(fnc,"rax",line.var2)
-				//Mov(fnc,"rdi",line.var1)
-				//strm << "\xF3\xAA" // rep stob
 				Mov(fnc,"rdi",line.var1)
 				Mov(fnc,"rsi",line.var2)
 				Mov(fnc,"rdx",line.var3)
 				MovPtrToReg(fnc,"rcx",memset)
 				ResultData << "\xFF\xD1" // call *rcx
-				
-				
-	
+
 			case void
 				printf("x86_64, unsupported opcode %s\n",line.opcode.ToCStr())
 				assert(false)
@@ -728,8 +802,29 @@ MCBuildFuncContext_x86_64 := class
 
 		if obj is MCVariable or obj is MCConstValue or obj is MCConstVarX86 {
 
-			if isFloatReg 
-			{
+			if obj.GetType()? is TypeVector {
+				if toReg {
+					if size == 8 {
+						WriteData(0x66,0x48,0x0F,0x6E,0x85 + (regIndx shl 3))
+					}else if size == 12 or size == 16 {
+						WriteData(0x0F,0x28, 0x85 + (regIndx shl 3))
+					}else{
+						assert(false)
+					}
+
+				}else{
+					if size == 8 {
+						WriteData(0x66,0x48,0x0F,0x7E,0x85 + (regIndx shl 3))
+					}else if size == 12 or size == 16 {
+						WriteData(0x0F,0x29, 0x85 + (regIndx shl 3))
+					}else{
+						assert(false)
+					}
+				}
+				x := getObjsStackOffset(fnc,indx)
+				ResultData.Write(x&,4)
+				
+			} else if isFloatReg {
 				if toReg {
 					if size == 4 {
 						WriteData(0x66,0x0F,0x6E,0x85 + (regIndx shl 3))
@@ -745,7 +840,7 @@ MCBuildFuncContext_x86_64 := class
 				}
 				x := getObjsStackOffset(fnc,indx)
 				ResultData.Write(x&,4)
-			}else{
+			}else {
 				regIndx := reg mod 8
 				extCode := reg >= 8 ?: 4 : 0
 					

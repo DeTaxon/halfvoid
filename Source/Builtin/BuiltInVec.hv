@@ -184,8 +184,8 @@ BuiltInVecShuffle := class extend BoxFuncCommon
 		for i : vs
 		{
 			indexes[i] = inds[i]
-			vecSize = vs
 		}
+		vecSize = vs
 	}
 	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{

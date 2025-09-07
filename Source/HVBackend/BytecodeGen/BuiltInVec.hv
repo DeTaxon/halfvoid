@@ -26,8 +26,9 @@ AppendClass BuiltInVecShuffle
 		newVar := ctx.CreateVar(typ)
 
 		HVB_ins_vec_shuffle_begin(ctx,newVar,inpObj)
-		for it : indexes
+		for i : vecSize
 		{
+			it := indexes[i]
 			if it >= vecSize
 			{
 				HVB_ins_vec_shuffle_zero(ctx)
