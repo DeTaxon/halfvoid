@@ -1019,6 +1019,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			cs += 1
 		case "assert"
 			//TODO
+			cs += 1
 
 		case void
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)
