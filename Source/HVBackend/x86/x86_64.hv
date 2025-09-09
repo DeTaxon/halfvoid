@@ -90,7 +90,7 @@ MCBuildFuncContext_x86_64 := class
 
 	ResultData := TEchoStream
 
-	labelTarget := AVLMap.{int,int} // left, target, right
+	labelTarget := AVLMap.{int,List.{int}} // left, target, right
 	labelPos := AVLMap.{int,int}
 
 	doubleValues := List.{Tuple.{double,int,int}} // value, mov position, value position
@@ -105,7 +105,7 @@ MCBuildFuncContext_x86_64 := class
 		// fnc.Print()
 		fnc = PassApplyRegistersX86(fnc)
 
-		fnc.Print()
+		// fnc.Print()
 
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
@@ -130,10 +130,13 @@ MCBuildFuncContext_x86_64 := class
 	}
 	FixLabels := !(void^ ptr) -> void
 	{
-		for lbl,id : labelTarget
+		for lbls,id : labelTarget
 		{
-			diff := labelPos[id] - (lbl + 4) // 4 - size of int, ptr offset
-			ptr->{u8^}[lbl]&->{int^}^ = diff
+			for lbl : lbls
+			{
+				diff := labelPos[id] - (lbl + 4) // 4 - size of int, ptr offset
+				ptr->{u8^}[lbl]&->{int^}^ = diff
+			}
 		}
 		for it : doubleValues
 		{
@@ -180,7 +183,7 @@ MCBuildFuncContext_x86_64 := class
 			case "llvm_getelementptr"
 				tp := objs[line.var2].GetType()
 
-				if tp is in TypePoint {
+				if tp is in TypePoint or tp == GTypeStr {
 					tpSize := tp.Base.GetSize()
 					MovU64ToReg(fnc,"rax",tpSize)
 					Mov(fnc,"rdx",line.var3)
@@ -206,7 +209,7 @@ MCBuildFuncContext_x86_64 := class
 
 
 				}else{
-					//printf("test %s %i\n",tp.GetBADStr().Str(),objs[line.var2] is MCVariable)
+					printf("wut %s %s %i\n",tp.GetBADStr().Str(),fileName,fileLine)
 					assert(false)
 				}
 			case "llvm_getelementptr0"
@@ -293,6 +296,59 @@ MCBuildFuncContext_x86_64 := class
 					}
 					Mov(fnc,line.var1,"rax")
 				}
+			case in !["min","max"]
+				tp := objs[line.var1].GetType()
+
+				if IsInt(tp) {
+					Mov(fnc,"rax",line.var2)
+					Mov(fnc,"rcx",line.var3)
+					WriteData(0x48,0x3B,0xC1) // cmp rax,rcx
+					switch line.opcode
+					{
+					case "min" WriteData(0x48,0x0F,0x4F,0xC1) //TODO unsigned
+					case "max" WriteData(0x48,0x0F,0x4C,0xC1)
+					}
+					Mov(fnc,line.var1,"rax")
+
+				}else{
+					assert(false)
+				}
+			case in !["shl","ushr","sshr"]
+				Mov(fnc,"rax",line.var2)
+				Mov(fnc,"rcx",line.var3) // MUST BE RCX
+
+				tp := objs[line.var2].GetType()
+
+				switch line.opcode
+				{
+				case "shl" WriteData(0x48,0xD3,0xE0) // shl rax,rcx
+				case "sshr" WriteData(0x48,0xD3,0xF8) // shr rax,rcx
+				case "ushr" WriteData(0x48,0xD3,0xE8) // shr rax,rcx
+				}
+				Mov(fnc,line.var1,"rax")
+			case in !["xor","and","or"]
+				Mov(fnc,"rax",line.var2)
+				Mov(fnc,"rcx",line.var3)
+				switch line.opcode
+				{
+				case "xor" WriteData(0x48,0x33,0xC1) // xor rax,rcx
+				case "and" WriteData(0x48,0x23,0xC1) // and rax,rcx
+				case "or" WriteData(0x48,0x0B,0xC1) // and rax,rcx
+				}
+				if objs[line.var2].GetType() == GTypeBool
+				{
+					WriteData(0x80,0xE0,0x1) // and 0x1, rax
+				}
+				Mov(fnc,line.var1,"rax")
+				
+			case "not"
+				Mov(fnc,"rax",line.var2)
+				WriteData(0x48,0xF7,0xD0) // not rax
+				if objs[line.var2].GetType() == GTypeBool
+				{
+					WriteData(0x80,0xE0,0x1) // and 0x1, rax
+				}
+				Mov(fnc,line.var1,"rax")
 
 			case "cmp"
 				//Mov(fnc,"rdx",line.var2)
@@ -478,7 +534,7 @@ MCBuildFuncContext_x86_64 := class
 				WriteData(0x3C) // cmp al and 0
 				ResultData.Write(x&,1)
 				WriteData(0x0F,0x85)
-				labelTarget[line.var1] = strm.Size()->{int}
+				labelTarget[line.var1].Push(strm.Size())
 				ResultData.Write(x&,4)
 			case "jmp_if_op"
 
@@ -496,13 +552,13 @@ MCBuildFuncContext_x86_64 := class
 					case ">=" ResultData << "\x0F\x8D"
 					case ">" ResultData << "\x0F\x8F"
 				}
-				labelTarget[line.var1] = strm.Size()->{int}
+				labelTarget[line.var1].Push(strm.Size())
 				x := 0
 				ResultData.Write(x&,4)
 			case "jmp"
 				ResultData << "\xE9"
 				x := 0
-				labelTarget[line.var1] = strm.Size()->{int}
+				labelTarget[line.var1].Push(strm.Size())
 				ResultData.Write(x&,4)
 			case "label"
 				labelPos[line.var1] = strm.Size()
@@ -553,7 +609,7 @@ MCBuildFuncContext_x86_64 := class
 
 					tp := objs[vr.var1].GetType()
 
-					if IsInt(tp) or tp is in TypePoint or tp == GTypeBool or tp == GTypeStr {
+					if IsInt(tp) or tp is in TypePoint or tp == GTypeBool or tp == GTypeStr  or tp is TypeArrayView  or tp is TypeEnum {
 						if (usedInts < 6) {
 							switch usedInts
 							{
@@ -601,6 +657,10 @@ MCBuildFuncContext_x86_64 := class
 				if fncObj is MCConstFunction {
 					fncHV := fncObj.GetValue()
 
+					if fncHV is ResistFunc {
+						fncHV = fncHV.base
+					}
+
 					if fncHV is BoxFuncDeclare {
 						ptr := GInterpCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^})
 						MovPtrToReg(fnc,"r10",ptr)
@@ -611,22 +671,36 @@ MCBuildFuncContext_x86_64 := class
 						WriteData(0x4D,0x8B,0x12) // mov r10, (r10)
 						WriteData(0x41,0xFF,0xD2) // call *r10
 					} else {
+						printf("wut %s\n",fncHV.UnitName)
 						assert(false)
 					}
-				}else if fncObj is MCVariable or fncObj is MCConstValue{
+				}else if fncObj is MCVariable or fncObj is MCConstValue or fncObj is MCConstPointerTyped{
 					tp := fncObj.GetType()
 					assert(tp is in TypePoint)
 					Mov(fnc,"r10",fncId)
 					//WriteData(0x4D,0x8B,0x12) // mov r10, (r10)
 					WriteData(0x41,0xFF,0xD2) // call *r10
+				}else if fncObj is MCGlobalVariable {
+					glb := fncObj&->{MCGlobalVariable^}.GetValueObject()
+					memPtr := GInterpCntx.GetGlobalVarMem(glb)
+					MovPtrToReg(fnc,"r10",memPtr)
+					WriteData(0x4D,0x8B,0x12) // mov r10, (r10)
+					WriteData(0x41,0xFF,0xD2) // call *r10
 				}else{
-					assert(false) //TODO function pointers
+					printf("wut %s %s %i\n",fncObj.UnitName,fileName,fileLine)
+					assert(false)
 				}
 
 				if resId != 0
 				{
-					//TODO return float value
-					Mov(fnc,resId,"rax")
+					resTyp := objs[resId].GetType()
+
+					if resTyp == GTypeFloat or resTyp == GTypeDouble or resTyp is TypeVector
+					{
+						Mov(fnc,resId,"xmm0")
+					}else{
+						Mov(fnc,resId,"rax")
+					}
 				}
 
 				callSize := stackPassed.Size() * 8
@@ -668,7 +742,7 @@ MCBuildFuncContext_x86_64 := class
 				tpTo := objs[line.var1].GetType()
 				tpFrom := objs[line.var2].GetType()
 
-				if tpTo is in TypePoint and tpFrom is in TypePoint
+				if IsPtrLikeType(tpTo) and IsPtrLikeType(tpFrom)
 				{
 					Mov(fnc,"rax",line.var2)
 					Mov(fnc,line.var1,"rax")
@@ -716,8 +790,8 @@ MCBuildFuncContext_x86_64 := class
 					assert(false)
 				}
 			case "get_pointer"
+				obj := ref objs[line.var2]
 				if objs[line.var2] is MCGlobalVariable {
-					obj := ref objs[line.var2]
 
 					assert(objs[line.var1] is MCConstRegisterX86)
 
@@ -725,8 +799,7 @@ MCBuildFuncContext_x86_64 := class
 					memPtr := GInterpCntx.GetGlobalVarMem(glb)
 					MovPtrToReg(fnc,objs[line.var1]&->{MCConstRegisterX86^}.GetValue(),memPtr)
 					//WriteData(0x48,0x8B,0x12) // mov r10, (rax)
-				}else{
-					assert(objs[line.var2] is MCVariable)
+				}else if obj is MCVariable {
 					assert(objs[line.var1] is MCConstRegisterX86)
 					reg := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
 					assert(reg < 16)
@@ -735,6 +808,26 @@ MCBuildFuncContext_x86_64 := class
 					ResultData.Write(c&,1)
 					x := getObjsStackOffset(fnc,line.var2)
 					strm.Write(x&,4)
+				}else if obj is MCConstFunction {
+					assert(objs[line.var1] is MCConstRegisterX86)
+					reg := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
+					assert(reg < 16)
+
+					base := obj.GetValue()
+
+					if base is BoxFuncBody
+					{
+						ptr := eng.GetFunctionPtr(base->{BoxFuncBody^})
+						MovPtrToReg(fnc,reg,ptr)
+					}else{
+						printf("unknown function %s\n",base.UnitName)
+						assert(false)
+					}
+				}else{
+					printf("unknown get_pointer\n")
+					obj.PrintObject()
+					printf("\n")
+					assert(false)
 				}
 
 			case "clean"
@@ -757,6 +850,10 @@ MCBuildFuncContext_x86_64 := class
 				Mov(fnc,"rdx",line.var3)
 				MovPtrToReg(fnc,"rcx",memset)
 				ResultData << "\xFF\xD1" // call *rcx
+			case "assert"
+				//TODO call only if bool worked
+				//WriteData(0xCC) //int3
+				WriteData(0x90) //NOP
 
 			case void
 				printf("x86_64, unsupported opcode %s\n",line.opcode.ToCStr())
@@ -909,6 +1006,19 @@ MCBuildFuncContext_x86_64 := class
 			ResultData.Write(datas[0]&,3)
 			x := obj&->{MCConstInteger^}.GetValue()
 			ResultData.Write(x&,4)
+		}else if obj is MCConstS64 {
+			assert(toReg)
+
+			WriteData(0x48,0xB8 + reg)
+
+			x := obj&->{MCConstS64^}.GetValue()
+			ResultData.Write(x&,8)
+
+		}else if obj is MCConstBlob {
+			assert(toReg)
+
+			x := obj&->{MCConstBlob^}.GetValue()
+			MovPtrToReg(fnc,reg,x)
 
 		}else if obj is MCConstDouble {
 			assert(toReg)
@@ -952,6 +1062,12 @@ MCBuildFuncContext_x86_64 := class
 		}else if obj is MCConstString {
 			assert(toReg)
 			MovPtrToReg(fnc,reg,obj&->{MCConstString^}.GetValue().CStr())
+		}else if obj is MCConstPointerTyped {
+			assert(toReg)
+			MovPtrToReg(fnc,reg,obj&->{MCConstPointerTyped^}.GetValue())
+		}else if obj is MCConstPointer {
+			assert(toReg)
+			MovPtrToReg(fnc,reg,obj&->{MCConstPointerTyped^}.GetValue())
 		}else if obj is MCConstBool {
 			assert(toReg)
 			MovU64ToReg(fnc,reg,obj&->{MCConstBool^}.GetValue() ?: 1 : 0)
@@ -1015,6 +1131,17 @@ MCBuildFuncContext_x86_64 := class
 		ResultData.Write(q&,1)
 		ResultData.Write(rr&,1)
 	}
+}
+
+IsPtrLikeType := !(Type^ tp) -> bool
+{
+	if tp is in TypePoint
+		return true
+	if tp is in TypeArrayView
+		return true
+	if tp == GTypeStr
+		return true
+	return false
 }
 
 X86Register := enum

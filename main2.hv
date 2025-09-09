@@ -8,27 +8,33 @@ SubFunc := !(int x,int y,float z,double w) -> void
 
 main := !(char^[] args) -> int
 {
-	tst()
+	RunFunc()
 }
-cc := class
+PointType := class
 {
-	tr := int^
+	pos := vec2f
+	velocity := vec2f
+}
+
+Huh := !() -> int
+{
+	result = 5
+	x := 6
 }
 
 RunFunc := !() -> void
 {
-	r := vec3f
-	r.x = 1.0f
-	r.y = 2.0f
-	r.z = 6.3f
-	//r.y = 2.0f
-	//r.z = 3.0f
-	//r.w = 4.0f
-	//r = r + r
-	c := r.zyx
+	c := vec2f
+	c = vec2f(2.0,2.0)
+	//verts := Vector.{PointType}
+	//verts.Resize(16)
 
-	printf("test %f %f %f\n",r.x,r.y,r.z)
-	printf("test %f %f %f\n",c.x,c.y,c.z)
+	//for it : verts
+	//{
+	//	it.pos.x = RandInt(0..1000) / 1000 - 0.5
+	//	it.pos.y = RandInt(0..1000) / 1000 - 0.5
+	//	it.pos *= vec2f(2.0,2.0)
+	//}
 }
 
 tst := !() -> int {
