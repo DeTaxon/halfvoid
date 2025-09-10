@@ -12,7 +12,7 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	///createdFunc(1,2,3,5,8,13,21,34,45)
 	
 	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!()^->void}
-	// assert(false)
+	assert(false)
 	createdFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
@@ -281,7 +281,7 @@ MCBuildFuncContext_x86_64 := class
 					assert(reg2 < 8)
 					switch size
 					{
-					case 1 WriteData(0x88,regData)
+					case 1 WriteData(0x40,0x88,regData)
 					case 2 WriteData(0x66,0x89, regData)
 					case 4 WriteData(0x89, regData)
 					case 8 WriteData(0x48,0x89, regData)
@@ -310,7 +310,7 @@ MCBuildFuncContext_x86_64 := class
 						Mov(fnc,"rcx",line.var2)
 						switch size
 						{
-						case 1 ResultData << "\x48\x8A\x01"
+						case 1 ResultData << "\x40\x8A\x01"
 						case 2 ResultData << "\x48\x0F\xBF\x01" //TODO
 						case 4 ResultData << "\x48\x8B\x01" //TODO
 						case 8 ResultData << "\x48\x8B\x01" //TODO
@@ -604,6 +604,9 @@ MCBuildFuncContext_x86_64 := class
 					case "<" ResultData << "\x0F\x82"
 					case ">=" ResultData << "\x0F\x8D"
 					case ">" ResultData << "\x0F\x8F"
+					case void 
+						printf("wut %i\n",line.V3Cond())
+						assert(false)
 				}
 				labelTarget[line.var1].Push(strm.Size())
 				x := 0
@@ -1052,9 +1055,7 @@ MCBuildFuncContext_x86_64 := class
 					switch size
 					{
 					case 1
-						if extCode != 0
-							WriteData(0x40 + extCode)
-						WriteData(0x88,0x85 + (regIndx shl 3))
+						WriteData(0x40 + extCode,0x88,0x85 + (regIndx shl 3))
 					case 2
 						if extCode != 0
 							WriteData(0x40 + extCode)

@@ -1,42 +1,32 @@
 
 
-SubFunc := !(int x,int y,float z,double w) -> void
-{
-	printf("subfunc %i %i %f %f\n",x,y,z, w)
-}
-
 
 main := !(char^[] args) -> int
 {
 	RunFunc()
 }
-PointType := class
-{
-	pos := vec4f
-}
-
-Huh := !() -> int
-{
-	result = 5
-	x := 6
-}
 
 RunFunc := !() -> void
 {
-	x := 1.2
-	printf("wut %f %f\n",sin(x),cos(x))
+	c := Str
+	c = "abab"
+	c.DivideStr("a",(x) ==> {
+		vertCount := 10
+		printf("a\n")
+		assert(false)
+		for i : vertCount
+		{
+		printf("b\n")
+			printf("why\n")
+			x.DivideStr(" ",(r) ==> {
 
-	//verts := Vector.{PointType}
-	//verts.Resize(16)
+			})
+			yield void
 
-	//for it : verts
-	//{
-	//	it.pos.x = RandInt(0..1000) / 1000 - 0.5
-	//	it.pos.y = RandInt(0..1000) / 1000 - 0.5
-	//	printf("a %f %f\n",it.pos.x,it.pos.y)
-	//	it.pos *= vec2f(2.0,2.0)
-	//	printf("b %f %f\n",it.pos.x,it.pos.y)
-	//}
+		}
+
+	})
+
 }
 /*
  *	it := vec3f
