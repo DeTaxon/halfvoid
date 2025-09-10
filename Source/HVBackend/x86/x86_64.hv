@@ -411,6 +411,7 @@ MCBuildFuncContext_x86_64 := class
 				resReg := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
 				//ResultData << "\x48\x3B\xD0" //cmp
 				
+				tp := objs[line.var2].GetType()
 
 				if reg1 >= 16
 				{
@@ -443,14 +444,26 @@ MCBuildFuncContext_x86_64 := class
 					ResultData << "\x48\x3B"
 					ResultData.WriteByte(0xC0 + (reg1 shl 3) + reg2)
 
-					switch line.V3Cond()
-					{
-						case "==" ResultData << "\x0F\x94"
-						case "!=" ResultData << "\x0F\x95"
-						case "<=" ResultData << "\x0F\x9E"
-						case "<" ResultData << "\x0F\x9C"
-						case ">=" ResultData << "\x0F\x9D"
-						case ">" ResultData << "\x0F\x9F"
+					if IsUInt(tp) or IsPtrLikeType(tp) {
+						switch line.V3Cond()
+						{
+							case "==" ResultData << "\x0F\x94"
+							case "!=" ResultData << "\x0F\x95"
+							case "<=" ResultData << "\x0F\x96"
+							case "<" ResultData << "\x0F\x92"
+							case ">=" ResultData << "\x0F\x93"
+							case ">" ResultData << "\x0F\x97"
+						}
+					}else{
+						switch line.V3Cond()
+						{
+							case "==" ResultData << "\x0F\x94"
+							case "!=" ResultData << "\x0F\x95"
+							case "<=" ResultData << "\x0F\x9E"
+							case "<" ResultData << "\x0F\x9C"
+							case ">=" ResultData << "\x0F\x9D"
+							case ">" ResultData << "\x0F\x9F"
+						}
 					}
 					WriteData(0xC0 + resReg)
 				}

@@ -8,25 +8,22 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	c := Str
-	c = "abab"
-	c.DivideStr("a",(x) ==> {
-		vertCount := 10
-		printf("a\n")
-		assert(false)
-		for i : vertCount
-		{
-		printf("b\n")
-			printf("why\n")
-			x.DivideStr(" ",(r) ==> {
+	x := int
+	y := x
+	x > y
+	x >= y
+	x < y
+	x <= y
 
-			})
-			yield void
-
-		}
-
-	})
-
+	//printf("wut %i %i %i %i %i %i\n",x == y, x != y, x > y, x >= y, x < y, x <= y)
+	//c := u8
+	//c = 4
+	//for i : c
+	//{
+	//	printf("wut %i %i\n",i,c)
+	//}
+	//
+	//TODO x86 fix float > float
 }
 /*
  *	it := vec3f
