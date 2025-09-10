@@ -175,6 +175,8 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 					{
 						if op.var1&[j] != i
 							continue
+						if op.opcode == "cmp" and j == 2 //TODO to table , + jmp_if_op
+							continue
 						tp := fnc.Objects[op.var1&[j]].GetType()
 
 						cnst2 := makeConst(tp.GetPoint())
