@@ -12,8 +12,7 @@ main := !(char^[] args) -> int
 }
 PointType := class
 {
-	pos := vec2f
-	velocity := vec2f
+	pos := vec4f
 }
 
 Huh := !() -> int
@@ -24,8 +23,9 @@ Huh := !() -> int
 
 RunFunc := !() -> void
 {
-	c := vec2f
-	c = vec2f(2.0,2.0)
+	x := 1.2
+	printf("wut %f %f\n",sin(x),cos(x))
+
 	//verts := Vector.{PointType}
 	//verts.Resize(16)
 
@@ -33,9 +33,15 @@ RunFunc := !() -> void
 	//{
 	//	it.pos.x = RandInt(0..1000) / 1000 - 0.5
 	//	it.pos.y = RandInt(0..1000) / 1000 - 0.5
+	//	printf("a %f %f\n",it.pos.x,it.pos.y)
 	//	it.pos *= vec2f(2.0,2.0)
+	//	printf("b %f %f\n",it.pos.x,it.pos.y)
 	//}
 }
+/*
+ *	it := vec3f
+ *	it.wxyz //TODO this does not create error
+ */
 
 tst := !() -> int {
 	nums := 10_000

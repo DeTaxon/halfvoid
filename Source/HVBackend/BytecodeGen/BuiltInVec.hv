@@ -21,7 +21,6 @@ AppendClass BuiltInVecShuffle
 	{
 		typ := lst[0].GetType()
 		inpObj := lst[0].WriteMC(ctx).CreatedId
-		vecSize := GetVecXTypeSize(typ)
 
 		newVar := ctx.CreateVar(typ)
 
@@ -29,7 +28,7 @@ AppendClass BuiltInVecShuffle
 		for i : vecSize
 		{
 			it := indexes[i]
-			if it >= vecSize
+			if it == -1
 			{
 				HVB_ins_vec_shuffle_zero(ctx)
 			}else{

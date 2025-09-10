@@ -117,7 +117,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 				if str[i] == 'y' inds[i] = 1
 				if str[i] == 'z' inds[i] = 2
 				if str[i] == 'w' inds[i] = 3
-				if str[i] == '0' inds[i] = GetVecXTypeSize(tp.Params[0].ItType)
+				if str[i] == '0' inds[i] = -1
 			}
 			return new BuiltInVecShuffle(tp,inds[0]&,str.Size())
 		}
@@ -206,7 +206,11 @@ BuiltInVecShuffle := class extend BoxFuncCommon
 		{
 			if i != 0
 				f^ << ","
-			f^ << "i32 " << indexes[i]
+			if indexes[i] == -1 {
+				f^ << "i32 " << vecSize
+			}else{
+				f^ << "i32 " << indexes[i]
+			}
 		}
 		f^ << ">"
 		if DebugMode

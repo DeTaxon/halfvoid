@@ -178,7 +178,11 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		case "cmp"
 
 			tp := oPtr[it.var2].GetType()
-			assert(oPtr[it.var4].GetType() == tp)
+			tp4 := oPtr[it.var4].GetType()
+
+			if tp != tp4 {
+				assert(IsPtrLikeType(tp) and IsPtrLikeType(tp4))
+			}
 			assert(oPtr[it.var1].GetType() == GTypeBool)
 
 			r1 := X86Register
@@ -238,7 +242,17 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				c += 2
 			}else{
 				reg1 := pushReg("rcx",ob1.GetType())
-				reg2 := pushReg("rax",ob2.GetType())
+
+				tp2 := ob2.GetType()
+				reg2 := int
+				if tp2.GetSize() > 8 {
+					assert(tp2 is TypeVector)
+					assert(tp2.GetSize() == 16)
+					reg2 = pushReg("xmm0",tp2)
+				}else{
+					reg2 = pushReg("rax",tp2)
+				}
+				
 
 				cPtr[c] = MCLine("mov",reg1,it.var1)
 				cPtr[c+1] = MCLine("mov",reg2,it.var2)
@@ -272,6 +286,36 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c] = it
 				c += 1
 			}
+		case in !["sin","cos"]
+			tp := oPtr[it.var2].GetType()
+			assert(IsFloat(tp))
+
+			newObj := MCConstPointerTyped
+			switch tp
+			{
+			case GTypeFloat
+				switch it.opcode
+				{
+				case "sin" newObj.GetValue() = x86_sinf
+				case "cos" newObj.GetValue() = x86_cosf
+				}
+			case GTypeDouble
+				switch it.opcode
+				{
+				case "sin" newObj.GetValue() = x86_sind
+				case "cos" newObj.GetValue() = x86_cosd
+				}
+			}
+			newObj.SetType(GetFuncType(![tp],tp).GetPoint())
+			fncId := o
+			oPtr[o] = newObj
+			o += 1
+
+			cPtr[c] = MCLine("call_start",it.var1,fncId)
+			cPtr[c+1] = MCLine("load_var",it.var2)
+			cPtr[c+2] = MCLine("call_end")
+			c += 3
+
 		case void
 			cPtr[c] = it
 			c += 1
@@ -308,3 +352,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 	result.InputsIndxStart = fnc.InputsIndxStart
 	result.InputsIndxCount = fnc.InputsIndxCount
 }
+
+x86_sinf := !(float x) -> float { return sin(x) }
+x86_cosf := !(float x) -> float { return cos(x) }
+x86_sind := !(double x) -> double { return sin(x) }
+x86_cosd := !(double x) -> double { return cos(x) }

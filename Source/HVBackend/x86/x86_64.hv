@@ -19,6 +19,8 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	CurrentWork = oldWork
 }
 
+//TODO check sse2 sse4_1 support
+
 
 
 x86FuncData := class
@@ -262,39 +264,60 @@ MCBuildFuncContext_x86_64 := class
 
 			case "llvm_store"
 
-				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
+				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue() 
 				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
 
 				size := objs[line.var2].GetType().GetSize()
 
-				assert(reg1 < 8 and reg2 < 8)
+				regData := (reg1 mod 8) + ((reg2 mod 8) shl 3)
 
-				regData := reg1 + (reg2 shl 3)
+				if size > 8 {
+					assert(reg2 >= 16)
+					assert(size == 16)
 
-				switch size
-				{
-				case 1 WriteData(0x88,regData)
-				case 2 WriteData(0x66,0x89, regData)
-				case 4 WriteData(0x89, regData)
-				case 8 WriteData(0x48,0x89, regData)
+					WriteData(0x0F,0x29,regData) // mov xmm0, (rcx)
+
+				}else{
+					assert(reg2 < 8)
+					switch size
+					{
+					case 1 WriteData(0x88,regData)
+					case 2 WriteData(0x66,0x89, regData)
+					case 4 WriteData(0x89, regData)
+					case 8 WriteData(0x48,0x89, regData)
+					}
+
 				}
+
 			case "llvm_load"
 
 				if objs[line.var1].GetType() == objs[line.var2].GetType() {
 					Mov(fnc,"rax",line.var2)
 					Mov(fnc,line.var1,"rax")
 				}else{
-					size := objs[line.var2].GetType().GetSize()
+					tp := objs[line.var1].GetType()
+					size := tp.GetSize()
 
-					Mov(fnc,"rcx",line.var2)
-					switch size
-					{
-					case 1 ResultData << "\x48\x8A\x01"
-					case 2 ResultData << "\x48\x0F\xBF\x01" //TODO
-					case 4 ResultData << "\x48\x8B\x01" //TODO
-					case 8 ResultData << "\x48\x8B\x01" //TODO
+					if size > 8 {
+						assert(tp is TypeVector)
+						assert(tp.Base == GTypeFloat)
+						assert(size == 16)
+
+						Mov(fnc,"rcx",line.var2)
+						WriteData(0x0F,0x28,0x01) // mov xmm0, (rcx)
+						Mov(fnc,line.var1,"xmm0")
+					}else{
+						Mov(fnc,"rcx",line.var2)
+						switch size
+						{
+						case 1 ResultData << "\x48\x8A\x01"
+						case 2 ResultData << "\x48\x0F\xBF\x01" //TODO
+						case 4 ResultData << "\x48\x8B\x01" //TODO
+						case 8 ResultData << "\x48\x8B\x01" //TODO
+						}
+						Mov(fnc,line.var1,"rax")
 					}
-					Mov(fnc,line.var1,"rax")
+
 				}
 			case in !["min","max"]
 				tp := objs[line.var1].GetType()
@@ -310,9 +333,39 @@ MCBuildFuncContext_x86_64 := class
 					}
 					Mov(fnc,line.var1,"rax")
 
+				}else if IsFloat(tp) {
+					Mov(fnc,"xmm0",line.var2)
+					Mov(fnc,"xmm1",line.var3)
+					
+					switch tp
+					{
+					case GTypeFloat WriteData(0xF3)
+					case GTypeDouble WriteData(0xF2)
+					case void assert(false)
+					}
+					switch line.opcode
+					{
+					case "min" WriteData(0x0F,0x5D,0xC1) //TODO unsigned
+					case "max" WriteData(0x0F,0x5F,0xC1)
+					}
+					Mov(fnc,line.var1,"xmm0")
 				}else{
 					assert(false)
 				}
+			case "sqrt"
+				tp := objs[line.var1].GetType()
+				assert(IsFloat(tp))
+
+				Mov(fnc,"xmm0",line.var2)
+				
+				switch tp
+				{
+				case GTypeFloat WriteData(0xF3)
+				case GTypeDouble WriteData(0xF2)
+				case void assert(false)
+				}
+				WriteData(0x0F,0x51,0xC0)
+				Mov(fnc,line.var1,"xmm0")
 			case in !["shl","ushr","sshr"]
 				Mov(fnc,"rax",line.var2)
 				Mov(fnc,"rcx",line.var3) // MUST BE RCX
@@ -563,32 +616,60 @@ MCBuildFuncContext_x86_64 := class
 			case "label"
 				labelPos[line.var1] = strm.Size()
 
+			case "vec_scalar_mul"
+				Mov(fnc,"xmm0",line.var2)
+				Mov(fnc,"xmm1",line.var3)
+
+				tp := objs[line.var2].GetType()->{TypeVector^}
+				assert(tp.Base == GTypeFloat)
+				vecSize := tp.vecElementCount
+				WriteData(0x66,0x0F,0x3A,0x40,0xC1) //xmm0 = Dot(xmm0,xmm1)
+				switch vecSize
+				{
+				case 2 WriteData(0x31)
+				case 3 WriteData(0x71)
+				case 4 WriteData(0xF1)
+				}
+				Mov(fnc,line.var1,"xmm0")
 			case "vec_shuffle_begin"
 				res := lines[i].var1
 				target := lines[i].var2
 
 				Mov(fnc,"xmm0",target)
 
-				vecSize := objs[target].GetType()->{TypeVector^}.vecElementCount
+				vecSizeRes := objs[target].GetType()->{TypeVector^}.vecElementCount
 
 				indx := int
+				zeroIndx := int
 				j := 0
 
 				i += 1
 				while lines[i].opcode != "vec_shuffle_end"
 				{
-					assert(lines[i].opcode  == "vec_shuffle_index")
-					obj := ref objs[lines[i].var1]
-					assert(obj is MCConstInteger)
-					val := obj&->{MCConstInteger^}.GetValue()
-					assert(val < vecSize) //TODO .0
-					indx = indx + (val shl j*2)
+					switch lines[i].opcode 
+					{
+					case "vec_shuffle_index"
+						obj := ref objs[lines[i].var1]
+						assert(obj is MCConstInteger)
+						val := obj&->{MCConstInteger^}.GetValue()
+						indx = indx + (val shl j*2)
+					case "vec_shuffle_zero"
+						zeroIndx = zeroIndx + (1 shl j)
+					}
+						
 					j += 1
 					i += 1
 				}
 
 				WriteData(0x66,0x0F,0x70,0xC0)
 				WriteData(indx)
+
+				if zeroIndx != 0
+				{
+					//zeroIndx = not_b zeroIndx
+					WriteData(0x0F,0x57,0xC9) // xor xmm1 ,xmm1 ; xmm1 = 0
+					WriteData(0x66,0x0F,0x3A,0x0C,0xC1,zeroIndx)
+				}
 
 				Mov(fnc,res,"xmm0")
 
@@ -742,21 +823,10 @@ MCBuildFuncContext_x86_64 := class
 				tpTo := objs[line.var1].GetType()
 				tpFrom := objs[line.var2].GetType()
 
-				if IsPtrLikeType(tpTo) and IsPtrLikeType(tpFrom)
+				if IsRAXCastType(tpTo) and IsRAXCastType(tpFrom)
 				{
 					Mov(fnc,"rax",line.var2)
 					Mov(fnc,line.var1,"rax")
-				}else if IsInt(tpTo) and IsInt(tpFrom) {
-					//if tpTo == GTypeS64 and tpFrom == GTypeInt {
-					//	Mov(fnc,"rax",line.var2)
-					//	ResultData << "\x48\x98"
-					//	Mov(fnc,line.var1,"rax")
-					//}else{ 
-						Mov(fnc,"rax",line.var2)
-						Mov(fnc,line.var1,"rax")
-						//printf("x86_64, unsupported integer cast\n")
-						//assert(false)
-					//}
 				}else if tpTo == GTypeFloat and tpFrom == GTypeDouble{
 					Mov(fnc,"xmm0",line.var2)
 					ResultData << "\xF2\x0F\x5A\xC8"
@@ -899,52 +969,57 @@ MCBuildFuncContext_x86_64 := class
 
 		if obj is MCVariable or obj is MCConstValue or obj is MCConstVarX86 {
 
-			if obj.GetType()? is TypeVector {
-				if toReg {
-					if size == 8 {
-						WriteData(0x66,0x48,0x0F,0x6E,0x85 + (regIndx shl 3))
-					}else if size == 12 or size == 16 {
-						WriteData(0x0F,0x28, 0x85 + (regIndx shl 3))
-					}else{
-						assert(false)
-					}
+			if isFloatReg {
 
+				if obj.GetType()? is TypeVector {
+					if toReg {
+						if size == 8 {
+							WriteData(0x66,0x48,0x0F,0x6E,0x85 + (regIndx shl 3))
+						}else if size == 12 or size == 16 {
+							WriteData(0x0F,0x28, 0x85 + (regIndx shl 3))
+						}else{
+							assert(false)
+						}
+
+					}else{
+						if size == 8 {
+							WriteData(0x66,0x48,0x0F,0x7E,0x85 + (regIndx shl 3))
+						}else if size == 12 or size == 16 {
+							WriteData(0x0F,0x29, 0x85 + (regIndx shl 3))
+						}else{
+							assert(false)
+						}
+					}
+					x := getObjsStackOffset(fnc,indx)
+					ResultData.Write(x&,4)	
 				}else{
-					if size == 8 {
-						WriteData(0x66,0x48,0x0F,0x7E,0x85 + (regIndx shl 3))
-					}else if size == 12 or size == 16 {
-						WriteData(0x0F,0x29, 0x85 + (regIndx shl 3))
+					if toReg {
+						if size == 4 {
+							WriteData(0x66,0x0F,0x6E,0x85 + (regIndx shl 3))
+						}else{
+							WriteData(0x66,0x48,0x0F,0x6E,0x85 + (regIndx shl 3))
+						}
 					}else{
-						assert(false)
+						if size == 4 {
+							WriteData(0x66,0x0F,0x7E,0x85 + (regIndx shl 3))
+						}else{
+							WriteData(0x66,0x48,0x0F,0x7E,0x85 + (regIndx shl 3))
+						}
 					}
-				}
-				x := getObjsStackOffset(fnc,indx)
-				ResultData.Write(x&,4)
-				
-			} else if isFloatReg {
-				if toReg {
-					if size == 4 {
-						WriteData(0x66,0x0F,0x6E,0x85 + (regIndx shl 3))
-					}else{
-						WriteData(0x66,0x48,0x0F,0x6E,0x85 + (regIndx shl 3))
-					}
-				}else{
-					if size == 4 {
-						WriteData(0x66,0x0F,0x7E,0x85 + (regIndx shl 3))
-					}else{
-						WriteData(0x66,0x48,0x0F,0x7E,0x85 + (regIndx shl 3))
-					}
-				}
-				x := getObjsStackOffset(fnc,indx)
-				ResultData.Write(x&,4)
+					x := getObjsStackOffset(fnc,indx)
+					ResultData.Write(x&,4)
+				} 
 			}else {
 				regIndx := reg mod 8
 				extCode := reg >= 8 ?: 4 : 0
+
+				assert(size <= 8)
 					
 
 				if toReg {
+					tp := obj.GetType()
 					
-					if IsUInt(obj.GetType()) {
+					if IsUInt(tp) or tp is TypeEnum {
 						switch size
 						{
 						case 1
@@ -1140,6 +1215,16 @@ IsPtrLikeType := !(Type^ tp) -> bool
 	if tp is in TypeArrayView
 		return true
 	if tp == GTypeStr
+		return true
+	return false
+}
+IsRAXCastType := !(Type^ tp) -> bool
+{
+	if IsPtrLikeType(tp)
+		return true
+	if IsInt(tp)
+		return true
+	if tp is TypeEnum
 		return true
 	return false
 }
