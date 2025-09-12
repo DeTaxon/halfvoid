@@ -5,7 +5,7 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	oldWork := CurrentWork
 	CurrentWork = result
 
-	ctx := MCBuildContext_x86_64()
+	ctx := GX86Cntx&
 
 	///createdFunc := ctx.GetFunctionPtr(funcToRun)->{!(int,int,int,int,int,int,int,int,int)^->void}
 	///// assert(false)
@@ -20,7 +20,7 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 }
 
 //TODO check sse2 sse4_1 support
-
+//TODO va_start va_end support
 
 
 x86FuncData := class
@@ -36,12 +36,6 @@ MCBuildContext_x86_64 := class
 	functions := x86FuncData[BoxFuncBody^]
 
 	funcsToCompile := List.{BoxFuncBody^}
-
-	this := !() -> void
-	{
-		bigMem.Create(16*1024*1024,"rwe") //TODO unconst
-		memIter = bigMem.GetPointer()
-	}
 
 	GetFunctionPtr := !(BoxFuncBody^ fnc) -> void^
 	{
@@ -62,6 +56,10 @@ MCBuildContext_x86_64 := class
 
 	CompileFuncs := !() -> void 
 	{
+		if memIter == null {
+			bigMem.Create(16*1024*1024,"rwe") //TODO unconst
+			memIter = bigMem.GetPointer()
+		}
 		while funcsToCompile.Size() != 0
 		{
 			fnc := funcsToCompile.Pop()
@@ -83,6 +81,15 @@ MCBuildContext_x86_64 := class
 			funcSize = (funcSize + 15) shr 4 shl 4
 			memIter = memIter->{u8^}[funcSize]&
 		}
+	}
+	ReloadFunctions := !(HotloadContext^ ctx) -> void
+	{
+		for newFunc : ctx.ChangedFunctions
+		{
+			if functions.Contain(newFunc)
+				funcsToCompile.Push(newFunc)
+		}
+		CompileFuncs()
 	}
 }
 
@@ -942,7 +949,7 @@ MCBuildFuncContext_x86_64 := class
 				WriteData(0x90) //NOP
 
 			case void
-				printf("x86_64, unsupported opcode %s\n",line.opcode.ToCStr())
+				printf("x86_64, unsupported opcode %s at %s %i\n",line.opcode.ToCStr(),fileName,fileLine)
 				assert(false)
 	
 			}

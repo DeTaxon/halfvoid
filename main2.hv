@@ -8,14 +8,17 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	x := int
-	y := x
-	x > y
-	x >= y
-	x < y
-	x <= y
+	x := double
+	y := 89deg
+	c := -y
 
-	//printf("wut %i %i %i %i %i %i\n",x == y, x != y, x > y, x >= y, x < y, x <= y)
+	if x < c
+	{
+		printf("hey %f %f %i\n",x , c , x < c)
+		printf("hey %f %f %i\n",x , c , x < c)
+	}
+
+	printf("wut %i %i %i %i %i %i\n",x == y, x != y, x > y, x >= y, x < y, x <= y)
 	//c := u8
 	//c = 4
 	//for i : c

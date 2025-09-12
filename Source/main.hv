@@ -35,6 +35,7 @@ RunMode := bool
 RunModeFuncName := char^
 
 GInterpCntx := MCInterpContext
+GX86Cntx := MCBuildContext_x86_64
 GHotloadCntx := HotloadContext
 
 WorkBag := CompilerWork

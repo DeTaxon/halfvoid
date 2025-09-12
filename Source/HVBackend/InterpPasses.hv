@@ -65,18 +65,23 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 			{
 				nm := constFunc->{BoxFuncDeclare^}
 
+				//if NonStopBuild and nm.itName == "printf"
+				//{
+				//	pv := @once intGetFunc("printf_hv")
+				//	if pv != null
+				//	{
+				//		it&->{MCConstFunction^}.GetValue() = pv
+				//	}
+				//}
 				if NonStopBuild and nm.itName == "printf"
 				{
-					pv := @once intGetFunc("printf_hv")
-					if pv != null
-					{
-						it&->{MCConstFunction^}.GetValue() = pv
-					}
+					fncPtr = printf_hv_nonstop
+					fncType = GetFuncType(![GTypeChar.GetPoint()],![false],GTypeInt,false,true).GetPoint()
 				}
 
 			}
 
-			if constFunc is BoxFuncBody
+			if constFunc is BoxFuncBody and fncPtr == null
 			{
 				bdy := constFunc->{BoxFuncBody^}
 
@@ -99,4 +104,11 @@ InterpPassReplaceCoreFunction := !(MCFunction^ optFunction) -> MCFunction^
 		}
 	}
 	return optFunction
+}
+printf_hv_nonstop := !(char^ str, ... ) -> int
+{
+	va := va_list
+	va_start(va&)
+	vprintf_hv_stream(cliWin.ConsoleStream?^,str,va&)
+	va_end(va&)
 }

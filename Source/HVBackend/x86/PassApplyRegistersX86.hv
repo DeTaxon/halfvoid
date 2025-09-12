@@ -181,7 +181,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			tp4 := oPtr[it.var4].GetType()
 
 			if tp != tp4 {
-				assert(IsPtrLikeType(tp) and IsPtrLikeType(tp4))
+				assert(IsRAXCastType(tp) and IsRAXCastType(tp4))
 			}
 			assert(oPtr[it.var1].GetType() == GTypeBool)
 
@@ -204,11 +204,10 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c+1] = MCLine("mov",reg2,it.var4)
 
 			if IsFloat(tp) {
-				//TODOTODOTODO definatly does not work when reg1 == reg2
 				if it.V3Cond() == ">" {
-					cPtr[c+2] = MCLine("cmp",res,reg2,"<=",reg1)
-				}else if it.V3Cond() == ">=" {
 					cPtr[c+2] = MCLine("cmp",res,reg2,"<",reg1)
+				}else if it.V3Cond() == ">=" {
+					cPtr[c+2] = MCLine("cmp",res,reg2,"<=",reg1)
 				}else {
 					cPtr[c+2] = MCLine("cmp",res,reg1,it.V3Cond(),reg2)
 				}
