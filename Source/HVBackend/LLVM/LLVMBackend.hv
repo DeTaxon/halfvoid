@@ -879,6 +879,20 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printf("%s %s %s %s %s %s\n",ob1.UnitName,ob1.GetType().GetBADStr().Str(),ob2.UnitName,ob2.GetType().GetBADStr().Str(),ob3.UnitName,ob3.GetType().GetBADStr().Str())
 					assert(false)
 				}
+			case "assert"
+				ob1 := ref fnc.Objects[op.var1]
+				tmpId := GetNewId()
+
+				out << "	br i1 "
+				LLVMPrintObjValue(ctx,ob1,op.var1)
+				out << ", label %End" << tmpId << ", label %Failed" << tmpId
+				printDebugEnd()
+				out << "Failed" << tmpId << ":\n"
+				out << "	call void @llvm.debugtrap()"
+				printDebugEnd()
+				out << "	br label %End" << tmpId
+				printDebugEnd()
+				out << "End" << tmpId << ":\n"
 			case void
 				printf("LLVM: unknown opcode %s at %s %i\n",op.opcode.ToCStr(),base.GetName(),indx)
 				assert(false)
