@@ -84,6 +84,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	}
 
 	
+	nc := false
 	out << "define "
 	rTyp.PrintType(ctx)
 	if fType2.ResultRef
@@ -96,6 +97,13 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		inx := fnc.InputsIndxStart + i
 		fnc.Objects[inx].GetType().PrintType(ctx)
 		out << " %Inp" << i
+		nc = true
+	}
+	if fType2.IsVargs
+	{
+		if nc
+			out << ","
+		out << "..."
 	}
 	out << ")"
 	if base.AttrId.IsSet()
@@ -879,6 +887,24 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printf("%s %s %s %s %s %s\n",ob1.UnitName,ob1.GetType().GetBADStr().Str(),ob2.UnitName,ob2.GetType().GetBADStr().Str(),ob3.UnitName,ob3.GetType().GetBADStr().Str())
 					assert(false)
 				}
+			case "va_start"
+				out << "	call void @llvm.va_start(i8* "
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var1],op.var1)
+				out << ")"
+				printDebugEnd()
+
+			case "va_arg"
+				out << "	%Var" << op.var1 << " = va_arg i8* "
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var2],op.var2)
+				out << " , "
+				fnc.Objects[op.var1].GetType().PrintType(ctx)
+				printDebugEnd()
+				
+			case "va_end"
+				out << "	call void @llvm.va_end(i8* "
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var1],op.var1)
+				out << ")"
+				printDebugEnd()
 			case "assert"
 				ob1 := ref fnc.Objects[op.var1]
 				tmpId := GetNewId()
