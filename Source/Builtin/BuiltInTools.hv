@@ -222,6 +222,39 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 		return GetFuncType(![GTypeVoidP],consts[0]->{Type^})
 		
 	}
+	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+	{
+		getType := consts[0]->{Type^}
+		if targetLinux  // TODO add windows support
+		{
+			if IsPtrLikeType(getType) or IsInt(getType)
+			{
+				callGetInt := CreateFuncCall("vaListLoadInt",objs)
+				assert(callGetInt != null)
+
+				if callGetInt?.GetType() != getType
+				{
+					callGetInt = GetExchange(callGetInt,getType)
+				}
+
+				return callGetInt?
+			}
+			if IsFloat(getType)
+			{
+				callGetFloat := CreateFuncCall("vaListLoadFloat",objs)
+				assert(callGetFloat != null)
+
+				if callGetFloat?.GetType() != getType
+				{
+					callGetFloat = GetExchange(callGetFloat,getType)
+				}
+
+				return callGetFloat?
+
+			}
+		}
+		return super(objs,consts,iObjs)
+	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{
 		return new BuiltInVaArg(tp,consts[0]->{Type^})

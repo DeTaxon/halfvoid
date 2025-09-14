@@ -1,8 +1,32 @@
 
 va_list := class
 {
-	offset := int
-	idk := int
-	point1 := void^
-	point2 := void^
+	intOffset := int
+	floatOffset := int
+	stackArea := u8^
+	regArea := u8^
+}
+
+
+vaListLoadInt := !(va_list^ va) -> u64
+{
+	if va.intOffset < 48
+	{
+		result = va.regArea[va.intOffset]
+		va.intOffset += 8
+	}else{
+		result = va.stackArea->{u64^}^
+		va.stackArea = va.stackArea[8]&
+	}
+}
+vaListLoadFloat := !(va_list^ va) -> double
+{
+	if va.floatOffset < 176
+	{
+		result = va.regArea[va.floatOffset]&->{double^}^
+		va.floatOffset += 16
+	}else{
+		result = va.stackArea->{double^}^
+		va.stackArea = va.stackArea[8]&
+	}
 }
