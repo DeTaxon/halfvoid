@@ -12,7 +12,7 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	///createdFunc(1,2,3,5,8,13,21,34,45)
 	
 	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!()^->void}
-	// assert(false)
+	assert(false)
 	createdFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
@@ -57,7 +57,7 @@ MCBuildContext_x86_64 := class
 	CompileFuncs := !() -> void 
 	{
 		if memIter == null {
-			bigMem.Create(16*1024*1024,"rwe") //TODO unconst
+			bigMem.Create(64*1024*1024,"rwe")
 			memIter = bigMem.GetPointer()
 		}
 		while funcsToCompile.Size() != 0
@@ -114,7 +114,7 @@ MCBuildFuncContext_x86_64 := class
 		// fnc.Print()
 		fnc = PassApplyRegistersX86(fnc)
 
-		// fnc.Print()
+		fnc.Print()
 
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
@@ -241,7 +241,7 @@ MCBuildFuncContext_x86_64 := class
 						assert(r != "rdx")
 					}else{
 						r = "rax"
-						Mov(fnc,"rax",line.var2) // TODO remove
+						Mov(fnc,"rax",line.var2)
 					}
 
 					MovU64ToReg(fnc,"rdx",offst)
@@ -315,12 +315,24 @@ MCBuildFuncContext_x86_64 := class
 						Mov(fnc,line.var1,"xmm0")
 					}else{
 						Mov(fnc,"rcx",line.var2)
-						switch size
-						{
-						case 1 ResultData << "\x40\x8A\x01"
-						case 2 ResultData << "\x48\x0F\xBF\x01" //TODO
-						case 4 ResultData << "\x48\x8B\x01" //TODO
-						case 8 ResultData << "\x48\x8B\x01" //TODO
+
+						if IsInt(tp) and not IsUInt(tp) {
+							switch size
+							{
+							case 1 WriteData(0x48,0x0F,0xBE,0x01)
+							case 2 WriteData(0x48,0x0F,0xBF,0x01)
+							case 4 WriteData(0x48,0x63,0x01)
+							case 8 WriteData(0x48,0x8B,0x01)
+							}
+
+						}else{
+							switch size
+							{
+							case 1 WriteData(0x48,0x0F,0xB6,0x01)
+							case 2 WriteData(0x48,0x0F,0xB7,0x01)
+							case 4 WriteData(0x8B,0x01)
+							case 8 WriteData(0x48,0x8B,0x01)
+							}
 						}
 						Mov(fnc,line.var1,"rax")
 					}
@@ -332,11 +344,21 @@ MCBuildFuncContext_x86_64 := class
 				if IsInt(tp) {
 					Mov(fnc,"rax",line.var2)
 					Mov(fnc,"rcx",line.var3)
-					WriteData(0x48,0x3B,0xC1) // cmp rax,rcx
-					switch line.opcode
-					{
-					case "min" WriteData(0x48,0x0F,0x4F,0xC1) //TODO unsigned
-					case "max" WriteData(0x48,0x0F,0x4C,0xC1)
+					WriteData(0x48,0x39,0xC1) // cmp rax,rcx
+
+					if IsUInt(tp) {
+						switch line.opcode
+						{
+						case "min" WriteData(0x48,0x0F,0x42,0xC1) // cmov rax,rcx
+						case "max" WriteData(0x48,0x0F,0x47,0xC1)
+						}
+
+					}else{
+						switch line.opcode
+						{
+						case "min" WriteData(0x48,0x0F,0x4C,0xC1) // cmov rax,rcx
+						case "max" WriteData(0x48,0x0F,0x4F,0xC1)
+						}
 					}
 					Mov(fnc,line.var1,"rax")
 
@@ -352,7 +374,7 @@ MCBuildFuncContext_x86_64 := class
 					}
 					switch line.opcode
 					{
-					case "min" WriteData(0x0F,0x5D,0xC1) //TODO unsigned
+					case "min" WriteData(0x0F,0x5D,0xC1)
 					case "max" WriteData(0x0F,0x5F,0xC1)
 					}
 					Mov(fnc,line.var1,"xmm0")
@@ -476,7 +498,7 @@ MCBuildFuncContext_x86_64 := class
 				}
 
 
-			case in !["add","sub"] //TODO signes aware
+			case in !["add","sub"]
 			
 				tp := objs[line.var1].GetType()
 
@@ -588,8 +610,15 @@ MCBuildFuncContext_x86_64 := class
 
 					code := 0
 					if line.opcode == "div" {
-						code = 7 // 6 if unsigned
-						MovU64ToReg(fnc,"rdx",0) // TODO, 0xFFFFFF if rax negative
+						if IsUInt(tp)
+						{
+							code = 6
+							MovU64ToReg(fnc,"rdx",0)
+						}else{
+							code = 7
+							WriteData(0x48,0x8B,0xD0) // mov rdx , rax
+							WriteData(0x48,0xC1,0xFA,63) // shr rdx,63
+						}
 					}else{
 						assert(line.opcode == "mul")
 						code = 5 // 4 if unsigned
@@ -749,7 +778,7 @@ MCBuildFuncContext_x86_64 := class
 				}
 				if stackPassed.Size() mod 2 != 0
 					Push("rax")
-				for it : stackPassed //TODO not aligned to 16 byte case
+				for it : stackPassed
 				{
 					Mov(fnc,"rax",it)
 					Push("rax")

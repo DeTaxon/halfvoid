@@ -9,6 +9,8 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
+	c := u64[256]
+	t := c[5]
 	//c := u8
 	//c = 4
 	//for i : c
@@ -17,10 +19,6 @@ RunFunc := !() -> void
 	//}
 	//
 }
-/*
- *	it := vec3f
- *	it.wxyz //TODO this does not create error
- */
 
 tst := !() -> int {
 	nums := 10_000
@@ -91,8 +89,6 @@ tst := !() -> int {
 }
 
 
-//TODO optimize enum on int consts
-//TODO '\x12'
 //TODO named input + template, !(@T^ x = null)
 //TODO emit error if named input provided but not used
 //TODO class functions inherit virtual property, and default values
@@ -100,7 +96,6 @@ tst := !() -> int {
 //TODO lazy class in hotload
 //TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
 //TODO allow !(ref int x) , in functions and function types, lambdas
-//TODO enum{"a","b","c"} Func(!["a","b"][2]) maybe make it work
 
 
 //ThisIsError := !() -> void
