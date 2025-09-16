@@ -55,7 +55,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 				if vecSize < 3
 					return null
 			case "w"
-				if vecSize < 4
+				if vecSize < 4 
 					return null
 			case void
 				if strVal.Value.Size() > 4
@@ -65,7 +65,13 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 				
 				for i : strVal.Value.Size()
 				{
-					if not (strVal.Value^[i] in "xyzw0")
+					c := strVal.Value^[i]
+
+					if not (c in "xyzw0")
+						return null
+					if vecSize < 4 and c == 'w'
+						return null
+					if vecSize < 3 and c == 'z'
 						return null
 				}
 				resType := Type^
