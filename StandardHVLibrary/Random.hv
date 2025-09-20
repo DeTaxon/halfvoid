@@ -18,3 +18,14 @@ RandInt := !(Range rRange) -> int
 	res = res mod dif
 	return res + rRange.Start
 }
+
+RandFloat := !(float a, float b) -> float
+	#Mark("JITPass")
+{
+	#MarkFunction("CallAtStart",initRandom)
+
+	mInt := 65536
+	proc := RandInt(0..mInt) / mInt
+
+	return a + (b - a)*proc
+}

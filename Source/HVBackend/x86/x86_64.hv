@@ -12,7 +12,7 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	///createdFunc(1,2,3,5,8,13,21,34,45)
 	
 	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!()^->void}
-	assert(false)
+	// assert(false)
 	createdFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
@@ -114,7 +114,7 @@ MCBuildFuncContext_x86_64 := class
 		// fnc.Print()
 		fnc = PassApplyRegistersX86(fnc)
 
-		fnc.Print()
+		// fnc.Print()
 
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
