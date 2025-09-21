@@ -4,15 +4,51 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 	@once GenMCTable()
 	tbl := ref OpcodeMustConstTable
 
-	bCtx := MCBuildContext(fnc,true,false)
+	objs := new Vector.{MCObject}
+	o := fnc.Objects.Size()
+	objs.Resize(o*2)
+	oPtr := objs.GetPointer()
+	memcpy(oPtr,fnc.Objects.GetPointer(),o*MCObject->TypeSize)
 
-	newObjs := ref bCtx.objects
-	newCmds := ref bCtx.lines
+	cmds := new Vector.{MCLine}
+	c := 0
+	cmds.Resize(fnc.Lines.Size()*4 + 100)
+	cPtr := cmds.GetPointer()
+
+	pushVar := (Type^ varType) ==> int
+	{
+		newVar := MCVariable
+
+		newVar.GetValueType() = varType
+
+		oPtr[o] = newVar
+		result = o
+		o += 1
+	}
+	pushInt := (int value) ==> int
+	{
+		newVar := MCConstInteger
+
+		newVar.GetValue() = value
+
+		oPtr[o] = newVar
+		result = o
+		o += 1
+	}
+	pushLabel := () ==> int
+	{
+		newLabel := MCLabel
+
+		oPtr[o] = newLabel
+		result = o
+		o += 1
+	}
 
 	for it , i : fnc.Lines
 	{
 		if it.opcode != "cmp" or it.V3Cond() != "<=>" {
-			newCmds.Push(it)
+			cPtr[c] = it
+			c += 1
 			continue
 		}
 
@@ -22,51 +58,72 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 		tp := ob1.GetType()
 
 		if IsInt(ob1.GetType()) {
-			newCmds.Push(MCLine("sub",it.var1,it.var2,it.var4))
+			cPtr[c] = MCLine("sub",it.var1,it.var2,it.var4)
+			c += 1
 		}else if IsPointLikeType(tp) {
-			c1 := bCtx.CreateVar(GTypeSizeT)
-			newCmds.Push(MCLine("cast",c1,it.var2))
-			c2 := bCtx.CreateVar(GTypeSizeT)
-			newCmds.Push(MCLine("cast",c2,it.var4))
 
-			resVal := bCtx.CreateVar(GTypeInt)
-			qLabel := bCtx.CreateLabel()
+			c1 := pushVar(GTypeSizeT)
+			cPtr[c+0] = MCLine("cast",c1,it.var2)
+			c2 := pushVar(GTypeSizeT)
+			cPtr[c+1] = MCLine("cast",c2,it.var4)
 
-			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(1))
-			res1 := HVB_ins_cmp_new(bCtx&,c1,">",c2)
-			HVB_ins_jump_if_bool(bCtx&,qLabel,res1)
+			resVal := pushVar(GTypeInt)
+			qLabel := pushLabel()
 
-			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(-1))
-			res1 := HVB_ins_cmp_new(bCtx&,c1,"<",c2)
-			HVB_ins_jump_if_bool(bCtx&,qLabel,res1)
 
-			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(0))
+			cPtr[c+2] = MCLine("mov",resVal,pushInt(1))
+			res1 := pushVar(GTypeBool)
+			cPtr[c+3] = MCLine("cmp",res1,c1,">",c2)
+			cPtr[c+4] = MCLine("jmp_if_bool",qLabel,res1)
 
-			HVB_ins_label(bCtx&,qLabel)
-			newCmds.Push(MCLine("cast",it.var1,resVal))
+			cPtr[c+5] = MCLine("mov",resVal,pushInt(-1))
+			res2 := pushVar(GTypeBool)
+			cPtr[c+6] = MCLine("cmp",res2,c1,"<",c2)
+			cPtr[c+7] = MCLine("jmp_if_bool",qLabel,res2)
+
+			cPtr[c+8] = MCLine("mov",resVal,pushInt(0))
+
+			cPtr[c+9] = MCLine("label",qLabel)
+			cPtr[c+10] = MCLine("cast",it.var1,resVal)
+			c+= 11
 		}else if IsFloat(tp) {
-			c1 := it.var2 
-			c2 := it.var4 
+			c1 := it.var2
+			c2 := it.var4
 
-			resVal := bCtx.CreateVar(GTypeInt)
-			qLabel := bCtx.CreateLabel()
+			resVal := pushVar(GTypeInt)
+			qLabel := pushLabel()
 
-			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(1))
-			res1 := HVB_ins_cmp_new(bCtx&,c1,">",c2)
-			HVB_ins_jump_if_bool(bCtx&,qLabel,res1)
 
-			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(-1))
-			res1 := HVB_ins_cmp_new(bCtx&,c1,"<",c2)
-			HVB_ins_jump_if_bool(bCtx&,qLabel,res1)
+			cPtr[c+0] = MCLine("mov",resVal,pushInt(1))
+			res1 := pushVar(GTypeBool)
+			cPtr[c+1] = MCLine("cmp",res1,c1,">",c2)
+			cPtr[c+2] = MCLine("jmp_if_bool",qLabel,res1)
 
-			HVB_ins_move(bCtx&,resVal,bCtx.AddInteger(0))
+			cPtr[c+3] = MCLine("mov",resVal,pushInt(-1))
+			res2 := pushVar(GTypeBool)
+			cPtr[c+4] = MCLine("cmp",res2,c1,"<",c2)
+			cPtr[c+5] = MCLine("jmp_if_bool",qLabel,res2)
 
-			HVB_ins_label(bCtx&,qLabel)
-			newCmds.Push(MCLine("cast",it.var1,resVal))
+			cPtr[c+6] = MCLine("mov",resVal,pushInt(0))
+
+			cPtr[c+7] = MCLine("label",qLabel)
+			cPtr[c+8] = MCLine("cast",it.var1,resVal)
+			c += 9
 		}else{
 			assert(false)
 		}
 	}
 
-	return bCtx.CreateMCFunction(false)
+	objs.Resize(o)
+	cmds.Resize(c)
+
+	result = new MCFunction
+
+	result.Objects = objs
+	result.Lines = cmds
+
+	result.BaseFunction = fnc.BaseFunction
+	result.ResultIndex = fnc.ResultIndex
+	result.InputsIndxStart = fnc.InputsIndxStart
+	result.InputsIndxCount = fnc.InputsIndxCount
 }

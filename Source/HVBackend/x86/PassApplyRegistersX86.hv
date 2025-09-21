@@ -1,8 +1,6 @@
 
 PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 {
-	bCtx := MCBuildContext(fnc,true,false)
-
 	objs := new Vector.{MCObject}
 	o := fnc.Objects.Size()
 	objs.Resize(o*6)
