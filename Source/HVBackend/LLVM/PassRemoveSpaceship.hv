@@ -6,7 +6,7 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 
 	objs := new Vector.{MCObject}
 	o := fnc.Objects.Size()
-	objs.Resize(o*2)
+	objs.Resize(o*2 + 50)
 	oPtr := objs.GetPointer()
 	memcpy(oPtr,fnc.Objects.GetPointer(),o*MCObject->TypeSize)
 
