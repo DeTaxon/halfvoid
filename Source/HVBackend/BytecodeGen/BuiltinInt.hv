@@ -115,8 +115,22 @@ AppendClass BuiltInIntDecInc
 	IsMCInlined := virtual true
 	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
 	{
+		tp := GetType()->{TypeFunc^}.ResultType
 		obj := indexes[0].WriteMC(ctx).CreatedId
+
+		oldValue := ctx.CreateVar(tp)
+		HVB_ins_move(ctx,oldValue,obj)
+
 		one := HVB_ins_const_int32(ctx,1)
+
+		if tp != GTypeInt
+		{
+			newOne := ctx.CreateVar(tp)
+			HVB_ins_cast(ctx,newOne,one)
+			one = newOne
+		}
+
+
 
 		switch llvm
 		{
@@ -128,7 +142,7 @@ AppendClass BuiltInIntDecInc
 			assert(false)
 
 		}
-		result.CreatedId = obj
+		result.CreatedId = oldValue
 	}
 }
 AppendClass BuiltInIntMinus

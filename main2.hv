@@ -3,14 +3,14 @@
 
 main := !(char^[] args) -> int
 {
-	c := vec3f
-	r := c.xyzz
+	RunFunc()
 }
 
 RunFunc := !() -> void
 {
-	c := u64[256]
-	t := c[5]
+	c := 0
+	printf("hey %i\n",c++)
+	printf("hey %i\n",c++)
 	//c := u8
 	//c = 4
 	//for i : c
