@@ -145,7 +145,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			c += 4
 
 		case in !["add","sub"]
-			v1 := ref oPtr[it.var2] //TODO float
+			v1 := ref oPtr[it.var2]
 			v2 := ref oPtr[it.var3]
 			res := ref oPtr[it.var1]
 
@@ -247,9 +247,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 				tp2 := ob2.GetType()
 				reg2 := int
-				if tp2.GetSize() > 8 {
-					assert(tp2 is TypeVector)
-					assert(tp2.GetSize() == 16)
+				if tp2 is TypeVector or  IsFloat(tp2) {
 					reg2 = pushReg("xmm0",tp2)
 				}else{
 					reg2 = pushReg("rax",tp2)
@@ -261,6 +259,34 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c+2] = MCLine("llvm_store",reg1,reg2)
 				c += 3
 
+			}
+		case "llvm_load"
+			ob1 := oPtr[it.var1]
+			ob2 := oPtr[it.var2]
+
+			tp := ob1.GetType()
+
+			if ob1.GetType() == ob2.GetType() {
+				reg := pushReg("rax",tp)
+
+				cPtr[c] = MCLine("mov",reg,it.var2)
+				cPtr[c+1] = MCLine("mov",it.var1,reg)
+				c += 2
+			}else{
+				reg1 := pushReg("rcx",ob2.GetType())
+
+				reg2 := int
+				if tp is TypeVector or IsFloat(tp) {
+					reg2 = pushReg("xmm0",tp)
+				}else{
+					reg2 = pushReg("rax",tp)
+				}
+				
+
+				cPtr[c] = MCLine("mov",reg1,it.var2)
+				cPtr[c+1] = MCLine("llvm_load",reg2,reg1)
+				cPtr[c+2] = MCLine("mov",it.var1,reg2)
+				c += 3
 			}
 		case "llvm_getelementptr"
 		

@@ -278,11 +278,16 @@ MCBuildFuncContext_x86_64 := class
 
 				regData := (reg1 mod 8) + ((reg2 mod 8) shl 3)
 
-				if size > 8 {
-					assert(reg2 >= 16)
-					assert(size == 16)
+				if reg2 >= 16 {
 
-					WriteData(0x0F,0x29,regData) // mov xmm0, (rcx)
+					switch size
+					{
+					case 4 WriteData(0x66,0x0F,0x7E,regData)
+					case 8 WriteData(0x66,0x48,0x0F,0x7E,regData)
+					case 16 WriteData(0x0F,0x29,regData) // mov xmm0, (rcx)
+					case void
+						assert(false)
+					}
 
 				}else{
 					assert(reg2 < 8)
@@ -298,45 +303,45 @@ MCBuildFuncContext_x86_64 := class
 
 			case "llvm_load"
 
-				if objs[line.var1].GetType() == objs[line.var2].GetType() {
-					Mov(fnc,"rax",line.var2)
-					Mov(fnc,line.var1,"rax")
-				}else{
-					tp := objs[line.var1].GetType()
-					size := tp.GetSize()
+				tp := objs[line.var1].GetType()
+				size := tp.GetSize()
 
-					if size > 8 {
-						assert(tp is TypeVector)
-						assert(tp.Base == GTypeFloat)
-						assert(size == 16)
+				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue() 
+				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
 
-						Mov(fnc,"rcx",line.var2)
-						WriteData(0x0F,0x28,0x01) // mov xmm0, (rcx)
-						Mov(fnc,line.var1,"xmm0")
-					}else{
-						Mov(fnc,"rcx",line.var2)
+				regData := (reg2 mod 8) + ((reg1 mod 8) shl 3)
 
-						if IsInt(tp) and not IsUInt(tp) {
-							switch size
-							{
-							case 1 WriteData(0x48,0x0F,0xBE,0x01)
-							case 2 WriteData(0x48,0x0F,0xBF,0x01)
-							case 4 WriteData(0x48,0x63,0x01)
-							case 8 WriteData(0x48,0x8B,0x01)
-							}
+				if reg1 >= 16 {
 
-						}else{
-							switch size
-							{
-							case 1 WriteData(0x48,0x0F,0xB6,0x01)
-							case 2 WriteData(0x48,0x0F,0xB7,0x01)
-							case 4 WriteData(0x8B,0x01)
-							case 8 WriteData(0x48,0x8B,0x01)
-							}
-						}
-						Mov(fnc,line.var1,"rax")
+					switch size
+					{
+					case 4 WriteData(0x66,0x0F,0x6E,regData)
+					case 8 WriteData(0x66,0x48,0x0F,0x6E,regData)
+					case 16 WriteData(0x0F,0x28,regData) // mov (rcx) , xmm
+					case void
+						assert(false)
 					}
 
+					
+				}else{
+					if IsInt(tp) and not IsUInt(tp) {
+						switch size
+						{
+						case 1 WriteData(0x48,0x0F,0xBE,regData)
+						case 2 WriteData(0x48,0x0F,0xBF,regData)
+						case 4 WriteData(0x48,0x63,regData)
+						case 8 WriteData(0x48,0x8B,regData)
+						}
+
+					}else{
+						switch size
+						{
+						case 1 WriteData(0x48,0x0F,0xB6,regData)
+						case 2 WriteData(0x48,0x0F,0xB7,regData)
+						case 4 WriteData(0x8B,regData)
+						case 8 WriteData(0x48,0x8B,regData)
+						}
+					}
 				}
 			case in !["min","max"]
 				tp := objs[line.var1].GetType()

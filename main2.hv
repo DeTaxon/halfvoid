@@ -3,14 +3,22 @@
 
 main := !(char^[] args) -> int
 {
-	RunFunc()
+	// RunFunc()
+	x := vec4f
+	y := vec4f
+
+	z := x + y
 }
 
 RunFunc := !() -> void
 {
-	c := 0
-	printf("hey %i\n",c++)
-	printf("hey %i\n",c++)
+	c := float[12]
+	c[2] = 3.0f
+
+	printf("Hey %f\n",c[2])
+	//c := 0
+	//printf("hey %i\n",c++)
+	//printf("hey %i\n",c++)
 	//c := u8
 	//c = 4
 	//for i : c
