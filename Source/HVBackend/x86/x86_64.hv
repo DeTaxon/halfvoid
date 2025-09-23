@@ -200,23 +200,6 @@ MCBuildFuncContext_x86_64 := class
 					Mov(fnc,"rdx",line.var2)
 					ResultData << "\x48\x01\xD0" // add rax rdx
 					Mov(fnc,line.var1,"rax")
-
-				}else if tp is TypeClass and objs[line.var2] is MCVariable {
-					x := getObjsStackOffset(fnc,line.var2)
-
-					assert(objs[line.var3] is MCConstInteger)
-					indx := objs[line.var3]&->{MCConstInteger^}.GetValue()
-
-					cls := tp->{TypeClass^}.ToClass
-
-					offst := cls.GetFieldByIndexRaw(indx).MemOffset
-					offst += x
-
-					WriteData(0x48,0x8D,0x85) // lea 
-					ResultData.Write(offst&,4)
-					Mov(fnc,line.var1,"rax")
-
-
 				}else{
 					printf("wut %s %s %i\n",tp.GetBADStr().Str(),fileName,fileLine)
 					assert(false)
@@ -238,15 +221,14 @@ MCBuildFuncContext_x86_64 := class
 
 					if objs[line.var2] is MCConstRegisterX86 {
 						r = objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
-						assert(r != "rdx")
 					}else{
 						r = "rax"
 						Mov(fnc,"rax",line.var2)
 					}
 
-					MovU64ToReg(fnc,"rdx",offst)
-					WriteData(0x48,0x01,0xD0 + r) //add r rdx
-					Mov(fnc,line.var1,"rax")
+					WriteData(0x48,0x81,0xC0 + r) //add r imm32
+					ResultData.Write(offst&,4)
+					Mov(fnc,line.var1,r)
 
 				}else if tp is in TypePoint {
 
