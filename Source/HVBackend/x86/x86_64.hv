@@ -129,11 +129,11 @@ MCBuildFuncContext_x86_64 := class
 
 		X86WriteBody(ResultData,fnc)
 
-		ResultData << "\x48\x81\xc4" // add %rsp,stackSize
+		WriteData(0x48,0x81,0xc4) // add %rsp,stackSize
 		ResultData.Write(stackSize&,4)
 
 		Pop("rbp")
-		ResultData << "\xC3" // ret
+		WriteData(0xC3) // ret
 
 		PrintValues()
 	}
@@ -192,18 +192,8 @@ MCBuildFuncContext_x86_64 := class
 			case "llvm_getelementptr"
 				tp := objs[line.var2].GetType()
 
-				if tp is in TypePoint or tp == GTypeStr {
-					tpSize := tp.Base.GetSize()
-					MovU64ToReg(fnc,"rax",tpSize)
-					Mov(fnc,"rdx",line.var3)
-					ResultData << "\x48\x0F\xAF\xC2" // imul 
-					Mov(fnc,"rdx",line.var2)
-					ResultData << "\x48\x01\xD0" // add rax rdx
-					Mov(fnc,line.var1,"rax")
-				}else{
-					printf("wut %s %s %i\n",tp.GetBADStr().Str(),fileName,fileLine)
-					assert(false)
-				}
+				printf("wut %s %s %i\n",tp.GetBADStr().Str(),fileName,fileLine)
+				assert(false)
 			case "llvm_getelementptr0"
 				tpPtr := objs[line.var2].GetType()
 				assert(tpPtr is in TypePoint)
@@ -229,7 +219,6 @@ MCBuildFuncContext_x86_64 := class
 					WriteData(0x48,0x81,0xC0 + r) //add r imm32
 					ResultData.Write(offst&,4)
 					Mov(fnc,line.var1,r)
-
 				}else if tp is in TypePoint {
 
 					assert(objs[line.var2] is MCConstRegisterX86)

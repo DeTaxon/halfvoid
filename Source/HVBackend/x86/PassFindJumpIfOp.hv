@@ -38,12 +38,10 @@ PassOptimizeJumpX86 := !(MCFunction^ fnc) ->MCFunction^
 		if line.opcode == "cmp" and next.opcode == "jmp_if_bool" 
 			and line.var1 == next.var2 and usedTimes[line.var1] == 2 and IsRAXCastType(oPtr[line.var1].GetType())
 		{
-			cPtr[c] = MCLine("jmp_if_op",next.var1,line.var2,line.var3,line.var4)
-			c += 1
+			cPtr[c++] = MCLine("jmp_if_op",next.var1,line.var2,line.var3,line.var4)
 			i += 2
 		}else{
-			cPtr[c] = line
-			c += 1
+			cPtr[c++] = line
 			i += 1
 		}
 	}

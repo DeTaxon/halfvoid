@@ -18,6 +18,15 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		result = o
 		o += 1
 	}
+	pushInt := (int value) ==> int
+	{
+		newReg := MCConstInteger
+
+		newReg.GetValue() = value
+
+		result = o
+		oPtr[o++] = newReg
+	}
 	pushVar := (int offset, Type^ varType) ==> int
 	{
 		newVar := MCConstVarX86
@@ -298,10 +307,22 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			{
 				r := pushReg("rcx",tp.GetPoint())
 
-				cPtr[c] = MCLine("get_pointer",r,it.var2)
-				cPtr[c+1] = MCLine("llvm_getelementptr0",it.var1,r,it.var3)
-				c += 2
-			}else{
+				cPtr[c++] = MCLine("get_pointer",r,it.var2)
+				cPtr[c++] = MCLine("llvm_getelementptr0",it.var1,r,it.var3)
+			}else if tp is in TypePoint or tp == GTypeStr {
+				r1 := pushReg("rax",GTypeInt)
+				r2 := pushReg("rdx",GTypeInt)
+
+				tpSize := tp.Base.GetSize()
+				tpSizeIndx := pushInt(tpSize)
+
+				cPtr[c++] = MCLine("mov",r1,tpSizeIndx)
+				cPtr[c++] = MCLine("mov",r2,it.var3)
+				cPtr[c++] = MCLine("mul",r1,r2)
+				cPtr[c++] = MCLine("mov",r2,it.var2)
+				cPtr[c++] = MCLine("add",r1,r2)
+				cPtr[c++] = MCLine("mov",it.var1,r1)
+			}else {
 				cPtr[c] = it
 				c += 1
 			}
