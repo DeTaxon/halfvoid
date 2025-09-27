@@ -1,14 +1,34 @@
 
 
+Huh := class
+{
+	Test := virtual !() -> void
+	{
+		printf("Nope\n")
+	}
+}
+Huh2 := class extends Huh
+{
+	Test := virtual !() -> void
+	{
+		printf("Yep\n")
+	}
+}
 
 main := !(char^[] args) -> int
 {
 	RunFunc()
 }
 
+c := !() -> Huh^
+{
+	return new Huh2
+}
+
 RunFunc := !() -> void
 {
-	tst()
+	r := c()
+	r.Test()
 }
 
 tst := !() -> int {

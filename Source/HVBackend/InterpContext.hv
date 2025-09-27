@@ -126,8 +126,7 @@ MCInterpContext := class
 
 					if fnc->{BoxFuncBody^}.IsParsed() //TODOTODO maybe someone used function an now it's parsed
 					{
-						mc := GetMCFunc(fnc)
-						fncPointer := GetFunctionPointer(mc)
+						fncPointer := RGetFuncPtr(fnc)
 						memPtr->{void^^}^ = fncPointer
 
 						//memPtr->{void^^}^ = asFnc.Value

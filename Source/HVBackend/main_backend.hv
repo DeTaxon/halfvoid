@@ -31,3 +31,13 @@ MCInterpFunction2Resulted := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, vo
 	CurrentWork->{InterpWork^}.isDone = true
 	CurrentWork = oldWork
 }
+RGetFuncPtr := !(BoxFunc^ fnc) -> void^
+{
+	if FastestRunner
+	{
+	return GX86Cntx.GetFunctionPtr(fnc->{BoxFuncBody^})
+	}
+
+	mc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
+	return GInterpCntx.GetFunctionPointer(mc)
+}
