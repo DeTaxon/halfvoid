@@ -45,6 +45,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 	cPtr := cmds.GetPointer()
 
 	fTyp := NormalizeFuncType(fnc.BaseFunction.GetType()->{TypeFunc^})
+
+	if targetLinux
 	{// load inputs
 		redInts := 0
 		redFloats := 0
@@ -92,6 +94,41 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				rt := pushReg(reg,tp)
 
 				cPtr[c] = MCLine("mov",indx,rt)
+				c += 1
+			}
+		}
+	}
+	if targetWindows
+	{// load inputs
+		stackIter := 16 + 16 // 16 - ret address + push(rbp), 16 - reserved for first 4 variables
+
+		for i : fnc.InputsIndxCount
+		{
+			tp := fTyp.Params[i].ItType
+			indx := i + fnc.InputsIndxStart
+
+			if i < 4 {
+				reg := X86Register
+
+				if (IsFloat(tp) or tp is TypeVector) and not fTyp.Params[i].IsRef {
+					reg = "xmm0"
+					reg&->{int^}^ += i
+				}else{
+					switch i
+					{
+					case 0 reg = "rcx"
+					case 1 reg = "rdx"
+					case 2 reg = "r8"
+					case 3 reg = "r9"
+					}
+				}
+
+				rt := pushReg(reg,tp)
+				cPtr[c++] = MCLine("mov",indx,rt)
+			}else{
+				newVar := pushVar(stackIter,tp)
+				stackIter += 8
+				cPtr[c] = MCLine("mov",indx,newVar)
 				c += 1
 			}
 		}

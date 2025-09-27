@@ -3,11 +3,7 @@
 
 main := !(char^[] args) -> int
 {
-	// RunFunc()
-	x := vec4f
-	y := vec4f
-
-	z := x + y
+	RunFunc()
 }
 
 RunFunc := !() -> void
@@ -83,7 +79,8 @@ tst := !() -> int {
 	printf("resultPtr %s\n",resultPtr)
 }
 
-
+//TODO memset to func call
+//TODO x86, make passing vec4f abi compatable, windows, linux
 //TODO named input + template, !(@T^ x = null)
 //TODO emit error if named input provided but not used
 //TODO class functions inherit virtual property, and default values

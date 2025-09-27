@@ -6,18 +6,15 @@ PageMemory := class
 	
 	Create := !(s64 setMemSize, char^ flags) -> bool
 	{
-	
-		memFlags := 0
-		if 'w' in flags
-			memFlags += PROT_WRITE
+		memFlags := PAGE_NOACCESS
 		if 'r' in flags
-			memFlags += PROT_READ
+			memFlags = PAGE_READONLY
+		if 'w' in flags
+			memFlags = PAGE_READWRITE
 		if 'e' in flags
-			memFlags += PROT_EXEC
+			memFlags = memFlags shl 4
 
-		ptr := mmap(null,setMemSize,memFlags,MAP_PRIVATE + MAP_ANON,-1,null)
-		//TODO ptr != MAP_FAILED != 0xFFFFFFFFF
-		memPointer = ptr
+		memPointer = VirtualAlloc(null,setMemSize,MEM_COMMIT,memFlags)
 		memSize = setMemSize
 	}
 	GetPointer := !() -> void^
@@ -30,6 +27,8 @@ PageMemory := class
 	}
 	Close := !() -> void
 	{
+		if memPointer != null
+			VirtualFree(memPointer)
 		//TODO cleanup
 		memPointer = null
 		memSize = 0

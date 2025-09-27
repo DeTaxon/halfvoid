@@ -22,6 +22,14 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 //TODO check sse2 sse4_1 support
 //TODO va_start va_end support
 
+//linux fastcall x64
+//volatile rax,rdi,rsi,rcx,rdx,r8,r9, xmm0-xmm7
+//nonvolatile rbx,rsp,rbp,r12-r15
+
+//windows fastcall x64
+//volatile rax,rcx,rdx,r8-r11, xmm0-xmm5
+//nonvolatile : r12 - r15, rdi,rsi,rbx,rbp,rsp
+
 
 x86FuncData := class
 {
@@ -110,7 +118,7 @@ MCBuildFuncContext_x86_64 := class
 		fnc = PassSimplifyVectors(fnc)
 		fnc = PassRemoveVoidParams(fnc)
 		fnc = PassRemoveReferences(fnc)
-		fnc = PassOptimizeJumpX86(fnc)
+		// fnc = PassOptimizeJumpX86(fnc)
 		// fnc.Print()
 		fnc = PassApplyRegistersX86(fnc)
 
@@ -124,19 +132,18 @@ MCBuildFuncContext_x86_64 := class
 
 		Push("rbp")
 		WriteData(0x48,0x89,0xE5) // mov $rbo,$rsp
-		WriteData(0x48,0x81,0xEC) // sub %rsp,stackSize
-		ResultData.Write(stackSize&,4)
+		SubRsp(stackSize)
 
 		X86WriteBody(ResultData,fnc)
 
-		WriteData(0x48,0x81,0xc4) // add %rsp,stackSize
-		ResultData.Write(stackSize&,4)
+		AddRsp(stackSize)
 
 		Pop("rbp")
 		WriteData(0xC3) // ret
 
 		PrintValues()
 	}
+
 	FixLabels := !(void^ ptr) -> void
 	{
 		for lbls,id : labelTarget
@@ -709,6 +716,7 @@ MCBuildFuncContext_x86_64 := class
 				usedInts := 0
 				usedFloats := 0
 				stackPassed := HybridStack.{int,20}
+				paramIndex := 0
 
 
 				while lines[i].opcode != "call_end"
@@ -719,37 +727,67 @@ MCBuildFuncContext_x86_64 := class
 					tp := objs[vr.var1].GetType()
 
 					if IsInt(tp) or tp is in TypePoint or tp == GTypeBool or tp == GTypeStr  or tp is TypeArrayView  or tp is TypeEnum {
-						if (usedInts < 6) {
-							switch usedInts
-							{
-							case 0 Mov(fnc,"rdi",vr.var1)
-							case 1 Mov(fnc,"rsi",vr.var1)
-							case 2 Mov(fnc,"rdx",vr.var1)
-							case 3 Mov(fnc,"rcx",vr.var1)
-							case 4 Mov(fnc,"r8",vr.var1)
-							case 5 Mov(fnc,"r9",vr.var1)
-							}
+						if targetLinux {
+							if (usedInts < 6) {
+								switch usedInts
+								{
+								case 0 Mov(fnc,"rdi",vr.var1)
+								case 1 Mov(fnc,"rsi",vr.var1)
+								case 2 Mov(fnc,"rdx",vr.var1)
+								case 3 Mov(fnc,"rcx",vr.var1)
+								case 4 Mov(fnc,"r8",vr.var1)
+								case 5 Mov(fnc,"r9",vr.var1)
+								}
 
-							usedInts += 1
+								usedInts += 1
+							}else {
+								stackPassed.PushFront(vr.var1)
+							}
+						}else if targetWindows {
+							if (paramIndex < 6) {
+								switch paramIndex
+								{
+								case 0 Mov(fnc,"rcx",vr.var1)
+								case 1 Mov(fnc,"rdx",vr.var1)
+								case 2 Mov(fnc,"r8",vr.var1)
+								case 3 Mov(fnc,"r9",vr.var1)
+								}
+							}else {
+								stackPassed.PushFront(vr.var1)
+							}
 						}else {
-							stackPassed.PushFront(vr.var1)
+							assert(false)
 						}
 					}else  if tp == GTypeFloat or tp == GTypeDouble or tp is TypeVector {
 
-						if usedFloats < 8 {
-							reg := X86Register
-							reg = "xmm0"
-							reg&->{int^}^ += usedFloats
-							Mov(fnc,reg,vr.var1)
-							usedFloats += 1
-						}else{
-							stackPassed.PushFront(vr.var1)
+						if targetLinux {
+							if usedFloats < 8 {
+								reg := X86Register
+								reg = "xmm0"
+								reg&->{int^}^ += usedFloats
+								Mov(fnc,reg,vr.var1)
+								usedFloats += 1
+							}else{
+								stackPassed.PushFront(vr.var1)
+							}
+						}else if targetWindows {
+							if paramIndex < 4 {
+								reg := X86Register
+								reg = "xmm0"
+								reg&->{int^}^ += usedFloats
+								Mov(fnc,reg,vr.var1)
+							}else{
+								stackPassed.PushFront(vr.var1)
+							}
+						}else {
+							assert(false)
 						}
 					}else{
 						printf("unknown call type %s\n",tp.UnitName)
 						assert(false)
 					}
 
+					paramIndex += 1
 					i += 1
 				}
 				if stackPassed.Size() mod 2 != 0
@@ -759,6 +797,8 @@ MCBuildFuncContext_x86_64 := class
 					Mov(fnc,"rax",it)
 					Push("rax")
 				}
+				if targetWindows
+					SubRsp(16)
 				MovU64ToReg(fnc,"rax",usedFloats)
 
 				fncObj := objs[fncId]
@@ -815,12 +855,10 @@ MCBuildFuncContext_x86_64 := class
 				callSize := stackPassed.Size() * 8
 				if stackPassed.Size() mod 2 != 0
 					callSize += 8
+				if targetWindows
+					callSize += 16
 				if callSize != 0
-				{
-					WriteData(0x48,0x81,0xc4) // add %rsp,callSize
-					ResultData.Write(callSize&,4)
-				}
-
+					AddRsp(callSize)
 
 			case "mov"
 
@@ -1231,6 +1269,16 @@ MCBuildFuncContext_x86_64 := class
 		ResultData.Write(w&,1)
 		ResultData.Write(q&,1)
 		ResultData.Write(rr&,1)
+	}
+	SubRsp := !(int val) -> void
+	{
+		WriteData(0x48,0x81,0xEC) // %rsp -= val
+		ResultData.Write(val&,4)
+	}
+	AddRsp := !(int val) -> void
+	{
+		WriteData(0x48,0x81,0xC4) // %rsp += val
+		ResultData.Write(val&,4)
 	}
 }
 
