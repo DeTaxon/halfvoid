@@ -56,9 +56,11 @@ GetItemUser := !(Str name) -> BoxExeObj^
 				assert(tmpl != null)
 				fnc := tmpl.GetFunc(![],![resType])
 				assert(fnc != null)
-				
-				mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
-				MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
+			
+				fPtr := RGetFuncPtr(fnc->{BoxFuncBody^})->{!()^->internalHVModuleBase^}
+				it.impClass = fPtr()
+				//mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
+				//MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
 				it.finishedRun = true
 			})
 		}
