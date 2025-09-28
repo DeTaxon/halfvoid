@@ -979,13 +979,6 @@ MCBuildFuncContext_x86_64 := class
 					Mov(fnc,line.var1,"rax")
 				}
 
-			case "memset"
-
-				Mov(fnc,"rdi",line.var1)
-				Mov(fnc,"rsi",line.var2)
-				Mov(fnc,"rdx",line.var3)
-				MovPtrToReg(fnc,"rcx",memset)
-				ResultData << "\xFF\xD1" // call *rcx
 			case "assert"
 				//TODO call only if bool worked
 				//WriteData(0xCC) //int3

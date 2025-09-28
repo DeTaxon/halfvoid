@@ -405,6 +405,18 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c+1] = MCLine("load_var",it.var2)
 			cPtr[c+2] = MCLine("call_end")
 			c += 3
+		case "memset"
+			newObj := MCConstPointerTyped
+			newObj.GetValue() = memset
+			newObj.SetType(GetFuncType(![GTypeVoidP,GTypeU8,GTypeSizeT],GTypeVoid).GetPoint())
+			fncId := o
+			oPtr[o++] = newObj
+
+			cPtr[c++] = MCLine("call_start",0,fncId)
+			cPtr[c++] = MCLine("load_var",it.var1)
+			cPtr[c++] = MCLine("load_var",it.var2)
+			cPtr[c++] = MCLine("load_var",it.var3)
+			cPtr[c++] = MCLine("call_end")
 
 		case void
 			cPtr[c] = it
