@@ -20,7 +20,6 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 }
 
 //TODO check sse2 sse4_1 support
-//TODO va_start va_end support
 
 //linux fastcall x64
 //volatile rax,rdi,rsi,rcx,rdx,r8,r9, xmm0-xmm7
@@ -254,7 +253,11 @@ MCBuildFuncContext_x86_64 := class
 
 				size := objs[line.var2].GetType().GetSize()
 
+
 				regData := (reg1 mod 8) + ((reg2 mod 8) shl 3)
+
+				if line.var3 != 0
+					regData = regData or_b 0x80
 
 				if reg2 >= 16 {
 
@@ -268,15 +271,31 @@ MCBuildFuncContext_x86_64 := class
 					}
 
 				}else{
-					assert(reg2 < 8)
+					upReg := 0
+					if reg2 >= 8
+					{
+						upReg = 0x04
+
+						if size == 2 or size == 4
+							WriteData(0x40 + upReg)
+					}
 					switch size
 					{
-					case 1 WriteData(0x40,0x88,regData)
+					case 1 WriteData(0x40 + upReg,0x88,regData)
 					case 2 WriteData(0x66,0x89, regData)
 					case 4 WriteData(0x89, regData)
-					case 8 WriteData(0x48,0x89, regData)
+					case 8 WriteData(0x48 + upReg,0x89, regData)
 					}
 
+				}
+
+				if line.var3 != 0
+				{
+					obj := objs[line.var3]
+					assert(obj is MCConstInteger)
+
+					offst := obj&->{MCConstInteger^}.GetValue()
+					ResultData.Write(offst&,4)
 				}
 
 			case "llvm_load"
@@ -959,6 +978,11 @@ MCBuildFuncContext_x86_64 := class
 						printf("unknown function %s\n",base.UnitName)
 						assert(false)
 					}
+				}else if obj is MCConstVarX86 {
+					offst := objs[line.var2]&->{MCConstVarX86^}.GetValue()
+					reg := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
+					WriteData(0x48,0x8D,0x85 + (reg shl 3))
+					ResultData.Write(offst&,4)
 				}else{
 					printf("unknown get_pointer\n")
 					obj.PrintObject()

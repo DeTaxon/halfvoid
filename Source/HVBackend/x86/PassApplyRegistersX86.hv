@@ -38,6 +38,15 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		result = o
 		o += 1
 	}
+	pushVar2 := (Type^ varType) ==> int
+	{
+		newVar := MCVariable
+
+		newVar.GetValueType() = varType
+
+		result = o
+		oPtr[o++] = newVar
+	}
 
 	cmds := new Vector.{MCLine}
 	c := 0
@@ -46,10 +55,13 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 	fTyp := NormalizeFuncType(fnc.BaseFunction.GetType()->{TypeFunc^})
 
+	regAreaId := 0
+
+	redInts := 0
+	redFloats := 0
+
 	if targetLinux
 	{// load inputs
-		redInts := 0
-		redFloats := 0
 		stackIter := 16
 
 		for i : fnc.InputsIndxCount
@@ -97,10 +109,55 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				c += 1
 			}
 		}
+
+		if fTyp.IsVargs
+		{
+			regArea := GetTypeByName(StringSpan("va_list_registers"))
+			assert(regArea != null)
+			if regArea != null
+			{
+				rId := pushVar2(regArea)
+
+				r1 := pushReg("rax",GTypeVoidP)
+
+				cPtr[c++] = MCLine("get_pointer",r1,rId)
+
+				offset := 0
+
+				for i : 6
+				{
+					reg := X86Register
+					switch i
+					{
+					case 0 reg = "rdi"
+					case 1 reg = "rsi"
+					case 2 reg = "rdx"
+					case 3 reg = "rcx"
+					case 4 reg = "r8"
+					case 5 reg = "r9"
+					}
+
+					cPtr[c++] = MCLine("llvm_store",rId,pushReg(reg,GTypeSizeT),pushInt(offset))
+					offset += GTypeSizeT.GetSize()
+				}
+
+				for i : 8
+				{
+					reg := X86Register
+					reg = "xmm0"
+					reg&->{int^}^ += i
+					cPtr[c++] = MCLine("llvm_store",rId,pushReg(reg,GTypeVec4f),pushInt(offset))
+					offset += 16
+
+				}
+
+				regAreaId = rId
+			}
+		}
 	}
 	if targetWindows
 	{// load inputs
-		stackIter := 16 + 16 // 16 - ret address + push(rbp), 16 - reserved for first 4 variables
+		stackIter := 16 + 32 // 16 - ret address + push(rbp), 32 - reserved for first 4 variables
 
 		for i : fnc.InputsIndxCount
 		{
@@ -130,6 +187,26 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				stackIter += 8
 				cPtr[c] = MCLine("mov",indx,newVar)
 				c += 1
+			}
+		}
+
+		if fTyp.IsVargs and fTyp.Params.Size() <= 4
+		{
+			r1 := pushReg("rsp",GTypeVoidP)
+
+			for i : 4
+			{
+				reg := X86Register
+
+				switch i
+				{
+				case 0 reg = "rcx"
+				case 1 reg = "rdx"
+				case 2 reg = "r8"
+				case 3 reg = "r9"
+				}
+
+				cPtr[c++] = MCLine("llvm_store",r1,pushReg(reg,GTypeVoidP),pushInt(16 + 8*i))
 			}
 		}
 	}
@@ -417,6 +494,37 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c++] = MCLine("load_var",it.var2)
 			cPtr[c++] = MCLine("load_var",it.var3)
 			cPtr[c++] = MCLine("call_end")
+
+		case "va_start"
+			if targetLinux
+			{
+				r1 := pushReg("rax",GTypeVoidP.GetPoint())
+				r2 := pushReg("rcx",GTypeInt)
+				r3 := pushReg("rcx",GTypeVoidP.GetPoint())
+
+				cPtr[c++] = MCLine("mov",r1,it.var1)
+				cPtr[c++] = MCLine("mov",r2,pushInt(min(redInts,6)*8))
+				cPtr[c++] = MCLine("llvm_store",r1,r2)
+				cPtr[c++] = MCLine("mov",r2,pushInt(min(redFloats,8)*16 + 6*8))
+				cPtr[c++] = MCLine("llvm_store",r1,r2,pushInt(4))
+
+				cPtr[c++] = MCLine("get_pointer",r3,pushVar(16,GTypeSizeT))
+				cPtr[c++] = MCLine("llvm_store",r1,r3,pushInt(8))
+				cPtr[c++] = MCLine("get_pointer",r3,regAreaId)
+				cPtr[c++] = MCLine("llvm_store",r1,r3,pushInt(16))
+			}
+			if targetWindows
+			{
+				r1 := pushReg("rax",GTypeVoidP)
+				r2 := pushReg("rcx",GTypeVoidP)
+
+				cPtr[c++] = MCLine("get_pointer",r2,pushVar(32 + 16,GTypeVoidP))
+				cPtr[c++] = MCLine("mov",r1,it.var1)
+				cPtr[c++] = MCLine("llvm_store",r1,r2)
+				
+			}
+		case "va_end"
+			//nothing
 
 		case void
 			cPtr[c] = it

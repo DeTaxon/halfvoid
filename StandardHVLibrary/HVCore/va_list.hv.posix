@@ -7,6 +7,12 @@ va_list := class
 	regArea := u8^
 }
 
+va_list_registers := class
+{
+	ints := s64[6]
+	floats := vec4f[8]
+}
+
 
 vaListLoadInt := !(va_list^ va) -> u64
 {

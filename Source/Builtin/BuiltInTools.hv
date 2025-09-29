@@ -225,7 +225,7 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		getType := consts[0]->{Type^}
-		if targetLinux  // TODO add windows support
+		if targetLinux  or targetWindows
 		{
 			if IsPtrLikeType(getType) or IsInt(getType)
 			{

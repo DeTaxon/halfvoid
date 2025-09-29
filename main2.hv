@@ -1,34 +1,26 @@
 
 
-Huh := class
-{
-	Test := virtual !() -> void
-	{
-		printf("Nope\n")
-	}
-}
-Huh2 := class extends Huh
-{
-	Test := virtual !() -> void
-	{
-		printf("Yep\n")
-	}
-}
 
 main := !(char^[] args) -> int
 {
 	RunFunc()
 }
 
-c := !() -> Huh^
+ManyArgs := !(int argc, ...) -> void
 {
-	return new Huh2
+	l := va_list
+	va_start(l&)
+
+
+	for i : argc
+	{
+		printf("val %f\n",va_arg(l&).{float})
+	}
 }
 
 RunFunc := !() -> void
 {
-	r := c()
-	r.Test()
+	ManyArgs(10,66.0,55.0,44.0,33.0,22.0,11.0,1.1,2.2,3.3,4.4)
 }
 
 tst := !() -> int {
