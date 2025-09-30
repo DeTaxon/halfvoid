@@ -72,12 +72,13 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 	assert(callerFrame != null)
 
-	cs := 0
 	thisFrame := MCInterpFuncFrame
 	thisFrame.InheritStack(callerFrame)
 	thisFrame.CreateFrame(iCntx,interpFunc)
 	thisFrame.callerIndx = callerIndx
 	thisFrame.ParentFrame = callerFrame
+
+	cs := ref thisFrame.cs
 
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
@@ -964,33 +965,77 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 			cs += 1
 		case "va_start"
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr1->{s64^^}^[0] = 0
-			ptr1->{void^^^}^[1] = thisFrame&
-			ptr1->{void^^^}^[2] = interpFunc
+
+			if callerFrame != null
+			{
+				bs := callerFrame.cs - 1
+				cPtr := callerFrame.func.Lines.GetPointer()
+				oPtr := callerFrame.func.Objects.GetPointer()
+
+				assert(cPtr[bs].opcode == "call_end")
+
+				while cPtr[bs].opcode != "call_start"
+					bs -= 1
+
+				fTyp := oPtr[cPtr[bs].var2].GetType()
+				if fTyp? is in TypePoint
+					fTyp = fTyp.Base
+				if fTyp? is TypeFunc
+				{
+					fT := fTyp->{TypeFunc^}
+					assert(fT.IsVargs)
+
+					argsCount := fT.Params.Size()
+					indxs := HybridQueue.{int,20}
+
+					bs += 1
+					k := -1
+					while cPtr[bs].opcode != "call_end"
+					{
+						k += 1
+						bs += 1
+
+						if k < argsCount
+							continue
+						indxs.Push(cPtr[bs - 1].var1)
+					}
+
+					if indxs.Size() != 0
+					{
+						ptr := thisFrame.AllocateOnStack(indxs.Size()*8)
+
+						for ind,i : indxs
+						{
+							ptr->{u64^}[i] = callerFrame.GetObjectPtr(ind)->{u64^}^
+						}
+						lst := thisFrame.GetObjectPtr(opPtr[cs].var1)->{va_list^^}^
+
+						if #OS() == "Linux"
+						{
+							lst.intOffset = 48
+							lst.floatOffset = 176
+							lst.stackArea = ptr->{u8^}
+							lst.regArea = ptr->{u8^}
+						}
+						if #OS() == "Windows"
+						{
+							lst^ = ptr
+						}
+					}
+
+
+				}else{
+					assert(false)
+				}
+
+			}else{
+				assert(false)
+			}
 			cs += 1
 		case "va_end"
 			cs += 1
 		case "va_arg"
-			
-			indxPtr := thisFrame.GetObjectPtr(opPtr[cs].var2)->{s64^^}^
-			
-			argFrame := indxPtr->{void^^}[1]->{MCInterpFuncFrame^}
-			argFunc := indxPtr->{void^^}[2]->{MCFunction^}
-
-			indx := indxPtr^
-			indxPtr^ += 1
-			indx += argFunc.InputsIndxCount
-			if argFrame.callerIndx != null and argFrame.callerIndx.Size() > indx
-			{
-				resultPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
-				argPtr := argFrame.ParentFrame.GetObjectPtr(argFrame.callerIndx[indx])
-
-				memcpy(resultPtr,argPtr,interpFunc.Objects[thisLine.var1].GetType().GetSize())
-				
-			}else{
-				assert(false)
-			}
+			assert(false)
 			cs += 1
 
 		case "debug_set_file"

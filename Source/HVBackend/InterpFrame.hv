@@ -21,6 +21,7 @@ MCInterpFuncFrame := class
 
 	ParentFrame := MCInterpFuncFrame^
 
+	cs := int
 
 	CreateStack := !() -> void
 	{
