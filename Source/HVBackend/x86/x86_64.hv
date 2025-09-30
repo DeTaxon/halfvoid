@@ -12,7 +12,7 @@ CompileAndRunCode_x86_64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	///createdFunc(1,2,3,5,8,13,21,34,45)
 	
 	createdFunc := ctx.GetFunctionPtr(funcToRun)->{!()^->void}
-	// assert(false)
+	//assert(false)
 	createdFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
@@ -736,6 +736,21 @@ MCBuildFuncContext_x86_64 := class
 				usedFloats := 0
 				stackPassed := HybridStack.{int,20}
 				paramIndex := 0
+				
+				isVargs := false
+				paramsCount := 0
+				
+				{
+					fTyp := objs[fncId].GetType()
+					if fTyp? is in TypePoint
+						fTyp = fTyp.Base
+					if fTyp? is TypeFunc
+					{
+						itType := fTyp->{TypeFunc^}
+						isVargs = itType.IsVargs
+						paramsCount = itType.Params.Size()
+					}
+				}
 
 
 				while lines[i].opcode != "call_end"
@@ -744,8 +759,13 @@ MCBuildFuncContext_x86_64 := class
 					assert(vr.opcode == "load_var")
 
 					tp := objs[vr.var1].GetType()
+					
+					isFloat := IsFloat(tp) or tp is TypeVector
+					
+					if targetWindows and isVargs and paramIndex >= paramsCount
+						isFloat = false
 
-					if IsInt(tp) or tp is in TypePoint or tp == GTypeBool or tp == GTypeStr  or tp is TypeArrayView  or tp is TypeEnum {
+					if not isFloat {
 						if targetLinux {
 							if (usedInts < 6) {
 								switch usedInts
@@ -763,7 +783,7 @@ MCBuildFuncContext_x86_64 := class
 								stackPassed.PushFront(vr.var1)
 							}
 						}else if targetWindows {
-							if (paramIndex < 6) {
+							if (paramIndex < 4) {
 								switch paramIndex
 								{
 								case 0 Mov(fnc,"rcx",vr.var1)
@@ -777,7 +797,7 @@ MCBuildFuncContext_x86_64 := class
 						}else {
 							assert(false)
 						}
-					}else  if tp == GTypeFloat or tp == GTypeDouble or tp is TypeVector {
+					}else {
 
 						if targetLinux {
 							if usedFloats < 8 {
@@ -793,7 +813,7 @@ MCBuildFuncContext_x86_64 := class
 							if paramIndex < 4 {
 								reg := X86Register
 								reg = "xmm0"
-								reg&->{int^}^ += usedFloats
+								reg&->{int^}^ += paramIndex
 								Mov(fnc,reg,vr.var1)
 							}else{
 								stackPassed.PushFront(vr.var1)
@@ -801,9 +821,6 @@ MCBuildFuncContext_x86_64 := class
 						}else {
 							assert(false)
 						}
-					}else{
-						printf("unknown call type %s\n",tp.UnitName)
-						assert(false)
 					}
 
 					paramIndex += 1
@@ -817,7 +834,7 @@ MCBuildFuncContext_x86_64 := class
 					Push("rax")
 				}
 				if targetWindows
-					SubRsp(16)
+					SubRsp(32)
 				MovU64ToReg(fnc,"rax",usedFloats)
 
 				fncObj := objs[fncId]
@@ -875,7 +892,7 @@ MCBuildFuncContext_x86_64 := class
 				if stackPassed.Size() mod 2 != 0
 					callSize += 8
 				if targetWindows
-					callSize += 16
+					callSize += 32
 				if callSize != 0
 					AddRsp(callSize)
 

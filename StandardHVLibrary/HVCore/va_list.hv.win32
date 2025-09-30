@@ -3,11 +3,11 @@ va_list := type void^
 
 vaListLoadInt := !(va_list^ va) -> u64
 {
-	result = va->{u64^^}^^
-	va^ = va^->{void^}[1]&
+	result = va^->{u64^}^
+	va->{size_t^}^ += void^->TypeSize
 }
 vaListLoadFloat := !(va_list^ va) -> double
 {
 	result = va->{double^^}^^
-	va^ = va^->{void^}[1]&
+	va->{size_t^}^ += void^->TypeSize
 }
