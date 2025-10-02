@@ -1,0 +1,63 @@
+
+PassRemoveBadSets := !(MCFunction^ fnc) ->MCFunction^
+{
+	bldr := MakeGreadyPass(fnc,4,6)
+
+	oPtr := bldr.oPtr
+	cPtr := bldr.cPtr
+
+	objsUsed := Vector.{int}
+	objsUsed.Resize(fnc.Objects.Size())
+	used := objsUsed.GetPointer()
+
+	iCmds := fnc.Lines.GetPointer()
+	cmdsSize := fnc.Lines.Size()
+
+	c := ref bldr.cmdsSize
+
+	for k : fnc.Lines.Size()
+	{
+		line := iCmds[k]
+		used[line.var1] += 1
+		used[line.var2] += 1
+		used[line.var3] += 1
+		used[line.var4] += 1
+		used[line.var5] += 1
+	}
+
+	i := 0
+	while i < cmdsSize
+	{
+		line := iCmds[i]
+
+		canRemove := false
+
+		if i < cmdsSize - 1
+			and iCmds[i].opcode == "mov" and used[iCmds[i].var1] == 2
+			and iCmds[i+1].opcode == "mov"
+			and iCmds[i].var1 == iCmds[i+1].var2
+		{
+			ob1 := ref oPtr[iCmds[i].var2]
+			ob2 := ref oPtr[iCmds[i+1].var1]
+			cntr := ref oPtr[iCmds[i].var1]
+			
+
+			if ob1.Value == ob2.Value
+				and ob1 is MCConstRegisterX86
+				and (cntr is MCVariable or cntr is MCConstValue)
+			{
+				canRemove = true
+			}
+
+		}
+		if canRemove
+		{
+			i += 2
+		}else{
+			cPtr[c++] = line
+			i += 1
+		}
+	}
+
+	return bldr.GenerateFunc()
+}
