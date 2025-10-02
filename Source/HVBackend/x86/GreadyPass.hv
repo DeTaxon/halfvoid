@@ -1,0 +1,72 @@
+
+
+GreedyPass := class
+{
+	originalFunc := MCFunction^
+
+	objs := Vector.{MCObject}^
+	objsSize := int
+
+	cmds := Vector.{MCLine}^
+	cmdsSize := int
+
+	oPtr := MCObject^
+	cPtr := MCLine^
+
+	PushReg := !(X86Register reg, Type^ regType) -> int
+	{
+		newReg := MCConstRegisterX86
+
+		newReg.GetValue() = reg
+		newReg.SetType(regType)
+
+		result = objsSize
+		oPtr[objsSize++] = newReg
+	}
+	PushInt := !(int value) -> int
+	{
+		newReg := MCConstInteger
+
+		newReg.GetValue() = value
+
+		result = objsSize
+		oPtr[objsSize++] = newReg
+	}
+	GenerateFunc := !() -> MCFunction^
+	{
+		objs.Resize(objsSize)
+		cmds.Resize(cmdsSize)
+
+		result = new MCFunction
+
+		result.Objects = objs
+		result.Lines = cmds
+
+		result.BaseFunction = originalFunc.BaseFunction
+		result.ResultIndex = originalFunc.ResultIndex
+		result.InputsIndxStart = originalFunc.InputsIndxStart
+		result.InputsIndxCount = originalFunc.InputsIndxCount
+	}
+}
+
+MakeGreadyPass := !(MCFunction^ fnc, int cmdK, int objK, bool copyObjs = true) -> GreedyPass
+{
+	result.originalFunc = fnc
+
+	result.objs = new Vector.{MCObject}
+
+	o := fnc.Objects.Size()
+	result.objs.Resize(o*objK)
+	result.oPtr = result.objs.GetPointer()
+
+	if copyObjs {
+		memcpy(result.objs.GetPointer(),fnc.Objects.GetPointer(),o*MCObject->TypeSize)
+		result.objsSize = o
+	}
+
+	result.cmds = new Vector.{MCLine}
+	c := fnc.Lines.Size()
+	result.cmds.Resize(c*cmdK + 100)
+	result.cPtr = result.cmds.GetPointer()
+	
+}

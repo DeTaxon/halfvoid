@@ -1,32 +1,11 @@
 
 PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 {
-	objs := new Vector.{MCObject}
-	o := fnc.Objects.Size()
-	objs.Resize(o*6)
-	oPtr := objs.GetPointer()
-	memcpy(oPtr,fnc.Objects.GetPointer(),o*MCObject->TypeSize)
+	bldr := MakeGreadyPass(fnc,4,6)
 
-	pushReg := (X86Register reg, Type^ regType) ==> int
-	{
-		newReg := MCConstRegisterX86
+	oPtr := bldr.objs.GetPointer()
+	o := ref bldr.objsSize
 
-		newReg.GetValue() = reg
-		newReg.SetType(regType)
-
-		oPtr[o] = newReg
-		result = o
-		o += 1
-	}
-	pushInt := (int value) ==> int
-	{
-		newReg := MCConstInteger
-
-		newReg.GetValue() = value
-
-		result = o
-		oPtr[o++] = newReg
-	}
 	pushVar := (int offset, Type^ varType) ==> int
 	{
 		newVar := MCConstVarX86
@@ -48,10 +27,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		oPtr[o++] = newVar
 	}
 
-	cmds := new Vector.{MCLine}
-	c := 0
-	cmds.Resize(fnc.Lines.Size()*4 + 100)
-	cPtr := cmds.GetPointer()
+	c := ref bldr.cmdsSize
+	cPtr := bldr.cmds.GetPointer()
 
 	fTyp := NormalizeFuncType(fnc.BaseFunction.GetType()->{TypeFunc^})
 
@@ -103,7 +80,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c] = MCLine("mov",indx,newVar)
 				c += 1
 			}else{
-				rt := pushReg(reg,tp)
+				rt := bldr.PushReg(reg,tp)
 
 				cPtr[c] = MCLine("mov",indx,rt)
 				c += 1
@@ -118,7 +95,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			{
 				rId := pushVar2(regArea)
 
-				r1 := pushReg("rax",GTypeVoidP)
+				r1 := bldr.PushReg("rax",GTypeVoidP)
 
 				cPtr[c++] = MCLine("get_pointer",r1,rId)
 
@@ -137,7 +114,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 					case 5 reg = "r9"
 					}
 
-					cPtr[c++] = MCLine("llvm_store",rId,pushReg(reg,GTypeSizeT),pushInt(offset))
+					cPtr[c++] = MCLine("llvm_store",rId,bldr.PushReg(reg,GTypeSizeT),bldr.PushInt(offset))
 					offset += GTypeSizeT.GetSize()
 				}
 
@@ -146,7 +123,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 					reg := X86Register
 					reg = "xmm0"
 					reg&->{int^}^ += i
-					cPtr[c++] = MCLine("llvm_store",rId,pushReg(reg,GTypeVec4f),pushInt(offset))
+					cPtr[c++] = MCLine("llvm_store",rId,bldr.PushReg(reg,GTypeVec4f),bldr.PushInt(offset))
 					offset += 16
 
 				}
@@ -180,7 +157,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 					}
 				}
 
-				rt := pushReg(reg,tp)
+				rt := bldr.PushReg(reg,tp)
 				cPtr[c++] = MCLine("mov",indx,rt)
 			}else{
 				newVar := pushVar(stackIter,tp)
@@ -192,7 +169,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 		if fTyp.IsVargs and fTyp.Params.Size() <= 4
 		{
-			r1 := pushReg("rax",GTypeVoidP)
+			r1 := bldr.PushReg("rax",GTypeVoidP)
 			cPtr[c++] = MCLine("get_pointer",r1,pushVar(16,GTypeVoidP))
 
 			for i : 4
@@ -207,7 +184,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				case 3 reg = "r9"
 				}
 
-				cPtr[c++] = MCLine("llvm_store",r1,pushReg(reg,GTypeVoidP),pushInt(8*i))
+				cPtr[c++] = MCLine("llvm_store",r1,bldr.PushReg(reg,GTypeVoidP),bldr.PushInt(8*i))
 			}
 		}
 	}
@@ -250,8 +227,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				r2 = "xmm1"
 			}
 
-			reg1 := pushReg(r1,tp)
-			reg2 := pushReg(r2,tp)
+			reg1 := bldr.PushReg(r1,tp)
+			reg2 := bldr.PushReg(r2,tp)
 
 			cPtr[c] = MCLine("mov",reg1,it.var2)
 			cPtr[c+1] = MCLine("mov",reg2,it.var3)
@@ -262,7 +239,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 			outReg := reg1
 			if it.opcode == "mod"  {
-				outReg = pushReg("rdx",tp)
+				outReg = bldr.PushReg("rdx",tp)
 			}
 			cPtr[c+3] = MCLine("mov",it.var1,outReg)
 
@@ -286,8 +263,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				r2 = "rdx"
 			}
 
-			reg1 := pushReg(r1,tp)
-			reg2 := pushReg(r2,tp)
+			reg1 := bldr.PushReg(r1,tp)
+			reg2 := bldr.PushReg(r2,tp)
 
 			cPtr[c] = MCLine("mov",reg1,it.var2)
 			cPtr[c+1] = MCLine("mov",reg2,it.var3)
@@ -318,9 +295,9 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				r2 = "xmm1"
 			}
 
-			reg1 := pushReg(r1,tp)
-			reg2 := pushReg(r2,tp)
-			res := pushReg("rcx",GTypeBool)
+			reg1 := bldr.PushReg(r1,tp)
+			reg2 := bldr.PushReg(r2,tp)
+			res := bldr.PushReg("rcx",GTypeBool)
 
 			cPtr[c] = MCLine("mov",reg1,it.var2)
 			cPtr[c+1] = MCLine("mov",reg2,it.var4)
@@ -348,7 +325,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c] = it
 				c += 1
 			}else{
-				newReg := pushReg("rax",v1.GetType())
+				newReg := bldr.PushReg("rax",v1.GetType())
 				cPtr[c] = it
 				cPtr[c].var1 = newReg
 				cPtr[c + 1] = MCLine("mov",it.var1,newReg)
@@ -361,20 +338,20 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			tp := ob1.GetType()
 
 			if ob1.GetType() == ob2.GetType() {
-				reg := pushReg("rax",tp)
+				reg := bldr.PushReg("rax",tp)
 
 				cPtr[c] = MCLine("mov",reg,it.var2)
 				cPtr[c+1] = MCLine("mov",it.var1,reg)
 				c += 2
 			}else{
-				reg1 := pushReg("rcx",ob1.GetType())
+				reg1 := bldr.PushReg("rcx",ob1.GetType())
 
 				tp2 := ob2.GetType()
 				reg2 := int
 				if tp2 is TypeVector or  IsFloat(tp2) {
-					reg2 = pushReg("xmm0",tp2)
+					reg2 = bldr.PushReg("xmm0",tp2)
 				}else{
-					reg2 = pushReg("rax",tp2)
+					reg2 = bldr.PushReg("rax",tp2)
 				}
 				
 
@@ -391,19 +368,19 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			tp := ob1.GetType()
 
 			if ob1.GetType() == ob2.GetType() {
-				reg := pushReg("rax",tp)
+				reg := bldr.PushReg("rax",tp)
 
 				cPtr[c] = MCLine("mov",reg,it.var2)
 				cPtr[c+1] = MCLine("mov",it.var1,reg)
 				c += 2
 			}else{
-				reg1 := pushReg("rcx",ob2.GetType())
+				reg1 := bldr.PushReg("rcx",ob2.GetType())
 
 				reg2 := int
 				if tp is TypeVector or IsFloat(tp) {
-					reg2 = pushReg("xmm0",tp)
+					reg2 = bldr.PushReg("xmm0",tp)
 				}else{
-					reg2 = pushReg("rax",tp)
+					reg2 = bldr.PushReg("rax",tp)
 				}
 				
 
@@ -420,16 +397,16 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			if obj1 is MCGlobalVariable  
 				or (tp is TypeClass and obj1 is MCVariable) 
 			{
-				r := pushReg("rcx",tp.GetPoint())
+				r := bldr.PushReg("rcx",tp.GetPoint())
 
 				cPtr[c++] = MCLine("get_pointer",r,it.var2)
 				cPtr[c++] = MCLine("llvm_getelementptr0",it.var1,r,it.var3)
 			}else if tp is in TypePoint or tp == GTypeStr {
-				r1 := pushReg("rax",GTypeInt)
-				r2 := pushReg("rdx",GTypeInt)
+				r1 := bldr.PushReg("rax",GTypeInt)
+				r2 := bldr.PushReg("rdx",GTypeInt)
 
 				tpSize := tp.Base.GetSize()
-				tpSizeIndx := pushInt(tpSize)
+				tpSizeIndx := bldr.PushInt(tpSize)
 
 				cPtr[c++] = MCLine("mov",r1,tpSizeIndx)
 				cPtr[c++] = MCLine("mov",r2,it.var3)
@@ -444,8 +421,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		case "mov"
 			ob1 := oPtr[it.var1]
 			if ob1 is MCGlobalVariable {
-				r1 := pushReg("rax",ob1.GetType().GetPoint())
-				r2 := pushReg("rcx",oPtr[it.var2].GetType())
+				r1 := bldr.PushReg("rax",ob1.GetType().GetPoint())
+				r2 := bldr.PushReg("rcx",oPtr[it.var2].GetType())
 				cPtr[c] = MCLine("get_pointer",r1,it.var1)
 				cPtr[c+1] = MCLine("mov",r2,it.var2)
 				cPtr[c+2] = MCLine("llvm_store",r1,r2)
@@ -499,25 +476,25 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		case "va_start"
 			if targetLinux
 			{
-				r1 := pushReg("rax",GTypeVoidP.GetPoint())
-				r2 := pushReg("rcx",GTypeInt)
-				r3 := pushReg("rcx",GTypeVoidP.GetPoint())
+				r1 := bldr.PushReg("rax",GTypeVoidP.GetPoint())
+				r2 := bldr.PushReg("rcx",GTypeInt)
+				r3 := bldr.PushReg("rcx",GTypeVoidP.GetPoint())
 
 				cPtr[c++] = MCLine("mov",r1,it.var1)
-				cPtr[c++] = MCLine("mov",r2,pushInt(min(redInts,6)*8))
+				cPtr[c++] = MCLine("mov",r2,bldr.PushInt(min(redInts,6)*8))
 				cPtr[c++] = MCLine("llvm_store",r1,r2)
-				cPtr[c++] = MCLine("mov",r2,pushInt(min(redFloats,8)*16 + 6*8))
-				cPtr[c++] = MCLine("llvm_store",r1,r2,pushInt(4))
+				cPtr[c++] = MCLine("mov",r2,bldr.PushInt(min(redFloats,8)*16 + 6*8))
+				cPtr[c++] = MCLine("llvm_store",r1,r2,bldr.PushInt(4))
 
 				cPtr[c++] = MCLine("get_pointer",r3,pushVar(16,GTypeSizeT))
-				cPtr[c++] = MCLine("llvm_store",r1,r3,pushInt(8))
+				cPtr[c++] = MCLine("llvm_store",r1,r3,bldr.PushInt(8))
 				cPtr[c++] = MCLine("get_pointer",r3,regAreaId)
-				cPtr[c++] = MCLine("llvm_store",r1,r3,pushInt(16))
+				cPtr[c++] = MCLine("llvm_store",r1,r3,bldr.PushInt(16))
 			}
 			if targetWindows
 			{
-				r1 := pushReg("rax",GTypeVoidP.GetPoint())
-				r2 := pushReg("rcx",GTypeVoidP.GetPoint())
+				r1 := bldr.PushReg("rax",GTypeVoidP.GetPoint())
+				r2 := bldr.PushReg("rcx",GTypeVoidP.GetPoint())
 				
 				offst := min(fTyp.Params.Size(),4)
 
@@ -540,11 +517,11 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 	if resTyp == GTypeVoid {
 		// this is fine
 	}else if IsInt(resTyp) or IsPtrLikeType(resTyp) or resTyp == GTypeBool  or fTyp.ResultRef {
-		reg := pushReg("rax",resTyp)
+		reg := bldr.PushReg("rax",resTyp)
 		cPtr[c] = MCLine("mov",reg,fnc.ResultIndex)
 		c += 1
 	}else if resTyp == GTypeFloat or resTyp == GTypeDouble or resTyp is TypeVector {
-		reg := pushReg("xmm0",resTyp)
+		reg := bldr.PushReg("xmm0",resTyp)
 		cPtr[c] = MCLine("mov",reg,fnc.ResultIndex)
 		c += 1
 	}else{
@@ -552,18 +529,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		assert(false)
 	}
 
-	objs.Resize(o)
-	cmds.Resize(c)
-
-	result = new MCFunction
-
-	result.Objects = objs
-	result.Lines = cmds
-
-	result.BaseFunction = fnc.BaseFunction
-	result.ResultIndex = fnc.ResultIndex
-	result.InputsIndxStart = fnc.InputsIndxStart
-	result.InputsIndxCount = fnc.InputsIndxCount
+	return bldr.GenerateFunc()
 }
 
 x86_sinf := !(float x) -> float { return sin(x) }

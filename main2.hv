@@ -6,26 +6,14 @@ main := !(char^[] args) -> int
 	RunFunc()
 }
 
-ManyArgs := !(int argc, ...) -> void
-{
-	l := va_list
-	va_start(l&)
-
-
-	for i : argc
-	{
-		printf("val %f\n",va_arg(l&).{float})
-	}
-}
-
 RunFunc := !() -> void
 {
-	ManyArgs(10,66.0,55.0,44.0,33.0,22.0,11.0,1.1,2.2,3.3,4.4)
+	tst()
 }
 
 tst := !() -> int {
 	nums := 10_000
-	nums = 3_000
+	nums = 5_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}
