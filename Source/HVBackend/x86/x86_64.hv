@@ -945,8 +945,7 @@ MCBuildFuncContext_x86_64 := class
 
 				if IsRAXCastType(tpTo) and IsRAXCastType(tpFrom)
 				{
-					Mov(fnc,"rax",line.var2)
-					Mov(fnc,line.var1,"rax")
+					assert(false) // managed py pass
 				}else if tpTo == GTypeFloat and tpFrom == GTypeDouble{
 					Mov(fnc,"xmm0",line.var2)
 					ResultData << "\xF2\x0F\x5A\xC8"

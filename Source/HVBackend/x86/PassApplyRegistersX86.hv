@@ -449,6 +449,20 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c] = it
 				c += 1
 			}
+		case "cast"
+			tpTo := oPtr[it.var1].GetType()
+			tpFrom := oPtr[it.var2].GetType()
+
+			if IsRAXCastType(tpTo) and IsRAXCastType(tpFrom)
+			{
+				rFrom := bldr.PushReg("rax",tpFrom)
+				rTo := bldr.PushReg("rax",tpTo)
+				cPtr[c++] = MCLine("mov",rFrom,it.var2)
+				cPtr[c++] = MCLine("mov",it.var1,rTo)
+
+			}else{
+				cPtr[c++] = it
+			}
 		case in !["sin","cos"]
 			tp := oPtr[it.var2].GetType()
 			assert(IsFloat(tp))
