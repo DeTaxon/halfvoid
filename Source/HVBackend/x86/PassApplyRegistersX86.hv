@@ -263,15 +263,33 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				r2 = "rdx"
 			}
 
-			reg1 := bldr.PushReg(r1,tp)
-			reg2 := bldr.PushReg(r2,tp)
+			if (v1 is MCConstInteger or v2 is MCConstInteger) and r1 == "rax"
+			{
+				reg1 := bldr.PushReg(r1,tp)
+				valIdx := 0
+				if v2 is MCConstInteger
+				{
+					cPtr[c++] = MCLine("mov",reg1,it.var2)
+					valIdx = it.var3
+				}else{
+					cPtr[c++] = MCLine("mov",reg1,it.var3)
+					valIdx = it.var2
+				}
+				cPtr[c++] = MCLine(it.opcode,reg1,valIdx)
+				cPtr[c++] = MCLine("mov",it.var1,reg1)
+				
+			}else{
 
-			cPtr[c] = MCLine("mov",reg1,it.var2)
-			cPtr[c+1] = MCLine("mov",reg2,it.var3)
-			cPtr[c+2] = MCLine(it.opcode,reg1,reg2)
-			cPtr[c+3] = MCLine("mov",it.var1,reg1)
-			
-			c += 4
+				reg1 := bldr.PushReg(r1,tp)
+				reg2 := bldr.PushReg(r2,tp)
+
+				cPtr[c] = MCLine("mov",reg1,it.var2)
+				cPtr[c+1] = MCLine("mov",reg2,it.var3)
+				cPtr[c+2] = MCLine(it.opcode,reg1,reg2)
+				cPtr[c+3] = MCLine("mov",it.var1,reg1)
+				
+				c += 4
+			}
 
 
 		case "cmp"

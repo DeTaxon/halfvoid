@@ -8,7 +8,9 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	tst()
+	x := 5
+	printf("test %i\n",x - 1)
+	//tst()
 }
 
 tst := !() -> int {

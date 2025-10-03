@@ -505,8 +505,11 @@ MCBuildFuncContext_x86_64 := class
 			
 				tp := objs[line.var1].GetType()
 
-				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
-				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
+				ob1 := ref objs[line.var1]
+				ob2 := ref objs[line.var2]
+
+				reg1 := ob1&->{MCConstRegisterX86^}.GetValue()
+				reg2 := ob2&->{MCConstRegisterX86^}.GetValue()
 
 				
 				if tp is TypeVector
@@ -552,13 +555,27 @@ MCBuildFuncContext_x86_64 := class
 					WriteData(0xC0 + (r1 shl 3) + r2)
 
 				}else{
-					WriteData(0x48)
-					switch line.opcode
+					if ob2& is MCConstInteger
 					{
-					case "add" WriteData(0x01)
-					case "sub" WriteData(0x29)
+						WriteData(0x48,0x81)
+						switch line.opcode
+						{
+						case "add" WriteData(0xC0 + reg1)
+						case "sub" WriteData(0xE8 + reg1)
+						}
+
+						x := ob2&->{MCConstInteger^}.GetValue()
+						ResultData.Write(x&,4)
+
+					}else{
+						WriteData(0x48)
+						switch line.opcode
+						{
+						case "add" WriteData(0x01)
+						case "sub" WriteData(0x29)
+						}
+						WriteData(0xC0 + (reg2 shl 3) + reg1)
 					}
-					WriteData(0xC0 + (reg2 shl 3) + reg1)
 				}
 
 			case in !["div","mul"]
