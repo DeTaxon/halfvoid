@@ -15,7 +15,7 @@ RunFunc := !() -> void
 
 tst := !() -> int {
 	nums := 10_000
-	nums = 5_000
+	// nums = 5_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

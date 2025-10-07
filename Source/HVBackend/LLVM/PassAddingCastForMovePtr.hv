@@ -34,7 +34,7 @@ PassAddingCastForPtrMove := !(MCFunction^ fnc) ->MCFunction^
 			cnst := makeConst(t1)
 
 			newCmds.Push(MCLine("cast",cnst,it.var2))
-			newCmds.Push(MCLine("llvm_store",it.var1,cnst))
+			newCmds.Push(MCLine("store",it.var1,cnst))
 		}else{
 
 			newCmds.Push(it)

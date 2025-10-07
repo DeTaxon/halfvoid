@@ -88,7 +88,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 				cnst := makeConst(tp)
 				vr := getVar(op.var1)
 
-				ln := MCLine("llvm_store",vr,cnst)
+				ln := MCLine("store",vr,cnst)
 				newCmds.InsertAfter(iter,ln)
 
 				if op.opcode != "llvm_getelementptr0"
@@ -103,7 +103,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 					tp := fnc.Objects[op.var2].GetType()
 					cnst := makeConst(tp.GetPoint())
 					vr := getVar(op.var2)
-					newCmds.InsertBefore(iter,MCLine("llvm_load",cnst,vr))
+					newCmds.InsertBefore(iter,MCLine("load",cnst,vr))
 
 					//printf("hm %p\n",fnc.Objects[op.var2].GetType() is in TypeClass,tp is in TypeClass)
 
@@ -113,7 +113,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 						op.var2 = cnst
 					}else{
 						cnst2 := makeConst(tp)
-						newCmds.InsertBefore(iter,MCLine("llvm_load",cnst2,cnst))
+						newCmds.InsertBefore(iter,MCLine("load",cnst2,cnst))
 						op.opcode = "llvm_getelementptr"
 						op.var2 = cnst2
 					}
@@ -128,12 +128,12 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 					op.var1 = cnstVal
 
-					newCmds.InsertAfter(iter,MCLine("llvm_store",cnstSet,cnstVal))
+					newCmds.InsertAfter(iter,MCLine("store",cnstSet,cnstVal))
 					newCmds.InsertAfter(iter,MCLine("mov",cnstSet,vr))
 				}
 				if op.opcode == "get_pointer" and op.var2 == i {
 					cnst := makeConst(fnc.Objects[op.var2].GetType().GetPoint())
-					newCmds.InsertBefore(iter,MCLine("llvm_load",cnst,getVar(op.var2)))
+					newCmds.InsertBefore(iter,MCLine("load",cnst,getVar(op.var2)))
 					op.opcode = "cast"
 					op.var2 = cnst
 				}else if op.opcode == "mov" and op.var1 == i {
@@ -150,7 +150,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 						vr := getVar(op.var1)
 
 						newCmds.InsertBefore(iter,MCLine("mov",cnstSet,vr))
-						op.opcode = "llvm_store"
+						op.opcode = "store"
 						op.var1 = cnstSet
 
 					}else{
@@ -166,7 +166,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 						vr := getVar(op.var1)
 
 						newCmds.InsertBefore(iter,MCLine("mov",cnstSet,vr))
-						op.opcode = "llvm_store"
+						op.opcode = "store"
 						op.var1 = cnstSet
 					}
 
@@ -182,8 +182,8 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 						cnst2 := makeConst(tp.GetPoint())
 						cnst := makeConst(tp)
 						vr := getVar(op.var1&[j])
-						newCmds.InsertBefore(iter,MCLine("llvm_load",cnst2,vr))
-						newCmds.InsertBefore(iter,MCLine("llvm_load",cnst,cnst2))
+						newCmds.InsertBefore(iter,MCLine("load",cnst2,vr))
+						newCmds.InsertBefore(iter,MCLine("load",cnst,cnst2))
 						op.var1&[j] = cnst
 					}
 

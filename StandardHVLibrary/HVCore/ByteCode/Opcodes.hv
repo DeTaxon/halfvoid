@@ -79,13 +79,15 @@ MCBaseOpcodes := enum extend u16
 	//DO NOT CREATE CODE WITH OPCODES BELOW!!!!
 	//opcodes below are backend specific
 
+	//result of removing references
+	"store", // var1^ = var2
+	"load", // var1 = var2^
+
 	//BACKEND interpreter
 	//Optimizations
 	"load_element_opt_class_const"
 
 	//BACKEND llvm ir
-	"llvm_store", // var1^ = var2
-	"llvm_load",
 	"llvm_getelementptr",
 	"llvm_getelementptr0"
 	//"llvm_copy_const" // var1 alias to var2

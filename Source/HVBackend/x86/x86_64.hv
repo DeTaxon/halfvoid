@@ -247,7 +247,7 @@ MCBuildFuncContext_x86_64 := class
 				}
 
 
-			case "llvm_store"
+			case "store"
 
 				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue() 
 				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
@@ -299,7 +299,7 @@ MCBuildFuncContext_x86_64 := class
 					ResultData.Write(offst&,4)
 				}
 
-			case "llvm_load"
+			case "load"
 
 				tp := objs[line.var1].GetType()
 				size := tp.GetSize()

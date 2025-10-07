@@ -19,10 +19,10 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	fnc = PassRemoveSpaceship(fnc)
 	fnc = PassSimplifyVectors(fnc)
 	fnc = PassRemoveVoidParams(fnc)
+	fnc = PassRemoveReferences(fnc)
 	//fnc = PassNormalizeTypes(fnc)
 	fnc = PassForceReturnConstValues(fnc)
 	if needPrint fnc.Print()
-	fnc = PassRemoveReferences(fnc)
 	if needPrint fnc.Print()
 	fnc = PassForceReturnConstValues(fnc)
 	if needPrint fnc.Print()
@@ -793,7 +793,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				LLVMPrintObjValue(ctx,ob3,op.var3)
 				out << ",i1 0)"
 				printDebugEnd()
-			case "llvm_store"
+			case "store"
 				ob1 := ref fnc.Objects[op.var1]
 				ob2 := ref fnc.Objects[op.var2]
 
@@ -808,7 +808,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << " "
 				LLVMPrintObjValue(ctx,ob1,op.var1)
 				printDebugEnd()
-			case "llvm_load"
+			case "load"
 				ob1 := ref fnc.Objects[op.var1]
 				ob2 := ref fnc.Objects[op.var2]
 
