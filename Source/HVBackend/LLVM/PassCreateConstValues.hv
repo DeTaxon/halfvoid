@@ -263,6 +263,8 @@ GenMCTable := !() -> void
 
 	tbl["store"] = MCLine("noop",0,1)
 	tbl["load"] = MCLine("noop")
+	tbl["get_field_ptr"] = MCLine("noop",0,1,1,1,1)
+
 	tbl["llvm_getelementptr"] = MCLine("noop",0,1,1,1,1)
 	tbl["llvm_getelementptr0"] = MCLine("noop",0,1,1,1,1)
 

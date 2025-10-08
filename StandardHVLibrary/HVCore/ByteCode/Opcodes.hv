@@ -69,19 +69,28 @@ MCBaseOpcodes := enum extend u16
 	"debug_set_file",
 	"debug_set_line",
 
-	//assembler does not work in interperter, for .exe generators only, x86_64 only for now
-	"asm_start", // op1 result, op2 string of assembler text, op3 optional arch
-	//"load_var",
-	"clob_str",
-	"asm_end",
 
 
 	//DO NOT CREATE CODE WITH OPCODES BELOW!!!!
 	//opcodes below are backend specific
 
-	//result of removing references
+	//assembler does not work in interperter, for .exe generators only
+	//assembler is x86_64 for now
+	"asm_start", // op1 result, op2 string of assembler text, op3 optional arch
+	//"load_var",
+	"clob_str",
+	"asm_end",
+
+	/////////result of removing references
 	"store", // var1^ = var2
 	"load", // var1 = var2^
+
+	//var1 = var2^.var3&
+	//var1 - pointer to field
+	//var2 - pointer to class
+	//var3 - const int, field index
+	"get_field_ptr", // get pointer to field in class
+	"get_array_ptr", // var1 = var2[var3]&
 
 	//BACKEND interpreter
 	//Optimizations

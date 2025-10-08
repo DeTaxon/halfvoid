@@ -3,6 +3,8 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 {
 	@once RetConstFuncTableInit()
 
+	fnc2 := passRemoveReferencesReplaceLoadElement(fnc)
+
 	tbl := ref RetConstFuncTable
 
 	newObjs := List.{MCObject}
@@ -39,6 +41,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 		vars[id] = result
 	}
+
 
 	for it , i : newObjs
 	{
@@ -80,7 +83,11 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 				continue
 			}
 
-			if (op.opcode == "load_element" or op.opcode == "llvm_getelementptr" or op.opcode == "llvm_getelementptr0") and op.var1 == i
+			if (op.opcode == "load_element" 
+				or op.opcode == "get_field_ptr" 
+				or op.opcode == "llvm_getelementptr" 
+				or op.opcode == "llvm_getelementptr0") 
+					and op.var1 == i
 			{
 				tp := it.GetType()
 				tp = tp.GetPoint()
@@ -91,7 +98,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 				ln := MCLine("store",vr,cnst)
 				newCmds.InsertAfter(iter,ln)
 
-				if op.opcode != "llvm_getelementptr0"
+				if op.opcode == "load_element"
 					op.opcode = "llvm_getelementptr"
 				op.var1 = cnst
 
@@ -109,7 +116,7 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 					if tp is in TypeClass
 					{
-						op.opcode = "llvm_getelementptr0"
+						op.opcode = "get_field_ptr"
 						op.var2 = cnst
 					}else{
 						cnst2 := makeConst(tp)
@@ -198,4 +205,40 @@ PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 	newFunc.Lines = newCmds.ToVector()
 
 	return newFunc
+}
+passRemoveReferencesReplaceLoadElement := !(MCFunction^ fnc) ->MCFunction^
+{
+	grd := MakeGreedyPass(fnc,2,2)
+
+	cPtr := grd.cPtr
+	c := ref grd.cmdsSize
+	oPtr := grd.oPtr
+
+	for line : fnc.Lines
+	{
+		if line.opcode == "load_element"
+		{
+			objTp := oPtr[line.var2].GetType()
+
+			if objTp is in TypeClass 
+			{
+				cnstObj := grd.PushConstVar(objTp.GetPoint())
+				cPtr[c++] = MCLine("get_pointer",cnstObj,line.var2)
+				cPtr[c++] = MCLine("get_field_ptr",line.var1,cnstObj,line.var2)
+
+			}else if objTp is in TypePoint or objTp == GTypeStr
+			{
+				cPtr[c++] = MCLine("get_array_ptr",line.var1,line.var2,line.var3)
+			}else{
+				printf("RemoveRef,unknown type %s\n",objTp.GetBADStr().Str())
+				assert(false)
+			}
+		}else{
+			cPtr[c++] = line
+		}
+	}
+}
+passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
+{
+
 }

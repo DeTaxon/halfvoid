@@ -81,7 +81,7 @@ tst := !() -> int {
 	printf("resultPtr %s\n",resultPtr)
 }
 
-//TODO memset to func call
+//TODO there is some trickary with GTypeStr in PassRemoveReferences
 //TODO x86, make passing vec4f abi compatable, windows, linux
 //TODO named input + template, !(@T^ x = null)
 //TODO emit error if named input provided but not used

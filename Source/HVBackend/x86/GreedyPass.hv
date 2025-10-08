@@ -13,6 +13,15 @@ GreedyPass := class
 	oPtr := MCObject^
 	cPtr := MCLine^
 
+	PushConstVar := !(Type^ varType) -> int
+	{
+		newReg := MCConstValue
+
+		newReg.GetValueType() = varType
+
+		result = objsSize
+		oPtr[objsSize++] = newReg
+	}
 	PushReg := !(X86Register reg, Type^ regType) -> int
 	{
 		newReg := MCConstRegisterX86
@@ -49,7 +58,7 @@ GreedyPass := class
 	}
 }
 
-MakeGreadyPass := !(MCFunction^ fnc, int cmdK, int objK, bool copyObjs = true) -> GreedyPass
+MakeGreedyPass := !(MCFunction^ fnc, int cmdK, int objK, bool copyObjs = true) -> GreedyPass
 {
 	result.originalFunc = fnc
 

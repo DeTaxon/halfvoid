@@ -1,0 +1,59 @@
+
+PassRemoveUnusedObjects := !(MCFunction^ fnc) -> MCFunction^
+{
+	grd := MakeGreedyPass(fnc,1,1,false)
+
+	objsCount := fnc.Objects.Size()
+
+	isUsed := Vector.{bool}
+	isUsed.Resize(objsCount)
+
+	isUsed[0] = true
+
+	cPtr := grd.cPtr
+	c := ref grd.cmdsSize
+	oPtr := grd.oPtr
+	o := ref grd.objsSize
+
+	icPtr := fnc.Lines.GetPointer()
+	ioPtr := fnc.Objects.GetPointer()
+	assert(icPtr != null and ioPtr != null)
+
+	for i : fnc.Lines.Size()
+	{
+		line := icPtr[i]
+		isUsed[line.var1] = true
+		isUsed[line.var2] = true
+		isUsed[line.var3] = true
+		isUsed[line.var4] = true
+		isUsed[line.var5] = true
+	}
+
+	newIds := Vector.{int}
+	newIds.Resize(objsCount)
+
+	idIter := 0
+	for i : objsCount
+	{
+		if isUsed[i]
+		{
+			oPtr[o++] = ioPtr[i]
+			newIds[i] = idIter
+			idIter += 1
+		}
+	}
+
+	for i : fnc.Lines.Size()
+	{
+		line := icPtr[i]
+
+		line.var1 = newIds[line.var1]
+		line.var2 = newIds[line.var2]
+		line.var3 = newIds[line.var3]
+		line.var4 = newIds[line.var4]
+		line.var5 = newIds[line.var5]
+
+		cPtr[c++] = line
+	}
+	return grd.GenerateFunc()
+}
