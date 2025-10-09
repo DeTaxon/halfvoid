@@ -90,17 +90,13 @@ MCBaseOpcodes := enum extend u16
 	//var2 - pointer to class
 	//var3 - const int, field index
 	"get_field_ptr", // get pointer to field in class
-	"get_array_ptr", // var1 = var2[var3]&
+	"get_array_elem_ptr", // var1 = var2[var3]&
 
 	//BACKEND interpreter
 	//Optimizations
 	"load_element_opt_class_const"
 
 	//BACKEND llvm ir
-	"llvm_getelementptr",
-	"llvm_getelementptr0"
-	//"llvm_copy_const" // var1 alias to var2
-	//
 	
 	//BACKEND x86
 	"jmp_if_op", // label var1 operator var2,   jump if var1 >= var2 , TODO interpreter/LLVM support

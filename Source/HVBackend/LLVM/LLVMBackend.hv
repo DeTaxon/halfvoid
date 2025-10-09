@@ -11,7 +11,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "main_145"
+	needPrint := base->{BoxFuncBody^}.OutputName == "InitTaskContexast"
 	//needPrint = true
 	//needPrint = false
 
@@ -843,7 +843,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << siz << "f32(float -0.0,<" << siz << " x float> %Temp" << op.var1 << ")"
 
 				printDebugEnd()
-			case in !["llvm_getelementptr","llvm_getelementptr0","get_field_ptr"]
+			case in !["get_field_ptr","get_array_elem_ptr"]
 				v1 := op.var2
 				v2 := op.var3
 				res := ref fnc.Objects[op.var1]
@@ -869,7 +869,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					out << " "
 					LLVMPrintObjValue(ctx,ob1,v1)
 
-					if op.opcode == "llvm_getelementptr0" or op.opcode == "get_field_ptr"
+					if op.opcode == "get_field_ptr"
 						out << ", i32 0 , "
 					else 
 						out << " , "

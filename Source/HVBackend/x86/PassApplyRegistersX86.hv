@@ -407,19 +407,12 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c+2] = MCLine("mov",it.var1,reg2)
 				c += 3
 			}
-		case "llvm_getelementptr"
+		case in !["get_array_elem_ptr"]
 		
 			obj1 := oPtr[it.var2]
 			tp := oPtr[it.var2].GetType()
 
-			if obj1 is MCGlobalVariable  
-				or (tp is TypeClass and obj1 is MCVariable) 
-			{
-				r := bldr.PushReg("rcx",tp.GetPoint())
-
-				cPtr[c++] = MCLine("get_pointer",r,it.var2)
-				cPtr[c++] = MCLine("llvm_getelementptr0",it.var1,r,it.var3)
-			}else if tp is in TypePoint or tp == GTypeStr {
+			if tp is in TypePoint or tp == GTypeStr {
 				r1 := bldr.PushReg("rax",GTypeInt)
 				r2 := bldr.PushReg("rdx",GTypeInt)
 

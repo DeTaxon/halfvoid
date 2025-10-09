@@ -140,22 +140,6 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 
 				thisLine := it
 
-				if (thisLine.opcode == "load_element" or thisLine.opcode == "llvm_getelementptr")
-					and IsVarType(fnc.Objects[thisLine.var2]) {
-
-					ob1 := ref fnc.Objects[thisLine.var2]
-
-					if ob1.GetType() is TypeClass {
-						cnst := toConstVar(ob1)
-						newCnst := ref newObjs[-1]&->{MCConstValue^}^
-						newCnst.GetValueType() = ob1.GetType().GetPoint()
-
-						newCmds.Push(MCLine("get_pointer",cnst,thisLine.var2))
-						thisLine.opcode = "llvm_getelementptr0"
-						thisLine.var2 = cnst
-					}
-				}
-
 				if inf.opcode == "noop"
 				{
 					newCmds.Push(thisLine)
@@ -261,12 +245,10 @@ GenMCTable := !() -> void
 	tbl["va_arg"] = MCLine("noop",0,1)
 	tbl["va_end"] = MCLine("noop",1)
 
-	tbl["store"] = MCLine("noop",0,1)
-	tbl["load"] = MCLine("noop")
+	tbl["store"] = MCLine("noop",1,1)
+	tbl["load"] = MCLine("noop",0,1)
 	tbl["get_field_ptr"] = MCLine("noop",0,1,1,1,1)
-
-	tbl["llvm_getelementptr"] = MCLine("noop",0,1,1,1,1)
-	tbl["llvm_getelementptr0"] = MCLine("noop",0,1,1,1,1)
+	tbl["get_array_elem_ptr"] = MCLine("noop",0,1,1,1,1)
 
 	tbl["asm_start"] = MCLine("noop")
 	tbl["asm_end"] = MCLine("noop")

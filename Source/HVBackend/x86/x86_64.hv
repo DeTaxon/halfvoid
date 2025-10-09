@@ -116,6 +116,7 @@ MCBuildFuncContext_x86_64 := class
 		fnc = PassRemoveSpaceship(fnc)
 		fnc = PassSimplifyVectors(fnc)
 		fnc = PassRemoveVoidParams(fnc)
+		// fnc.Print()
 		fnc = PassRemoveReferences(fnc)
 		// fnc = PassOptimizeJumpX86(fnc)
 		// fnc.Print()
@@ -197,55 +198,6 @@ MCBuildFuncContext_x86_64 := class
 			case "debug_set_line"
 				fileLine = objs[line.var1]&->{MCConstInteger^}.GetValue()
 
-			case "llvm_getelementptr"
-				tp := objs[line.var2].GetType()
-
-				printf("wut %s %s %i\n",tp.GetBADStr().Str(),fileName,fileLine)
-				assert(false)
-			case "llvm_getelementptr0"
-				tpPtr := objs[line.var2].GetType()
-				assert(tpPtr is in TypePoint)
-				tp := tpPtr.Base
-
-				if tp is TypeClass {
-					assert(objs[line.var3] is MCConstInteger)
-					indx := objs[line.var3]&->{MCConstInteger^}.GetValue()
-
-					cls := tp->{TypeClass^}.ToClass
-
-					offst := cls.GetFieldByIndexRaw(indx).MemOffset
-
-					r := X86Register
-
-					if objs[line.var2] is MCConstRegisterX86 {
-						r = objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
-					}else{
-						r = "rax"
-						Mov(fnc,"rax",line.var2)
-					}
-
-					WriteData(0x48,0x81,0xC0 + r) //add r imm32
-					ResultData.Write(offst&,4)
-					Mov(fnc,line.var1,r)
-				}else if tp is in TypePoint {
-
-					assert(objs[line.var2] is MCConstRegisterX86)
-					reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
-
-					assert(reg2 == "rcx")
-
-					tpSize := tp.GetSize()
-					MovU64ToReg(fnc,"rax",tpSize)
-					Mov(fnc,"rdx",line.var3)
-					WriteData(0x48,0x0F,0xAF,0xC2) // imul 
-					//Mov(fnc,"rdx",line.var2)
-					WriteData(0x48,0x8B,0x09) // mov rcx, (rcx)
-					WriteData(0x48,0x01,0xC8) // add rax rcx
-					Mov(fnc,line.var1,"rax")
-				}else {
-					printf("wut %s %s %i\n",tp.GetBADStr().CStr(),fileName,fileLine)
-					assert(false)
-				}
 			case "get_field_ptr"
 				tpPtr := objs[line.var2].GetType()
 				assert(tpPtr is in TypePoint)

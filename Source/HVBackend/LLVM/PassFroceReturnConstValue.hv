@@ -140,9 +140,7 @@ RetConstFuncTableInit := !() -> void
 	tbl.Insert("vec_scalar_mul")
 
 	tbl.Insert("get_field_ptr")
-
-	tbl.Insert("llvm_getelementptr")
-	tbl.Insert("llvm_getelementptr0")
+	tbl.Insert("get_array_elem_ptr")
 
 	tbl.Insert("va_arg")
 
