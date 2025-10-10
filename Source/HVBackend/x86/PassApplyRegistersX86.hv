@@ -407,7 +407,28 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c+2] = MCLine("mov",it.var1,reg2)
 				c += 3
 			}
-		case in !["get_array_elem_ptr"]
+		case "get_field_ptr"
+			tpPtr := oPtr[it.var2].GetType()
+			assert(tpPtr is in TypePoint)
+			tp := tpPtr.Base
+
+			assert(tp is TypeClass)
+
+			assert(oPtr[it.var3] is MCConstInteger)
+			indx := oPtr[it.var3]&->{MCConstInteger^}.GetValue()
+
+			cls := tp->{TypeClass^}.ToClass
+
+			offst := cls.GetFieldByIndexRaw(indx).MemOffset
+
+			r1 := bldr.PushReg("rax",GTypeVoidP)
+			intVal := bldr.PushInt(offst)
+
+			cPtr[c++] = MCLine("mov",r1,it.var2)
+			cPtr[c++] = MCLine("add",r1,intVal)
+			cPtr[c++] = MCLine("mov",it.var1,r1)
+
+		case "get_array_elem_ptr"
 		
 			obj1 := oPtr[it.var2]
 			tp := oPtr[it.var2].GetType()

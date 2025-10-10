@@ -199,31 +199,7 @@ MCBuildFuncContext_x86_64 := class
 				fileLine = objs[line.var1]&->{MCConstInteger^}.GetValue()
 
 			case "get_field_ptr"
-				tpPtr := objs[line.var2].GetType()
-				assert(tpPtr is in TypePoint)
-				tp := tpPtr.Base
-
-				assert(tp is TypeClass)
-
-				assert(objs[line.var3] is MCConstInteger)
-				indx := objs[line.var3]&->{MCConstInteger^}.GetValue()
-
-				cls := tp->{TypeClass^}.ToClass
-
-				offst := cls.GetFieldByIndexRaw(indx).MemOffset
-
-				r := X86Register
-
-				if objs[line.var2] is MCConstRegisterX86 {
-					r = objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
-				}else{
-					r = "rax"
-					Mov(fnc,"rax",line.var2)
-				}
-
-				WriteData(0x48,0x81,0xC0 + r) //add r imm32
-				ResultData.Write(offst&,4)
-				Mov(fnc,line.var1,r)
+				assert(false)
 
 			case "store"
 
