@@ -37,3 +37,15 @@ TaskYield := !() -> void
 	CurrentThread.ThreadMainTask.switchToTask()
 	TaskCheckMutex.Unlock()
 }
+
+
+AppendClass TaskWorker
+{
+	SkipTimers := !() -> void
+	{
+		TaskCheckMutex.Lock()
+		TaskTimersArray[^].0 = 0
+		TaskCheckMutex.Unlock()
+	}
+
+}

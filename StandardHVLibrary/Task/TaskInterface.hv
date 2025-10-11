@@ -1,0 +1,7 @@
+
+#MarkFunction("JITPass",TSpawnTask)
+TSpawnTask := !(!()&-> void cb) -> Task^
+{
+	return CurrentThread.CreateTask(cb)
+}
+

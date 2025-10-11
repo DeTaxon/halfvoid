@@ -43,14 +43,6 @@ internalThreadDestructor := !() -> void
 	CurrentTask = null
 }
 
-
-#MarkFunction("JITPass",TSpawnTask)
-TSpawnTask := !(!()&-> void cb) -> Task^
-{
-	return CurrentThread.CreateTask(cb)
-}
-
-
 ucontextStartTask := !() -> void
 {
 	CurrentTask.startTaskThread()
