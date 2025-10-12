@@ -41,7 +41,7 @@ TaskYield := !() -> void
 
 AppendClass TaskWorker
 {
-	SkipTimers := !() -> void
+	SkipTimers := virtual !() -> void
 	{
 		TaskCheckMutex.Lock()
 		TaskTimersArray[^].0 = 0
