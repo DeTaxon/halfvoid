@@ -3,7 +3,26 @@
 
 main := !(char^[] args) -> int
 {
-	RunFunc()
+	vals := size_t[20]
+	vals[0] = 14
+	vals[1]&->{float^}^ = 1.1
+	vals[2] = 2
+	vals[3] = 3
+	vals[4] = 4
+	vals[5] = 5
+	vals[6] = 6
+	vals[7]&->{float^}^ = 7.7
+	vals[8] = 8
+	// RunFunc()
+	ret := CallFunctionPtr(Gello,9,"ifiiiiifi",vals,true)
+
+	printf("result %i %f\n",ret,ret&->{double^}^)
+}
+
+Gello := !(int x,float y, int z, int a,int b, int c,int i, float j ,int k) -> double
+{
+	printf("Yep %i %f %i %i %i %i %i %f %i\n",x,y,z,a,b,c,i,j,k)
+	return 6
 }
 
 RunFunc := !() -> void
