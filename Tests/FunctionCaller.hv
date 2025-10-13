@@ -1,0 +1,64 @@
+
+FFITests := !() -> void
+	#Mark("UnitTest")
+{
+	c := FunctionCaller.{64}
+
+	c.PushInt(1)
+	c.PushFloat(1.0)
+	c.PushInt(2)
+	c.PushDouble(2.0)
+
+	c.PushInt(3)
+	c.PushInt(4)
+	c.PushInt(5)
+	c.PushInt(6)
+	c.PushInt(7)
+
+	c.PushFloat(3.0)
+	c.PushFloat(4.0)
+	c.PushFloat(5.0)
+	c.PushFloat(6.0)
+
+	c.PushFloat(7.0)
+	c.PushFloat(8.0)
+	c.PushFloat(9.0)
+	c.PushFloat(10.0)
+
+	c.Call(TSumFunc)
+}
+
+TSumFunc := !(
+	int a1, float d1, int a2, double d2,
+	int a3,int a4, int a5, int a6, int a7,
+	float d3, float d4, float d5,float d6,
+	float d7,float d8,float d9,float d10
+) -> void
+{
+	intSum := a1 + a2 + a3 + a4 + a5 + a6 + a7
+	floatSum := d1 + d2 + d3 + d4 + d5
+			+ d6 + d7 + d8 + d9 + d10
+
+	assert(intSum == 28)
+	assert(floatSum == 55.0)
+
+}
+
+FFITestsRet := !() -> void
+	#Mark("UnitTest")
+{
+	c := FunctionCaller.{64}
+
+	c.Call(FFIRetInt)
+	assert(c.GetRetS64() == 31)
+
+	c.Call(FFIRetFloat)
+	assert(c.GetRetFloat() == 31.0)
+
+	c.Call(FFIRetDouble)
+	assert(c.GetRetDouble() == 31.0)
+}
+
+FFIRetInt := !() -> s64 { return 31 }
+FFIRetFloat := !() -> float { return 31.0 }
+FFIRetDouble := !() -> double { return 31.0 }

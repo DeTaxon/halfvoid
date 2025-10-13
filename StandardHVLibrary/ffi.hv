@@ -1,12 +1,82 @@
 
-CallFunctionPtr := !(void^ fncPtr,int argc, char^ inpInfo, u64^ args, bool retFloat) -> u64
+FunctionCaller := class .{@StackSize}
+{
+	argc := int
+	inputs := vec4f[StackSize] //TODO dirty
+	pointers := void^[StackSize]
+	filter := char[StackSize]
+
+	ReturnFloat := vec4f
+	ReturnInt := size_t
+
+	PushPtr := !(void^ value) -> void { pushObj('i',value) }
+	PushInt := !(s64 value) -> void { pushObj('i',value) }
+	PushFloat := !(float value) -> void { pushObj('f',value) }
+	PushDouble := !(double value) -> void { pushObj('d',value) } 
+	PushVec2f := !(vec2f value) -> void { pushObj('d',value) } 
+	PushVec3f := !(vec3f value) -> void { pushObj('v',value) } 
+	PushVec4f := !(vec4f value) -> void  { pushObj('v',value) }
+
+	Call := !(void^ fncPtr) -> void
+	{
+		ctx := CallFunctionPtrInputs
+
+		ctx.FunctionPointer = fncPtr
+		ctx.AllArgs = argc
+		ctx.BaseArgs = argc
+		ctx.Filter = filter
+		ctx.Args = pointers
+
+		CallFunctionPtr(ctx&)
+
+		ReturnFloat = ctx.ReturnFloat
+		ReturnInt = ctx.ReturnInt
+	}
+
+	GetRetPtr := !() -> void^ { return ReturnInt&->{void^^}^ }
+	GetRetS64 := !() -> s64 { return ReturnInt }
+	GetRetFloat := !() -> float { return ReturnFloat.x }
+	GetRetDouble := !() -> double { return ReturnFloat&->{double^}^}
+
+	pushObj := !(char fltr, @T value) -> void
+	{
+		i := argc
+
+		assert(i < StackSize)
+
+		ptr := inputs[i]&->{T^}
+		ptr^ = value
+		pointers[i] = ptr
+		filter[i] = fltr
+
+		argc += 1
+	}
+}
+
+// i,f,d,v
+
+CallFunctionPtrInputs := class
+{
+	ReturnFloat := vec4f
+	ReturnInt := size_t
+
+	FunctionPointer := void^
+	AllArgs := int
+	BaseArgs := int // AllArgs minus args passed to variadic
+	Filter := char^
+	Args := void^^
+
+}
+
+CallFunctionPtr := !(CallFunctionPtrInputs^ inpts) -> void
 {
 	if #OS() == "Linux"
 	{
-		assert(argc  < 128)
+		argc := inpts.AllArgs
+		args := inpts.Args
 
 		ints := u64[6]
-		floats := u64[8]
+		floats := vec4f[8]
 		stack := u64[128] //TODO make dirty
 
 		stackSize := u64
@@ -18,15 +88,19 @@ CallFunctionPtr := !(void^ fncPtr,int argc, char^ inpInfo, u64^ args, bool retFl
 			
 			for i : argc
 			{
-				isFloat := inpInfo[i] == 'f'
+				c := inpts.Filter[i]
 
-				if isFloat and usedFloats < 8
+				if c == 'f' and usedFloats < 8
 				{
-					floats[usedFloats++] = args[i]
-				}else if usedInts < 6 {
-					ints[usedInts++] = args[i]
-				}else{
-					stack[usedStack++] = args[i]
+					floats[usedFloats++].x = args[i]->{float^}^
+				}else if c == 'd' and usedInts < 6 {
+					floats[usedFloats++]&->{double^}^ = args[i]->{double^}^
+				}else if c == 'v' and usedInts < 6 {
+					floats[usedFloats++] = args[i]->{vec4f^}^
+				}else if c == 'i' and usedInts < 6 {
+					ints[usedInts++] = args[i]->{s64^}^
+				}else {
+					stack[usedStack++] = args[i]->{u64^}^
 				}
 			}
 
@@ -39,14 +113,14 @@ CallFunctionPtr := !(void^ fncPtr,int argc, char^ inpInfo, u64^ args, bool retFl
 
 		asm(
 		"movq %2,%%r11;"
-		"movq (%%r11),%%xmm0; addq $8,%%r11;"
-		"movq (%%r11),%%xmm1; addq $8,%%r11;"
-		"movq (%%r11),%%xmm2; addq $8,%%r11;"
-		"movq (%%r11),%%xmm3; addq $8,%%r11;"
-		"movq (%%r11),%%xmm4; addq $8,%%r11;"
-		"movq (%%r11),%%xmm5; addq $8,%%r11;"
-		"movq (%%r11),%%xmm6; addq $8,%%r11;"
-		"movq (%%r11),%%xmm7;"
+		"movaps (%%r11),%%xmm0; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm1; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm2; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm3; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm4; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm5; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm6; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm7;"
 
 		"movq (%3),%%r11;"
 		"movq %4,%%r12;"
@@ -79,18 +153,97 @@ CallFunctionPtr := !(void^ fncPtr,int argc, char^ inpInfo, u64^ args, bool retFl
 
 
 		:
-		: "r"(fncPtr),"r"(ints&),"r"(floats&), "r"(stackSize&), "r"(stack[stackSize - 1]&)
+		: "r"(inpts.FunctionPointer),"r"(ints&),"r"(floats&), "r"(stackSize&), "r"(stack[stackSize - 1]&)
 		: "%r11","%r12","%rax","%rdi","%rsi","%rcx","%rdx","%r8","%r9"
 		)
 
-		if retFloat
+		inpts.ReturnFloat = floats[0]
+		inpts.ReturnInt = ints[0]
+
+	}else if #OS == "Windows" {
+		argc := inpts.AllArgs
+		args := inpts.Args
+
+		vals := vec4f[4]
+		stack := u64[128] //TODO $dirty
+
+		stackSize := u64
+
 		{
-			return floats[0]
-		}else{
-			return ints[0]
+			for i : argc
+			{
+				c := inpts.Filter[i]
+
+				if i < 4 {
+					vals[i]& = inpts					
+					if c == 'v'
+					{
+						vals[i]&->{void^^}^ = inpts.Args[i]
+					}else{
+						vals[i] = inpts.Args[i]->{size_t^}^
+					}
+				}else{
+					if c == 'v'
+					{
+						stack[stackSize++]&->{void^^}^ = inpts.Args[i]
+					}else{
+						stack[stackSize++] = inpts.Args[i]->{size_t^}^
+					}
+				}
+			}
+
+			if stackStack mod 2 != 0 //align to 16 bytes
+				stackStack += 1
+
+			stackSize = usedStack
 		}
 
+
+		asm(
+		"movq %1,%%r11;"
+		"movaps (%%r11),%%xmm0; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm1; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm2; addq $16,%%r11;"
+		"movaps (%%r11),%%xmm3;"
+
+		"movq (%2),%%r11;"
+		"movq %3,%%r12;"
+		"load_stack_begin%=:"
+		"cmp $0,%%r11;"
+		"je load_stack_end%=;"
+		"pushq (%%r12);"
+		"subq $8,%%r12"
+		"subq $1,%%r11"
+		"jmp load_stack_begin%=;"
+		"load_stack_end%=:"
+
+		"movq %1,%%r11;"
+		"movq (%%r11),%%rcx; addq $8,%%r11;"
+		"movq (%%r11),%%rdx; addq $8,%%r11;"
+		"movq (%%r11),%%r8; addq $8,%%r11;"
+		"movq (%%r11),%%r9;"
+
+		"movq %0,%%r11;"
+		"add $16,%%rsp"
+		"call *%%r11;"
+		"sub $16,%%rsp"
+		"movq %1,%%r11"
+		"movq %%rax,(%%r11)"
+		"addq $16,%%r11"
+		"movq %%xmm0,(%%r11)"
+
+		"mov (%2),%%r11;"
+		"imul $8,%%r11"
+		"addq %%r11,%%rsp"
+
+		:
+		: "r"(inpts.FunctionPointer),"r"(vals&), "r"(stackSize&), "r"(stack[stackSize - 1]&)
+		: "%r11","%r12","%rax","%rdi","%rsi","%rcx","%rdx","%r8","%r9"
+		)
+
+		inpts.ReturnFloat = vals[1]
+		inpts.ReturnInt = vals[0]&->{size_t^}^
 	}else{
-		assert(false) // unsoported os
+		assert(false) // unsupported os
 	}
 }
