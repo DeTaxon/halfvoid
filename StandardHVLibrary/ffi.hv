@@ -160,7 +160,7 @@ CallFunctionPtr := !(CallFunctionPtrInputs^ inpts) -> void
 		inpts.ReturnFloat = floats[0]
 		inpts.ReturnInt = ints[0]
 
-	}else if #OS == "Windows" {
+	}else if #OS() == "Windows" {
 		argc := inpts.AllArgs
 		args := inpts.Args
 
@@ -174,28 +174,25 @@ CallFunctionPtr := !(CallFunctionPtrInputs^ inpts) -> void
 			{
 				c := inpts.Filter[i]
 
-				if i < 4 {
-					vals[i]& = inpts					
+				if i < 4 {					
 					if c == 'v'
 					{
-						vals[i]&->{void^^}^ = inpts.Args[i]
+						vals[i]&->{void^^}^ = args[i]
 					}else{
-						vals[i] = inpts.Args[i]->{size_t^}^
+						vals[i]&->{size_t^}^ = args[i]->{size_t^}^
 					}
 				}else{
 					if c == 'v'
 					{
-						stack[stackSize++]&->{void^^}^ = inpts.Args[i]
+						stack[stackSize++]&->{void^^}^ = args[i]
 					}else{
-						stack[stackSize++] = inpts.Args[i]->{size_t^}^
+						stack[stackSize++] = args[i]->{size_t^}^
 					}
 				}
 			}
 
-			if stackStack mod 2 != 0 //align to 16 bytes
-				stackStack += 1
-
-			stackSize = usedStack
+			if stackSize mod 2 != 0 //align to 16 bytes
+				stackSize += 1
 		}
 
 
@@ -218,15 +215,15 @@ CallFunctionPtr := !(CallFunctionPtrInputs^ inpts) -> void
 		"load_stack_end%=:"
 
 		"movq %1,%%r11;"
-		"movq (%%r11),%%rcx; addq $8,%%r11;"
-		"movq (%%r11),%%rdx; addq $8,%%r11;"
-		"movq (%%r11),%%r8; addq $8,%%r11;"
+		"movq (%%r11),%%rcx; addq $16,%%r11;"
+		"movq (%%r11),%%rdx; addq $16,%%r11;"
+		"movq (%%r11),%%r8; addq $16,%%r11;"
 		"movq (%%r11),%%r9;"
 
 		"movq %0,%%r11;"
-		"add $16,%%rsp"
+		"sub $32,%%rsp"
 		"call *%%r11;"
-		"sub $16,%%rsp"
+		"addq $32,%%rsp"
 		"movq %1,%%r11"
 		"movq %%rax,(%%r11)"
 		"addq $16,%%r11"

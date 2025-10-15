@@ -81,6 +81,10 @@ unit:
 	./halfvoid -g $(flags) -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Tests -o /tmp/out.ll
 	clang -g /tmp/out.ll -o /tmp/hv_tests -lm -ldl
 	/tmp/hv_tests
+unit.exe:
+	./halfvoid.exe -g $(flags) -emulate-tls -win32  -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Tests -o /tmp/out.ll
+	clang.exe -g /tmp/out.ll -o /tmp/hv_tests.exe -static
+	/tmp/hv_tests.exe
 jit:
 	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -jit -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 run:
