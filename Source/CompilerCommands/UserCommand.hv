@@ -157,9 +157,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 		callObj := () ==> Blob^
 		{
 			resultBlob := void^
-			extraStep := resultBlob&
 			interpFnc := GInterpCntx.GetMCFunc(userCmd.CallFunction)
-			interpResult := MCInterpFunction2Resulted(GInterpCntx&,interpFnc,inptPointers,extraStep&)
+			interpResult := MCInterpFunction2Resulted(GInterpCntx&,interpFnc,inptPointers,resultBlob&)
 
 			resMessage := interpResult.GetErrorMessage()
 			if resMessage->AsString != null //TODO i dont need AsString
