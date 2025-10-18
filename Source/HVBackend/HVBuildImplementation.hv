@@ -38,6 +38,11 @@ HVContextImplementation := class extend HV_Context
 		fType := GetFuncType(typesThis,isReference,rType,resultReference,isVariadicArguments)
 		return fType
 	}
+	GetTypeGroup := !(HV_Object^ obj) -> TypeGroups
+	{
+		if obj is in TypeFunction
+			return "Function"
+	}
 	GetTypeId := virtual !(HV_Object^ obj) -> TypeId 
 	{
 		if obj is not in Type

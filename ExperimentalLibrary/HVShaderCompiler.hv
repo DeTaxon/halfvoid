@@ -60,11 +60,16 @@ SpirvCompiler := class
 		for indx,tp : typeIds
 		{
 			id := HV.GetTypeId(tp)
+			typeGroup := HV.GetTypeGroup(tp)
 
 			if id == void
 			{
 				c.Write32(0x00020000 + 19) // OpTypeVoid
 				c.Write32(indx)
+			} else if typeGroup == "Function" {
+				
+			}else {
+
 			}
 			
 		}

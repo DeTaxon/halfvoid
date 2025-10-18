@@ -10,6 +10,8 @@ HV_Context := class
 	GetFuncType := virtual !(HV_Object^[] types,bool[] isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ {}
 	GetTypeId := virtual !(HV_Object^ obj) -> TypeId {}
 
+	GetTypeGroup := !(HV_Object^ obj) -> TypeGroups {}
+
 	CreateClass := virtual !() -> HV_Class^ {}
 
 	CreateInt32 := virtual !(int value) -> HV_Object^ {}
@@ -28,6 +30,24 @@ HV_Context := class
 	GetFunctionAndHisFriends := virtual !(HV_Object^ func) -> HVFunctionUsage {}
 }
 
+TypeGroups := enum
+{
+	"None",
+	"Base", // ints, floats
+	"Pointer",
+	"Array",
+	"ArrayView",
+	"Function"
+}
+
+HVFunctionTypeInfo := class
+{
+	Types := Vector.{HV_Object^}
+	IsRef := Vector.{bool}
+
+	ResultTypes := Vector.{HV_Object^}
+	ResultRefs := Vector.{bool}
+}
 
 HVFunctionUsage := class
 {
