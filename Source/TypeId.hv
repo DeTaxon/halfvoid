@@ -4,6 +4,13 @@
 DB_TypeId := HVTable2.{Type^,int}
 TypeIdIter := int
 
+
+TypeFromTypeId := !(int id) -> Type^
+{
+	if DB_TypeId.Value.ContainSome(id)
+		return DB_TypeId.Value.GetOne(id)
+	return null
+}
 TypeIdFromType := !(Type^ tp) -> int
 {
 	if DB_TypeId.Key.ContainSome(tp)

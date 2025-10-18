@@ -4,9 +4,11 @@ HV := HV_Context^
 HV_Context := class
 {
 	GetType := virtual !(Str typeName) -> HV_Object^ {}
+	GetTypeObj := virtual !(TypeId tp) -> HV_Object^ {}
 	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^ {}
 	GetTypeBase := virtual !(HV_Object^ baseType) -> HV_Object^ {} // pointer of type to it's type
 	GetFuncType := virtual !(HV_Object^[] types,bool[] isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ {}
+	GetTypeId := virtual !(HV_Object^ obj) -> TypeId {}
 
 	CreateClass := virtual !() -> HV_Class^ {}
 
@@ -21,6 +23,17 @@ HV_Context := class
 	ForEachFuncElement := virtual !(HV_Object^ obj, !(HV_Object^,HV_Object^,int)&-> void cb) -> void {}
 
 	ForEachClass := virtual !(!(HV_Class^)&->void cb) -> void {}
+
+	// Get function + all function that are called by it, + used classes and globals
+	GetFunctionAndHisFriends := virtual !(HV_Object^ func) -> HVFunctionUsage {}
+}
+
+
+HVFunctionUsage := class
+{
+	Functions := Vector.{HV_Object^}
+	Classes := Vector.{HV_Class^}
+	Globals := Vector.{HV_Object^}
 }
 
 HV_Context_Empty := HV_Context

@@ -1,0 +1,57 @@
+
+EndianStreamWrapper := class
+{
+	stream := Stream^
+	SwapBytes := bool
+
+	this := !(Stream^ strm) -> void
+	{
+		stream = strm
+	}
+	SetStream := !(Stream^ strm) -> void
+	{
+		stream = strm
+	}
+
+	SetLittleEndian := !() -> void { SwapBytes = false}
+	SetBigEndian := !() -> void { SwapBytes = true}
+
+	Write8 := !(u8 x) -> void { Stream.Write(x&,1) }
+	Write16 := !(u16 x) -> void {
+		if SwapBytes
+		{
+			c := x&->{char^}
+			tmp := c[0]
+			c[0] = c[1]
+			c[1] = tmp
+
+		}
+		stream.Write(x&,2) 
+	}
+	Write32 := !(u32 x) -> void {
+		if SwapBytes
+		{
+			c := x&->{char^}
+			tmp := c[0]
+			c[0] = c[3]
+			c[3] = tmp
+			tmp = c[1]
+			c[1] = c[2]
+			c[2] = tmp
+		}
+		stream.Write(x&,4)
+	}
+	Write64 := !(u64 x) -> void {
+		if SwapBytes
+		{
+			c := x&->{char^}
+			for i : 4
+			{
+				tmp := c[i]
+				c[i] = c[7 - i]
+				c[7 - i] = tmp
+			}
+		}
+		stream.Write(x&,4)
+	}
+}

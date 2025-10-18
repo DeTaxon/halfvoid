@@ -1,6 +1,8 @@
 
 
 
+
+
 main := !(char^[] args) -> int
 {
 	RunFunc()
@@ -9,7 +11,48 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	tst()
+	// tst()
+	makeSpirv()
+}
+
+makeSpirv := !() -> void
+{
+	ts := new TFile("tst.comp","wr")
+	c := #SpirvTest()
+	ts.Write(c.GetPointer(),c.Size())
+	ts.Close()
+}
+
+AllcFree := class
+{
+	left := AllcFree^
+	right := AllcFree^
+	up := AllcFree^ 
+	balance := s8
+
+	size := int
+}
+Allc := class extends IAllocator
+{
+	startPage := PageMemory
+
+	AllocMem := virtual !(int size, bool dirty = false) -> void^
+	{
+		if startPage.memPointer == null
+		{
+			startPage.Create(8*1024*1024)
+		}
+	}
+	FreeMem := virtual !(void^ mem) -> void
+	{
+	}
+
+	GetPointerInfo := !(void^ ptr) -> void
+	{
+		// actual pointer
+		// typeid
+		//
+	}
 }
 
 tst := !() -> int {

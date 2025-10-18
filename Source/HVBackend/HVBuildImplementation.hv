@@ -14,6 +14,10 @@ HVContextImplementation := class extend HV_Context
 			return null
 		return asType
 	}
+	GetTypeObj := virtual !(TypeId tp) -> HV_Object^
+	{
+		return TypeFromTypeId(tp)
+	}
 	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^
 	{
 		typ := baseType->{Type^}
@@ -33,6 +37,12 @@ HVContextImplementation := class extend HV_Context
 		rType := resultType->{Type^}
 		fType := GetFuncType(typesThis,isReference,rType,resultReference,isVariadicArguments)
 		return fType
+	}
+	GetTypeId := virtual !(HV_Object^ obj) -> TypeId 
+	{
+		if obj is not in Type
+			return void
+		return TypeIdFromType(obj)
 	}
 	CreateClass := virtual !() -> HV_Class^ 
 	{
@@ -60,6 +70,31 @@ HVContextImplementation := class extend HV_Context
 	EmitError := virtual !(Str errorMessage) -> void
 	{
 		CurrentWork?.SetErrorMessage(errorMessage)
+	}
+	GetFunctionAndHisFriends := virtual !(HV_Object^ func) -> HVFunctionUsage 
+	{
+		if func is not BoxFuncBody
+			return void
+		func->{BoxFuncBody^}.ParseBody()
+		func.WaitReadyState()
+
+		CodeCheckCtx := MCInterpContext
+
+		c := CollectFunctionsCtx(CodeCheckCtx&,func->{BoxFuncBody^})
+
+		// c.Workarounds()
+		c.Collect()
+
+
+		result.Functions.Resize(c.WriteFunctions.Size())
+		for it,i : c.WriteFunctions
+			result.Functions[i] = it
+		result.Globals.Resize(c.WriteGlobals.Size())
+		for it,i : c.WriteGlobals
+			result.Globals[i] = it
+		result.Classes.Resize(c.UsedClasses.Size())
+		for it,i : c.UsedClasses
+			result.Classes[i] = it.hvClass&
 	}
 }
 HV_FunctionTemplateImp := class extend HV_FunctionTemplate

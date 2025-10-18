@@ -205,7 +205,7 @@ MCInterpFuncFrame := class
 			}else if itType == GTypeFloat{
 				valuesPtr[i] = GetObjectPtr(it)->{void^}
 				valuesTypes[i] = ffi_type_float
-			}else if itType == GTypeInt{
+			}else if itType == GTypeInt or itType == GTypeTypeId {
 				values[i]&->{int^}^ = GetInt(it)
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_sint32
