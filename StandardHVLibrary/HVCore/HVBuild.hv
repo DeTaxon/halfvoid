@@ -10,7 +10,7 @@ HV_Context := class
 	GetFuncType := virtual !(HV_Object^[] types,bool[] isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ {}
 	GetTypeId := virtual !(HV_Object^ obj) -> TypeId {}
 
-	GetTypeGroup := !(HV_Object^ obj) -> TypeGroups {}
+	GetTypeGroup := virtual !(HV_Object^ obj) -> TypeGroups {}
 
 	CreateClass := virtual !() -> HV_Class^ {}
 
@@ -28,6 +28,8 @@ HV_Context := class
 
 	// Get function + all function that are called by it, + used classes and globals
 	GetFunctionAndHisFriends := virtual !(HV_Object^ func) -> HVFunctionUsage {}
+
+	GetSSAFunc := virtual !(HV_Object^ fnc) -> HVB_Function^ {}
 }
 
 TypeGroups := enum

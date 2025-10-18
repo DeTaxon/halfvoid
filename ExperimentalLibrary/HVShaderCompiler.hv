@@ -3,9 +3,20 @@
 	Name = "SpirvTest",
 	Call = !() -> Blob^
 	{
-		ts := new TEchoStream()
 
 		ctx := SpirvCompiler
+		objs := HV.GetFunctionAndHisFriends(HV.FindFunction("TestShader"))
+
+		fTypeId := 0
+		for fnc : objs.Functions
+		{
+			ssa := HV.GetSSAFunc(fnc)
+
+			fTypeId = ctx.GetFunctionTypeId(ssa)
+			// ssa.Print()
+		}
+		ts := new TEchoStream()
+
 		ctx.c.SetStream(ts)
 
 		c := EndianStreamWrapper(ts)
@@ -18,14 +29,8 @@
 
 		ctx.WriteTypes()
 
-
-		c.Write32(0x00030000 + 33) // OpTypeFunction
-		c.Write32(406)
-		c.Write32(ctx.GetTypeId(void))
-
-		objs := HV.GetFunctionAndHisFriends(HV.FindFunction("TestShader"))
-
-		ctx.WriteFunction(null)
+		for it : objs.Functions
+			ctx.WriteFunction(HV.GetSSAFunc(it))
 
 		ret := MakeBlob(ts.Size())
 		ts.Read(ret.GetPointer(),ts.Size())
@@ -40,6 +45,19 @@ SpirvCompiler := class
 	idIter := int
 
 	typeIds := int[HV_Object^]
+
+	fncTypeIds := HVB_Function^[int]
+
+	GetFunctionTypeId := !(HVB_Function^ fnc) -> int
+	{
+		r := fnc.GetFunctionType()
+
+		key := r.GetHVType()
+
+		result = GetTypeId(key)
+		fncTypeIds[result] = fnc
+
+	}
 
 	GetTypeId := !(TypeId x) -> int
 	{
@@ -67,6 +85,18 @@ SpirvCompiler := class
 				c.Write32(0x00020000 + 19) // OpTypeVoid
 				c.Write32(indx)
 			} else if typeGroup == "Function" {
+				fnc := fncTypeIds[indx]
+				
+				r := fnc.GetFunctionType()
+
+				cnt := 3 + r.InputTypes.Size()
+
+				c.Write32((cnt shl 16) + 33) // OpTypeFunction
+				c.Write32(indx)
+				c.Write32(GetTypeId(r.ReturnType))
+				for it : r.InputTypes
+					c.Write32(GetTypeId(it))
+
 				
 			}else {
 
@@ -107,13 +137,13 @@ SpirvCompiler := class
 		c.Write32(1)
 		c.Write32(1)
 	}
-	WriteFunction := !(HV_Object^ fnc) -> void
+	WriteFunction := !(HVB_Function^ fnc) -> void
 	{
 		c.Write32(0x00050000 + 54) //OpFunction
-		c.Write32(GetTypeId(HV.GetType("void"))) // result type
+		c.Write32(GetTypeId(void)) // result type
 		c.Write32(404) // result object
 		c.Write32(0) // ???
-		c.Write32(406) // function type
+		c.Write32(GetFunctionTypeId(fnc)) // function type
 	
 		c.Write32(0x0020000 + 248) // OpLabel
 		c.Write32(1001)

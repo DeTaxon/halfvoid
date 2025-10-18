@@ -38,10 +38,12 @@ HVContextImplementation := class extend HV_Context
 		fType := GetFuncType(typesThis,isReference,rType,resultReference,isVariadicArguments)
 		return fType
 	}
-	GetTypeGroup := !(HV_Object^ obj) -> TypeGroups
+	GetTypeGroup := virtual !(HV_Object^ obj) -> TypeGroups
 	{
-		if obj is in TypeFunction
+		if obj is in TypeFunc
 			return "Function"
+		if obj is in TypePoint
+			return "Pointer"
 	}
 	GetTypeId := virtual !(HV_Object^ obj) -> TypeId 
 	{
@@ -100,6 +102,14 @@ HVContextImplementation := class extend HV_Context
 		result.Classes.Resize(c.UsedClasses.Size())
 		for it,i : c.UsedClasses
 			result.Classes[i] = it.hvClass&
+	}
+
+	GetSSAFunc := virtual !(HV_Object^ fnc) -> HVB_Function^
+	{
+		if fnc is not in BoxFuncBody
+			return null
+
+		return new HVBFunction(SSAConainer.GetFunc(fnc))
 	}
 }
 HV_FunctionTemplateImp := class extend HV_FunctionTemplate

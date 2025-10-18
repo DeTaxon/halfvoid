@@ -1,20 +1,34 @@
 
-HVB_VariableObjectType := enum
+HVB_Function := class
 {
-	Error
-}
 
+	GetFunctionType := virtual !() -> HVBFunctionType {}
 
-HVB_FunctionEditor := class
-{
-	GetVariablesCount := virtual !() -> int { return 0 }
+	GetVariablesCount := virtual !() -> int {}
 	//GetVariableObjType := virtual !(int index) -> HVB_VariableObjectType { return "Error" }
-	GetVariableType := virtual !(int index) -> HV_Object^ { return null }
-	GetVatiableValue := virtual !(int index) -> HV_Object^ { return null }
-	GetVariableFuncEditor := virtual !(int index) -> HVB_FunctionEditor^ { return null }
+	GetVariableType := virtual !(int index) -> HV_Object^ {}
+	GetVatiableValue := virtual !(int index) -> HV_Object^ {}
 
 	GetCodeLinesCount := virtual !() -> int { return 0 }
-	GetLine := virtual !(int index) -> MCLine^ {} 
+	GetLine := virtual !(int index) -> ref MCLine {}
+
+	Print := virtual !() -> void {}
+}
+
+HVBFunctionType := class
+{
+	InputTypes := Vector.{HV_Object^}
+	InputIsRefs := Vector.{bool}
+
+	ReturnType := HV_Object^
+	ReturnIsRef := bool
+
+	IsVArgs := bool // printf(char^ , ...) ... <-
+
+	GetHVType := !() -> HV_Object^
+	{
+		return HV.GetFuncType(InputTypes,InputIsRefs,ReturnType,ReturnIsRef,IsVArgs)
+	}
 }
 
 MCLine := class

@@ -1,5 +1,5 @@
 
-HVBFunction := class extend HVB_FunctionEditor
+HVBFunction := class extend HVB_Function
 {
 	baseFunc := MCFunction^
 
@@ -7,13 +7,25 @@ HVBFunction := class extend HVB_FunctionEditor
 	{
 		baseFunc = fnc
 	}
-
-	GetCodeLinesCount := virtual !() -> int { return baseFunc.Lines.Size() }
-	GetLine := virtual !(int index) -> MCLine^ { return baseFunc.Lines[index]& } 
 	
 	GetVariablesCount := virtual !() -> int { return baseFunc.Objects.Size() }
 	//GetVariableObjType := virtual !(int index) -> HVB_VariableObjectType { return "Error" }
 	GetVariableType := virtual !(int index) -> HV_Object^ { return null }
 	GetVatiableValue := virtual !(int index) -> HV_Object^ { return null }
-	GetVariableFuncEditor := virtual !(int index) -> HVB_FunctionEditor^ { return null }
+
+	GetCodeLinesCount := virtual !() -> int { return baseFunc.Lines.Size() }
+	GetLine := virtual !(int index) -> ref MCLine { return baseFunc.Lines[index] }
+
+	GetFunctionType := virtual !() -> HVBFunctionType
+	{
+		result.InputTypes.Resize(baseFunc.InputsIndxCount)
+		result.InputTypes[^i] = baseFunc.Objects[baseFunc.InputsIndxStart + i].GetType()
+
+		result.InputIsRefs.Resize(baseFunc.InputsIndxCount)
+		result.InputIsRefs[^i] = baseFunc.Objects[baseFunc.InputsIndxStart + i] is MCReference
+
+		result.ReturnType = baseFunc.Objects[baseFunc.ResultIndex].GetType()
+		result.ReturnIsRef = baseFunc.Objects[baseFunc.ResultIndex] is MCReference
+	}
+	Print := virtual !() -> void { baseFunc.Print() }
 }

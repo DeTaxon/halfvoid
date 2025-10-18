@@ -36,6 +36,7 @@ RunModeFuncName := char^
 
 GInterpCntx := MCInterpContext
 GX86Cntx := MCBuildContext_x86_64
+
 GHotloadCntx := HotloadContext
 
 WorkBag := CompilerWork
@@ -245,7 +246,7 @@ main := !(char^[] args) -> int
 	#ForceVirtualFunctions("HV_Object")
 	#ForceVirtualFunctions("HV_Context")
 	#ForceVirtualFunctions("HV_Class")
-	#ForceVirtualFunctions("HVB_FunctionEditor")
+	#ForceVirtualFunctions("HVB_Function")
 	#ForceVirtualFunctions("internalHVModuleBase")
 	#ForceVirtualFunctions("BlobOnVector")
 	#ForceVirtualFunctions("StringSpan")

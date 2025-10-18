@@ -1,0 +1,24 @@
+SSAConainer := SSAConainerType
+
+SSAConainerType := class
+{
+	funcs := AVLMap.{BoxFuncBody^,MCFunction^}
+
+	GetFunc := !(BoxFuncBody^ fnc) -> MCFunction^
+	{
+		return funcs[fnc]?
+
+		result = GInterpCntx.GetMCFunc(fnc)
+
+		result = PassRemoveSpaceship(result)
+		result = PassSimplifyVectors(result)
+		result = PassRemoveVoidParams(result)
+		result = PassRemoveReferences(result)
+		result = PassForceReturnConstValues(result)
+		result = PassForceReturnConstValues(result)
+		result = PassCreateConstValues(result)
+		result = PassAddingCastForPtrMove(result)
+
+		funcs[fnc] = result
+	}
+}
