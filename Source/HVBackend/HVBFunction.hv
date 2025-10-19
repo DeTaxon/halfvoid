@@ -9,11 +9,11 @@ HVBFunction := class extend HVB_Function
 	}
 	
 	GetVariablesCount := virtual !() -> int { return baseFunc.Objects.Size() }
-	//GetVariableObjType := virtual !(int index) -> HVB_VariableObjectType { return "Error" }
-	GetVariableType := virtual !(int index) -> HV_Object^ { return null }
-	GetVatiableValue := virtual !(int index) -> HV_Object^ { return null }
+	GetVariablesPointer := virtual !() -> MCObject^ { return baseFunc.Objects.GetPointer() }
+	GetVariableType := virtual !(int index) -> HV_Object^ { return baseFunc.Objects[index].GetType() }
 
 	GetCodeLinesCount := virtual !() -> int { return baseFunc.Lines.Size() }
+	GetCodeLinesPointer := virtual !() -> MCLine^ { return baseFunc.Lines.GetPointer() }
 	GetLine := virtual !(int index) -> ref MCLine { return baseFunc.Lines[index] }
 
 	GetFunctionType := virtual !() -> HVBFunctionType

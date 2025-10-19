@@ -5,11 +5,12 @@ HVB_Function := class
 	GetFunctionType := virtual !() -> HVBFunctionType {}
 
 	GetVariablesCount := virtual !() -> int {}
+	GetVariablesPointer := virtual !() -> MCObject^ {}
 	//GetVariableObjType := virtual !(int index) -> HVB_VariableObjectType { return "Error" }
 	GetVariableType := virtual !(int index) -> HV_Object^ {}
-	GetVatiableValue := virtual !(int index) -> HV_Object^ {}
 
-	GetCodeLinesCount := virtual !() -> int { return 0 }
+	GetCodeLinesCount := virtual !() -> int {}
+	GetCodeLinesPointer := virtual !() -> MCLine^ {}
 	GetLine := virtual !(int index) -> ref MCLine {}
 
 	Print := virtual !() -> void {}

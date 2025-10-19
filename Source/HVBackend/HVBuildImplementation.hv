@@ -18,6 +18,11 @@ HVContextImplementation := class extend HV_Context
 	{
 		return TypeFromTypeId(tp)
 	}
+	GetTypeSize := virtual !(HV_Object^ tp) -> int
+	{
+		if tp is in Type
+			return tp.GetSize()
+	}
 	GetTypeArraySize := virtual !(HV_Object^ tp) -> int
 	{
 		if tp is TypeVector

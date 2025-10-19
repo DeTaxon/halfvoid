@@ -253,6 +253,8 @@ main := !(char^[] args) -> int
 	#ForceVirtualFunctions("String")
 	#ForceVirtualFunctions("Stream")
 	#ForceVirtualFunctions("XML")
+	#ForceVirtualFunctions("MCObject")
+	#ForceVirtualFunctions("MCConstInteger")
 
 	GetFuncMangle(StringSpan("main"))
 

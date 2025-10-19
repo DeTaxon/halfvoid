@@ -80,6 +80,28 @@ MCInterpContext := class
 				globalVariables[vr] = result
 				return void
 			}
+
+			if classVar.Name == "MCObject"
+			{
+				free(result)
+				result = MCObject->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "MCGlobalVariable"
+			{
+				free(result)
+				result = MCGlobalVariable->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "MCConstInteger"
+			{
+				free(result)
+				result = MCConstInteger->VTable
+				globalVariables[vr] = result
+				return void
+			}
 			//if classVar.Name == "THatch"
 			//{
 			//	free(result)

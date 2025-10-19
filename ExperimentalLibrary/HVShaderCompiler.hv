@@ -22,10 +22,19 @@
 			ctx.GetFunctionTypeId(ssa,true)
 			ctx.GetFunctionId(ssa)
 
+			varPtr := ssa.GetVariablesPointer()
 			for i : ssa.GetVariablesCount()
 			{
-				ctx.GetTypeId(ssa.GetVariableType(i)?)
+				obj := ref varPtr[i]
+				ctx.GetTypeId(obj.GetObjType()?)
+				if obj is MCConstInteger
+				{
+					ctx.GetTypeId(int)
+					ctx.getIntConstId(obj&->{MCConstInteger^}.GetValue())
+				}
 			}
+
+
 			ssa.Print()
 
 			if fnc == mainFunc
@@ -35,6 +44,8 @@
 		for fnc : objs.Functions
 		{
 			ctx.GetFunctionIdOffset(HV.GetSSAFunc(fnc))
+
+			
 		}
 
 		ts := new TEchoStream()
@@ -50,6 +61,7 @@
 		ctx.GetTypeId(void)
 
 		ctx.WriteTypes()
+		ctx.WriteConsts()
 
 		for it : objs.Functions
 			ctx.WriteFunction(HV.GetSSAFunc(it))
@@ -80,6 +92,16 @@ SpirvCompiler := class
 	fncIds := int[HVB_Function^]
 
 	fncIdOffset := int[HVB_Function^]
+
+	intConsts := int[int]
+
+	getIntConstId := !(int value) -> int
+	{
+		return intConsts[value]?
+
+		result = getNewId()
+		intConsts[value] = result
+	}
 
 	GetFunctionId := !(HVB_Function^ fnc) -> int
 	{
@@ -178,6 +200,11 @@ SpirvCompiler := class
 				c.Write32(0x30000 + 22)
 				c.Write32(indx)
 				c.Write32(id == float ?: 32 : 64)
+			} else if id == int {
+				c.Write32(0x40000 + 21) // OpTypeInt
+				c.Write32(indx)
+				c.Write32(HV.GetTypeSize(tp)*8)
+				c.Write32(1) // signed
 			} else if typeGroup == "Function" {
 				fnc := fncTypeIds[indx]
 				
@@ -242,6 +269,17 @@ SpirvCompiler := class
 			}
 		}
 	}
+	WriteConsts := !() -> void
+	{
+		intId := this.GetTypeId(int)
+		for ind,val : intConsts
+		{
+			c.Write32(0x40000 + 43) //OpConstant
+			c.Write32(intId)
+			c.Write32(ind)
+			c.Write32(val)
+		}
+	}
 
 	WriteHeader := !() -> void
 	{
@@ -288,8 +326,19 @@ SpirvCompiler := class
 		c.Write32(0x0020000 + 248) // OpLabel
 		c.Write32(idFIter++)
 
+		cPtr := fnc.GetCodeLinesPointer()
+		oPtr := fnc.GetVariablesPointer()
 		for i : fnc.GetCodeLinesCount()
 		{
+			line := cPtr[i]
+			
+			if line.opcode == "mov"
+			{
+				o1 := ref oPtr[line.var1]
+				o2 := ref oPtr[line.var2]
+
+				if o1 is MCConstValue and  o2 is MCGlobalVariable
+			}
 			
 		}
 

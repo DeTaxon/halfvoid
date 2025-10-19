@@ -5,6 +5,7 @@ HV_Context := class
 {
 	GetType := virtual !(Str typeName) -> HV_Object^ {}
 	GetTypeObj := virtual !(TypeId tp) -> HV_Object^ {}
+	GetTypeSize := virtual !(HV_Object^ tp) -> int {}
 	GetTypeArraySize := virtual !(HV_Object^ tp) -> int {}
 	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^ {}
 	GetTypeBase := virtual !(HV_Object^ childType) -> HV_Object^ {} // pointer of type to it's type
