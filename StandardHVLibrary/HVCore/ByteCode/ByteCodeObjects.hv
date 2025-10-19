@@ -1,0 +1,71 @@
+
+MCObject := class
+{
+	UnitName := poison virtual #ThisClass()->TypeName
+
+	IsConstant := virtual false
+	Value := u64
+	Value2 := u64
+
+	"this" := !() -> void {
+
+	}
+
+	"=" := !(MCObject setValue) -> void
+	{
+		this->VTable = setValue->VTable
+		Value = setValue.Value
+		Value2 = setValue.Value2
+	}
+	GetObjType := !() -> HV_Object^ {}
+}
+
+
+MCVariable := class extend MCObject
+{
+}
+MCConstValue := class extends MCVariable //same as variable, but assigned only once
+{
+}
+MCGlobalVariable := class extend MCObject
+{
+}
+MCReference := class extend MCObject
+{
+}
+MCConstVoid := class extend MCObject
+{
+}
+MCConstInteger := class extend MCObject
+{
+	IsConstant := virtual true
+	GetValue := !() -> ref int { return Value&->{int^}^ }
+}
+MCConstBool := class extend MCObject
+{
+}
+MCConstS64 := class extend MCObject
+{
+}
+MCConstDouble := class extend MCObject
+{
+}
+MCConstFunction := class extend MCObject
+{
+}
+MCConstString :=  class extend MCObject
+{
+}
+MCConstPointer := class extend MCObject
+{
+}
+MCConstBlob := class extend MCObject
+{
+}
+MCConstPointerTyped := class extend MCObject
+{
+}
+
+MCLabel := class extend MCObject
+{
+}
