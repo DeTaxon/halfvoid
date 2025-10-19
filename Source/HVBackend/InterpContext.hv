@@ -88,6 +88,13 @@ MCInterpContext := class
 				globalVariables[vr] = result
 				return void
 			}
+			if classVar.Name == "MCConstValue"
+			{
+				free(result)
+				result = MCConstValue->VTable
+				globalVariables[vr] = result
+				return void
+			}
 			if classVar.Name == "MCGlobalVariable"
 			{
 				free(result)

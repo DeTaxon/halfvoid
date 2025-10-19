@@ -337,7 +337,10 @@ SpirvCompiler := class
 				o1 := ref oPtr[line.var1]
 				o2 := ref oPtr[line.var2]
 
-				if o1 is MCConstValue and  o2 is MCGlobalVariable
+				if o1& is MCConstValue and o2 is MCGlobalVariable
+				{
+					printf("here\n")
+				}
 			}
 			
 		}
