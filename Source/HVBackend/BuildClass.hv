@@ -24,6 +24,15 @@ HVClassImpl := class extend HV_Class
 {
 	baseClass := BoxClass^
 
+	GetFieldsCount := virtual !() -> int
+	{
+		return baseClass.GetFieldsCount()
+	}
+	GetFieldType := virtual !(int index) -> HV_Object^
+	{
+		return baseClass.GetFieldByIndex(index)?.Field.Value
+	}
+
 	AddField := virtual !(Str fieldName,HV_Object^ fieldType) -> void
 	{
 		if fieldType == null

@@ -18,6 +18,14 @@ HVContextImplementation := class extend HV_Context
 	{
 		return TypeFromTypeId(tp)
 	}
+	GetTypeArraySize := virtual !(HV_Object^ tp) -> int
+	{
+		if tp is TypeVector
+			return tp.vecElementCount
+		if tp is not in TypeArr
+			return 0
+		return tp.len
+	}
 	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^
 	{
 		typ := baseType->{Type^}
@@ -44,12 +52,27 @@ HVContextImplementation := class extend HV_Context
 			return "Function"
 		if obj is in TypePoint
 			return "Pointer"
+		if obj is in TypeVector
+			return "Vector"
+		if obj is in TypeClass
+			return "Class"
+		if obj is in TypeArr
+			return "Array"
+		if obj is in TypeStandard
+			return "Prime"
 	}
 	GetTypeId := virtual !(HV_Object^ obj) -> TypeId 
 	{
 		if obj is not in Type
 			return void
 		return TypeIdFromType(obj)
+	}
+	GetTypeClass := virtual !(HV_Object^ obj) -> HV_Class^
+	{
+		if obj is not in TypeClass
+			return null
+		return obj.ToClass.hvClass&
+
 	}
 	CreateClass := virtual !() -> HV_Class^ 
 	{
@@ -109,7 +132,7 @@ HVContextImplementation := class extend HV_Context
 		if fnc is not in BoxFuncBody
 			return null
 
-		return new HVBFunction(SSAConainer.GetFunc(fnc))
+		return SSAConainer.GetFunc(fnc)
 	}
 }
 HV_FunctionTemplateImp := class extend HV_FunctionTemplate

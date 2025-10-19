@@ -181,6 +181,11 @@ BoxExeObj := class extend BoxUnit
 	{
 	}
 
+	GetObjType := virtual !() -> HV_Object^
+	{
+		return GetType()
+	}
+
 }
 
 BoxExeConstObj := class extend BoxExeObj

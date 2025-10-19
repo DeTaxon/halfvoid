@@ -1,8 +1,4 @@
 
-
-
-
-
 main := !(char^[] args) -> int
 {
 	RunFunc()

@@ -5,10 +5,12 @@ HV_Context := class
 {
 	GetType := virtual !(Str typeName) -> HV_Object^ {}
 	GetTypeObj := virtual !(TypeId tp) -> HV_Object^ {}
+	GetTypeArraySize := virtual !(HV_Object^ tp) -> int {}
 	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^ {}
-	GetTypeBase := virtual !(HV_Object^ baseType) -> HV_Object^ {} // pointer of type to it's type
+	GetTypeBase := virtual !(HV_Object^ childType) -> HV_Object^ {} // pointer of type to it's type
 	GetFuncType := virtual !(HV_Object^[] types,bool[] isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ {}
 	GetTypeId := virtual !(HV_Object^ obj) -> TypeId {}
+	GetTypeClass := virtual !(HV_Object^ obj) -> HV_Class^ {}
 
 	GetTypeGroup := virtual !(HV_Object^ obj) -> TypeGroups {}
 
@@ -35,11 +37,14 @@ HV_Context := class
 TypeGroups := enum
 {
 	"None",
-	"Base", // ints, floats
+	"Prime", // ints, floats
 	"Pointer",
+	"Vector",
 	"Array",
 	"ArrayView",
-	"Function"
+	"Function",
+	"Enum",
+	"Class"
 }
 
 HVFunctionTypeInfo := class
@@ -62,6 +67,9 @@ HV_Context_Empty := HV_Context
 
 HV_Class := class
 {
+	GetFieldsCount := virtual !() -> int {}
+	GetFieldType := virtual !(int index) -> HV_Object^ {}
+
 	AddField := virtual !(Str fieldName,HV_Object^ fieldType) -> void {}
 	AddMethod := virtual !(Str funcName,HV_Object^ fncObj) -> void {}
 	AddMethodStr := virtual !(Str funcName,Str fncText) -> void {}
@@ -77,6 +85,8 @@ HV_Object := class
 	IsConst := virtual false
 	//TODO
 	//GetType
+	
+	GetObjType := virtual !() -> HV_Object^ {}
 	
 	IsEditSupported := virtual false
 	ElementName := virtual "Unknown"

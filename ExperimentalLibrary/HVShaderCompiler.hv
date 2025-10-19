@@ -3,18 +3,40 @@
 	Name = "SpirvTest",
 	Call = !() -> Blob^
 	{
-
 		ctx := SpirvCompiler
-		objs := HV.GetFunctionAndHisFriends(HV.FindFunction("TestShader"))
 
-		fTypeId := 0
+		mainFunc := HV.FindFunction("TestShader")
+		objs := HV.GetFunctionAndHisFriends(mainFunc)
+
+
+		for glb : objs.Globals
+		{
+			tp := glb.GetObjType()
+			ctx.GetTypeId(tp?,"Uniform",true)
+		}
+
 		for fnc : objs.Functions
 		{
 			ssa := HV.GetSSAFunc(fnc)
 
-			fTypeId = ctx.GetFunctionTypeId(ssa)
-			// ssa.Print()
+			ctx.GetFunctionTypeId(ssa,true)
+			ctx.GetFunctionId(ssa)
+
+			for i : ssa.GetVariablesCount()
+			{
+				ctx.GetTypeId(ssa.GetVariableType(i)?)
+			}
+			ssa.Print()
+
+			if fnc == mainFunc
+				ctx.MainFuncId = ctx.GetFunctionId(ssa)
 		}
+
+		for fnc : objs.Functions
+		{
+			ctx.GetFunctionIdOffset(HV.GetSSAFunc(fnc))
+		}
+
 		ts := new TEchoStream()
 
 		ctx.c.SetStream(ts)
@@ -42,40 +64,108 @@ SpirvCompiler := class
 {
 	c := EndianStreamWrapper
 
+	MainFuncId := int
+	
 	idIter := int
+	getNewId := !() -> int
+	{
+		idIter += 1
+		return idIter 
+	}
 
 	typeIds := int[HV_Object^]
+	typeUniformIds := int[HV_Object^]
 
 	fncTypeIds := HVB_Function^[int]
+	fncIds := int[HVB_Function^]
 
-	GetFunctionTypeId := !(HVB_Function^ fnc) -> int
+	fncIdOffset := int[HVB_Function^]
+
+	GetFunctionId := !(HVB_Function^ fnc) -> int
+	{
+		return fncIds[fnc]?
+
+		result = getNewId()
+		fncIds[fnc] = result
+	}
+
+	GetFunctionTypeId := !(HVB_Function^ fnc,bool touchAll = false) -> int
 	{
 		r := fnc.GetFunctionType()
+
+		if touchAll
+		{
+			GetTypeId(r.InputTypes[^],"Function",touchAll)
+			GetTypeId(r.ReturnType,"Function",touchAll)
+		}
 
 		key := r.GetHVType()
 
 		result = GetTypeId(key)
 		fncTypeIds[result] = fnc
-
 	}
+	GetFunctionIdOffset := !(HVB_Function^ fnc) -> int
+	{
+		return fncIdOffset[fnc]?
 
-	GetTypeId := !(TypeId x) -> int
-	{
-		return this.GetTypeId(HV.GetTypeObj(x))
-	}
-	GetTypeId := !(HV_Object^ x) -> int
-	{
-		if typeIds.Contain(x)
-			return typeIds[x]
+		count := fnc.GetVariablesCount()
+
 		idIter++
-		newId := idIter
-		typeIds[x] = newId
+		result = idIter
+		idIter += count - 1
+
+		fncIdOffset[fnc] = result
+	}
+
+	GetTypeId := !(TypeId x,SpirvStorageGroup group = "Function") -> int
+	{
+		return this.GetTypeId(HV.GetTypeObj(x),group)
+	}
+	GetTypeId := !(HV_Object^ x,SpirvStorageGroup group = "Function", bool touchAll = false) -> int
+	{
+		switch group
+		{
+		case "Uniform"
+			return typeUniformIds[x]?
+		case void
+			return typeIds[x]?
+		}
+
+		typeGroup := HV.GetTypeGroup(x)
+
+		if touchAll
+		{
+			base := HV.GetTypeBase(x)
+			if base != null
+				GetTypeId(base,"Function",touchAll)
+			if typeGroup == "Class"
+			{
+				cls := HV.GetTypeClass(x)
+
+				for i : cls.GetFieldsCount()
+				{
+					GetTypeId(cls.GetFieldType(i),"Function",touchAll)
+				}
+			}
+		}
+		newId := getNewId()
+		switch group
+		{
+		case "Uniform"
+			typeUniformIds[x] = newId
+		case void
+			typeIds[x] = newId
+		}
 		return newId
+
 	}
 
 	WriteTypes := !() -> void
 	{
-		for indx,tp : typeIds
+		rev := HV_Object^[int]
+		for it,ind : typeIds
+			rev[it] = ind
+		for tp,indx : rev
 		{
 			id := HV.GetTypeId(tp)
 			typeGroup := HV.GetTypeGroup(tp)
@@ -84,6 +174,10 @@ SpirvCompiler := class
 			{
 				c.Write32(0x00020000 + 19) // OpTypeVoid
 				c.Write32(indx)
+			} else if id == float or id == double {
+				c.Write32(0x30000 + 22)
+				c.Write32(indx)
+				c.Write32(id == float ?: 32 : 64)
 			} else if typeGroup == "Function" {
 				fnc := fncTypeIds[indx]
 				
@@ -97,11 +191,55 @@ SpirvCompiler := class
 				for it : r.InputTypes
 					c.Write32(GetTypeId(it))
 
+			}else if typeGroup == "Pointer" {
+			}else if typeGroup == "Vector" {
+				c.Write32(0x40000 + 23)
+				c.Write32(indx)
+				c.Write32(GetTypeId(HV.GetTypeBase(tp)))
+				c.Write32(HV.GetTypeArraySize(tp))
+			}else if typeGroup == "Array" {
+				base := HV.GetTypeBase(tp)
+				arSize := HV.GetTypeArraySize(tp)
+
+				if arSize == 0
+				{
+					c.Write32(0x30000 + 29)
+					c.Write32(indx)
+					c.Write32(GetTypeId(base))
+				}else{
+					
+				}
+
+			}else if typeGroup == "Class" {
+				cls := HV.GetTypeClass(tp)
+
+				fCount := cls.GetFieldsCount()
+				
+				c.Write32(((fCount + 2) shl 16) + 30) // OpTypeStruct
+				c.Write32(indx)
+				for i : fCount
+				{
+					c.Write32(GetTypeId(cls.GetFieldType(i)))
+				}
 				
 			}else {
 
 			}
 			
+		}
+		for indx,tp : typeUniformIds
+		{
+			id := HV.GetTypeId(tp)
+			typeGroup := HV.GetTypeGroup(tp)
+
+			if typeGroup == "Pointer"
+			{
+				base := HV.GetTypeBase(tp)
+				c.Write32(0x00040000 + 32) // OpTypePointer
+				c.Write32(indx)
+				c.Write32(2) // uniform
+				c.Write32(GetTypeId(base))
+			}
 		}
 	}
 
@@ -123,7 +261,7 @@ SpirvCompiler := class
 
 		c.Write32(0x00050000 + 15) // OpEntryPoint
 		c.Write32(5) // Vertex,TessCon,TessEv,Geo,Frag,Compute
-		c.Write32(404) // id of function
+		c.Write32(MainFuncId) // id of function
 
 		nm := "main"
 		c.Write32(nm[0]&->{u32^}^)
@@ -131,7 +269,7 @@ SpirvCompiler := class
 
 		// execution mode
 		c.Write32(0x00060000 + 16)
-		c.Write32(404)
+		c.Write32(MainFuncId)
 		c.Write32(17) // LocalSize
 		c.Write32(1)
 		c.Write32(1)
@@ -139,18 +277,31 @@ SpirvCompiler := class
 	}
 	WriteFunction := !(HVB_Function^ fnc) -> void
 	{
+		idFIter := GetFunctionIdOffset(fnc) + 1
+
 		c.Write32(0x00050000 + 54) //OpFunction
 		c.Write32(GetTypeId(void)) // result type
-		c.Write32(404) // result object
+		c.Write32(GetFunctionId(fnc)) // result object
 		c.Write32(0) // ???
 		c.Write32(GetFunctionTypeId(fnc)) // function type
 	
 		c.Write32(0x0020000 + 248) // OpLabel
-		c.Write32(1001)
-	
+		c.Write32(idFIter++)
+
+		for i : fnc.GetCodeLinesCount()
+		{
+			
+		}
+
 		c.Write32(0x0010000 + 253) // OpReturn
 		c.Write32(0x0010000 + 56) //OpFunctionEnd
 	}
+}
+
+SpirvStorageGroup := enum
+{
+	"Function",
+	"Uniform"
 }
 
 
@@ -160,9 +311,14 @@ PartType := class
 	vel := vec2f
 }
 
-particles := PartType^
+Unifrm := class
+{
+	particles := PartType[0]
+}
+
+uni := Unifrm^
 
 TestShader := !() -> void
 {
-	particles[0].pos.x += 0.1
+	uni.particles[0].pos.x += 0.1
 }

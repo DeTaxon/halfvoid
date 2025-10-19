@@ -46,7 +46,11 @@ GlobalVar2 := class extend BoxUnit
 		parseHatch.Emit()
 	}
 
-	GetType := !() -> Type^
+	GetObjType := virtual !() -> HV_Object^
+	{
+		return proxy.GetType()
+	}
+	GetType := virtual !() -> Type^
 	{
 		return proxy.GetType()
 	}

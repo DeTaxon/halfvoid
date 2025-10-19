@@ -2,23 +2,24 @@ SSAConainer := SSAConainerType
 
 SSAConainerType := class
 {
-	funcs := AVLMap.{BoxFuncBody^,MCFunction^}
+	funcs := AVLMap.{BoxFuncBody^,HVBFunction^}
 
-	GetFunc := !(BoxFuncBody^ fnc) -> MCFunction^
+	GetFunc := !(BoxFuncBody^ fnc) -> HVBFunction^
 	{
 		return funcs[fnc]?
 
-		result = GInterpCntx.GetMCFunc(fnc)
+		ret := GInterpCntx.GetMCFunc(fnc)
 
-		result = PassRemoveSpaceship(result)
-		result = PassSimplifyVectors(result)
-		result = PassRemoveVoidParams(result)
-		result = PassRemoveReferences(result)
-		result = PassForceReturnConstValues(result)
-		result = PassForceReturnConstValues(result)
-		result = PassCreateConstValues(result)
-		result = PassAddingCastForPtrMove(result)
+		ret = PassRemoveSpaceship(ret)
+		ret = PassSimplifyVectors(ret)
+		ret = PassRemoveVoidParams(ret)
+		ret = PassRemoveReferences(ret)
+		ret = PassForceReturnConstValues(ret)
+		ret = PassForceReturnConstValues(ret)
+		ret = PassCreateConstValues(ret)
+		ret = PassAddingCastForPtrMove(ret)
 
+		result = new HVBFunction(ret)
 		funcs[fnc] = result
 	}
 }
