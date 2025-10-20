@@ -70,6 +70,16 @@ AppendClass MCConstS64
 	GetType := virtual !() -> Type^ { return GTypeS64 }
 	GetObjType := virtual !() -> HV_Object^ { return GetType() }
 }
+AppendClass MCConstFloat
+{
+
+	IsConstant := virtual true
+	GetValue := !() -> ref float { return Value&->{float^}^}
+
+	PrintObject := virtual !() -> void { printf("float %f",GetValue()) }
+	GetType := virtual !() -> Type^ { return GTypeFloat }
+	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+}
 AppendClass MCConstDouble
 {
 

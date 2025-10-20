@@ -15,9 +15,11 @@ SSAConainerType := class
 		ret = PassRemoveVoidParams(ret)
 		ret = PassRemoveReferences(ret)
 		ret = PassForceReturnConstValues(ret)
-		ret = PassForceReturnConstValues(ret)
 		ret = PassCreateConstValues(ret)
 		ret = PassAddingCastForPtrMove(ret)
+		ret = PassCleanupFloats(ret)
+		ret = PassRemoveTooManyVars(ret)
+		ret = PassRemoveUnusedObjects(ret)
 
 		result = new HVBFunction(ret)
 		funcs[fnc] = result

@@ -17,7 +17,17 @@ MCObject := class
 		Value = setValue.Value
 		Value2 = setValue.Value2
 	}
-	GetObjType := !() -> HV_Object^ {}
+	"==" := !(MCObject cmpValue) -> bool
+	{
+		if this->VTable != cmpValue->VTable
+			return false
+		if Value != cmpValue.Value
+			return false
+		if Value2 != cmpValue.Value2
+			return false
+		return true
+	}
+	GetObjType := virtual !() -> HV_Object^ {}
 }
 
 
@@ -29,6 +39,7 @@ MCConstValue := class extends MCVariable //same as variable, but assigned only o
 }
 MCGlobalVariable := class extend MCObject
 {
+	GetGlobalVariable := !() -> HV_Object^ { return Value&->{HV_Object^^}^ }
 }
 MCReference := class extend MCObject
 {
@@ -45,6 +56,9 @@ MCConstBool := class extend MCObject
 {
 }
 MCConstS64 := class extend MCObject
+{
+}
+MCConstFloat := class extend MCObject
 {
 }
 MCConstDouble := class extend MCObject

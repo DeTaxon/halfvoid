@@ -41,6 +41,15 @@ GreedyPass := class
 		result = objsSize
 		oPtr[objsSize++] = newReg
 	}
+	PushFloat := !(float value) -> int
+	{
+		newReg := MCConstFloat
+
+		newReg.GetValue() = value
+
+		result = objsSize
+		oPtr[objsSize++] = newReg
+	}
 	GenerateFunc := !() -> MCFunction^
 	{
 		objs.Resize(objsSize)

@@ -1,5 +1,5 @@
 
-:= !(MCFunction^ fnc) ->MCFunction^
+PassCleanupFloats := !(MCFunction^ fnc) ->MCFunction^
 {
 	ctx := MakeGreedyPass(fnc,1,2,true)
 
@@ -17,6 +17,15 @@
 
 		switch line.opcode
 		{
+		case "cast"
+			if oPtr[line.var1].GetType() == GTypeFloat and oPtr[line.var2] is MCConstDouble
+			{
+				id := ctx.PushFloat(oPtr[line.var2]&->{MCConstDouble^}.GetValue())
+				oPtr[line.var1] = oPtr[id]
+			}else{
+				cPtr[c] = line
+				c += 1
+			}
 		case void
 			cPtr[c] = line
 			c += 1

@@ -30,6 +30,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	if needPrint fnc.Print()
 	fnc = PassAddingCastForPtrMove(fnc)
 	if needPrint fnc.Print()
+	// fnc = PassRemoveTooManyVars(fnc)
+	// fnc = PassRemoveUnusedObjects(fnc)
 
 	fType2 := NormalizeFuncType(base.GetType()->{TypeFunc^})
 	rTyp := fType2.ResultType

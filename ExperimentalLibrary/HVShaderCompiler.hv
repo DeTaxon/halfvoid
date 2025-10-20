@@ -13,6 +13,7 @@
 		{
 			tp := glb.GetObjType()
 			ctx.GetTypeId(tp?,"Uniform",true)
+			ctx.GetGlobObjId(glb)
 		}
 
 		for fnc : objs.Functions
@@ -62,6 +63,7 @@
 
 		ctx.WriteTypes()
 		ctx.WriteConsts()
+		ctx.WriteGlobals()
 
 		for it : objs.Functions
 			ctx.WriteFunction(HV.GetSSAFunc(it))
@@ -85,6 +87,7 @@ SpirvCompiler := class
 		return idIter 
 	}
 
+
 	typeIds := int[HV_Object^]
 	typeUniformIds := int[HV_Object^]
 
@@ -93,7 +96,18 @@ SpirvCompiler := class
 
 	fncIdOffset := int[HVB_Function^]
 
+	globIds := int[HV_Object^]
+
 	intConsts := int[int]
+
+	GetGlobObjId := !(HV_Object^ obj) -> int
+	{
+		return globIds[obj]?
+
+		newId := getNewId()
+		globIds[obj] = newId
+		return newId
+	}
 
 	getIntConstId := !(int value) -> int
 	{
@@ -199,7 +213,7 @@ SpirvCompiler := class
 			} else if id == float or id == double {
 				c.Write32(0x30000 + 22)
 				c.Write32(indx)
-				c.Write32(id == float ?: 32 : 64)
+				c.Write32(id == float ?: 32 : 64) // OpTypeFloat OpTypeDouble
 			} else if id == int {
 				c.Write32(0x40000 + 21) // OpTypeInt
 				c.Write32(indx)
@@ -281,6 +295,18 @@ SpirvCompiler := class
 		}
 	}
 
+	WriteGlobals := !() -> void
+	{
+		for id,obj : globIds
+		{
+			c.Write32(0x40000 + 59) // OpVariable
+			c.Write32(GetTypeId(obj.GetObjType(),"Uniform"))
+			c.Write32(id)
+			c.Write32(2) // Uniform
+			//c.Write32(initializer)
+		}
+	}
+
 	WriteHeader := !() -> void
 	{
 		c.Write32(0x07230203) // magic number
@@ -339,7 +365,12 @@ SpirvCompiler := class
 
 				if o1& is MCConstValue and o2 is MCGlobalVariable
 				{
-					printf("here\n")
+					v2 := GetGlobObjId(o2&->{MCGlobalVariable^}.GetGlobalVariable())
+
+					c.Write32(0x40000 + 65)
+					c.Write32(GetTypeId(o1.GetObjType(),"Uniform"))
+					c.Write32(line.var1 + idFIter)
+					c.Write32(v2)
 				}
 			}
 			
