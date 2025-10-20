@@ -93,7 +93,7 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 			for i : inIndx..4
 			{
-				if line.opcode == "cmp" and i == 2
+				if not IsOpcodeUsesVar(line.opcode,i)
 					continue
 				v := line.var1&[i]
 				if oPtr[v] is MCReference
@@ -129,5 +129,4 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 	}
 
 	return grd.GenerateFunc()
-
 }

@@ -9,6 +9,10 @@ PassRemoveUnusedObjects := !(MCFunction^ fnc) -> MCFunction^
 	isUsed.Resize(objsCount)
 
 	isUsed[0] = true
+	isUsed[fnc.ResultIndex] = true
+
+	for i : fnc.InputsIndxCount
+		isUsed[fnc.InputsIndxStart + i] = true
 
 	cPtr := grd.cPtr
 	c := ref grd.cmdsSize
@@ -22,11 +26,12 @@ PassRemoveUnusedObjects := !(MCFunction^ fnc) -> MCFunction^
 	for i : fnc.Lines.Size()
 	{
 		line := icPtr[i]
-		isUsed[line.var1] = true
-		isUsed[line.var2] = true
-		isUsed[line.var3] = true
-		isUsed[line.var4] = true
-		isUsed[line.var5] = true
+		for k : 5
+		{
+			if not IsOpcodeUsesVar(line.opcode,k)
+				continue
+			isUsed[line.var1&[k]] = true
+		}
 	}
 
 	newIds := Vector.{int}
@@ -47,11 +52,12 @@ PassRemoveUnusedObjects := !(MCFunction^ fnc) -> MCFunction^
 	{
 		line := icPtr[i]
 
-		line.var1 = newIds[line.var1]
-		line.var2 = newIds[line.var2]
-		line.var3 = newIds[line.var3]
-		line.var4 = newIds[line.var4]
-		line.var5 = newIds[line.var5]
+		for k : 5
+		{
+			if not IsOpcodeUsesVar(line.opcode,k)
+				continue
+			line.var1&[k] = newIds[line.var1&[k]]
+		}
 
 		cPtr[c++] = line
 	}
