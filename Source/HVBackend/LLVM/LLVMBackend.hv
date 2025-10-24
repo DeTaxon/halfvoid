@@ -34,9 +34,6 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	fnc = PassRemoveUnusedObjects(fnc)
 	if needPrint fnc.Print()
 
-	fType2 := NormalizeFuncType(base.GetType()->{TypeFunc^})
-	rTyp := fType2.ResultType
-
 	currentDbgFileId := int
 	currentDbgBlockId := int
 
@@ -89,9 +86,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	
 	nc := false
 	out << "define "
-	rTyp.PrintType(ctx)
-	if fType2.ResultRef
-		out << "*"
+
+	fnc.Objects[fnc.ResultIndex].GetType().PrintType(ctx)
 	out << " @" << base.OutputName << "("
 	for i : fnc.InputsIndxCount
 	{
@@ -102,7 +98,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		out << " %Inp" << i
 		nc = true
 	}
-	if fType2.IsVargs
+	if fnc.IsVArgs
 	{
 		if nc
 			out << ","
@@ -883,7 +879,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printDebugEnd()
 
 				}else {
-					printf("LLVM: unknown llvm_getelementptr at %s %i\n",fnc.BaseFunction.GetName(),indx)
+					printf("LLVM: unknown llvm_getelementptr at %s %i\n","unknown",indx)
 					ob1 := ref fnc.Objects[op.var1]
 					ob2 := ref fnc.Objects[op.var2]
 					ob3 := ref fnc.Objects[op.var3]
@@ -931,26 +927,21 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	}
 
 
-	if rTyp == GTypeVoid {
+	rTyp2 := fnc.Objects[fnc.ResultIndex].GetType()
+	if rTyp2 == GTypeVoid {
 		out << "	ret void"
 		printDebugEnd()
 	}else {
 		out << "	%ResultValue = load "
-		rTyp.PrintType(ctx)
-		if fType2.ResultRef
-			out << "*"
+		rTyp2.PrintType(ctx)
 		out << " , "
-		rTyp.PrintType(ctx)
-		if fType2.ResultRef
-			out << "*"
+		rTyp2.PrintType(ctx)
 		out << "* "
 		LLVMPrintObjValue(ctx,fnc.Objects[fnc.ResultIndex],fnc.ResultIndex)
 		printDebugEnd()
 
 		out << "	ret "
-		rTyp.PrintType(ctx)
-		if fType2.ResultRef
-			out << "*"
+		rTyp2.PrintType(ctx)
 		out << " %ResultValue"
 		printDebugEnd()
 	}

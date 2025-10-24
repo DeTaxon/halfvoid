@@ -7,11 +7,11 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	// tst()
+	tst()
 	// makeSpirv()
-	x := 0
-	tst(x)
-	printf("hey %i\n",x)
+	// x := 0
+	// tst(x)
+	// printf("hey %i\n",x)
 }
 
 tst := !(int& x,...) -> void
@@ -60,7 +60,7 @@ Allc := class extends IAllocator
 }
 
 tst := !() -> int {
-	nums := 10_000
+	nums := 1_000
 	// nums = 10
 
 	bigNums := nums*3

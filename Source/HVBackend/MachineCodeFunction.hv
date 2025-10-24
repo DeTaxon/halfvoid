@@ -166,6 +166,7 @@ AppendClass HVB_Function
 		result.ResultIndex = ResultIndex
 		result.InputsIndxStart = InputsIndxStart
 		result.InputsIndxCount = InputsIndxCount
+		result.IsVArgs = this.IsVArgs
 	}
 	
 	Print := !() -> void

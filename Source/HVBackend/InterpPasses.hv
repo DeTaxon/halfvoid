@@ -4,7 +4,7 @@ InterpPassPrepare := !(MCFunction^ optFunction) -> MCFunction^
 	result = optFunction
 	
 	result = InterpPassReplaceCoreFunction(result)
-	//result = InterpPassPrecomputeLoadElement(result)
+	// result = InterpPassPrecomputeLoadElement(result)
 }
 
 
