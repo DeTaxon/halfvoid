@@ -1,0 +1,46 @@
+
+PassSpirvPrettify := !(HVB_Function^ fnc) -> HVB_Function^
+{
+	ctx := MakeGreedyPass(fnc,1,2,true)
+
+	oPtr := ctx.oPtr
+	cPtr := ctx.cPtr
+
+	o := ref ctx.objsSize
+	c := ref ctx.cmdsSize
+
+	iPtr := fnc.Lines.GetPointer()
+
+	usage := Vector.{int}
+	usage.Resize(fnc.Objects.Size())
+
+	for i : fnc.Lines.Size()
+	{
+		line := iPtr[i]
+		for k : 5
+		{
+			usage[line.var1&[k]] += 1
+		}
+	}
+
+	for i : fnc.Lines.Size()
+	{
+		line := iPtr[i]
+
+		switch line.opcode
+		{
+		case "mov"
+			if usage[line.var1] == 2 and oPtr[line.var2] is MCGlobalVariable
+			{
+				printf("yeo\n")
+				cPtr[c++] = line
+			}else{
+				cPtr[c++] = line
+			}
+		case void
+			cPtr[c++] = line
+		}
+	}
+
+	return ctx.GenerateFunc()
+}

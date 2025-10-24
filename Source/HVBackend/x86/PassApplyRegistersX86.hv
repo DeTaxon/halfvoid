@@ -43,14 +43,14 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 		for i : fnc.InputsIndxCount
 		{
-			tp := fTyp.Params[i].ItType
 			indx := i + fnc.InputsIndxStart
+			tp := oPtr[indx].GetType()
 
 			reg := X86Register
 
 			loadFromStack := false
 
-			if (IsFloat(tp) or tp is TypeVector) and not fTyp.Params[i].IsRef {
+			if (IsFloat(tp) or tp is TypeVector) {
 				reg = "xmm0"
 				if redFloats < 8 {
 					reg&->{int^}^ += redFloats

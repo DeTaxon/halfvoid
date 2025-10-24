@@ -1,0 +1,37 @@
+HVB_Function := class
+{
+	ResultIndex := int
+	InputsIndxStart := int
+	InputsIndxCount := int
+
+	Objects := MCObject[]
+	Lines := MCLine[]
+
+	GetFunctionType := virtual !() -> HVBFunctionType
+	{
+		result.InputTypes.Resize(InputsIndxCount)
+		result.InputTypes[^i] = Objects[InputsIndxStart + i].GetObjType()
+
+		result.InputIsRefs.Resize(InputsIndxCount)
+		result.InputIsRefs[^i] = Objects[InputsIndxStart + i] is MCReference
+
+		result.ReturnType =  Objects[ResultIndex].GetObjType()
+		result.ReturnIsRef = Objects[ResultIndex] is MCReference
+	}
+}
+
+HVBFunctionType := class
+{
+	InputTypes := Vector.{HV_Object^}
+	InputIsRefs := Vector.{bool}
+
+	ReturnType := HV_Object^
+	ReturnIsRef := bool
+
+	IsVArgs := bool // printf(char^ , ...) ... <-
+
+	GetHVType := !() -> HV_Object^
+	{
+		return HV.GetFuncType(InputTypes,InputIsRefs,ReturnType,ReturnIsRef,IsVArgs)
+	}
+}

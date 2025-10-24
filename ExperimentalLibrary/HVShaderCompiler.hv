@@ -23,8 +23,9 @@
 			ctx.GetFunctionTypeId(ssa,true)
 			ctx.GetFunctionId(ssa)
 
-			varPtr := ssa.GetVariablesPointer()
-			for i : ssa.GetVariablesCount()
+			printf("test ssa %p\n",ssa.Objects)
+			varPtr := ssa.Objects.GetPointer()
+			for i : ssa.Objects.Size()
 			{
 				obj := ref varPtr[i]
 				ctx.GetTypeId(obj.GetObjType()?)
@@ -34,9 +35,10 @@
 					ctx.getIntConstId(obj&->{MCConstInteger^}.GetValue())
 				}
 			}
+			tst := PassSpirvPrettify(ssa)
 
-
-			ssa.Print()
+			// ssa.Print()
+			// tst.Print()
 
 			if fnc == mainFunc
 				ctx.MainFuncId = ctx.GetFunctionId(ssa)
@@ -144,7 +146,7 @@ SpirvCompiler := class
 	{
 		return fncIdOffset[fnc]?
 
-		count := fnc.GetVariablesCount()
+		count := fnc.Objects.Size()
 
 		idIter++
 		result = idIter
@@ -352,9 +354,9 @@ SpirvCompiler := class
 		c.Write32(0x0020000 + 248) // OpLabel
 		c.Write32(idFIter++)
 
-		cPtr := fnc.GetCodeLinesPointer()
-		oPtr := fnc.GetVariablesPointer()
-		for i : fnc.GetCodeLinesCount()
+		cPtr := fnc.Lines.GetPointer()
+		oPtr := fnc.Objects.GetPointer()
+		for i : fnc.Lines.Size()
 		{
 			line := cPtr[i]
 			
@@ -372,6 +374,17 @@ SpirvCompiler := class
 					c.Write32(line.var1 + idFIter)
 					c.Write32(v2)
 				}
+			}else if line.opcode == "get_array_elem_ptr" and i == 4
+			{
+				o1 := ref oPtr[line.var1]
+				o2 := ref oPtr[line.var2]
+				o3 := ref oPtr[line.var3]
+
+					c.Write32(0x50000 + 67)
+					c.Write32(GetTypeId(o1.GetObjType(),"Uniform"))
+					c.Write32(line.var1 + idFIter)
+					c.Write32(line.var2 + idFIter)
+					c.Write32(getIntConstId(o3&->{MCConstInteger^}.GetValue()))
 			}
 			
 		}

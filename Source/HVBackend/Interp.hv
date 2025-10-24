@@ -1047,7 +1047,20 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			thisFrame.DebugFileLine = ptr1->{int^}^
 			cs += 1
 		case "switch_start"
+
+			valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
+
 			switchValue := thisFrame.GetObjectPtr(opPtr[cs].var1)->{int^}^
+
+			if valType is TypeEnum
+			{
+				valSize := valType.GetSize()
+				if valSize == 2
+					switchValue = switchValue and_b 0xFFFF
+				if valSize == 1
+					switchValue = switchValue and_b 0xFF
+			}
+
 			cs += 1
 
 			while opPtr[cs].opcode != "switch_end"

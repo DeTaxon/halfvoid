@@ -8,7 +8,15 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	// tst()
-	makeSpirv()
+	// makeSpirv()
+	x := 0
+	tst(x)
+	printf("hey %i\n",x)
+}
+
+tst := !(int& x) -> void
+{
+	x = 12
 }
 
 makeSpirv := !() -> void

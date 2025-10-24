@@ -113,6 +113,7 @@ MCBuildFuncContext_x86_64 := class
 
 	Compile := !(MCFunction^ fnc) -> void
 	{
+		// fnc.Print()
 		fnc = PassRemoveSpaceship(fnc)
 		fnc = PassSimplifyVectors(fnc)
 		fnc = PassRemoveVoidParams(fnc)

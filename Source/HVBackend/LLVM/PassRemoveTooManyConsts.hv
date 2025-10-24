@@ -34,7 +34,7 @@ PassRemoveTooManyVars := !(MCFunction^ fnc) ->MCFunction^
 
 		canRemove := false
 
-		if false and i < cmdsSize - 1
+		if i < cmdsSize - 1
 			and iCmds[i].opcode == "mov" and used[iCmds[i].var1] == 2
 			and iCmds[i+1].opcode == "mov"
 			and iCmds[i].var1 == iCmds[i+1].var2
@@ -53,12 +53,14 @@ PassRemoveTooManyVars := !(MCFunction^ fnc) ->MCFunction^
 				beforeId := iCmds[i+1].var1
 				afterId := iCmds[i].var2
 
+				afterId = remakeId[afterId]?
+
 				remakeId[beforeId] = afterId
 			}
 
 		}
 
-		if false and line.opcode == "cast" and oPtr[line.var1] == oPtr[line.var2] and oPtr[line.var1] is MCConstValue
+		if line.opcode == "cast" and oPtr[line.var1] == oPtr[line.var2] and oPtr[line.var1] is MCConstValue
 		{
 			line.var2 = remakeId[line.var2]?
 			remakeId[line.var1] = line.var2
@@ -67,11 +69,12 @@ PassRemoveTooManyVars := !(MCFunction^ fnc) ->MCFunction^
 		{
 			i += 2
 		}else{
-			for j : 4
+			for j : 5
 			{
-				id := line.var2&[j]
-				id = remakeId[id]?
-				line.var2&[j] = id
+				id := line.var1&[j]
+				if IsOpcodeUsesVar(line.opcode,j)
+					id = remakeId[id]?
+				line.var1&[j] = id
 			}
 			cPtr[c++] = line
 			i += 1

@@ -149,16 +149,10 @@ AppendClass MCLabel
 	PrintObject := virtual !() -> void { printf("Label") }
 }
 
-MCFunction := class
+MCFunction := type HVB_Function
+AppendClass HVB_Function
 {
 	BaseFunction := BoxFuncBody^
-
-	ResultIndex := int
-	InputsIndxStart := int
-	InputsIndxCount := int
-
-	Objects := MCObject[]
-	Lines := MCLine[]
 
 	//optimization info
 	StackFrameSize := int

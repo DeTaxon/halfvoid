@@ -109,6 +109,13 @@ MCInterpContext := class
 				globalVariables[vr] = result
 				return void
 			}
+			if classVar.Name == "MCReference"
+			{
+				free(result)
+				result = MCReference->VTable
+				globalVariables[vr] = result
+				return void
+			}
 			//if classVar.Name == "THatch"
 			//{
 			//	free(result)

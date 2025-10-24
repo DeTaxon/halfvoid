@@ -2,9 +2,9 @@ SSAConainer := SSAConainerType
 
 SSAConainerType := class
 {
-	funcs := AVLMap.{BoxFuncBody^,HVBFunction^}
+	funcs := AVLMap.{BoxFuncBody^,HVB_Function^}
 
-	GetFunc := !(BoxFuncBody^ fnc) -> HVBFunction^
+	GetFunc := !(BoxFuncBody^ fnc) -> HVB_Function^
 	{
 		return funcs[fnc]?
 
@@ -21,7 +21,7 @@ SSAConainerType := class
 		ret = PassRemoveTooManyVars(ret)
 		ret = PassRemoveUnusedObjects(ret)
 
-		result = new HVBFunction(ret)
+		result = ret
 		funcs[fnc] = result
 	}
 }

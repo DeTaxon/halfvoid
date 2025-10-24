@@ -1,37 +1,4 @@
 
-HVB_Function := class
-{
-
-	GetFunctionType := virtual !() -> HVBFunctionType {}
-
-	GetVariablesCount := virtual !() -> int {}
-	GetVariablesPointer := virtual !() -> MCObject^ {}
-	//GetVariableObjType := virtual !(int index) -> HVB_VariableObjectType { return "Error" }
-	GetVariableType := virtual !(int index) -> HV_Object^ {}
-
-	GetCodeLinesCount := virtual !() -> int {}
-	GetCodeLinesPointer := virtual !() -> MCLine^ {}
-	GetLine := virtual !(int index) -> ref MCLine {}
-
-	Print := virtual !() -> void {}
-}
-
-HVBFunctionType := class
-{
-	InputTypes := Vector.{HV_Object^}
-	InputIsRefs := Vector.{bool}
-
-	ReturnType := HV_Object^
-	ReturnIsRef := bool
-
-	IsVArgs := bool // printf(char^ , ...) ... <-
-
-	GetHVType := !() -> HV_Object^
-	{
-		return HV.GetFuncType(InputTypes,InputIsRefs,ReturnType,ReturnIsRef,IsVArgs)
-	}
-}
-
 MCLine := class
 {
 	opcode := MCBaseOpcodes
