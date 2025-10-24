@@ -273,7 +273,7 @@ MCInterpContext := class
 		if funcPointer != null
 			return funcPointer
 
-		argsCount := fnc.BaseFunction.GetType()->{TypeFunc^}.Params.Size()
+		argsCount := fnc.InputsIndxCount
 		newClosure := calloc((HV_closure_func_data->TypeSize + void^->TypeSize*argsCount),1)->{HV_closure_func_data^}
 
 		closure := ffi_closure_alloc(128,newClosure.func_pointer&) //TODO unconst
