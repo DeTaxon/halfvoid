@@ -123,6 +123,7 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 	result.Lines = cmds
 
 	result.BaseFunction = fnc.BaseFunction
+	result.IsVArgs = fnc.IsVArgs
 	result.ResultIndex = fnc.ResultIndex
 	result.InputsIndxStart = fnc.InputsIndxStart
 	result.InputsIndxCount = fnc.InputsIndxCount

@@ -14,7 +14,7 @@ RunFunc := !() -> void
 	printf("hey %i\n",x)
 }
 
-tst := !(int& x) -> void
+tst := !(int& x,...) -> void
 {
 	x = 12
 }

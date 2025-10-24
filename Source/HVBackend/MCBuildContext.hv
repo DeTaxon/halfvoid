@@ -14,6 +14,7 @@ MCBuildContext := class
 	ResultIndex := int
 	InputsIndxStart := int
 	InputsIndxCount := int
+	IsVArgs := bool
 
 	labels := AVLMap.{BoxLabel^,int}
 
@@ -22,6 +23,7 @@ MCBuildContext := class
 		BaseFunction = fnc.BaseFunction
 
 		ResultIndex = fnc.ResultIndex
+		IsVArgs = fnc.IsVArgs
 		InputsIndxStart = fnc.InputsIndxStart
 		InputsIndxCount = fnc.InputsIndxCount
 
@@ -208,6 +210,7 @@ MCBuildContext := class
 		result.ResultIndex = this.ResultIndex
 		result.InputsIndxStart = this.InputsIndxStart
 		result.InputsIndxCount = this.InputsIndxCount
+		result.IsVArgs = this.IsVArgs
 
 		if computeStack
 			result.ComputeStackFrame() //TODO remove it from here, it is called in ebery optiimzation

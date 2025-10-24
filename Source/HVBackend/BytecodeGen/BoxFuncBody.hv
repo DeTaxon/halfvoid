@@ -6,6 +6,7 @@ AppendClass BoxFuncBody
 		WaitReadyState()
 
 		fType := GetType()->{TypeFunc^}
+		ctx.IsVArgs = fType.IsVargs
 		resType := fType.ResultType
 		ctx.InputsIndxCount = Params.Size()
 		if resType != GTypeVoid or fType.ExtraResults.Size() != 0

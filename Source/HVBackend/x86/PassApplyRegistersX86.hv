@@ -30,8 +30,6 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 	c := ref bldr.cmdsSize
 	cPtr := bldr.cmds.GetPointer()
 
-	fTyp := NormalizeFuncType(fnc.BaseFunction.GetType()->{TypeFunc^})
-
 	regAreaId := 0
 
 	redInts := 0
@@ -87,7 +85,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			}
 		}
 
-		if fTyp.IsVargs
+		if fnc.IsVArgs
 		{
 			regArea := GetTypeByName(StringSpan("va_list_registers"))
 			assert(regArea != null)
@@ -138,13 +136,13 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 		for i : fnc.InputsIndxCount
 		{
-			tp := fTyp.Params[i].ItType
 			indx := i + fnc.InputsIndxStart
+			tp := fnc.Objects[indx].GetType()
 
 			if i < 4 {
 				reg := X86Register
 
-				if (IsFloat(tp) or tp is TypeVector) and not fTyp.Params[i].IsRef {
+				if (IsFloat(tp) or tp is TypeVector) {
 					reg = "xmm0"
 					reg&->{int^}^ += i
 				}else{
@@ -167,7 +165,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			}
 		}
 
-		if fTyp.IsVargs and fTyp.Params.Size() <= 4
+		if fnc.IsVArgs and fnc.InputsIndxCount <= 4
 		{
 			r1 := bldr.PushReg("rax",GTypeVoidP)
 			cPtr[c++] = MCLine("get_pointer",r1,pushVar(16,GTypeVoidP))
@@ -542,7 +540,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				r1 := bldr.PushReg("rax",GTypeVoidP.GetPoint())
 				r2 := bldr.PushReg("rcx",GTypeVoidP.GetPoint())
 				
-				offst := min(fTyp.Params.Size(),4)
+				offst := min(fnc.InputsIndxCount,4)
 
 				cPtr[c++] = MCLine("get_pointer",r2,pushVar( offst*8 + 16,GTypeVoidP.GetPoint()))
 				cPtr[c++] = MCLine("mov",r1,it.var1)
@@ -559,10 +557,10 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		i += 1
 	}
 
-	resTyp := fTyp.ResultType
+	resTyp := fnc.Objects[fnc.ResultIndex].GetType()
 	if resTyp == GTypeVoid {
 		// this is fine
-	}else if IsInt(resTyp) or IsPtrLikeType(resTyp) or resTyp == GTypeBool  or fTyp.ResultRef {
+	}else if IsInt(resTyp) or IsPtrLikeType(resTyp) or resTyp == GTypeBool {
 		reg := bldr.PushReg("rax",resTyp)
 		cPtr[c] = MCLine("mov",reg,fnc.ResultIndex)
 		c += 1
@@ -571,7 +569,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		cPtr[c] = MCLine("mov",reg,fnc.ResultIndex)
 		c += 1
 	}else{
-		printf("unknown res type %s %s %i\n",resTyp.GetBADStr().Str(),resTyp.UnitName,fTyp.ResultRef)
+		printf("unknown res type %s %s\n",resTyp.GetBADStr().Str(),resTyp.UnitName)
 		assert(false)
 	}
 
