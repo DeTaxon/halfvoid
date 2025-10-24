@@ -7,47 +7,44 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 	tbl := ref OpcodeMustConstTable
 
 
-	newObjs := List.{MCObject}
-	newCmds := List.{MCLine}
+	ctx := MakeGreedyPass(fnc,4,6)
+	cPtr := ctx.cPtr
+	c := ref ctx.cmdsSize
+	oPtr := ctx.oPtr
+	o := ref ctx.objsSize
 
-	newObjs.Push(fnc.Objects[^])
-
+	iPtr := fnc.Lines.GetPointer()
 
 	toConstVar := (MCObject obj) ==> int
 	{
-		result = newObjs.Size()
-		newObjs.Emplace()
-		newObjs[-1]->SetType(MCConstValue)
-		newObjs[-1]&->{MCConstValue^}.GetValueType() = NormalizeType(obj.GetType())
+		return ctx.PushConstVar(NormalizeType(obj.GetType()))
 	}
 	makeConstVar := (int id) ==> int
 	{
-		obj := ref fnc.Objects[id]
-		result = newObjs.Size()
-		newObjs.Emplace()
-		newObjs[-1]->SetType(MCConstValue)
-		newObjs[-1]&->{MCConstValue^}.GetValueType() = NormalizeType(obj.GetType())
-		newCmds.Push(MCLine("mov",result,id))
+		obj := ref oPtr[id]
+		result = ctx.PushConstVar(NormalizeType(obj.GetType()))
+		cPtr[c++] = MCLine("mov",result,id)
 	}
 
 	i := 0
-	while i < fnc.Lines.Size()
+	fncLinesSize := fnc.Lines.Size()
+	while i < fncLinesSize
 	{
-		it := ref fnc.Lines[i]
+		it := ref iPtr[i]
 		switch it.opcode
 		{
 		case "mov"
 
-			ob1 := ref fnc.Objects[it.var1]
-			ob2 := ref fnc.Objects[it.var2]
+			ob1 := ref oPtr[it.var1]
+			ob2 := ref oPtr[it.var2]
 
 			if IsVarType(ob1) and IsVarType(ob2)
 			{
 				cnstId := toConstVar(ob2)
-				newCmds.Push(MCLine("mov",cnstId,it.var2))
-				newCmds.Push(MCLine("mov",it.var1,cnstId))
+				cPtr[c++] = MCLine("mov",cnstId,it.var2)
+				cPtr[c++] = MCLine("mov",it.var1,cnstId)
 			}else{
-				newCmds.Push(it)
+				cPtr[c++] = it
 			}
 			i += 1
 
@@ -55,14 +52,14 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			stLine := it
 			i += 1
 
-			if IsVarType(fnc.Objects[stLine.var2])
+			if IsVarType(oPtr[stLine.var2])
 			{
 				cnstId := makeConstVar(stLine.var2)
 				stLine.var2 = cnstId
 			}
 
 			varConsts := HybridQueue.{int,16}
-			while fnc.Lines[i].opcode != "call_end"
+			while iPtr[i].opcode != "call_end"
 			{
 				vr := ref fnc.Lines[i]
 				assert(vr.opcode == "load_var")
@@ -72,32 +69,32 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 				{
 					cnstId := toConstVar(obj)
 					varConsts.Push(cnstId)
-					newCmds.Push(MCLine("mov",cnstId,vr.var1))
+					cPtr[c++] = MCLine("mov",cnstId,vr.var1)
 				}else{
 					varConsts.Push(vr.var1)
 				}
 				i += 1
 			}
-			newCmds.Push(stLine)
-			newCmds.Push(MCLine("load_var",varConsts[^]))
-			newCmds.Push(MCLine("call_end"))
+			cPtr[c++] = stLine
+			cPtr[c++] = MCLine("load_var",varConsts[^])
+			cPtr[c++] = MCLine("call_end")
 			i += 1
 		case "switch_start"
 			stLine := it
 			i += 1
 
-			if IsVarType(fnc.Objects[stLine.var1])
+			if IsVarType(oPtr[stLine.var1])
 			{
 				cnstId := makeConstVar(stLine.var1)
 				stLine.var1 = cnstId
 			}
-			newCmds.Push(stLine)
-			while fnc.Lines[i].opcode != "switch_end"
+			cPtr[c++] = stLine
+			while iPtr[i].opcode != "switch_end"
 			{
-				newCmds.Push(fnc.Lines[i])
+				cPtr[c++] = iPtr[i]
 				i += 1
 			}
-			newCmds.Push(fnc.Lines[i])
+			cPtr[c++] = iPtr[i]
 			i += 1
 		case "asm_start"
 			stLine := it
@@ -105,17 +102,17 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 
 			clobObjs := HybridQueue.{int,16}
 			varConsts := HybridQueue.{int,16}
-			while fnc.Lines[i].opcode != "asm_end"
+			while iPtr[i].opcode != "asm_end"
 			{
 				vr := ref fnc.Lines[i]
 				if vr.opcode == "load_var"
 				{
-					obj := ref fnc.Objects[vr.var1]
+					obj := ref oPtr[vr.var1]
 					if IsObjectVariable(obj)
 					{
 						cnstId := toConstVar(obj)
 						varConsts.Push(cnstId)
-						newCmds.Push(MCLine("mov",cnstId,vr.var1))
+						cPtr[c++] = MCLine("mov",cnstId,vr.var1)
 					}else{
 						varConsts.Push(vr.var1)
 					}
@@ -126,12 +123,12 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 				}
 				i += 1
 			}
-			newCmds.Push(stLine)
+			cPtr[c++] = stLine
 			for it : clobObjs
-				newCmds.Push(MCLine("clob_str",it))
+				cPtr[c++] = MCLine("clob_str",it)
 			for it : varConsts
-				newCmds.Push(MCLine("load_var",it))
-			newCmds.Push(MCLine("asm_end"))
+				cPtr[c++] = MCLine("load_var",it)
+			cPtr[c++] = MCLine("asm_end")
 			i += 1
 		case void
 			if tbl.Contain(it.opcode)
@@ -142,14 +139,14 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 
 				if inf.opcode == "noop"
 				{
-					newCmds.Push(thisLine)
+					cPtr[c++] = thisLine
 				}else{
 					
 					vars := int[5]
 					for i : 5
 					{
-						assert(thisLine.var1&[i] < newObjs.Size())
-						ob := ref newObjs[thisLine.var1&[i]]
+						assert(thisLine.var1&[i] < o)
+						ob := ref oPtr[thisLine.var1&[i]]
 						if inf.var1&[i] != 0 and IsObjectVariable(ob)
 						{
 							vars[i] = makeConstVar(thisLine.var1&[i])
@@ -157,7 +154,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 							vars[i] = thisLine.var1&[i]
 						}
 					}
-					newCmds.Push(MCLine(thisLine.opcode,vars[0],vars[1],vars[2],vars[3],vars[4]))
+					cPtr[c++] = MCLine(thisLine.opcode,vars[0],vars[1],vars[2],vars[3],vars[4])
 				}
 			}else{
 				printf("LLVM there is no const use in table for opcode %s\n",it.opcode.ToCStr())
@@ -167,12 +164,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 		}
 	}
 
-	newFunc := fnc.CreateBaseFunc() 
-
-	newFunc.Objects = newObjs.ToVector()
-	newFunc.Lines = newCmds.ToVector()
-
-	return newFunc
+	return ctx.GenerateFunc()
 }
 
 OpcodeMustConstTable := AVLMap.{MCBaseOpcodes,MCLine}

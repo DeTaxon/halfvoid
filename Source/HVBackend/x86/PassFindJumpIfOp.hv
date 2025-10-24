@@ -3,9 +3,9 @@ PassOptimizeJumpX86 := !(MCFunction^ fnc) ->MCFunction^
 {
 	ctx := MakeGreedyPass(fnc,4,6)
 	cPtr := ctx.cPtr
-	c := ref ctx.objsSize
+	c := ref ctx.cmdsSize
 	oPtr := ctx.oPtr
-	o := ref ctx.cmdsSize
+	o := ref ctx.objsSize
 
 	iPtr := fnc.Lines.GetPointer()
 	iSize := fnc.Lines.Size()
