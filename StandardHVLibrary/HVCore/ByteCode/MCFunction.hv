@@ -4,6 +4,8 @@ HVB_Function := class
 	InputsIndxStart := int
 	InputsIndxCount := int
 
+	IsVArgs := bool
+
 	Objects := MCObject[]
 	Lines := MCLine[]
 
@@ -17,6 +19,8 @@ HVB_Function := class
 
 		result.ReturnType =  Objects[ResultIndex].GetObjType()
 		result.ReturnIsRef = Objects[ResultIndex] is MCReference
+
+		result.IsVArgs = IsVArgs
 	}
 }
 

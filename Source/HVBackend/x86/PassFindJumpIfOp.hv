@@ -1,18 +1,11 @@
 
 PassOptimizeJumpX86 := !(MCFunction^ fnc) ->MCFunction^
 {
-	bCtx := MCBuildContext(fnc,true,false)
-
-	objs := new Vector.{MCObject}
-	o := fnc.Objects.Size()
-	objs.Resize(o*6)
-	oPtr := objs.GetPointer()
-	memcpy(oPtr,fnc.Objects.GetPointer(),o*MCObject->TypeSize)
-
-	cmds := new Vector.{MCLine}
-	c := 0
-	cmds.Resize(fnc.Lines.Size()*4)
-	cPtr := cmds.GetPointer()
+	ctx := MakeGreedyPass(fnc,4,6)
+	cPtr := ctx.cPtr
+	c := ref ctx.objsSize
+	oPtr := ctx.oPtr
+	o := ref ctx.cmdsSize
 
 	iPtr := fnc.Lines.GetPointer()
 	iSize := fnc.Lines.Size()
@@ -48,16 +41,5 @@ PassOptimizeJumpX86 := !(MCFunction^ fnc) ->MCFunction^
 	cPtr[c] = iPtr[iSize - 1]
 	c += 1
 
-	objs.Resize(o)
-	cmds.Resize(c)
-
-	result = new MCFunction
-
-	result.Objects = objs
-	result.Lines = cmds
-
-	result.BaseFunction = fnc.BaseFunction
-	result.ResultIndex = fnc.ResultIndex
-	result.InputsIndxStart = fnc.InputsIndxStart
-	result.InputsIndxCount = fnc.InputsIndxCount
+	return ctx.GenerateFunc()
 }
