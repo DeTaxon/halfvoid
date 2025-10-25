@@ -102,6 +102,9 @@ RetConstFuncTable := AVLSet.{MCBaseOpcodes}
 
 RetConstFuncTableInit := !() -> void
 {
+	oldAlc := SwapAllocator(null)
+	defer SetAllocator(oldAlc)
+
 	tbl := ref RetConstFuncTable
 
 	tbl.Insert("cast")

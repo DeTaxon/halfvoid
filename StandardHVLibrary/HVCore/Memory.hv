@@ -24,13 +24,20 @@ internalHVDelete := !(void^ x) -> void
 
 CurrentAllocator := task_local IAllocator^
 
+
+GetDefaultAllocator := !() -> IAllocator^
+	#Mark("JITPass")
+{
+	defAlloc := static DefaultAllocator
+	return defAlloc&
+}
+
 GetAllocator := !() -> IAllocator^
 	#Mark("JITPass")
 {
 	if CurrentAllocator != null
 		return CurrentAllocator
-	defAlloc := static DefaultAllocator
-	return defAlloc&
+	return GetDefaultAllocator()
 }
 
 SwapAllocator := !(IAllocator^ alc) -> IAllocator^

@@ -1,8 +1,6 @@
 
 PassRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 {
-	@once RetConstFuncTableInit()
-
 	fnc = passRemoveReferencesReplaceLoadElement(fnc)
 	return passRemoveReferencesRemoveReferences(fnc)
 }

@@ -180,6 +180,9 @@ IsVarType := !(MCObject obj) -> bool
 }
 GenMCTable := !() -> void
 {
+	oldAlc := SwapAllocator(GetDefaultAllocator())
+	defer SetAllocator(oldAlc)
+
 	tbl := ref OpcodeMustConstTable
 	//tbl["call_start"] = MCLine("noop")
 	tbl["load_var"] = MCLine("noop",1)

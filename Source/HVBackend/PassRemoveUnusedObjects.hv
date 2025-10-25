@@ -8,6 +8,8 @@ PassRemoveUnusedObjects := !(MCFunction^ fnc) -> MCFunction^
 	isUsed := Vector.{bool}
 	isUsed.Resize(objsCount)
 
+	defer isUsed.Destroy()
+
 	isUsed[0] = true
 	isUsed[fnc.ResultIndex] = true
 
@@ -36,6 +38,8 @@ PassRemoveUnusedObjects := !(MCFunction^ fnc) -> MCFunction^
 
 	newIds := Vector.{int}
 	newIds.Resize(objsCount)
+
+	defer newIds.Destroy()
 
 	idIter := 0
 	for i : objsCount
