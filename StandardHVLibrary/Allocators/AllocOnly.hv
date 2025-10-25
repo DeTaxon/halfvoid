@@ -1,0 +1,35 @@
+AllocateOnly := class extends IAllocator
+{
+	basePage := PageMemory
+
+	iterPtr := u8^
+	leftSize := int
+
+	AllocMem := virtual !(int size, bool dirty = false) -> void^
+	{
+		size = (size + 0xF) and_b 0xFFFFFFF0
+
+		result = iterPtr
+
+		// if not dirty or true
+			memset(result,0,size)
+		iterPtr = iterPtr[size]&
+	}
+	FreeMem := virtual !(void^ mem) -> void
+	{
+	}
+	Reset := !() -> void
+	{
+		iterPtr = basePage.GetPointer()->{u8^}
+		leftSize = 0
+	}
+	Destroy := !() -> void
+	{
+		basePage.Close()
+	}
+}
+MakeTempAllocator := !() -> AllocateOnly
+{
+	result.basePage.Create(128*1024*1024,"rw")
+	result.Reset()
+}

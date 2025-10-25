@@ -30,7 +30,8 @@ PageMemory := class
 	}
 	Close := !() -> void
 	{
-		//TODO cleanup
+		if memPointer != null
+			munmap(memPointer,memSize)
 		memPointer = null
 		memSize = 0
 	}

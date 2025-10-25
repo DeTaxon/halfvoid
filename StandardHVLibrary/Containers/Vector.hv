@@ -15,7 +15,7 @@ Vector := class .{@T} extend TArrayView.{T}
 	{
 		return itSize
 	}
-	Resize := !(int count) -> void
+	Resize := !(int count, bool dirty = false) -> void
 	{
 		if count == itSize
 			return void
@@ -26,7 +26,9 @@ Vector := class .{@T} extend TArrayView.{T}
 			return void
 		}
 
-		newPointer := calloc(count,T->TypeSize)->{T^}
+		alc := GetAllocator()
+
+		newPointer := alc.AllocMem(count*T->TypeSize,dirty)->{T^}
 
 
 		if T->TypeGroup == "Class"
@@ -56,14 +58,7 @@ Vector := class .{@T} extend TArrayView.{T}
 	{
 		if pointer != null
 		{
-			if T->IsGCPointer
-			{
-				for i : itSize
-				{
-					pointer[i] = null
-				}
-			}
-			free(pointer)
+			GetAllocator().FreeMem(pointer)
 			pointer = null
 		}
 		itSize = 0

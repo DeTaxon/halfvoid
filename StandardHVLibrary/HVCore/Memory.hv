@@ -1,7 +1,8 @@
 internalHVNew := !() .{@T} -> T^
 {
 	objSize := max(T->TypeSize,1)
-	result&->{void^^}^ = calloc(1,max(T->TypeSize,1) ) //way to bypass DecRef
+	alc := GetAllocator()
+	result&->{void^^}^ = alc.AllocMem(max(T->TypeSize,1)) //way to bypass custom setters
 	if T->TypeGroup == "Class"
 		internalHVInitClass(result^)
 
@@ -12,23 +13,36 @@ internalHVNew := !() .{@T} -> T^
 }
 internalHVNewConstructed := !(@T^ obj, args...) -> T^ //TODO delete after halfvoid updated
 {
-	//printf("internal func\n")
 	result = obj
 	result.this(args...)
 }
 
 internalHVDelete := !(void^ x) -> void
 {
-	//if #Var("Tracy") and GlobalTracyInUse
-	//{
-	//	___tracy_emit_memory_free_callstack?(x,62,0)
-	//}
-	free(x)
+	GetAllocator().FreeMem(x)
 }
 
+CurrentAllocator := task_local IAllocator^
+
 GetAllocator := !() -> IAllocator^
+	#Mark("JITPass")
 {
+	if CurrentAllocator != null
+		return CurrentAllocator
 	defAlloc := static DefaultAllocator
 	return defAlloc&
+}
+
+SwapAllocator := !(IAllocator^ alc) -> IAllocator^
+	#Mark("JITPass")
+{
+	result = CurrentAllocator
+	CurrentAllocator = alc
+}
+
+SetAllocator := !(IAllocator^ alc) -> void
+	#Mark("JITPass")
+{
+	CurrentAllocator = alc
 }
 
