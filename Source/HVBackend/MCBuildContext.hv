@@ -9,7 +9,7 @@ MCBuildContext := class
 	exitNodes := ContextExitNode
 	DeferObjects := HybridStack.{BoxExeObj^,20}
 
-	BaseFunction := BoxFuncBody^
+	BaseFunction := void^//BoxFuncBody^
 
 	ResultIndex := int
 	InputsIndxStart := int

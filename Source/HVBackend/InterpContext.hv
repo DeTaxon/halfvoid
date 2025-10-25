@@ -314,7 +314,7 @@ MCInterpContext := class
 		}else{
 			resultType = ffi_type_void
 		}
-		hv := fnc.BaseFunction
+		hv := fnc.BaseFunction->{BoxFuncBody^}
 		fType := hv.GetType()->{TypeFunc^}
 
 		typesSize := 0
@@ -484,7 +484,7 @@ MCInterpContext := class
 HV_closure_func := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data^ data) -> void
 {
 	mc := data.interpFunc
-	hv := mc.BaseFunction
+	hv := mc.BaseFunction->{BoxFuncBody^}
 	fType := hv.GetType()->{TypeFunc^}
 
 	step2 := void^[120]

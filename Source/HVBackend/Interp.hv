@@ -1,7 +1,7 @@
 
 MCInterpFunction2 := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inputs = null,void^ resultPtr = null) -> void
 {
-	fType := interpFunc.BaseFunction.GetType()->{TypeFunc^}
+	fType := interpFunc.BaseFunction->{BoxFuncBody^}.GetType()->{TypeFunc^}
 
 	isComplex := fType.ResultType.IsComplexReturn() and not fType.ResultRef
 	if fType.ExtraResults.Size() != 0

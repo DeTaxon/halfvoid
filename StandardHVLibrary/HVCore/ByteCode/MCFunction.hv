@@ -9,6 +9,8 @@ HVB_Function := class
 	Objects := MCObject[]
 	Lines := MCLine[]
 
+	BaseFunction := void^ //BoxFuncBody^
+
 	GetFunctionType := virtual !() -> HVBFunctionType
 	{
 		result.InputTypes.Resize(InputsIndxCount)

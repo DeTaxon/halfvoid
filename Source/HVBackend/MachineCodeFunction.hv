@@ -152,8 +152,6 @@ AppendClass MCLabel
 MCFunction := type HVB_Function
 AppendClass HVB_Function
 {
-	BaseFunction := BoxFuncBody^
-
 	//optimization info
 	StackFrameSize := int
 	StackOffsets := int[] // Also contains lable positions
