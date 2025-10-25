@@ -25,6 +25,8 @@ GreedyPass := class
 
 	GenerateFunc := !() -> HVB_Function^
 	{
+		assert(objsSize < objs.Size())
+		assert(cmdsSize < cmds.Size())
 		objs.Resize(objsSize)
 		cmds.Resize(cmdsSize)
 
@@ -48,7 +50,7 @@ MakeGreedyPass := !(HVB_Function^ fnc, int cmdK, int objK, bool copyObjs = true)
 	result.objs = new Vector.{MCObject}
 
 	o := fnc.Objects.Size()
-	result.objs.Resize(o*objK)
+	result.objs.Resize(o*objK + 500)
 	result.oPtr = result.objs.GetPointer()
 
 	if copyObjs {
@@ -58,7 +60,7 @@ MakeGreedyPass := !(HVB_Function^ fnc, int cmdK, int objK, bool copyObjs = true)
 
 	result.cmds = new Vector.{MCLine}
 	c := fnc.Lines.Size()
-	result.cmds.Resize(c*cmdK + 100)
+	result.cmds.Resize(c*cmdK + 500)
 	result.cPtr = result.cmds.GetPointer()
 	
 }

@@ -488,8 +488,11 @@ ForEachVecType := !(!(TypeVector^)&-> void cb) -> void
 	}
 }
 
+// TypesAllocator := AllocateOnly
+
 CreateStandardTypes := !() -> void
 {	
+	// oldAlc := SwapAllocator(TypesAllocator&)
 	//u
 	TypeTable[0] = new TypeInteger("i8","u8","!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)
 	TypeTable[1] = new TypeInteger("i16","u16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)

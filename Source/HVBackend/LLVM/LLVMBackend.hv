@@ -11,7 +11,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "InitTaskContexast"
+	needPrint := base->{BoxFuncBody^}.OutputName == "startTaskThreadasd"
 	//needPrint = true
 	//needPrint = false
 
