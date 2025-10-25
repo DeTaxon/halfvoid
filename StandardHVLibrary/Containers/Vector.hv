@@ -28,7 +28,7 @@ Vector := class .{@T} extend TArrayView.{T}
 
 		alc := GetAllocator()
 
-		newPointer := alc.AllocMem(count*T->TypeSize,dirty)->{T^}
+		newPointer := alc.AllocMem(count*T->TypeSize,false)->{T^}
 
 
 		if T->TypeGroup == "Class"

@@ -14,9 +14,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	needPrint := base->{BoxFuncBody^}.OutputName == "InitTaskContexast"
 	//needPrint = true
 	//needPrint = false
-	
+
 	// tmpAlloc := MakeTempAllocator()
-	oldAlloc := SwapAllocator(tmpAlloc&)
+	// oldAlloc := SwapAllocator(tmpAlloc&)
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
