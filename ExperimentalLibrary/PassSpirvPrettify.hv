@@ -14,6 +14,8 @@ PassSpirvPrettify := !(HVB_Function^ fnc) -> HVB_Function^
 	usage := Vector.{int}
 	usage.Resize(fnc.Objects.Size())
 
+	defer usage.Destroy()
+
 	for i : fnc.Lines.Size()
 	{
 		line := iPtr[i]
@@ -23,23 +25,40 @@ PassSpirvPrettify := !(HVB_Function^ fnc) -> HVB_Function^
 		}
 	}
 
-	for i : fnc.Lines.Size()
+	repl := Vector.{int}
+	repl.Resize(fnc.Objects.Size())
+
+	lnCount := fnc.Lines.Size()
+
+	i := 0
+	while i < lnCount
 	{
 		line := iPtr[i]
-
-		switch line.opcode
+		for k : 5
 		{
-		case "mov"
-			if usage[line.var1] == 2 and oPtr[line.var2] is MCGlobalVariable
-			{
-				printf("yeo\n")
-				cPtr[c++] = line
-			}else{
-				cPtr[c++] = line
-			}
-		case void
-			cPtr[c++] = line
+			c := repl[line.var1&[k]]
+			if c != 0
+				line.var1&[k] = c
 		}
+
+		if i < lnCount - 1
+			and oPtr[line.var2] is MCGlobalVariable
+			and oPtr[line.var1] is MCConstValue
+			and usage[line.var1] == 2
+			and iPtr[i + 1].opcode == "get_array_elem_ptr"
+			and iPtr[i + 1].var2 == line.var1
+		{
+			repl[line.var1] = line.var2
+			i += 1
+
+			continue
+		}
+
+		{
+			cPtr[c++] = line
+			i += 1
+		}
+
 	}
 
 	return ctx.GenerateFunc()

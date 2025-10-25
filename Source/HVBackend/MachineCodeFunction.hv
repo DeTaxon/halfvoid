@@ -2,8 +2,8 @@
 
 AppendClass MCObject
 {
-	PrintObject := virtual !() -> void { printf("unknown object") }
 	GetType := virtual !() -> Type^ { return GTypeVoid }
+	PrintObject := virtual !() -> void { printf("unknown object") }
 }
 
 
@@ -152,21 +152,6 @@ AppendClass MCLabel
 MCFunction := type HVB_Function
 AppendClass HVB_Function
 {
-	//optimization info
-	StackFrameSize := int
-	StackOffsets := int[] // Also contains lable positions
-
-	CreateBaseFunc := !() -> MCFunction^
-	{
-		result = new MCFunction
-		result.BaseFunction = BaseFunction
-
-		result.ResultIndex = ResultIndex
-		result.InputsIndxStart = InputsIndxStart
-		result.InputsIndxCount = InputsIndxCount
-		result.IsVArgs = this.IsVArgs
-	}
-	
 	Print := !() -> void
 	{
 		printf("-------- Objects\n")
@@ -183,7 +168,21 @@ AppendClass HVB_Function
 			printf("%7i %20s: %6i %6i %6i %6i %6i\n",i,it.opcode.ToCStr(),it.var1,it.var2,it.var3,it.var4,it.var5)
 		}
 	}
+	//optimization info
+	StackFrameSize := int
+	StackOffsets := int[] // Also contains lable positions
 
+	CreateBaseFunc := !() -> MCFunction^
+	{
+		result = new MCFunction
+		result.BaseFunction = BaseFunction
+
+		result.ResultIndex = ResultIndex
+		result.InputsIndxStart = InputsIndxStart
+		result.InputsIndxCount = InputsIndxCount
+		result.IsVArgs = this.IsVArgs
+	}
+	
 	ComputeStackFrame := !() -> void
 	{
 		StackFrameSize = 0

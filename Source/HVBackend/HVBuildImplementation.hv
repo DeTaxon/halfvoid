@@ -139,6 +139,10 @@ HVContextImplementation := class extend HV_Context
 
 		return SSAConainer.GetFunc(fnc)
 	}
+	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void
+	{
+		fnc.Print()
+	}
 }
 HV_FunctionTemplateImp := class extend HV_FunctionTemplate
 {

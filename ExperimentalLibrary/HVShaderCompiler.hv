@@ -37,8 +37,8 @@
 			}
 			tst := PassSpirvPrettify(ssa)
 
-			// ssa.Print()
-			// tst.Print()
+			HV.PrintMCFunction(ssa)
+			HV.PrintMCFunction(tst)
 
 			if fnc == mainFunc
 				ctx.MainFuncId = ctx.GetFunctionId(ssa)

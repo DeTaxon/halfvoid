@@ -33,6 +33,9 @@ HV_Context := class
 	GetFunctionAndHisFriends := virtual !(HV_Object^ func) -> HVFunctionUsage {}
 
 	GetSSAFunc := virtual !(HV_Object^ fnc) -> HVB_Function^ {}
+
+	//Temp
+	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void {}
 }
 
 TypeGroups := enum
