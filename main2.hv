@@ -1,7 +1,17 @@
 
+
+rrr := class
+{
+	this := !(int x) -> void
+	{
+		printf("yep %i\n",x)
+	}
+}
 main := !(char^[] args) -> int
 {
-	RunFunc()
+	// RunFunc()
+	c := AllocateOnly
+	r := c.new rrr(10)
 }
 
 

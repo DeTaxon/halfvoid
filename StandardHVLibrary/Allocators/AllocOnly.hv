@@ -1,23 +1,42 @@
+
 AllocateOnly := class extends IAllocator
 {
-	basePage := PageMemory
+	firstPage := PageMemory
+	currentPage := PageMemory^
 
 	iterPtr := u8^
 	leftSize := int
 
-	Init := !() -> void
-	{
-		basePage.Create(8*1024*1024,"rw")
-		Reset()
-	}
 	AllocMem := virtual !(int size, bool dirty = false) -> void^
 	{
+		//TODO  if size > 1Mb
+		assert(size < 1*1024*1024)
+
+		if size > leftSize
+		{
+			if currentPage == null {
+				currentPage = firstPage&->{PageMemory^}
+			}else{
+				currentPage = currentPage.GetPointer()->{PageMemory^}
+			}
+			infoSize := (PageMemory->TypeSize + 0x0F) and_b 0xFFFFFFF0
+			if currentPage.Size() == 0
+			{
+				currentPage.Create(1*1024*1024,"rw")
+				memset(currentPage.GetPointer(),0,infoSize)
+				internalHVInitClass(currentPage.GetPointer()->{PageMemory^}^)
+			}
+
+			iterPtr = currentPage.GetPointer()->{u8^}[infoSize]&
+			leftSize = currentPage.Size() - infoSize
+		}
+
 		oldSize := size
 		size = (size + 0xF) and_b 0xFFFFFFF0
 
 		result = iterPtr
 
-		// if not dirty or true
+		if not dirty
 			memset(result,0,size)
 		iterPtr = iterPtr[size]&
 		leftSize -= size
@@ -27,15 +46,24 @@ AllocateOnly := class extends IAllocator
 	}
 	Reset := !() -> void
 	{
-		iterPtr = basePage.GetPointer()->{u8^}
-		leftSize = basePage.Size()
+		iterPtr = 0
+		leftSize = 0
 	}
 	Destroy := !() -> void
 	{
-		basePage.Close()
+		while firstPage.Size() != 0
+		{
+			prevIter := PageMemory^
+			iter := firstPage&
+
+			//while iter.Size() != 0
+			//{
+			//	prevIter = iter
+			//	iter = iter.GetPointer()->{PageMemory^}
+			//}
+		}
 	}
 }
 MakeTempAllocator := !() -> AllocateOnly
 {
-	result.Init()
 }

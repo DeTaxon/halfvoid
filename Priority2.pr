@@ -1,7 +1,8 @@
 #UnaryMinus
 "#best ()"
 "try {} catch () {}"
-"new d ()" "! []" "! {}"
+"! []" "! {}"
+#NewConstruct
 #FunctionBody
 "d . d () . {}"
 "d () . {}" "d . {}"
