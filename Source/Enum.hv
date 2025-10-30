@@ -242,6 +242,8 @@ TypeEnum := class extend TypeStandard
 	}
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ctx.UsedTypes.Insert(this&)
+
 		if ToEnum?.BaseType != null
 		{
 			ToEnum.BaseType.PrintType(ctx)

@@ -14,6 +14,8 @@ LLVMWriteContext := class
 	LocalVarIds := AVLMap.{void^,int}
 	UnrefIds := AVLMap.{void^,int}
 
+	UsedTypes := AVLSet.{Type^}
+
 	ClassIgnoresVTable := bool
 
 	GetLocalVarId := !(void^ obj) -> int

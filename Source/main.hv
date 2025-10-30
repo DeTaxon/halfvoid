@@ -19,8 +19,6 @@ GArchLLVMTypeSizeT := "i64"
 
 GVoidObj := BoxExeObj^
 
-GDebugTypePrintMeta := List.{Type^}
-
 AllClasses := List.{BoxClass^}
 AllFunctions := AVLSet.{BoxFunc^}
 
@@ -569,10 +567,14 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 	}
 	AllFunctions[^].PrintCode(ctx)
 
-	while GDebugTypePrintMeta.Size() != 0
+	for it : ctx.UsedTypes
 	{
-		GDebugTypePrintMeta[0].PrintMeta(ctx)
-		GDebugTypePrintMeta.Pop()
+		it.PrintMeta(ctx)
+	}
+	for r,base : GRefTypes
+	{
+		if ctx.UsedTypes.Contain(base)
+			r.PrintMeta(ctx)
 	}
 }
 

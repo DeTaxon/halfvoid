@@ -40,7 +40,6 @@ TypeFunc := class extend Type
 		if DebugMode
 		{
 			MetaId = GetNewId()
-			GDebugTypePrintMeta.Push(this&)
 		}
 	}
 	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
@@ -79,6 +78,8 @@ TypeFunc := class extend Type
 
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ctx.UsedTypes.Insert(this&)
+
 		f := ctx.writeStream
 
 		ResultType.PrintType(ctx)
@@ -97,7 +98,10 @@ TypeFunc := class extend Type
 
 			par.ItType.PrintType(ctx)
 			if par.IsRef or par.ItType is in TypeClass
+			{
+				ctx.UsedTypes.Insert(par.ItType.GetPoint())
 				f^ << "*"
+			}
 		}
 
 		if IsVargs

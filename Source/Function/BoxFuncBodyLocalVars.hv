@@ -321,7 +321,7 @@ FuncLocalCallIfTrue := class extend BoxExeObj
 		objs := CheckExeDownList
 		objs.Push(varPtr)
 		objs.Push(GBoolFalse)
-		storeFalse = CreateFuncCall(StringSpan("="),objs)
+		storeFalse = CreateFuncCall("=",objs)
 	}
 	PrintDefer := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -372,6 +372,8 @@ FuncLocalDebugInfoDeclare := class extend BoxExeObj
 		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 
 		ctx.funcDebugMetas.Push(this&)
+
+		ctx.UsedTypes.Insert(baseVar.GetType())
 	}
 	PrintDebugPostFuncMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -426,6 +428,8 @@ FuncLocalDebugInfoValue := class extend BoxExeObj
 		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
 
 		ctx.funcDebugMetas.Push(this&)
+
+		ctx.UsedTypes.Insert(baseVar.GetType())
 	}
 	PrintDebugPostFuncMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{

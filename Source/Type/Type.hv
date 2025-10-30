@@ -151,7 +151,6 @@ TypeStandard := class extend Type
 		if DebugMode
 		{
 			MetaId = GetNewId()
-			GDebugTypePrintMeta.Push(this&)
 		}
 	}
 	GetName := virtual !() -> string
@@ -169,6 +168,7 @@ TypeStandard := class extend Type
 	}
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ctx.UsedTypes.Insert(this&)
 		ctx.writeStream^ << IRName
 	}
 	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
@@ -229,7 +229,6 @@ TypeArr := class extend Type
 		if DebugMode
 		{
 			MetaId = GetNewId()
-			GDebugTypePrintMeta.Push(this&)
 		}
 	}
 	GetAlign := virtual !() -> int
@@ -250,6 +249,8 @@ TypeArr := class extend Type
 	}
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ctx.UsedTypes.Insert(this&)
+
 		f := ctx.writeStream
 
 		f^ << "["
@@ -287,6 +288,8 @@ TypePointLike := class extend Type
 	}
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ctx.UsedTypes.Insert(this&)
+
 		Base.PrintType(ctx)
 		ctx.writeStream^ << "*"
 	}
@@ -314,7 +317,6 @@ TypePoint := class extend TypePointLike
 		if DebugMode
 		{
 			MetaId = GetNewId()
-			GDebugTypePrintMeta.Push(this&)
 		}
 	}
 	GetType := virtual !() -> string
@@ -326,6 +328,7 @@ TypeVoidPoint := class extend TypePoint
 {
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ctx.UsedTypes.Insert(this&)
 		ctx.writeStream^ << "i8*"
 	}
 }
@@ -340,7 +343,6 @@ TypeArrayView := class extend Type
 		if DebugMode
 		{
 			MetaId = GetNewId()
-			GDebugTypePrintMeta.Push(this&)
 		}
 	}
 	GetAlign := virtual !() -> int
@@ -353,6 +355,7 @@ TypeArrayView := class extend Type
 	}
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ctx.UsedTypes.Insert(this&)
 		viewClassType.PrintType(ctx)
 		ctx.writeStream^ << "*"
 	}
@@ -380,7 +383,6 @@ TypeDebugRef := class extend Type //FO
 		if DebugMode
 		{
 			MetaId = GetNewId()
-			GDebugTypePrintMeta.Push(this&)
 		}
 	}
 	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void

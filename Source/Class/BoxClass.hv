@@ -75,6 +75,10 @@ BoxClass := class extend BoxUnit
 				f^ << ","
 			needComma^ = true
 			typ := it.Field.Value
+
+			ctx.UsedTypes.Insert(typ)
+			ctx.UsedTypes.Insert(typ.Base?)
+
 			typ = NormalizeType(typ)
 			typ.PrintType(ctx)
 		}
@@ -113,6 +117,13 @@ BoxClass := class extend BoxUnit
 
 		if DebugMode
 		{
+			for fnc : VTable
+			{
+				tp := fnc.GetType()
+				ctx.UsedTypes.Insert(tp?)
+				ctx.UsedTypes.Insert(tp?.Base?)
+			}
+			
 			fieldMetas := List.{int}
 
 			for i : FieldsPath.Size()
@@ -331,6 +342,7 @@ TypeClass := class extend Type
 	}
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		ctx.UsedTypes.Insert(this&)
 		ctx.writeStream^ << "%Class" << MetaId
 	}
 	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void

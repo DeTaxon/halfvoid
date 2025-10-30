@@ -26,8 +26,12 @@ TypeStr := class extend TypePointLike
 		if DebugMode
 		{
 			MetaId = GetNewId()
-			GDebugTypePrintMeta.Push(this&)
 		}
+	}
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.UsedTypes.Insert(this&)
+		super(ctx)
 	}
 	IsComplexType := virtual !() -> bool
 	{
