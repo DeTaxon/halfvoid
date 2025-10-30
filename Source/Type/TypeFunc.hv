@@ -246,6 +246,9 @@ GetFuncType := !(
 		return fnc
 	}
 
+	oldAlc := SwapAllocator(TypesAllocator&)
+	defer SetAllocator(oldAlc)
+
 	newFunc := new TypeFunc()
 	itList.Push(newFunc)
 	

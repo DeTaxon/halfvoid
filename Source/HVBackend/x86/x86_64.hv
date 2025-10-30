@@ -113,6 +113,8 @@ MCBuildFuncContext_x86_64 := class
 
 	Compile := !(MCFunction^ fnc) -> void
 	{
+		tmpAlloc := MakeTempAllocator()
+		oldAlloc := SwapAllocator(tmpAlloc&)
 		// fnc.Print()
 		fnc = PassRemoveSpaceship(fnc)
 		fnc = PassSimplifyVectors(fnc)
@@ -123,7 +125,10 @@ MCBuildFuncContext_x86_64 := class
 		// fnc.Print()
 		fnc = PassApplyRegistersX86(fnc)
 		fnc = PassRemoveBadSets(fnc)
+
+		SetAllocator(oldAlloc)
 		fnc = PassRemoveUnusedObjects(fnc)
+		tmpAlloc.Destroy()
 
 		// fnc.Print()
 
