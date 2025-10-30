@@ -10,7 +10,7 @@ AllocateOnly := class extends IAllocator
 	AllocMem := virtual !(int size, bool dirty = false) -> void^
 	{
 		//TODO  if size > 1Mb
-		assert(size < 1*1024*1024)
+		assert(size < 16*1024*1024)
 
 		if size > leftSize
 		{
@@ -22,7 +22,7 @@ AllocateOnly := class extends IAllocator
 			infoSize := (PageMemory->TypeSize + 0x0F) and_b 0xFFFFFFF0
 			if currentPage.Size() == 0
 			{
-				currentPage.Create(1*1024*1024,"rw")
+				currentPage.Create(16*1024*1024,"rw")
 				memset(currentPage.GetPointer(),0,infoSize)
 				internalHVInitClass(currentPage.GetPointer()->{PageMemory^}^)
 			}
@@ -53,14 +53,16 @@ AllocateOnly := class extends IAllocator
 	{
 		while firstPage.Size() != 0
 		{
-			prevIter := PageMemory^
 			iter := firstPage&
+			prevIter := iter
 
-			//while iter.Size() != 0
-			//{
-			//	prevIter = iter
-			//	iter = iter.GetPointer()->{PageMemory^}
-			//}
+			while iter.Size() != 0
+			{
+				prevIter = iter
+				iter = iter.GetPointer()->{PageMemory^}
+			}
+
+			prevIter.Close()
 		}
 	}
 }

@@ -15,15 +15,14 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	//needPrint = true
 	//needPrint = false
 
-	// tmpAlloc := MakeTempAllocator()
-	// oldAlloc := SwapAllocator(tmpAlloc&)
+	tmpAlloc := MakeTempAllocator()
+	oldAlloc := SwapAllocator(tmpAlloc&)
 
 	if needPrint fnc.Print()
 	fnc = PassRemoveSpaceship(fnc)
 	fnc = PassSimplifyVectors(fnc)
 	fnc = PassRemoveVoidParams(fnc)
 	fnc = PassRemoveReferences(fnc)
-	// SetAllocator(oldAlloc)
 	//fnc = PassNormalizeTypes(fnc)
 	fnc = PassForceReturnConstValues(fnc)
 	if needPrint fnc.Print()
@@ -36,10 +35,11 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	if needPrint fnc.Print()
 	fnc = PassRemoveTooManyVars(fnc)
 
+	SetAllocator(oldAlloc)
 
 	fnc = PassRemoveUnusedObjects(fnc)
 
-	// tmpAlloc.Destroy()
+	tmpAlloc.Destroy()
 
 	if needPrint fnc.Print()
 

@@ -19,13 +19,21 @@ Type := class extend BoxExeConstObj
 	GetPoint := virtual !() -> Type^
 	{
 		if AsPoint == null
+		{
+			oldAlc := SwapAllocator(TypesAllocator&)
+			defer SetAllocator(oldAlc)
+
 			AsPoint = new TypePoint(this&)
+		}
 		return AsPoint
 	}
 	GetArrayView := virtual !() -> Type^
 	{
 		if AsArrayView == null
 		{
+			oldAlc := SwapAllocator(TypesAllocator&)
+			defer SetAllocator(oldAlc)
+
 			res := new TypeArrayView(this&)
 
 			tpys := List.{BoxExeConstObj^}
@@ -43,6 +51,10 @@ Type := class extend BoxExeConstObj
 	{
 		if arrays.Contain(len)
 			return arrays[len]
+
+		oldAlc := SwapAllocator(TypesAllocator&)
+		defer SetAllocator(oldAlc)
+
 		newEl := new TypeArr(this&,len)
 		arrays[len] = newEl
 		return newEl
@@ -84,6 +96,10 @@ Type := class extend BoxExeConstObj
 	{
 		if GRefTypes.Contain(this&)
 			return GRefTypes[this&]
+
+		oldAlc := SwapAllocator(TypesAllocator&)
+		defer SetAllocator(oldAlc)
+
 		nRef := new TypeDebugRef(this&)
 		GRefTypes[this&] = nRef
 		return nRef
@@ -490,11 +506,13 @@ ForEachVecType := !(!(TypeVector^)&-> void cb) -> void
 	}
 }
 
-// TypesAllocator := AllocateOnly
+TypesAllocator := AllocateOnly
 
 CreateStandardTypes := !() -> void
 {	
-	// oldAlc := SwapAllocator(TypesAllocator&)
+	oldAlc := SwapAllocator(TypesAllocator&)
+	defer SetAllocator(oldAlc)
+
 	//u
 	TypeTable[0] = new TypeInteger("i8","u8","!DIBasicType(name: \"byte\", size: 8, align: 8,encoding: DW_ATE_unsigned_char)",1,1)
 	TypeTable[1] = new TypeInteger("i16","u16","!DIBasicType(name: \"ushort\", size: 16, align: 16,encoding: DW_ATE_unsigned)",2,2)
