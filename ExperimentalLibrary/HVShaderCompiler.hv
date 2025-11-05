@@ -36,7 +36,8 @@
 			}
 			tst := PassSpirvPrettify(ssa)
 
-			HV.PrintMCFunction(ssa)
+			ctx.passedFuncs[ssa] = tst
+
 			HV.PrintMCFunction(tst)
 
 			if fnc == mainFunc
@@ -66,8 +67,8 @@
 		ctx.WriteConsts()
 		ctx.WriteGlobals()
 
-		for it : objs.Functions
-			ctx.WriteFunction(HV.GetSSAFunc(it))
+		for it : ctx.passedFuncs
+			ctx.WriteFunction(it)
 
 		ret := MakeBlob(ts.Size())
 		ts.Read(ret.GetPointer(),ts.Size())
@@ -100,6 +101,8 @@ SpirvCompiler := class
 	globIds := int[HV_Object^]
 
 	intConsts := int[int]
+
+	passedFuncs := AVLMap.{HVB_Function^,HVB_Function^}
 
 	GetGlobObjId := !(HV_Object^ obj) -> int
 	{
@@ -374,12 +377,29 @@ SpirvCompiler := class
 				{
 					ln := cPtr[k]
 					if ln.opcode == "get_array_elem_ptr" {
-						chainIndexes.Push(ln.var3)
+						if oPtr[ln.var3] is MCConstInteger
+						{
+							chainIndexes.Push(this.getIntConstId(oPtr[ln.var3]&->{MCConstInteger^}.GetValue()))
+						}else{
+							chainIndexes.Push(ln.var3 + idFIter)
+						}
 						if k == i
-							startIndex = ln.var2
+						{
+							if oPtr[ln.var2] is MCGlobalVariable
+							{
+								startIndex = this.GetGlobObjId(oPtr[ln.var2]&->{MCGlobalVariable^}.GetGlobalVariable())
+							}else{
+								startIndex = ln.var2
+							}
+						}
 						resIndex = ln.var1
 					}else if ln.opcode == "get_field_ptr" {
-						chainIndexes.Push(ln.var3)
+						if oPtr[ln.var3] is MCConstInteger
+						{
+							chainIndexes.Push(this.getIntConstId(oPtr[ln.var3]&->{MCConstInteger^}.GetValue()))
+						}else{
+							chainIndexes.Push(ln.var3 + idFIter)
+						}
 						if k == i
 							startIndex = ln.var2
 						resIndex = ln.var1
@@ -391,11 +411,12 @@ SpirvCompiler := class
 
 				if k != i
 				{
-					indCount := (chainIndexes.Size() + 3) shl 16
+					indCount := (chainIndexes.Size() + 4) shl 16
 					c.Write32(indCount + 67)
-					c.Write32(GetTypeId(oPtr[resIndex].GetObjType(),"Uniform"))
+					c.Write32(GetTypeId(oPtr[resIndex].GetObjType()))
 					c.Write32(resIndex)
-					c.Write32(chainIndexes[^] + idFIter)
+					c.Write32(startIndex)
+					c.Write32(chainIndexes[^])
 
 					i += k - i
 					continue
