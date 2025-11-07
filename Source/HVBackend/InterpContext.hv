@@ -401,7 +401,12 @@ MCInterpContext := class
 		result = buildCtx.CreateMCFunction()
 
 		if InterpMode
+		{
+			result = PassFirstOpt(result,true)
+		// result.Print()
 			result = InterpPassPrepare(result)
+			result.ComputeStackFrame()
+		}
 		result.BaseFunction = itm
 
 		funcs[itm] = result

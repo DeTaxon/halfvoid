@@ -96,6 +96,12 @@ MCBaseOpcodes := enum extend u16
 	//Optimizations
 	"load_element_opt_class_const"
 
+	// "stack_load"
+	// "stack_store"
+	//
+	// "stack_add_int"
+	// "stack_add_float"
+
 	//BACKEND llvm ir
 	
 	//BACKEND x86

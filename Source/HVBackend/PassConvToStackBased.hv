@@ -1,0 +1,27 @@
+
+PassConvToStackBased := !(MCFunction^ fnc) ->MCFunction^
+{
+	ctx := MakeGreedyPass(fnc,1,2,true)
+
+	oPtr := ctx.oPtr
+	cPtr := ctx.cPtr
+
+	o := ref ctx.objsSize
+	c := ref ctx.cmdsSize
+
+	iPtr := fnc.Lines.GetPointer()
+
+	for i : fnc.Lines.Size()
+	{
+		line := iPtr[i]
+
+		switch line.opcode
+		{
+		case void
+			cPtr[c] = line
+			c += 1
+		}
+	}
+
+	return ctx.GenerateFunc()
+}

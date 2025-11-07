@@ -1,0 +1,38 @@
+
+PassFirstOpt := !(MCFunction^ fnc, bool removeDebug = false) ->MCFunction^
+{
+	ctx := MakeGreedyPass(fnc,1,2,true)
+
+	oPtr := ctx.oPtr
+	cPtr := ctx.cPtr
+
+	o := ref ctx.objsSize
+	c := ref ctx.cmdsSize
+
+	iPtr := fnc.Lines.GetPointer()
+
+	lSize := fnc.Lines.Size()
+	i := 0
+	while i < lSize
+	{
+		line := iPtr[i]
+
+		twoAvail := i + 1 < lSize
+
+		if removeDebug and (line.opcode == "debug_set_line" or line.opcode == "debug_set_file")
+		{
+
+		}else if line.opcode == "clean"
+			and twoAvail and iPtr[i+1].opcode == "mov" and iPtr[i+1].var1 == line.var1 {
+		}else if line.opcode == "jmp"
+			and twoAvail and iPtr[i+1].opcode == "label" and iPtr[i+1].var1 == line.var1 {
+		}else{
+			cPtr[c] = line
+			c += 1
+		}
+
+		i += 1
+	}
+
+	return ctx.GenerateFunc()
+}
