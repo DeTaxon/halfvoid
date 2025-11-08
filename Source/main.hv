@@ -25,6 +25,8 @@ AllFunctions := AVLSet.{BoxFunc^}
 targetLinux := false
 targetWindows := false
 
+TargetCPUArch := Str // "x86_64" , "AArch64"
+
 DisableScary := false
 
 GVInitInterpreted := true
@@ -82,6 +84,8 @@ main := !(char^[] args) -> int
 		osHVFile = ".hv.win32"
 		osCLIBFile = ".clib.win32"
 	}
+
+	TargetCPUArch = "x86_64"
 
 
 	AddCompilerVars := List.{Str}
@@ -182,6 +186,15 @@ main := !(char^[] args) -> int
 				GVInitInterpreted = false
 			case "-emulate-tls"
 				EmulateTLS = true
+			case "-target-cpu"
+				i += 1
+				switch args[i]
+				{
+				case "x86_64"
+					TargetCPUArch = "x86_64"
+				case in !["arm64","AArch64"]
+					TargetCPUArch = "AArch64"
+				}
 			case "-linux"
 				targetLinux = true
 				targetWindows = false

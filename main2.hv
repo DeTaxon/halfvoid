@@ -10,8 +10,15 @@ rrr := class
 main := !(char^[] args) -> int
 {
 	// RunFunc()
-	c := AllocateOnly
-	r := c.new rrr(10)
+	if #CPUArch() == "AArch64"
+	{
+		printf("i am arm\n")
+	}else if #CPUArch() == "x86_64"
+	{
+		printf("i am amd\n")
+	}else{
+		printf("nope\n")
+	}
 }
 
 

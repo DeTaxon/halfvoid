@@ -51,6 +51,10 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			return GetExeString(StringSpan("Windows").GetString())
 		assert(false)
 	}
+	if cmd == "#CPUArch"
+	{
+		return GetExeString(TargetCPUArch)
+	}
 	if cmd == "#MarkedFunctions" or cmd == "#MarkFunction"
 	{
 		return TryGetMarkedFunctions(itm)
