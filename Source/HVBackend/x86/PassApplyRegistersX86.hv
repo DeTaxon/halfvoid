@@ -560,7 +560,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 	resTyp := fnc.Objects[fnc.ResultIndex].GetType()
 	if resTyp == GTypeVoid {
 		// this is fine
-	}else if IsInt(resTyp) or IsPtrLikeType(resTyp) or resTyp == GTypeBool {
+	}else if IsInt(resTyp) or IsPtrLikeType(resTyp) or resTyp == GTypeBool or resTyp is in TypeEnum {
 		reg := bldr.PushReg("rax",resTyp)
 		cPtr[c] = MCLine("mov",reg,fnc.ResultIndex)
 		c += 1

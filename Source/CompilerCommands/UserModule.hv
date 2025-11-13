@@ -20,10 +20,10 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	bdy.Down?.Up = bdy
 
 	parents := HybridQueue.{Tuple.{Token^,InheritanceType},2}
-	par1 := new TokenIndent("internalHVModuleBase")
-	c := InheritanceType
-	c = "extends"
-	parents.Emplace(par1,c)
+	//par1 := new TokenIndent("internalHVModuleBase")
+	//c := InheritanceType
+	//c = "extends"
+	// parents.Emplace(par1,c)
 
 	resultClass := new BoxClassBody(false,parents,bdy)
 	resultClass.Name = "ModuleName"
@@ -31,6 +31,9 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	newModule.bodyClass = resultClass
 
 	UserModules.Push(newModule)
+
+	newModule.StartInit()
+
 	return GObjNone
 }
 
@@ -38,37 +41,18 @@ GetItemUser := !(Str name) -> BoxExeObj^
 {
 	for it : UserModules
 	{
-		if not it.ExpectFunctionsComplete()
-			continue
-
-		if it.impClass == null
-		{
-			if it.startedCompile
-				continue
-
-			it.startedCompile = true
-
-			SubWork(() ==> {
-				it.bodyClass.AwaitReadyState()
-				it.bodyClass.AwaitTypeState()
-				resType := it.bodyClass.ItType
-				tmpl := intGetTemplate("internalHVCreateBase")
-				assert(tmpl != null)
-				fnc := tmpl.GetFunc(![],![resType])
-				assert(fnc != null)
-			
-				fPtr := RGetFuncPtr(fnc->{BoxFuncBody^})->{!()^->internalHVModuleBase^}
-				it.impClass = fPtr()
-				//mcFunc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
-				//MCInterpFunction(GInterpCntx&,mcFunc,null,it.impClass&)
-				it.finishedRun = true
-			})
-		}
+		// if not it.ExpectFunctionsComplete()
+		// 	continue
 		if not it.finishedRun
 			continue
 
+		imp := it.impClass
+
+		if imp == null
+			continue
+
 		res := BoxExeObj^
-		res = it.impClass?.GetItem(name)?->{BoxExeObj^}
+		res = it.GetItem?(imp,name)?->{BoxExeObj^}
 		if res? is in BoxExeObj
 			return res
 	}
@@ -81,10 +65,83 @@ UserModule := class
 	bodyClass := BoxClassBody^
 	impClass := internalHVModuleBase^
 
-	startedCompile := bool
+	GetItem := !(void^,Str)^->void^
+
+	// startedCompile := bool
 	finishedRun := bool
 	isCompiled := bool
 	compileWork := CWorkUserModuleCompilation^
+
+	StartInit := !() -> void
+	{
+		SubWork(() ==> {
+
+
+			bodyClass.AwaitReadyState()
+			resType := bodyClass.ItType
+			tmpl := intGetTemplate("internalHVCreateBase")
+			assert(tmpl != null)
+			fnc := tmpl.GetFunc(![],![resType])
+			assert(fnc != null)
+
+			fPtr := RGetFuncPtr(fnc->{BoxFuncBody^})->{!()^->internalHVModuleBase^}
+			impClass = fPtr()
+
+
+
+
+
+			bodyClass.enterScope(() ==> [this&] {
+	
+				//TODO check types
+				bodyClass.GetMethods("Init",x ==> [this&] {
+					for it : x
+					{
+						fnc := it
+	
+						if fnc is BuildInVirtualCall
+							fnc = fnc.wrappedFunc
+						
+						if fnc is in BoxFuncBody
+						{
+							initFunc := RGetFuncPtr(fnc)->{!(void^)^->void}
+							initFunc(impClass)
+						}
+					}
+				})
+				//TODO check types
+				bodyClass.GetMethods("GetItem",x ==> [this&] {
+					for it : x
+					{
+						fnc := it
+	
+						if fnc is BuildInVirtualCall
+							fnc = fnc.wrappedFunc
+						
+						if fnc is in BoxFuncBody
+						{
+							// fnc.ParentScope = bodyClass
+	
+							GetItem = RGetFuncPtr(fnc)->{!(void^,Str)^->void^}
+						}
+					}
+				})
+
+			})
+
+			{
+				c := CollectFunctionsCtx(GInterpCntx&)
+				c.checkClass(bodyClass)
+				c.Collect()
+				c.WriteFunctions[^].WaitReadyState()
+			}
+			// c.UsedClasses[^].WaitReadyState()
+
+			finishedRun = true
+		})
+
+	}
+
 
 	ExpectFunctionsComplete := !() -> bool
 	{
@@ -94,11 +151,11 @@ UserModule := class
 		if compileWork == null
 		{
 
-			bodyClass.StartParseBody()
+			// bodyClass.StartParseBody()
 
 			newWork := new CWorkUserModuleCompilation
 			newWork.waitModuleClass = bodyClass
-			newWork.AddClass(bodyClass)
+			newWork.AddClassForced(bodyClass)
 			WorkBag.AddWork(newWork)
 			compileWork = newWork
 		}
@@ -127,7 +184,10 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 		if cls.IsComplete()
 			return void
 		waitClasses.Push(cls)
-
+	}
+	AddClassForced := !(BoxClass^ cls) -> void
+	{
+		waitClasses.Push(cls)
 	}
 	AddUnit := !(BoxUnit^ newUnit) -> void
 	{
@@ -155,6 +215,9 @@ CWorkUserModuleCompilation := class extend CWorkUnit
 
 		if waitModuleClass?.IsComplete()
 		{
+			waitModuleClass.GetMethods(StringSpan("Init"),x ==> {
+				AddUnit(x[^])
+			})
 			waitModuleClass.GetMethods(StringSpan("GetItem"),x ==> {
 				AddUnit(x[^])
 			})

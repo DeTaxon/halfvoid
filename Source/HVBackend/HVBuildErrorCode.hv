@@ -1,0 +1,37 @@
+AppendClass HVContextImplementation
+{
+	IsNonStopMode := virtual !() -> bool 
+	{
+		return NonStopBuild
+	}
+
+	CreateBuildError := virtual !(Str errorMessage) -> void^
+	{
+		errObj := new UserError
+		errObj.ErrorMessage = errorMessage
+		WorkBag.AddWork(errObj)
+		return errObj
+	}
+	RemoveBuildError := virtual !(void^ handler) -> void
+	{
+		// TODO yep memory leak, GC will fix it i promise
+		handler->{UserError^}.IsRemoved = true
+	}
+}
+
+UserError := class extends CWorkUnit 
+{
+	ErrorMessage := Str
+	IsRemoved := bool
+
+	DoWork := virtual !() -> CWorkState 
+	{
+		if IsRemoved
+			return "Complete"
+		return "Failed"
+	}
+	IsDone := virtual !() -> bool { return IsRemoved }
+	GetErrorMessage := virtual !() -> Str { return ErrorMessage }
+	// Cancel := virtual !() -> void { IsRemoved = true }
+	GetWorkTask := virtual !() -> Task^ { return null }
+}

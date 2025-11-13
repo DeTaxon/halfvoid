@@ -29,6 +29,11 @@ HV_Context := class
 
 	ForEachClass := virtual !(!(HV_Class^)&->void cb) -> void {}
 
+	IsNonStopMode := virtual !() -> bool {}
+	CreateBuildError := virtual !(Str errorMessage) -> void^ {}
+	RemoveBuildError := virtual !(void^ handler) -> void {}
+
+
 	// Get function + all function that are called by it, + used classes and globals
 	GetFunctionAndHisFriends := virtual !(HV_Object^ func) -> HVFunctionUsage {}
 

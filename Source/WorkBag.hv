@@ -18,6 +18,11 @@ CompilerWork := class
 		works[^].Cancel()
 	}
 
+	RemoveComplete := !() -> void
+	{
+		works.DeleteIf(@1.IsDone() )
+	}
+
 	DoWork := !() -> int
 	{
 		while works.Size() != 0

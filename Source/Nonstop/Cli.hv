@@ -322,7 +322,7 @@ CliParseMain := !() -> void
 			libs.CreateInitPart()
 	}
 
-	if WorkBag.works.Size() != 0
+	while WorkBag.works.Size() != 0
 	{
 		WaitForParsingObjects()
 		TSleep(0.01)
@@ -349,5 +349,11 @@ CliParseMain := !() -> void
 		cliWin.ConsoleStream = newStream
 
 		globVar->{Stream^^}^ = newStream
+	}
+	while not cliQuit 
+	{
+		WorkBag.DoWork()
+		WorkBag.RemoveComplete()
+		TSleep(0.1)
 	}
 }

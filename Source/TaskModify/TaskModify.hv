@@ -28,6 +28,7 @@ AddCustomTaskPoll := !() -> void
 		return null
 
 		taskTable := AVLMap.{Task^,int}
+		defer taskTable.Destroy()
 
 		for it,ind : WorkBag.works
 		{

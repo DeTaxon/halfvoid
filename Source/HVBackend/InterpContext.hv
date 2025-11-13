@@ -160,6 +160,21 @@ MCInterpContext := class
 					}
 					assert(fnc is in BoxFuncBody)
 
+
+					// TODOTODO i broke another feature of compiler
+					// it's not suppose to parse all virtual functions, only used
+					// but interpreter is very lazy and uses function when it's too late
+					fnc.ParseBody()
+					for i : 50
+					{
+						if fnc.IsParsed()
+						{
+							break
+						}else{
+							TaskYield()
+						}
+					}
+
 					if fnc->{BoxFuncBody^}.IsParsed() //TODOTODO maybe someone used function an now it's parsed
 					{
 						fncPointer := RGetFuncPtr(fnc)
@@ -402,7 +417,8 @@ MCInterpContext := class
 
 		if InterpMode
 		{
-			result = PassFirstOpt(result,true)
+			// result = PassFirstOpt(result,true)
+			result = PassFirstOpt(result,false)
 		// result.Print()
 			result = InterpPassPrepare(result)
 			result.ComputeStackFrame()

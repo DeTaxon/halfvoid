@@ -1,5 +1,9 @@
 internalHVModuleBase := class
 {
+	// Init := virtual !() -> void
+	// {
+	//
+	// }
 	GetItem := virtual !(Str name) -> void^
 	{
 	}

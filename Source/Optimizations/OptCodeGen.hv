@@ -83,6 +83,10 @@ CollectFunctionsCtx := class
 	checkedGlobals := AVLSet.{GlobalVar2^}
 	checkGlobals := HybridStack.{GlobalVar2^,20}
 
+	this := !(MCInterpContext^ interpContext) -> void
+	{
+		iCtx = interpContext
+	}
 	this := !(MCInterpContext^ interpContext,BoxFuncBody^ mainFunc) -> void
 	{
 		iCtx = interpContext
