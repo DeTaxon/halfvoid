@@ -391,7 +391,12 @@ TypeClass := class extend Type
 	GetPoint := virtual !() -> Type^
 	{
 		if AsPoint == null
+		{
+			oldAlc := SwapAllocator(TypesAllocator&)
+			defer SetAllocator(oldAlc)
+
 			AsPoint = new TypePointComplex(this&)
+		}
 		return AsPoint
 	}
 	NotifyUse := virtual !() -> void
