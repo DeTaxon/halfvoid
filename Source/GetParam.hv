@@ -69,7 +69,9 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			for it : capVars
 			{
 				if it.itName == asItm.Value
-					return it.CreateVarCall()
+				{
+					return GetParamCaptureVar(it.CreateVarCall(),it.itName,par,metFuncs)
+				}
 			}
 		}
 		if par is ConstVar

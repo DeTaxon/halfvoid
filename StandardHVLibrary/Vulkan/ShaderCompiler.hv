@@ -5,6 +5,8 @@ ShaderCompiler_CompileResult := class
 {
 	ResultShader := Blob^
 	ErrorMessage := Str
+
+	"=" := default
 }
 
 ShaderCompiler := class
@@ -32,6 +34,14 @@ ShaderCompiler := class
 	}
 	Compile := !(File^ fl) -> ShaderCompiler_CompileResult
 	{
+		if fl == null
+		{
+			result.ErrorMessage = "No file provided"
+			return void
+		}
+		if cacheFileModule == null
+			return CompileInner(fl)
+
 		baseRes := ref result
 		result.ResultShader = cacheFileModule.GetCacheValue(fl,() ==> {
 			res := CompileInner(fl)

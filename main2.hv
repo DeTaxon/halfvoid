@@ -22,14 +22,75 @@ main := !(char^[] args) -> int
 }
 
 
+ASd := class
+{
+	ccc := int
+	Test := !() -> void
+	{
+		lmbd1 := () ==> [this&] {
+			lmbd2 := () ==> {
+				ccc += 1
+				printf("yep\n")
+			}
+			lmbd2()
+		}
+		lmbd1()
+	}
+}
+
 RunFunc := !() -> void
 {
-	tst()
-	// makeSpirv()
-	// x := 0
-	// tst(x)
-	// printf("hey %i\n",x)
+	z := ASd
+	z.Test()
 }
+
+// #Module
+// {
+// 	rep := vRepo
+// 	shaderCompiler := ShaderCompiler
+//
+// 	cc := int
+//
+// 	Init := !() -> void
+// 	{
+// 		TSpawnTask(() ==> {
+// 			TSleep(1.0)
+// 			rep.ReadFolder(".",false, x ==> {
+//
+// 				if x is not File
+// 					return void
+//
+// 				nm := x.GetName()
+//
+// 				shaderFile := false
+//
+// 				if nm.End == ".vert"
+// 					shaderFile = true
+// 				if nm.End == ".hv"
+// 					shaderFile = true
+//
+// 				printf("here %s\n",nm.Str())
+//
+// 				if shaderFile
+// 				{
+// 					cc *= 2
+// 					//res := shaderCompiler.Compile(null)
+// 					//
+// 					// if res.ResultShader == null
+// 					// {
+// 					// 	// Console << "Error message " << res.ErrorMessage << "\n"
+// 					// }else{
+// 					// 	// ech := TEchoStream
+// 					// 	// ech << "ShadersBin/" << x.GetPath()->AsString^[8..0]
+// 					// 	// binPath := ech.GetStr()
+// 					// 	// Console << "Compiled " << binPath << "\n"
+// 					// }
+// 				}
+//
+// 			})	
+// 		})
+// 	}
+// }
 
 tst := !(int& x,...) -> void
 {
