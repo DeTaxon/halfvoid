@@ -72,7 +72,7 @@ ShaderCompiler := class
 		if txt != null and StringSpan(txt) != ""
 		{
 			result.ErrorMessage->AsString = new String(txt)
-			printf("yep %s\n",result.ErrorMessage)
+			// printf("yep %s\n",result.ErrorMessage)
 			return void
 		}
 

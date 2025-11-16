@@ -205,6 +205,7 @@ tst := !() -> int {
 	printf("resultPtr %s\n",resultPtr)
 }
 
+//TODO  printf("string %s\n") , string fails for some reason
 //TODO TypesAllocator for all TypeClass
 //TODO recursive #Mark("JIT") for classes
 //TODO there is some trickary with GTypeStr in PassRemoveReferences

@@ -157,6 +157,7 @@ initMonitorFolder := !() -> void
 
 //#MarkFunction("JITPass",AsyncMonitorFolderNonStop)
 AsyncMonitorFolderNonStop := !(Str folderPath,bool recursive,!(FSObject^,FSChangeEvent)& -> void cb) -> TGCObject^
+	#Mark("JITPass")
 {
 	#MarkFunction("CallAtStart",initMonitorFolder)
 

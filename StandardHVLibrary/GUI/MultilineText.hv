@@ -47,8 +47,23 @@ MultilineText := class extend GUIObject
 	}
 }
 
-//TODO UTF8 aware + \n aware
+//TODO UTF8 aware
 CalculateStringLines := !(Str value, int textWidth) -> int
 {
-	return (value->AsString.Size() + textWidth - 1) div textWidth //TODO without ->AsString
+	sum := 0
+	if value.Size() != 0
+	{
+		prevIndex := 0
+		for i : value.Size() - 1
+		{
+			if value[i] == '\n'
+			{
+				sum += ((i - prevIndex) div textWidth) + 1
+				prevIndex = i + 1
+			}
+		}
+		sum += 1
+	}
+	return max(sum,1)
+	// return (value->AsString.Size() + textWidth - 1) div textWidth //TODO without ->AsString
 }
