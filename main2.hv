@@ -1,101 +1,16 @@
 
-
-rrr := class
-{
-	this := !(int x) -> void
-	{
-		printf("yep %i\n",x)
-	}
-}
 main := !(char^[] args) -> int
 {
 	// RunFunc()
-	if #CPUArch() == "AArch64"
-	{
-		printf("i am arm\n")
-	}else if #CPUArch() == "x86_64"
-	{
-		printf("i am amd\n")
-	}else{
-		printf("nope\n")
-	}
 }
 
 
-ASd := class
-{
-	ccc := int
-	Test := !() -> void
-	{
-		lmbd1 := () ==> [this&] {
-			lmbd2 := () ==> {
-				ccc += 1
-				printf("yep\n")
-			}
-			lmbd2()
-		}
-		lmbd1()
-	}
-}
 
 RunFunc := !() -> void
 {
-	z := ASd
-	z.Test()
+	// tst()
 }
 
-// #Module
-// {
-// 	rep := vRepo
-// 	shaderCompiler := ShaderCompiler
-//
-// 	cc := int
-//
-// 	Init := !() -> void
-// 	{
-// 		TSpawnTask(() ==> {
-// 			TSleep(1.0)
-// 			rep.ReadFolder(".",false, x ==> {
-//
-// 				if x is not File
-// 					return void
-//
-// 				nm := x.GetName()
-//
-// 				shaderFile := false
-//
-// 				if nm.End == ".vert"
-// 					shaderFile = true
-// 				if nm.End == ".hv"
-// 					shaderFile = true
-//
-// 				printf("here %s\n",nm.Str())
-//
-// 				if shaderFile
-// 				{
-// 					cc *= 2
-// 					//res := shaderCompiler.Compile(null)
-// 					//
-// 					// if res.ResultShader == null
-// 					// {
-// 					// 	// Console << "Error message " << res.ErrorMessage << "\n"
-// 					// }else{
-// 					// 	// ech := TEchoStream
-// 					// 	// ech << "ShadersBin/" << x.GetPath()->AsString^[8..0]
-// 					// 	// binPath := ech.GetStr()
-// 					// 	// Console << "Compiled " << binPath << "\n"
-// 					// }
-// 				}
-//
-// 			})	
-// 		})
-// 	}
-// }
-
-tst := !(int& x,...) -> void
-{
-	x = 12
-}
 
 makeSpirv := !() -> void
 {
@@ -205,7 +120,6 @@ tst := !() -> int {
 	printf("resultPtr %s\n",resultPtr)
 }
 
-//TODO  printf("string %s\n") , string fails for some reason
 //TODO TypesAllocator for all TypeClass
 //TODO recursive #Mark("JIT") for classes
 //TODO there is some trickary with GTypeStr in PassRemoveReferences

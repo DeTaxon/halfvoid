@@ -46,8 +46,8 @@ VulkanShaderLoader := class
 			}
 		}
 
-		vertBlob := shaderCompiler.Compile(fil.GetFile(vertName)).ResultShader
-		fragBlob := shaderCompiler.Compile(fil.GetFile(fragName)).ResultShader
+		vertBlob := fil.GetFile(vertName).GetBlob()
+		fragBlob := fil.GetFile(fragName).GetBlob()
 
 		return shaderType.CreateShader(vertBlob,fragBlob)
 	}
