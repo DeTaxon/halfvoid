@@ -580,14 +580,17 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 	}
 	AllFunctions[^].PrintCode(ctx)
 
-	for it : ctx.UsedTypes
+	if DebugMode
 	{
-		it.PrintMeta(ctx)
-	}
-	for r,base : GRefTypes
-	{
-		if ctx.UsedTypes.Contain(base)
-			r.PrintMeta(ctx)
+		for it : ctx.UsedTypes
+		{
+			it.PrintMeta(ctx)
+		}
+		for r,base : GRefTypes
+		{
+			if ctx.UsedTypes.Contain(base)
+				r.PrintMeta(ctx)
+		}
 	}
 }
 

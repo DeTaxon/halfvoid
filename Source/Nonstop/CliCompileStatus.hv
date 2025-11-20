@@ -52,6 +52,7 @@ mainStatusFunc := !() -> void
 				if gotWorks.Contain(it)
 					continue
 
+
 				st := TEchoStream
 				switch it is
 				{

@@ -8,7 +8,9 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	// tst()
+	@work tst()
+
+	TSleep(6.0)
 }
 
 
@@ -52,7 +54,7 @@ Allc := class extends IAllocator
 	}
 }
 
-tst := !() -> int {
+tst := !() -> void {
 	nums := 1_000
 	// nums = 10
 

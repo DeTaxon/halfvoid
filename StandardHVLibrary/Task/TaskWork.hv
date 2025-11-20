@@ -3,9 +3,6 @@ TaskWorkersToDo := List.{Task^}
 
 "@work call" := !(!()&->@T lmbd ) -> T
 {
-	//taskWorkCallBegin()
-	//result = lmbd()
-	//taskWorkCallEnd()
 	internalWorkCall(() ==> [cl = result&] {
 		cl^ = lmbd()
 	})
@@ -37,18 +34,11 @@ internalWorkCall := !(!()&->void lmbd) -> void
 
 	myTask->{Task^}.resume()
 	myTask->{Task^}.itTaskWorker.innerNotify()
+
 	TaskMainEvent.Emit()
 	CurrentThread.switchToMain()
 
 	TaskCheckMutex.Unlock()
-}
-
-taskWorkCallBegin := !() -> void
-{
-
-}
-taskWorkCallEnd := !() -> void
-{
 }
 
 SpawnWork := !(!()&->void lmbd) -> Task^
