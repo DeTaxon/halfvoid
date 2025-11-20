@@ -18,3 +18,14 @@ TaskMainTaskWorker := TaskWorker^
 TaskAdditionalWorkers := List.{TaskWorker^}
 
 TaskPauseList := AVLMap.{double,Task^}
+
+GetCurrentTask := !() -> Task^
+	#Attr("optnone") #Attr("noinline")
+{
+	return CurrentTask
+}
+GetCurrentThread := !() -> TaskWorker^
+	#Attr("optnone") #Attr("noinline")
+{
+	return CurrentThread
+}

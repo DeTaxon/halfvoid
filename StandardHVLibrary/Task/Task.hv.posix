@@ -63,6 +63,7 @@ AppendClass Task
 		//	swapcontext(uContext[0]&,CurrentTask.uContext[0]&)
 	}
 	switchToTask := !() -> void
+		#Attr("optnone") #Attr("noinline")
 	{
 		if #Var("Tracy") and GlobalTracyInUse
 		{
