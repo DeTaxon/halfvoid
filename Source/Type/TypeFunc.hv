@@ -134,7 +134,7 @@ TypeFunc := class extend Type
 	}
 }
 
-funcTypes := HybridQueue.{TypeFunc^,10}[9973]^
+funcTypes := Vector.{TypeFunc^}[9973]^
 
 
 GetFuncType := !(Type^ res) -> TypeFunc^

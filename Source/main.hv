@@ -61,7 +61,7 @@ main := !(char^[] args) -> int
 
 	AddCustomTaskPoll()
 
-	funcTypes = calloc(HybridQueue.{TypeFunc^,10}[9973]->TypeSize,1)->{HybridQueue.{TypeFunc^,10}[9973]^}
+	funcTypes = calloc(Vector.{TypeFunc^}[9973]->TypeSize,1)->{Vector.{TypeFunc^}[9973]^}
 	for i : 9973
 	{
 		internalHVInitClass(funcTypes^[i])

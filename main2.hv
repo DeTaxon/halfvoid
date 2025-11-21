@@ -1,7 +1,19 @@
 
 main := !(char^[] args) -> int
 {
-	// RunFunc()
+	tst := MakeVectorOnStack().{int,10}
+
+	tst.Push(13)
+
+	tst.Destroy()
+}
+
+MakeVectorOnStack := !(T[Size] buf = #Var) .{@T,@Size} -> Vector.{T}
+{
+	result.itPointer = buf[0]&
+	result.itSize = 0
+	result.itCapacity = Size
+	result.isBorrowed = true
 }
 
 

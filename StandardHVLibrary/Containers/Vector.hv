@@ -1,7 +1,9 @@
 Vector := class .{@T} extend TArrayView.{T}
 {
-	pointer := T^
+	itPointer := T^
 	itSize := int
+	itCapacity := int
+	isBorrowed := bool
 
 	this := !(int count) -> void
 	{
@@ -9,27 +11,43 @@ Vector := class .{@T} extend TArrayView.{T}
 	}
 	"[]" := virtual !(int i) -> ref T
 	{
-		return pointer[i]
+		return itPointer[i]
 	}
 	Size := virtual !() -> int
 	{
 		return itSize
 	}
+	Push := !(T x) -> void
+	{
+		if itCapacity == 0
+		{
+			Reserve(16) // random number
+		} else if itSize == itCapacity
+		{
+			Reserve(itSize*3)
+		}
+		this[itSize++] = x
+	}
 	Resize := !(int count, bool dirty = false) -> void
 	{
-		if count == itSize
-			return void
-
-		if count < itSize
+		if count <= itSize
 		{
 			itSize = count
 			return void
 		}
 
+		Reserve(count,dirty)
+
+		itSize = count
+	}
+	Reserve := !(int count, bool dirty = false) -> void
+	{
+		if count <= itCapacity
+			return void
+
 		alc := GetAllocator()
 
 		newPointer := alc.AllocMem(count*T->TypeSize,false)->{T^}
-
 
 		if T->TypeGroup == "Class"
 		{
@@ -39,27 +57,34 @@ Vector := class .{@T} extend TArrayView.{T}
 			}
 		}
 
-		//for i : min(itSize,count) //TODO
-		//{
-		//	newPointer[i] = pointer[i]
-		//}
+		for i : itSize
+		{
+			newPointer[i] = itPointer[i]
+		}
 
-		pointer = newPointer
-		itSize = count
+		if not isBorrowed
+			delete itPointer
+		isBorrowed = false
+		itPointer = newPointer
+
+		itCapacity = count
+
 	}
 
 
 	GetPointer := virtual !() -> T^
 	{
-		return pointer
+		return itPointer
 	}
 
 	Destroy := virtual !() -> void
 	{
-		if pointer != null
+		if itPointer != null
 		{
-			GetAllocator().FreeMem(pointer)
-			pointer = null
+			if not isBorrowed
+				GetAllocator().FreeMem(itPointer)
+			isBorrowed = false
+			itPointer = null
 		}
 		itSize = 0
 	}
@@ -91,3 +116,4 @@ HVFixedArrayIterator := class .{@T}
 {
 	return ve.Get()
 }
+

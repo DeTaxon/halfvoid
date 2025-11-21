@@ -134,11 +134,17 @@ BoxFuncCall := class extend BoxExeObj
 							downs.Push(GVoidObj)
 						}
 						defToken = defToken.Right
+					}else if defToken is TokenIndent and defToken->{TokenIndent^}.Value == "#Var" {
+						newVar := new LocalVar("",par.ItType,true,false)
+						CurrentFunc?.AddLocalVar(newVar)
+						downs.Push(newVar.CreateVarCall())
 					}else{
 						newCall := TryGetExeCall(defToken)
 						if newCall == null
 						{
 							CurrentWork?.SetErrorMessage(defToken.MakeError("Could not execute default token, called function is incorrect"))
+							defToken.Print(0)
+							return void
 						}
 						downs.Push(newCall)
 					}
