@@ -6,7 +6,15 @@ main := !(char^[] args) -> int
 	tst.Push(13)
 
 	tst.Destroy()
+	
+	hop(![3,1,5])
 }
+
+hop := !(Vector.{int} tst) -> void
+{
+	printf("test %i\n",tst[^])
+}
+
 
 MakeVectorOnStack := !(T[Size] buf = #Var) .{@T,@Size} -> Vector.{T}
 {
