@@ -169,6 +169,16 @@ BoxFuncBody := class extend BoxFuncCommon
 	{
 		return Name
 	}
+	GetDebugName := virtual !() -> Str
+	{
+		res := TEchoStream
+		if Attrs.IsMethod
+		{
+			res << Params[0].GetType().GetBADStr() << "::"
+		}
+		res << Name
+		return res.GetStr()
+	}
 	SetPrintName := virtual !(Str nm) -> void
 	{
 		Name = nm

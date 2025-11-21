@@ -470,7 +470,8 @@ WorkBagPrintErrors := !() -> bool
 		{
 			cWork := it->{CWorkFuncCompile^}
 			//cWork.itFunc.bdy.Print(0)
-			printf("could not compile function %s %s:%i\n",cWork.itFunc.Name,cWork.itFunc.GetFileScope().fileName,cWork.itLine)
+			fName := cWork.itFunc.GetDebugName()
+			printf("could not compile function %s %s:%i\n",fName,cWork.itFunc.GetFileScope().fileName,cWork.itLine)
 		}
 	}
 	return true

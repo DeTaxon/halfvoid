@@ -589,9 +589,15 @@ ModuleVulkan := class extend ModuleInterface
 						func.ParseBodyForced()
 						func->{BoxFuncBody^}.ParentScope = newStruct
 						newStruct.DefaultSpace.Methods[StringSpan("this")].Push(func)
+
 					})
 				}
 			}
+
+			ItType := newStruct.ItType
+			setFunc := GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),![])
+			newStruct.DefaultSpace.Methods[StringSpan("=")].Push(setFunc)
+
 			AllClasses.Push(newStruct)
 			newStruct.FinilizeCreation()
 			return newStruct.ItType

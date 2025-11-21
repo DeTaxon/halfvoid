@@ -39,6 +39,10 @@ BoxFunc := class extend BoxExeConstObj
 	SetName := virtual !(Str nm) -> void
 	{
 	}
+	GetDebugName := virtual !() -> Str
+	{
+		return ""
+	}
 	ForceOutputName := virtual !(Str nm) -> void {}
 	SetPrintName := virtual !(Str nm) -> void
 	{
