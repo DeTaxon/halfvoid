@@ -423,6 +423,14 @@ RuleFunctionBody := !(void^ itr) -> int
 		size += 1
 	}
 
+	if It.GetValue() == "." and It.Right?.GetValue() == "{}"
+	{
+		size += 2
+		It = It.Right.Right
+
+		if It == null return 0
+	}
+
 	if It.GetValue() != "!" return 0
 
 	It = It.Right

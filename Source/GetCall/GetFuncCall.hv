@@ -3,18 +3,35 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 {
 	if itm == null or itm.Down == null or itm.Down.Right == null
 		return null
+
+	itr := itm.Down
+
+	nameToken := itm.Down
+	constsToken := Token^
+
+	if itr.Down? is TokenIndent and itr.Down.Right?.GetValue() == "." 
+		and itr.Down.Right.Right?.GetValue() == "{}" and itr.Down.Right.Right.Right == null
+	{
+		nameToken = itr.Down
+		constsToken = itr.Down.Right.Right
+
+		if itr == null return null
+	}
+
+
 	if itm.Down?.Right.GetValue() != "()"
 		return null
+
 	brc := itm.Down.Right
-	constsToken := brc.Right
-	if constsToken != null
+
+	if brc.Right?.GetValue() == "." and brc.Right.Right?.GetValue() == "{}"
 	{
-		if constsToken.GetValue() != "."
-			return null
-		constsToken = constsToken.Right
-		if constsToken == null or constsToken.GetValue() != "{}"
-			return null
+		constsToken = brc.Right.Right
+
 		if constsToken.Right != null
+			return null
+	}else{
+		if brc.Right != null
 			return null
 	}
 
@@ -71,9 +88,9 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		return null
 	}
 	
-	if itm.Down is TokenIndent
+	if nameToken is TokenIndent
 	{
-		asInd := itm.Down->{TokenIndent^}
+		asInd := nameToken->{TokenIndent^}
 
 		if asInd.Value == "super"
 		{
@@ -269,7 +286,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		if resFunc != null
 			return resFunc
 	}
-	dwnItem := TryGetExeCall(itm.Down)
+	dwnItem := TryGetExeCall(nameToken)
 	if dwnItem != null
 	{
 		if dwnItem is in BoxFuncTemplate

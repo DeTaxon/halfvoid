@@ -117,11 +117,4 @@ HVFixedArrayIterator := class .{@T}
 	return ve.Get()
 }
 
-"->{}" := !(@T[@size] x) .{Vector.{T}} -> Vector.{T}
-{
-	result.itPointer = x
-	result.itSize = size
-	result.itCapacity = size
-	result.isBorrowed = true
-}
 

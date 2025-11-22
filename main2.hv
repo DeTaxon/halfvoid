@@ -1,7 +1,7 @@
 
 main := !(char^[] args) -> int
 {
-	tst := MakeVectorOnStack().{int,10}
+	tst := MakeVectorOnStack.{int,10}()
 
 	tst.Push(13)
 
@@ -15,8 +15,15 @@ hop := !(Vector.{int} tst) -> void
 	printf("test %i\n",tst[^])
 }
 
+"->{}" := !(@T[@size] x) .{Vector.{T}} -> Vector.{T}
+{
+	result.itPointer = x
+	result.itSize = size
+	result.itCapacity = size
+	result.isBorrowed = true
+}
 
-MakeVectorOnStack := !(T[Size] buf = #Var) .{@T,@Size} -> Vector.{T}
+MakeVectorOnStack := !(T[Size] buf = #Var) . {@T,@Size} -> Vector.{T}
 {
 	result.itPointer = buf[0]&
 	result.itSize = 0
@@ -33,6 +40,17 @@ RunFunc := !() -> void
 	TSleep(6.0)
 }
 
+//TODO TypesAllocator for all TypeClass
+//TODO recursive #Mark("JIT") for classes
+//TODO there is some trickary with GTypeStr in PassRemoveReferences
+//TODO x86, make passing vec4f abi compatable, windows, linux
+//TODO named input + template, !(@T^ x = null)
+//TODO emit error if named input provided but not used
+//TODO class functions inherit virtual property, and default values
+//TODO lazy class and fake fields
+//TODO lazy class in hotload
+//TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
+//TODO allow !(ref int x) , in functions and function types, lambdas
 
 makeSpirv := !() -> void
 {
@@ -141,19 +159,6 @@ tst := !() -> void {
 	}
 	printf("resultPtr %s\n",resultPtr)
 }
-
-//TODO TypesAllocator for all TypeClass
-//TODO recursive #Mark("JIT") for classes
-//TODO there is some trickary with GTypeStr in PassRemoveReferences
-//TODO x86, make passing vec4f abi compatable, windows, linux
-//TODO named input + template, !(@T^ x = null)
-//TODO emit error if named input provided but not used
-//TODO class functions inherit virtual property, and default values
-//TODO lazy class and fake fields
-//TODO lazy class in hotload
-//TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
-//TODO allow !(ref int x) , in functions and function types, lambdas
-
 
 //ThisIsError := !() -> void
 //{
