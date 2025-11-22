@@ -23,7 +23,8 @@
 		"shaderc_env_version_vulkan_1_0" : 4194304,
 		"shaderc_env_version_vulkan_1_1" : 4198400,
 		"shaderc_env_version_vulkan_1_2" : 4202496,
-		"shaderc_env_version_vulkan_1_3" : 4206592
+		"shaderc_env_version_vulkan_1_3" : 4206592,
+		"shaderc_env_version_vulkan_1_4" : 4210688
 	},
 	"funcs" : {
 		"shaderc_compiler_initialize" : "void^",
