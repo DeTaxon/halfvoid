@@ -162,7 +162,8 @@ ToLocalVar := !(BoxExeObj^ itm,Str varName) -> LocalVar^
 
 		objs := ![objRes.CreateVarBaseCall(),new UnrefFuncCall(itm)]
 
-		setFunc := GPointStoreTemplate.GetFunc(objs,![])
+		empt := Vector.{BoxExeConstObj^}
+		setFunc := GPointStoreTemplate.GetFunc(objs,empt)
 		setCall := setFunc.CreateCall(objs)
 		assert(setCall != null)
 		objRes.extraWork.Push(setCall)

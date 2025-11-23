@@ -445,7 +445,7 @@ innerTrySetType := !(BoxExeObj^ obj,Type^ toType) -> BoxExeObj^
 	if obj.GetType() is TypeClass
 		itObj = new UnrefFuncCall(itObj)
 
-	cnsts := List.{BoxExeConstObj^}
+	cnsts := MakeVectorOnStack.{BoxExeConstObj^,10}()
 	cnsts.Push(toType)
 	objs := CheckExeDownList
 	objs.Push(itObj)

@@ -1,4 +1,4 @@
-IsEqConstants := !(BoxExeConstObj^[] a, BoxExeConstObj^[] b) -> bool
+IsEqConstants := !(Vector.{BoxExeConstObj^} a, Vector.{BoxExeConstObj^} b) -> bool
 {
 	if a.Size() != b.Size()
 		return false

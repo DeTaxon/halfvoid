@@ -174,7 +174,7 @@ ReturnHalfState := class extend BoxExeObj
 
 				if rRef and ft.GetResultCount() < 2
 				{
-					cns := List.{BoxExeConstObj^}
+					cns := Vector.{BoxExeConstObj^}
 					setPtrFunc := GPointStoreTemplate.GetFunc(objs,cns)
 					assert(setPtrFunc != null)
 					callObj = setPtrFunc.CreateCall(objs)

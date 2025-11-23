@@ -51,7 +51,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 	Objs := ref iObjs.Objs
 
-	consts := List.{BoxExeConstObj^}
+	consts := MakeVectorOnStack.{BoxExeConstObj^,20}()
 	if constsToken != null
 	{
 		SyntaxCompress(constsToken,LexHVInputVars)

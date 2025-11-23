@@ -16,6 +16,11 @@ List := class.{@T} extend TArrayView.{T}
 		newNode := createBackNode()
 		newNode.data = itm
 	}
+	Push := !() -> ref T
+	{
+		newNode := createBackNode()
+		return newNode.data
+	}
 
 	Emplace := !(args...) -> void
 	{

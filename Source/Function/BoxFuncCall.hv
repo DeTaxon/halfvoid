@@ -205,6 +205,7 @@ BoxFuncCall := class extend BoxExeObj
 			{
 				if i < fType.Params.Size()
 					continue
+				before := downs[i]
 				tp := downs[i].GetType()
 				if IsInt(tp) and not (tp == GTypeU64 or GTypeS64 == tp)
 				{
@@ -249,6 +250,19 @@ BoxFuncCall := class extend BoxExeObj
 						}
 					}
 				}
+				if downs[i] == null
+				{
+					tmpl := TEchoStream
+					tmpl << "Could not exchange type from "
+					//downs[i].GetType().PrintDebugName(tmpl&)
+					tmpl << before.GetType().GetBADStr().Str()
+					tmpl << "\n"
+					c := tmpl.GetStr()
+					printf("hey %s\n",CurrentLine?.ItToken.MakeError(c)) //TODO error is not passed
+					printf("%s\n",c)
+					exit(-1)
+				}
+
 			}
 		}
 
@@ -256,6 +270,19 @@ BoxFuncCall := class extend BoxExeObj
 		{
 			if i >= downs.Size()
 				break
+
+			if downs[i] == null 
+			{
+				tmpl := TEchoStream
+				tmpl << "Could not exchange type from "
+				//downs[i].GetType().PrintDebugName(tmpl&)
+				tmpl << objs[i].GetType().GetBADStr().Str()
+				tmpl << "\n"
+				c := tmpl.GetStr()
+				printf("hey %s\n",CurrentLine?.ItToken.MakeError(c)) //TODO error is not passed
+				printf("%s\n",c)
+				exit(-1)
+			}
 			if par.IsRef
 			{
 				downs[i].NotifyMemUse()

@@ -51,6 +51,5 @@ TryGetDecoratorCall := !(Token^ itm) -> BoxExeObj^
 	objs := CheckExeDownList
 	objs.Push(lmbd)
 	
-	cnsts := List.{BoxExeConstObj^}
-	return CreateFuncCall(resCall,objs,cnsts)
+	return CreateFuncCall(resCall,objs)
 }

@@ -380,7 +380,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		StartParseHeader()
 			
 		resFuncTyp := hData.CreateFuncType()
-		cnsts := List.{BoxExeConstObj^}
+		cnsts := Vector.{BoxExeConstObj^}
 		return GetFuncByType(resFuncTyp,cnsts)
 	}
 	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> int

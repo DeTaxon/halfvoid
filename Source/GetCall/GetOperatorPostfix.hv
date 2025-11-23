@@ -21,7 +21,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 			if not CheckFuncCallBrackets(dwn.Down.Right,objs,namedInputs)
 				return null
 
-			cnsts := List.{BoxExeConstObj^}
+			cnsts := Vector.{BoxExeConstObj^}
 
 			cl2 := CreateFuncCallOperator(StringSpan("[]?"),objs,cnsts)
 			if cl2 == null
@@ -59,7 +59,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		{
 			Objs := CheckExeDownList
 			Objs.Push(cl)
-			consts := List.{BoxExeConstObj^}
+			consts := Vector.{BoxExeConstObj^}
 			cl2 := CreateFuncCallOperator(StringSpan("?"),Objs,consts)
 			if cl2 != null
 			{
@@ -109,7 +109,7 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 			return null
 
 
-		cnsts := List.{BoxExeConstObj^}
+		cnsts := Vector.{BoxExeConstObj^}
 		return CreateFuncCallOperator(StringSpan("[]"),Objs,cnsts)?
 
 		if Objs.Size() >= 1 and Objs[0].GetType() == GTypeStr

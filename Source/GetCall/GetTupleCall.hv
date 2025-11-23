@@ -26,11 +26,8 @@ TryGetTemplateCall := !(Token^ itm) -> BoxExeObj^
 	tplType := GetTuple(tps).ItType
 	tps.Destroy()
 
-	cnsts := List.{BoxExeConstObj^}
-	cnsts.Push(tplType)
-
 	assert(TemplateInternalCreateTuple != null)
-	itFunc := TemplateInternalCreateTuple.GetFunc(objs,cnsts)
+	itFunc := TemplateInternalCreateTuple.GetFunc(objs,![tplType])
 
 	return itFunc.CreateCall(objs)
 }

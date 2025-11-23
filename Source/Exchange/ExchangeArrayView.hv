@@ -116,9 +116,7 @@ ExchangeArrayHolderToArrayView := class extend ExchangeUnit
 		if arrBox.GetArraySize() == 0
 		{
 			objs := CheckExeDownList
-			cnsts := List.{BoxExeConstObj^}
-			cnsts.Push(expType.Base)
-			resFunc := ArrayViewCreateEmptyArray.GetFunc(objs,cnsts)
+			resFunc := ArrayViewCreateEmptyArray.GetFunc(objs,![expType.Base])
 			return resFunc.CreateCall()
 		}
 		return arrBox.createUse(expType.Base)

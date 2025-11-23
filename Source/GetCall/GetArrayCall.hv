@@ -46,10 +46,7 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 	res.vals.Push(objs[^])
 	return res
 
-	cnsts := List.{BoxExeConstObj^}
-	cnsts.Push(allType.GetArray(objs.Size()))
-	resCall := CreateFuncCall(StringSpan("![]"),objs,cnsts)
-	cnsts.Destroy()
+	resCall := CreateFuncCall(StringSpan("![]"),objs,![allType.GetArray(objs.Size())])
 
 	if resCall == null
 	{
@@ -156,9 +153,7 @@ BoxArrayHolder := class extend BoxExeObj
 			return globalVar.proxy&
 		}
 
-		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(bs.GetArray(vals.Size()))
-		resCall := CreateFuncCall(StringSpan("![]"),vals,cnsts)
+		resCall := CreateFuncCall(StringSpan("![]"),vals,![bs.GetArray(vals.Size())])
 
 		if resCall == null
 		{

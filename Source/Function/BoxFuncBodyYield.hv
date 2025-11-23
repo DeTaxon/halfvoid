@@ -87,7 +87,7 @@ AppendClass BoxFuncBody
 			return void
 		
 		objs := CheckExeDownList
-		cnsts := List.{BoxExeConstObj^}
+		cnsts := Vector.{BoxExeConstObj^}
 
 		objs.Push(YieldStateInt.CreateVarCall())
 		objs.Push(GetExeInt(-1))

@@ -79,8 +79,7 @@ CreateEmbeddedObj := !(Str cmp,void^ key,StringSpan setFileName,char^ compType, 
 	objs.Push(embInfo.compressionType == "Deflate" ?: GBoolTrue : GBoolFalse)
 	objs.Push(GetExeString(embInfo.fileName.GetString()))
 
-	cnsts := List.{BoxExeConstObj^}
-	return CreateFuncCall(StringSpan("internalGetEmbeddedFile"),objs,cnsts)
+	return CreateFuncCall(StringSpan("internalGetEmbeddedFile"),objs)
 }
 
 PrintEmbeddedFiles := !(LLVMWriteContext^ ctx) -> void

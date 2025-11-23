@@ -201,11 +201,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
 	
-		lst := List.{BoxExeConstObj^}
-		lst.Push(tplType)
-		lst.Push(newFunc.GetYieldTuple().ItType)
-		
-		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,lst)
+		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,![tplType,newFunc.GetYieldTuple().ItType])
 
 		step1 := createLambdaFunc.CreateCall(objs)
 		step2 := new UnrefFuncCall(step1)

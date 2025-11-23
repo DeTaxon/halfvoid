@@ -105,6 +105,12 @@ Vector := class .{@T} extend TArrayView.{T}
 		result.pointer = GetPointer()
 		result.size = Size()
 	}
+
+	"=" := !(Vector.{T} other) -> void
+	{
+		Resize(other.Size())
+		this[^i] = other[i]
+	}
 }
 
 HVFixedArrayIterator := class .{@T}

@@ -320,7 +320,7 @@ BuiltInVecModifByScalar:= class extend BoxFuncCommon
 		CurrentFunc?.AddLocalVar(locVar)
 
 		cCall := locVar.CreateVarCall()
-		constrObj := CreateFuncCall(". this",![cCall,objs[1]],![])
+		constrObj := CreateFuncCall(". this",![cCall,objs[1]])
 		assert(constrObj != null)
 		locVar.extraWork.Push(constrObj?)
 

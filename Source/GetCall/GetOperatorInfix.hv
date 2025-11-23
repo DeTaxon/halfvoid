@@ -17,7 +17,7 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 
 		lst4 := CheckExeDownList
 		lst4.Push(res)
-		cnsts := List.{BoxExeConstObj^}
+		cnsts := Vector.{BoxExeConstObj^}
 		return CreateFuncCall(StringSpan(". not"),lst4,cnsts)
 	}
 
@@ -224,7 +224,7 @@ innertTryGetCompareOverSpaceship := !(Str oper,CheckExeDownList lst,Token^ debug
 
 	if resCall != null
 	{
-		cnsts := List.{BoxExeConstObj^}
+		cnsts := Vector.{BoxExeConstObj^}
 		result = makeFuncCall(resCall,lst,cnsts) 
 		if usingSpaceship
 		{
@@ -233,7 +233,7 @@ innertTryGetCompareOverSpaceship := !(Str oper,CheckExeDownList lst,Token^ debug
 		return void
 	}
 	oneList := CheckExeDownList
-	noConsts := List.{BoxExeConstObj^}
+	noConsts := Vector.{BoxExeConstObj^}
 	oneList.Push(lst[1])
 	result = innerTryGetMethodCall("<=>",lst[0],oneList,noConsts)
 	if result != null
@@ -341,7 +341,7 @@ innerTryGetInfixCall := !(StringSpan oper,BoxExeObj^[] lst,Token^ errToken) -> B
 
 	if tmpList[0].GetType() is in TypeClass
 	{
-		cnsts := List.{BoxExeConstObj^}
+		cnsts := Vector.{BoxExeConstObj^}
 		objs8 := CheckExeDownList
 		objs8.Push(tmpList[1])
 		return innerTryGetMethodCall(oper,tmpList[0],objs8,cnsts)?
@@ -349,8 +349,7 @@ innerTryGetInfixCall := !(StringSpan oper,BoxExeObj^[] lst,Token^ errToken) -> B
 
 	return TryComputeOperators(oper,tmpList)?
 
-	consts := List.{BoxExeConstObj^}
-	return CreateFuncCall(oper,tmpList,consts)?
+	return CreateFuncCall(oper,tmpList)?
 
 
 	return null

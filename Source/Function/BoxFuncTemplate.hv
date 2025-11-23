@@ -2,7 +2,7 @@
 BoxFuncTemplate := class extend BoxExeConstObj
 {
 	AllFuncs := AVLMap.{Type^,List.{BoxFunc^}}
-	FuncConstants := AVLMap.{BoxFunc^,List.{BoxExeConstObj^}}
+	FuncConstants := AVLMap.{BoxFunc^,Vector.{BoxExeConstObj^}}
 	ItCodeSpace := BoxCodeSpace^
 
 
@@ -16,7 +16,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 			return CmpNoExchange
 		return CheckPriority(fTyp,objs,consts,iObjs)
 	}
-	GetFunc := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> BoxFunc^
+	GetFunc := virtual !(BoxExeObj^[] objs, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		fTyp := ToFuncType(objs,consts)
 
@@ -32,7 +32,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 		return GetFuncByType(fTyp,consts)
 	}
 
-	GetFuncByType := virtual !(TypeFunc^ fTyp, BoxExeConstObj^[] consts) -> BoxFunc^
+	GetFuncByType := virtual !(TypeFunc^ fTyp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		if AllFuncs.Contain(fTyp)
 		{
@@ -91,11 +91,11 @@ BoxFuncTemplate := class extend BoxExeConstObj
 	SetName := virtual !(Str name) -> void
 	{
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+	CreateFuncCall := virtual !(BoxExeObj^[] objs,Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
 	{
 		return CreateFuncCall(objs,consts,null)
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateFuncCall := virtual !(BoxExeObj^[] objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		fnc := GetFunc(objs,consts)
 		return fnc.CreateCall(objs,iObjs)

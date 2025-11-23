@@ -15,12 +15,12 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 	{
 		return baseTemplate.GetPriority(objs,consts,iObjs)
 	}
-	GetFunc := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> BoxFunc^
+	GetFunc := virtual !(BoxExeObj^[] objs, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		return baseTemplate.GetFunc(objs,consts)
 	}
 
-	GetFuncByType := virtual !(TypeFunc^ fTyp, BoxExeConstObj^[] consts) -> BoxFunc^
+	GetFuncByType := virtual !(TypeFunc^ fTyp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		return baseTemplate.GetFuncByType(fTyp,consts)
 	}
@@ -41,18 +41,13 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 	{
 		baseTemplate.SetName(name)
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateFuncCall := virtual !(BoxExeObj^[] objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		buf := char[256]
 		memcpy(buf[0]&,decoratorToken.Value.NonNullStr(),decoratorToken.Value.Size())
 		sprintf(buf[decoratorToken.Value.Size()]&," func")
 
-		consts2 := List.{BoxExeConstObj^}
-		consts2.Push(new BoxFuncTemplateConst(baseTemplate)) //TODO memory leak
-		
-		resCall := CreateFuncCall(StringSpan(buf[0]&),objs,consts2)
-
-		consts2.Destroy()
+		resCall := CreateFuncCall(StringSpan(buf[0]&),objs,![new BoxFuncTemplateConst(baseTemplate)])
 
 		if resCall == null
 		{

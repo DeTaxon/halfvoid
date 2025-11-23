@@ -45,7 +45,8 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 
 		if allocObj != null
 		{
-			createCall := innerTryGetMethodCall("AllocMem",allocObj,![typeSize,GBoolFalse],![])
+			consts := Vector.{BoxExeConstObj^}
+			createCall := innerTryGetMethodCall("AllocMem",allocObj,![typeSize,GBoolFalse],consts)
 
 			if createCall == null
 				return null
@@ -108,7 +109,8 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 
 		if allocObj != null
 		{
-			return innerTryGetMethodCall("FreeMem",allocObj,![dwn],![])
+			consts := Vector.{BoxExeConstObj^}
+			return innerTryGetMethodCall("FreeMem",allocObj,![dwn],consts)
 		}
 
 		return FunctionInternalDelete.CreateCall(![dwn])

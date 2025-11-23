@@ -54,7 +54,7 @@ CreateTypeIsCheck := !(BoxExeObj^ checkObj, Type^ expType,bool isIn, bool makeNe
 		rCall = new IsSameTypeChecker(checkObj,expType->{TypeClass^})
 	}
 	if makeNegative
-		rCall = CreateFuncCall(StringSpan(". not"),![rCall],![])
+		rCall = CreateFuncCall(". not",![rCall])
 	return rCall
 }
 

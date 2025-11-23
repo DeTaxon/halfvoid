@@ -17,7 +17,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	if iter == null or iter.GetValue() != "()" return null
 	iter = iter.Right
 
-	consts := List.{BoxExeConstObj^}
+	consts := MakeVectorOnStack.{BoxExeConstObj^,20}()
 	constsToken := Token^
 	if iter?.GetValue() == "." and iter.Right?.GetValue() == "{}"
 	{
@@ -86,7 +86,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	return null
 }
 
-innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, BoxExeObj^[] sObjs,BoxExeConstObj^[] consts, FuncInputObjects^ iObjs = null) -> BoxExeObj^
+innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, BoxExeObj^[] sObjs,Vector.{BoxExeConstObj^} consts, FuncInputObjects^ iObjs = null) -> BoxExeObj^
 {
 	if vr == null
 		return null

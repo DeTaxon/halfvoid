@@ -21,7 +21,7 @@ TryGetVarTemplateUse := !(Token^ obj) -> BoxExeObj^
 	if dwn == null or dwn is not GlobalVarTemplate
 		return null
 
-	consts := List.{BoxExeConstObj^}
+	consts := MakeVectorOnStack.{BoxExeConstObj^,10}()
 	itr := iter.Right.Down
 	while itr != null
 	{

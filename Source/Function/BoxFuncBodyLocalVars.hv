@@ -64,7 +64,7 @@ AppendClass BoxFuncBody
 			{
 				objs := CheckExeDownList
 				objs.Push(access)
-				cnsts := List.{BoxExeConstObj^}
+				cnsts := Vector.{BoxExeConstObj^}
 				fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
 
 				assert(fnc != null)
@@ -100,7 +100,7 @@ AppendClass BoxFuncBody
 		{
 			objs := CheckExeDownList
 			objs.Push(access)
-			cnsts := List.{BoxExeConstObj^}
+			cnsts := Vector.{BoxExeConstObj^}
 			fnc := TemplateInternalInitClass.GetFunc(objs,cnsts)
 
 			assert(fnc != null)

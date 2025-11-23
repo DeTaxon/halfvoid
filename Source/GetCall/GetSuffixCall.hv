@@ -41,8 +41,7 @@ TryGetSuffixCall := !(Token^ itm) -> BoxExeObj^
 		objs := CheckExeDownList
 		objs.Push(regBlob)
 		objs.Push(GetExeInt(regBlobSize))
-		cnsts := List.{BoxExeConstObj^}
-		res := CreateFuncCall(StringSpan("internalRegexpRetrive"),objs,cnsts)
+		res := CreateFuncCall(StringSpan("internalRegexpRetrive"),objs)
 		assert(res != null)
 		return res
 	}

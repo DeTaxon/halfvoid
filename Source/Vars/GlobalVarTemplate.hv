@@ -9,7 +9,7 @@ GlobalVarTemplate := class extend BoxExeObj
 
 	VarNames := List.{StringSpan}
 
-	vars := List.{Tuple.{BoxExeConstObj^[],GlobalVar2^}}
+	vars := List.{Tuple.{Vector.{BoxExeConstObj^},GlobalVar2^}}
 
 	this := !(Str name,Token^ inTypeTree,Token^ constToken,Token^ base) -> void
 	{
@@ -27,7 +27,7 @@ GlobalVarTemplate := class extend BoxExeObj
 			iter = iter.Right
 		}
 	}
-	GetGlobalVar := !(BoxExeConstObj^[] consts) -> GlobalVar2^
+	GetGlobalVar := !(Vector.{BoxExeConstObj^} consts) -> GlobalVar2^
 	{
 		for it : vars
 		{
@@ -48,11 +48,13 @@ GlobalVarTemplate := class extend BoxExeObj
 		globVar.BodyToken = BodyToken
 		globVar.BodyInit()
 
-		vars.Emplace(consts.ToVector(),globVar)
+		newVar := ref vars.Push()
+		newVar.0.Push(consts[^])
+		newVar.1 = globVar
 
 		return globVar
 	}
-	GetVarType := !(BoxExeConstObj^[] consts,AVLMap.{Str,BoxUnit^} resConsts) -> Type^
+	GetVarType := !(Vector.{BoxExeConstObj^} consts,AVLMap.{Str,BoxUnit^} resConsts) -> Type^
 	{
 
 		cycleLimit := 0
