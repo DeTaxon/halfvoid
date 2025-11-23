@@ -147,7 +147,9 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 
 		if resType == null
 			return null
-		fType := GetFuncType(k,ArraySpan.{Type^}(types[0]&,k),ArraySpan.{bool}(isRefs[0]&,k),resType,resRef,isVarg)->{Type^}
+		spTyp := MakeVectorSpanOnPtr(types[0]&,k)
+		spRefs := MakeVectorSpanOnPtr(isRefs[0]&,k)
+		fType := GetFuncType(k,spTyp,spRefs,resType,resRef,isVarg)->{Type^}
 
 		if isLambda
 		{

@@ -54,8 +54,8 @@ BoxFuncTemplate := class extend BoxExeConstObj
 	}
 	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
 	{
-		tps := HybridQueue.{Type^,12}
-		refs := HybridQueue.{bool,12}
+		tps := MakeVectorOnStack.{Type^,12}()
+		refs := MakeVectorOnStack.{bool,12}()
 
 		for ob,i : objs
 		{

@@ -28,6 +28,17 @@ Vector := class .{@T} extend TArrayView.{T}
 		}
 		this[itSize++] = x
 	}
+	Emplace := !(args...) -> void
+	{
+		if itCapacity == 0
+		{
+			Reserve(16) // random number
+		} else if itSize == itCapacity
+		{
+			Reserve(itSize*3)
+		}
+		this[itSize++]."this"(args...)
+	}
 	Resize := !(int count, bool dirty = false) -> void
 	{
 		if count <= itSize
@@ -138,5 +149,14 @@ MakeVectorOnStack := !(T[Size] buf = #Var) . {@T,@Size} -> Vector.{T}
 	result.itPointer = buf[0]&
 	result.itSize = 0
 	result.itCapacity = Size
+	result.isBorrowed = true
+}
+MakeVectorSpanOnPtr := !(@T^ buf, int size) -> Vector.{T}
+{
+	if buf == null
+		size = 0
+	result.itPointer = buf
+	result.itSize = size
+	result.itCapacity = size
 	result.isBorrowed = true
 }

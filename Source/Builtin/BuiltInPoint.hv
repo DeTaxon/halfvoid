@@ -101,7 +101,8 @@ PointArrayGetTemplate := class extend BoxFuncTemplate
 					return null
 				}
 			}
-			return GetFuncType(2,![a2,GTypeInt],null,a.Base,true,false)
+			empt := Vector.{bool}
+			return GetFuncType(2,![a2,GTypeInt],empt,a.Base,true,false)
 		}
 		return null
 	}

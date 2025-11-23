@@ -28,7 +28,8 @@ BuiltInArrayViewCmpVoidP := class extend BoxFuncTemplate
 			if objs[0].GetType() != GTypeVoidP and objs[0].GetType() is not TypeArrayView
 				return null
 		}
-		return GetFuncType(2,![objs[0].GetType(),objs[1].GetType()],null,GTypeBool,false,false)
+		mpt := Vector.{bool}
+		return GetFuncType(2,![objs[0].GetType(),objs[1].GetType()],mpt,GTypeBool,false,false)
 
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^

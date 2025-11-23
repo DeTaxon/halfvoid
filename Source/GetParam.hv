@@ -36,7 +36,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 
 	asItm := itm->{TokenIndent^}
 
-	metFuncs := HybridQueue.{BoxFuncBody^,4}
+	metFuncs := MakeVectorOnStack.{BoxFuncBody^,6}()
 	lastLambdaHolder := LambdaObject^
 
 	for parObject : UnitStack
@@ -291,7 +291,7 @@ CallFromSomeVar := !(NamedVar^ vr) -> BoxExeObj^
 	assert(false)
 	return null
 }
-GetParamCaptureVar := !(BoxExeObj^ preRes,Str varName,BoxUnit^ par,HybridQueue.{BoxFuncBody^,4} fncs) -> BoxExeObj^
+GetParamCaptureVar := !(BoxExeObj^ preRes,Str varName,BoxUnit^ par,Vector.{BoxFuncBody^} fncs) -> BoxExeObj^
 {
 	if fncs.Size() == 0
 		return preRes

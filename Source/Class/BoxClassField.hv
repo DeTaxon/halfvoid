@@ -360,8 +360,8 @@ FieldPath := class extend BoxFuncCommon
 
 	this := !(Type^ baseClass, Type^ res) -> void
 	{
-		bsClass := baseClass //TODO
-		SetType(GetFuncType(1,ArraySpan.{Type^}(bsClass&,1),null,res,true,false))
+		spR := Vector.{bool}
+		SetType(GetFuncType(1,![baseClass],spR,res,true,false))
 	}
 	IsMem := virtual !() -> bool
 	{
@@ -406,7 +406,9 @@ FieldPathAbs := class extend FieldPath
 {
 	this := !(Type^ baseClass, Type^ res) -> void
 	{
-		SetType(GetFuncType(1,ArraySpan.{Type^}(baseClass&,1),null,res,true,false))
+		spT := MakeVectorSpanOnPtr(baseClass&,1)
+		spR := Vector.{bool}
+		SetType(GetFuncType(1,spT,spR,res,true,false))
 	}
 	GetIndex := virtual !(BoxClass^ cls) -> int
 	{

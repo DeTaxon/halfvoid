@@ -339,8 +339,8 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			return null
 		}
 
-		resTypes := HybridQueue.{Type^,50}
-		resRefs := HybridQueue.{bool,50}
+		resTypes := MakeVectorOnStack.{Type^,50}()
+		resRefs := MakeVectorOnStack.{bool,50}()
 
 		resTypes.Push(resTypeT)
 		resRefs.Push(hData.ResultType.IsRef)
@@ -351,7 +351,9 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			resRefs.Push(it.IsRef)
 		}
 
-		return GetFuncType(ArraySpan.{Type^}(fTyps[0]&,objs.Size()),ArraySpan.{bool}(iRef[0]&,objs.Size()),resTypes,resRefs,hData.IsVargs)
+		spTyps := MakeVectorSpanOnPtr(fTyps[0]&,objs.Size())
+		spRefs := MakeVectorSpanOnPtr(iRef[0]&,objs.Size())
+		return GetFuncType(spTyps,spRefs,resTypes,resRefs,hData.IsVargs)
 	}
 	checkType := !(BoxExeObj^ obj,Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^} resCnsts) -> Type^
 	{

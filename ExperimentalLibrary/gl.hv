@@ -65,7 +65,7 @@
 			return null
 
 		cmd := glCommands[str]
-		types := HybridQueue.{HV_Object^,16}
+		types := MakeVectorOnStack.{HV_Object^,16}()
 
 		for pars : cmd.Values 
 		{
@@ -87,7 +87,8 @@
 			resType = GetStringType(resNode.Values[0].ValueSpan)
 		}
 
-		fType := HV.GetFuncType(types,null,resType,false,false)
+		mpty := Vector.{bool}
+		fType := HV.GetFuncType(types,mpty,resType,false,false)
 		return HV.GetTypePointer(fType)
 	}
 	GetParamType := !(XMLNode^ node) -> HV_Object^

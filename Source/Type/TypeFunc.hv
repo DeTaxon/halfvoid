@@ -139,31 +139,31 @@ funcTypes := Vector.{TypeFunc^}[9973]^
 
 GetFuncType := !(Type^ res) -> TypeFunc^
 {
-	return GetFuncType(null,null,res)
+	spT := Vector.{Type^}
+	spR := Vector.{bool}
+	return GetFuncType(spT,spR,res)
 }
-GetFuncType := !(Type^[] args,Type^ res) -> TypeFunc^
+GetFuncType := !(Vector.{Type^} args,Type^ res) -> TypeFunc^
 {
-	return GetFuncType(args,null,res)
+	empty := Vector.{bool}
+	return GetFuncType(args,empty,res)
 }
 
 GetFuncType := !(int count,Type^^ args,bool^ refs, Type^ res,bool resRef,bool isVargs) -> TypeFunc^
 {
-	argsSpan := ArraySpan.{Type^}(args,count)
-	refsSpan := ArraySpan.{bool}(refs,count)
-	refsView := refsSpan&->{bool[]}
-	if refs == null
-		refsView = null
-	return GetFuncType(argsSpan,refsView,res,resRef,isVargs)
+	argsSpan := MakeVectorSpanOnPtr(args,count)
+	refsSpan := MakeVectorSpanOnPtr(refs,count)
+	return GetFuncType(argsSpan,refsSpan,res,resRef,isVargs)
 }
 
-GetFuncType := !(int count,Type^[] args,bool[] refs, Type^ res = GTypeVoid,bool resRef = false,bool isVargs = false) -> TypeFunc^
+GetFuncType := !(int count,Vector.{Type^} args = #Var,Vector.{bool} refs = #Var, Type^ res = GTypeVoid,bool resRef = false,bool isVargs = false) -> TypeFunc^
 {
 	return GetFuncType(args,refs,res,resRef,isVargs)
 }
 
 GetFuncType := !(	
-			Type^[] args = null,
-			bool[] refs = null, 
+			Vector.{Type^} args = #Var,
+			Vector.{bool} refs = #Var, 
 			Type^ res = GTypeVoid,
 			bool resRef = false,
 			bool isVargs = false
@@ -172,18 +172,16 @@ GetFuncType := !(
 	return GetFuncType(args,refs,![res],![resRef],isVargs)
 }
 GetFuncType := !(	
-			Type^[] args = null,
-			bool[] refs = null, 
-			Type^[] res,
-			bool[] resRef,
+			Vector.{Type^} args = #Var,
+			Vector.{bool} refs = #Var,
+			Vector.{Type^} res,
+			Vector.{bool} resRef,
 			bool isVargs = false
 			) -> TypeFunc^
 {
 	assert(res.Size() >= 1)
 
-	count := 0
-	if args != null
-		count = args.Size()
+	count :=  args.Size()
 	hsh := u32
 
 	for i : count
@@ -233,7 +231,7 @@ GetFuncType := !(
 				break
 			}
 			isRef := false
-			if refs != null
+			if j < refs.Size()
 				isRef = refs[j]
 			if fnc.Params[j].IsRef != isRef
 			{
@@ -255,7 +253,7 @@ GetFuncType := !(
 	for i : count
 	{
 		isRef := false
-		if refs != null
+		if i < refs.Size()
 		{
 			isRef = refs[i]
 		}else{
@@ -294,7 +292,10 @@ FuncTypeSetResult := !(TypeFunc^ oldType,Type^ newResult,bool isRefResult) -> Ty
 		isRef[i] = oldType.Params[i].IsRef
 	}
 	k := oldType.Params.Size()
-	return GetFuncType(k,ArraySpan.{Type^}(Typs[0]&,k),ArraySpan.{bool}(isRef[0]&,k),newResult,isRefResult,oldType.IsVargs)
+
+	spTyps := MakeVectorSpanOnPtr(Typs[0]&,k)
+	spRefs := MakeVectorSpanOnPtr(isRef[0]&,k)
+	return GetFuncType(k,spTyps,spRefs,newResult,isRefResult,oldType.IsVargs)
 }
 FuncTypeSetParam := !(TypeFunc^ oldType,int index,Type^ newParamType,bool isRefParam) -> TypeFunc^
 {
@@ -309,7 +310,10 @@ FuncTypeSetParam := !(TypeFunc^ oldType,int index,Type^ newParamType,bool isRefP
 	Typs[index] = newParamType
 	isRef[index] = isRefParam
 	k := oldType.Params.Size()
-	return GetFuncType(k,ArraySpan.{Type^}(Typs[0]&,k),ArraySpan.{bool}(isRef[0]&,k),oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
+
+	spTyps := MakeVectorSpanOnPtr(Typs[0]&,k)
+	spRefs := MakeVectorSpanOnPtr(isRef[0]&,k)
+	return GetFuncType(k,spTyps,spRefs,oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
 }
 FuncTypePopFront := !(TypeFunc^ oldType) -> TypeFunc^
 {
@@ -334,5 +338,7 @@ FuncTypePopFront := !(TypeFunc^ oldType) -> TypeFunc^
 		if Typs[i] == null
 			return null
 	}
-	return GetFuncType(k,ArraySpan.{Type^}(Typs[0]&,k),ArraySpan.{bool}(isRef[0]&,k),oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
+	spTyps := MakeVectorSpanOnPtr(Typs[0]&,k)
+	spRefs := MakeVectorSpanOnPtr(isRef[0]&,k)
+	return GetFuncType(k,spTyps,spRefs,oldType.ResultType,oldType.ResultRef,oldType.IsVargs)
 }

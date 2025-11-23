@@ -13,7 +13,7 @@ BoxEnum := class extend BoxUnit
 	ItType := TypeEnum^
 	BaseType := TypeStandard^
 	ReadyState := THatch
-	Values := HybridQueue.{Tuple.{Str,BoxEnumValue^},10}
+	Values := Vector.{Tuple.{Str,BoxEnumValue^}}
 	EnumToken := Token^
 	Parent := BoxEnum^
 	ToCStrFunction := BoxFuncBody^
@@ -99,6 +99,7 @@ BoxEnum := class extend BoxUnit
 	{
 		BaseType = res.BaseType
 
+		Values.Reserve(res.Values.Size())
 		for it : res.Values
 		{
 			Values.Emplace(it.0,null->{BoxEnumValue^})
@@ -208,7 +209,7 @@ BoxEnum := class extend BoxUnit
 	{
 		AwaitReadyState()
 		if cmpFunc == null
-			cmpFunc = new BuiltInIntBase(GetFuncType(![ItType,ItType],GTypeBool),"icmp eq")
+			cmpFunc = new BuiltInIntBase(GetFuncType(![ItType->{Type^},ItType],GTypeBool),"icmp eq")
 		return cmpFunc
 	}
 }
@@ -347,7 +348,7 @@ EnumBuildInStoreTemplate := class extend BoxFuncTemplate
 			return null
 		}
 		
-		return GetFuncType(![a,a],![true,false],GTypeVoid)
+		return GetFuncType(![a->{Type^},a],![true,false],GTypeVoid)
 	}
 	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
 	{

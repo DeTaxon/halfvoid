@@ -9,7 +9,7 @@ HV_Context := class
 	GetTypeArraySize := virtual !(HV_Object^ tp) -> int {}
 	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^ {}
 	GetTypeBase := virtual !(HV_Object^ childType) -> HV_Object^ {} // pointer of type to it's type
-	GetFuncType := virtual !(HV_Object^[] types,bool[] isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ {}
+	GetFuncType := virtual !(Vector.{HV_Object^} types,Vector.{bool} isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ {}
 	GetTypeId := virtual !(HV_Object^ obj) -> TypeId {}
 	GetTypeClass := virtual !(HV_Object^ obj) -> HV_Class^ {}
 

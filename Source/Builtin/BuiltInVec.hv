@@ -370,7 +370,7 @@ CreateBuiltInVec:= !() -> void
 	}
 	ForEachVecType(x ==> {
 
-		storeType := GetFuncType(![x,x],![true,false],GTypeVoid)
+		storeType := GetFuncType(![x->{Type^},x],![true,false],GTypeVoid)
 		base := x.Base
 
 		bSpace.Functions["="].Push(new BuiltInPrimeStore(storeType))

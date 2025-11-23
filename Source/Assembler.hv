@@ -247,7 +247,7 @@ BoxAssemblerInline := class extend BoxExeObj
 
 		newSt := ech.GetStr()
 
-		inpts := HybridQueue.{int,13}
+		inpts := MakeVectorOnStack.{int,13}()
 		
 		for it : CallObj
 		{

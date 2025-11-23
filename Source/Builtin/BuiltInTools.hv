@@ -104,7 +104,8 @@ BuiltInMemsetInlineInt := class extend BoxFuncCommon
 {
 	this := !() -> void
 	{
-		SetType(GetFuncType(4,![GTypeVoidP,GTypeU8,GTypeInt,GTypeBool],null,GTypeVoid,false,false))
+		empt := Vector.{bool}
+		SetType(GetFuncType(4,![GTypeVoidP,GTypeU8,GTypeInt,GTypeBool],empt,GTypeVoid,false,false))
 	}
 	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{

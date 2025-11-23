@@ -20,6 +20,11 @@ cmpConst := !(BoxExeConstObj^ a, BoxExeConstObj^ b) -> bool
 	{
 		return a == b
 	}
+	if a is BoxExeInt and b is BoxExeInt
+	{
+		return a->{BoxExeInt^}.Value == b->{BoxExeInt^}.Value
+	}
+	// printf("yep %s %s\n",a.UnitName,b.UnitName)
 	assert(false)
 	return false
 }

@@ -212,16 +212,16 @@ FunctionHeaderInfo := class
 	{
 		assert(IsOneFunc())
 
-		fTyp := HybridQueue.{Type^,50}
-		isRef := HybridQueue.{bool,50}
+		fTyp := MakeVectorOnStack.{Type^,50}()
+		isRef := MakeVectorOnStack.{bool,50}()
 		for it,i : Types
 		{
 			fTyp.Push(it.ItType)
 			isRef.Push(it.IsRef)
 		}
 
-		resTypes := HybridQueue.{Type^,50}
-		resRefs := HybridQueue.{bool,50}
+		resTypes := MakeVectorOnStack.{Type^,50}()
+		resRefs := MakeVectorOnStack.{bool,50}()
 
 		resType := ResultType.ItType
 		if resType == null
