@@ -40,7 +40,7 @@ TemplateCheckConstants := !(BoxExeConstObj^[] cnsts, List.{Token^} cnstsTokens, 
 		varName := cnstsTokens[0]->{TokenTemplateType^}.Value[1..0] //TODO empty variadic?
 		//TODO this case just for one {@Types...}, maybe add for @{@T,@Types...}
 
-		typs := List.{Type^}
+		typs := Vector.{Type^}
 		for c2 : cnsts
 		{
 			if c2 is not in Type
