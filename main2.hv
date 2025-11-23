@@ -1,19 +1,23 @@
 
+a1 := class
+{
+
+}
+a2 := class extends a1
+{
+
+}
+
+Test := !(Vector.{a1^} g) -> int
+{
+
+}
 main := !(char^[] args) -> int
 {
-	tst := MakeVectorOnStack.{int,10}()
-
-	tst.Push(13)
-
-	tst.Destroy()
-	c := ![3,1,5]
-	hop(c)
+	c := a2^
+	Test(![c])
 }
 
-hop := !(Vector.{int} tst) -> void
-{
-	printf("test %i\n",tst[^])
-}
 
 
 

@@ -50,3 +50,37 @@ ExchangeArrayHolderToArray := class extend ExchangeUnit
 		return obj->{BoxArrayHolder^}.createUse(expType.Base)
 	}
 }
+ExchangeArrayHolderToVector := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if obj is not BoxArrayHolder
+			return CmpNoExchange
+		if not expectResultRef
+			return CmpNoExchange
+		if to is not TypeClass
+			return CmpNoExchange
+
+		holder := obj->{BoxArrayHolder^}
+		typ := to->{TypeClass^}.ToClass
+
+		if typ.TemplateParent != GVectorTemplate
+			return CmpNoExchange
+
+
+		rt := typ.Constants.Constants[0]->{Type^}
+
+		resExchange := 0
+		for it : holder.vals
+		{
+			resExchange = max(resExchange,TypePriorCmp(it,rt,false))
+		}
+
+		return resExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		typ := expType->{TypeClass^}.ToClass.Constants.Constants[0]->{Type^}
+		return obj->{BoxArrayHolder^}.createUse(typ)
+	}
+}
