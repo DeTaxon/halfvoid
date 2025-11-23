@@ -64,7 +64,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 
 CollectFunctionsCtx := class
 {
-	WriteGlobals := List.{GlobalVar2^}
+	WriteGlobals := Vector.{GlobalVar2^}
 	WriteFunctions := List.{BoxFuncBody^}
 	DeclareFunctions := List.{BoxFuncDeclare^}
 	UsedClasses := List.{BoxClass^}
@@ -349,7 +349,7 @@ CollectFunctionsCtx := class
 			
 	}
 }
-OptPrintGlobals := !(MCInterpContext^ iCtx,LLVMWriteContext^ ctx,GlobalVar2^[] globals) -> void
+OptPrintGlobals := !(MCInterpContext^ iCtx,LLVMWriteContext^ ctx,Vector.{GlobalVar2^} globals) -> void
 {
 	wr := ref ctx.writeStream^
 	for glob : globals
