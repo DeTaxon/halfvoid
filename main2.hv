@@ -6,8 +6,8 @@ main := !(char^[] args) -> int
 	tst.Push(13)
 
 	tst.Destroy()
-	
-	hop(![3,1,5])
+	c := ![3,1,5]
+	hop(c)
 }
 
 hop := !(Vector.{int} tst) -> void
@@ -15,21 +15,6 @@ hop := !(Vector.{int} tst) -> void
 	printf("test %i\n",tst[^])
 }
 
-"->{}" := !(@T[@size] x) .{Vector.{T}} -> Vector.{T}
-{
-	result.itPointer = x
-	result.itSize = size
-	result.itCapacity = size
-	result.isBorrowed = true
-}
-
-MakeVectorOnStack := !(T[Size] buf = #Var) . {@T,@Size} -> Vector.{T}
-{
-	result.itPointer = buf[0]&
-	result.itSize = 0
-	result.itCapacity = Size
-	result.isBorrowed = true
-}
 
 
 
@@ -37,7 +22,7 @@ RunFunc := !() -> void
 {
 	@work tst()
 
-	TSleep(6.0)
+	// TSleep(6.0)
 }
 
 //TODO TypesAllocator for all TypeClass

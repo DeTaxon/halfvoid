@@ -118,3 +118,25 @@ HVFixedArrayIterator := class .{@T}
 }
 
 
+"->{}" := !(@T[@size] x) .{Vector.{T}} -> Vector.{T}
+{
+	result.itPointer = x
+	result.itSize = size
+	result.itCapacity = size
+	result.isBorrowed = true
+}
+"->{}" := !(@Typ[@Size] itArr) .{@Typ[]} -> Vector.{Typ}
+{
+	result.itPointer = itArr
+	result.itSize = Size
+	result.itCapacity = Size
+	result.isBorrowed = true
+}
+
+MakeVectorOnStack := !(T[Size] buf = #Var) . {@T,@Size} -> Vector.{T}
+{
+	result.itPointer = buf[0]&
+	result.itSize = 0
+	result.itCapacity = Size
+	result.isBorrowed = true
+}

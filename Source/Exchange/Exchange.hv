@@ -24,9 +24,7 @@ GetExchange := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 
 	objs := CheckExeDownList
 	objs.Push(obj)
-	cnsts := List.{BoxExeConstObj^}
-	cnsts.Push(expType)
-	resCall := CreateFuncCall("->{}",objs,cnsts)
+	resCall := CreateFuncCall("->{}",objs,![expType])
 	if resCall != null
 		return resCall
 	return null

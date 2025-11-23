@@ -127,11 +127,6 @@ internalCreateEmptyArray := !() .{@Typ} -> ArraySpan.{Typ}
 	result.itSize = 0
 }
 
-"->{}" := !(@Typ[@Size] itArr) .{@Typ[]} -> ArraySpan.{Typ}
-{
-	result.pointer = itArr[0]&
-	result.itSize = Size
-}
 
 //"->{}" := !(TArraySpan.{@T} x) .{T[]} -> T[]
 //{
