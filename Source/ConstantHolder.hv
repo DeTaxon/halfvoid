@@ -28,7 +28,7 @@ ConstantHolder := class
 	}
 }
 
-TemplateCheckConstants := !(BoxExeConstObj^[] cnsts, List.{Token^} cnstsTokens, AVLMap.{Str,BoxUnit^} namedConsts) -> bool
+TemplateCheckConstants := !(Vector.{BoxExeConstObj^} cnsts, List.{Token^} cnstsTokens, AVLMap.{Str,BoxUnit^} namedConsts) -> bool
 {
 	if cnsts.Size() != cnstsTokens.Size()
 		return false

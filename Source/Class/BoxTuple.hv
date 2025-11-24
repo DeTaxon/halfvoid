@@ -135,7 +135,7 @@ BoxClassTuple := class extend BoxClassPoison
 
 BoxClassTupleTemplate := class extend BoxClassTemplate
 {
-	GetClass := virtual !(BoxExeConstObj^[] inpts) -> BoxClass^
+	GetClass := virtual !(Vector.{BoxExeConstObj^} inpts) -> BoxClass^
 	{
 		lst := List.{Type^}
 

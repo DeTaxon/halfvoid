@@ -153,11 +153,8 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 
 		if isLambda
 		{
-			args := List.{BoxExeConstObj^}
-			args.Push(fType.GetPoint())
-			rl := GCLambda.GetClass(args)
+			rl := GCLambda.GetClass(![fType.GetPoint()])
 			assert(rl != null)
-			args.Destroy()
 			return rl.ItType.GetPoint()
 		}
 
@@ -210,7 +207,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		if checkRes == null
 			return null
 
-		cnsts := List.{BoxExeConstObj^}
+		cnsts := Vector.{BoxExeConstObj^}
 
 		tmpl := BoxClassTemplate^
 

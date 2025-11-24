@@ -36,10 +36,8 @@ Type := class extend BoxExeConstObj
 
 			res := new TypeArrayView(this&)
 
-			tpys := List.{BoxExeConstObj^}
-			tpys.Push(this&)
 			assert(ArrayViewTemplate != null)
-			rClass := ArrayViewTemplate.GetClass(tpys)
+			rClass := ArrayViewTemplate.GetClass(![this&])
 			assert(rClass != null)
 			res.viewClassType = rClass.ItType->{TypeClass^}
 

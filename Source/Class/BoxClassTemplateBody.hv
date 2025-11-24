@@ -1,6 +1,6 @@
 BoxClassTemplate := class extend BoxUnit
 {
-	GetClass := virtual !(BoxExeConstObj^[] inpts) -> BoxClass^
+	GetClass := virtual !(Vector.{BoxExeConstObj^} inpts) -> BoxClass^
 	{
 		assert(false)
 	}
@@ -55,7 +55,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 	}
 
 	classes := AVLMap.{int,List.{Tuple.{ConstantHolder^,BoxClass^}}}
-	GetClass := virtual !(BoxExeConstObj^[] inpts) -> BoxClass^
+	GetClass := virtual !(Vector.{BoxExeConstObj^} inpts) -> BoxClass^
 	{
 		hsh := 0
 		
@@ -83,7 +83,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		result = CreateClass(inConsts,inpts)
 		itList.Emplace(inConsts,result)
 	}
-	CreateClass := virtual !(ConstantHolder^ inConsts,BoxExeConstObj^[] inpts) -> BoxClass^
+	CreateClass := virtual !(ConstantHolder^ inConsts,Vector.{BoxExeConstObj^} inpts) -> BoxClass^
 	{
 		namedConstants := AVLMap.{Str,BoxUnit^}
 		TemplateCheckConstants(inpts,ItConstsTokens,namedConstants)

@@ -1,6 +1,6 @@
 LambdaClassTemplate := class extend BoxClassTemplateBody
 {
-	CreateClass := virtual !(ConstantHolder^ inConsts,BoxExeConstObj^[] inpts) -> BoxClass^
+	CreateClass := virtual !(ConstantHolder^ inConsts,Vector.{BoxExeConstObj^} inpts) -> BoxClass^
 	{
 		res := this."BoxClassTemplateBody.CreateClass"(inConsts,inpts)
 

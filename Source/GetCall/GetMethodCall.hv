@@ -42,7 +42,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 	if vr.GetType() is in TypeEnum
 	{
-		return GetEnumMethodCall(itm,vr,iObjs.Objs,consts)?
+		return GetEnumMethodCall(itm,vr)?
 	}
 
 	gotName := false

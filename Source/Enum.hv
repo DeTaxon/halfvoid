@@ -272,7 +272,7 @@ BoxEnumValue := class extend BoxExeObj
 	}
 }
 
-GetEnumMethodCall := !(Token^ itm,BoxExeObj^ vr,BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+GetEnumMethodCall := !(Token^ itm,BoxExeObj^ vr) -> BoxExeObj^
 {
 	if itm.Down.Right.Right is not TokenIndent
 		return null
