@@ -45,7 +45,7 @@ TypedefTemplateConst := class extend BoxExeConstObj
 {
 	ItConsts := HybridQueue.{Token^,5}
 	TypeToken := Token^
-	GetType := !(BoxExeConstObj^[] cnsts) -> Type^
+	GetType := !(Vector.{BoxExeConstObj^} cnsts) -> Type^
 	{
 		if cnsts.Size() != ItConsts.Size()
 			return null

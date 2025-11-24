@@ -7,8 +7,8 @@ BoxCodeSpace := class
 	Functions := AVLMap.{Str,List.{BoxFunc^}} //only for builtin functions
 	Globals := AVLMap.{Str,List.{BoxUnit^}}
 
-	ExchangeTableFuncs :=  HybridQueue.{BoxUnit^,10}
-	ExchangeTableTemplates := HybridQueue.{BoxUnit^,10}
+	ExchangeTableFuncs :=  Vector.{BoxUnit^}
+	ExchangeTableTemplates := Vector.{BoxUnit^}
 
 	Types := HashMap.{Str,BoxUnit^}
 

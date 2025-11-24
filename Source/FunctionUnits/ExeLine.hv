@@ -135,8 +135,8 @@ BoxExeLineSimple := class extend BoxUnit
 	}
 }
 
-ExeDownList := type HybridQueue.{BoxExeObj^,8}
-CheckExeDownList := type HybridQueue.{BoxExeObj^,20}
+ExeDownList := type Vector.{BoxExeObj^}
+CheckExeDownList := type Vector.{BoxExeObj^}
 
 BoxExeObj := class extend BoxUnit
 {
@@ -378,7 +378,7 @@ CheckFuncCallConsts := !(Token^ itm, Vector.{BoxExeConstObj^} consts) -> void
 }
 
 
-GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool expectExac = false,FuncInputObjects^ iObjs = null) -> BoxUnit^
+GetBestFunc := !(Vector.{BoxUnit^} x,Vector.{BoxExeObj^} Objs,Vector.{BoxExeConstObj^} consts,bool expectExac = false,FuncInputObjects^ iObjs = null) -> BoxUnit^
 {
 	priorityes := HybridQueue.{int,13}
 
@@ -402,7 +402,8 @@ GetBestFunc := !(BoxUnit^[] x,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,bool ex
 		return null
 	return x[bestI]
 }
-CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeConstObj^[] consts,HybridQueue.{int,13} priorityes,FuncInputObjects^ iObjs = null) -> void
+CalculatePriorities := !(Vector.{BoxUnit^} candidateObjects,Vector.{BoxExeObj^} Objs
+	,Vector.{BoxExeConstObj^} consts,HybridQueue.{int,13} priorityes,FuncInputObjects^ iObjs = null) -> void
 {
 	for checkObj : candidateObjects
 	{
@@ -451,16 +452,16 @@ CalculatePriorities := !(BoxUnit^[] candidateObjects,BoxExeObj^[] Objs,BoxExeCon
 	}
 }
 
-CreateFuncCall := !(Str name, BoxExeObj^[] Objs) -> BoxExeObj^
+CreateFuncCall := !(Str name, Vector.{BoxExeObj^} Objs) -> BoxExeObj^
 {
 	cnsts := Vector.{BoxExeConstObj^}
 	return CreateFuncCall(name,Objs,cnsts)
 }
-CreateFuncCall := !(Str name, BoxExeObj^[] Objs,Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
+CreateFuncCall := !(Str name, Vector.{BoxExeObj^} Objs,Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	return CreateFuncCall(name,Objs,consts,null)
 }
-CreateFuncCall := !(Str name, BoxExeObj^[] Objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+CreateFuncCall := !(Str name, Vector.{BoxExeObj^} Objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
 {
 	callItem := BoxUnit^
 
@@ -487,7 +488,7 @@ CreateFuncCall := !(Str name, BoxExeObj^[] Objs,Vector.{BoxExeConstObj^} consts,
 	}
 	return makeFuncCall(callItem,Objs,consts,iObjs)
 }
-makeFuncCall := !(BoxUnit^ callItem, BoxExeObj^[] Objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs = null) -> BoxExeObj^
+makeFuncCall := !(BoxUnit^ callItem, Vector.{BoxExeObj^} Objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs = null) -> BoxExeObj^
 {
 	if callItem is ConstVar
 	{
@@ -531,7 +532,7 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 	Objs := CheckExeDownList
 	Objs.Push(obj)
 
-	consts := List.{BoxExeConstObj^}
+	consts := Vector.{BoxExeConstObj^}
 	consts.Push(toType)
 
 	found := false
@@ -557,7 +558,7 @@ IsGonnaWorkExchange := !(BoxExeObj^ obj,Type^ toType) -> bool
 	return found
 }
 
-CreateFuncCallOperator := !(Str name, BoxExeObj^[] Objs, Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
+CreateFuncCallOperator := !(Str name, Vector.{BoxExeObj^} Objs, Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	if Objs.Size() != 0 and Objs[0].GetType() is in TypeClass
 	{
@@ -589,7 +590,7 @@ CreateFuncCallOperator := !(Str name, BoxExeObj^[] Objs, Vector.{BoxExeConstObj^
 
 CmpNoExchange := 999000
 
-CmpFuncPriorityAllExchange := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults) -> int
+CmpFuncPriorityAllExchange := !(TypeFunc^ fncType, Vector.{BoxExeObj^} objs ,int defaults) -> int
 {
 	blockedExchange := AVLSet.{int}
 	return CmpFuncPriority(fncType,objs,defaults,blockedExchange)
@@ -597,7 +598,7 @@ CmpFuncPriorityAllExchange := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaul
 
 
 //TODO hide blockedExchange,names,defaults, in FunctionHeaderData
-CmpFuncPriority := !(TypeFunc^ fncType, BoxExeObj^[] objs ,int defaults, AVLSet.{int} blockedExchange, FuncInputObjects^ iObjs = null,List.{StringSpan}^ names = null) -> int
+CmpFuncPriority := !(TypeFunc^ fncType, Vector.{BoxExeObj^} objs ,int defaults, AVLSet.{int} blockedExchange, FuncInputObjects^ iObjs = null,List.{StringSpan}^ names = null) -> int
 {
 	worstCase := 0
 

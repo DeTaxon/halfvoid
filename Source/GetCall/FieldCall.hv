@@ -17,7 +17,8 @@ TryGetFieldCall := !(Token^ itm) -> BoxExeObj^
 	t := itm.Down.Right.Right
 	return innerTryGetFieldCall(val,t)?
 
-	return TryRemoveAutoCast(val,![], (obj,inputs) ==> {
+	objs := Vector.{BoxExeObj^}
+	return TryRemoveAutoCast(val,objs, (obj,inputs) ==> {
 		return innerTryGetFieldCall(obj,t)
 	})
 

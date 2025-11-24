@@ -10,7 +10,7 @@ BuildInVirtualCall := class extend BoxFuncCommon
 		funcIndex = inFuncIndex
 		SetType(inWFunc.GetType()->{TypeFunc^})
 	}
-	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		TryForceVirtualUse()
 		return super(objs,iObjs)

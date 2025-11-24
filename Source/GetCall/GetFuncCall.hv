@@ -175,7 +175,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				return null
 			}
 
-			fncs := HybridQueue.{BoxUnit^,10}		
+			fncs := MakeVectorOnStack.{BoxUnit^,10}()	
 			while true
 			{
 				itSpace.itClass.AwaitTypeState()
@@ -311,7 +311,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 	return null
 }
 
-innerTryGetPtrCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs) -> BoxExeObj^
+innerTryGetPtrCall := !(BoxExeObj^ dwnItem, Vector.{BoxExeObj^} Objs) -> BoxExeObj^
 {
 	dType := dwnItem.GetType()
 	if dType is in TypePoint and dType.Base is TypeFunc
@@ -324,7 +324,7 @@ innerTryGetPtrCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs) -> BoxExeObj^
 	}
 	return null
 }
-innerTryGetSkobCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+innerTryGetSkobCall := !(BoxExeObj^ dwnItem, Vector.{BoxExeObj^} Objs,Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	dType := dwnItem.GetType()
 	cls := BoxClass^

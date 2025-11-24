@@ -150,7 +150,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			TempPrefix.CheckToken(cns)
 		}
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
+	ToFuncType := virtual !(Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		StartParseHeader()
 
@@ -274,7 +274,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 
 		return newFunc
 	}
-	checkTypes := !(HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10} objs, BoxExeConstObj^[] consts, AVLMap.{Str,BoxUnit^} resCnsts) -> TypeFunc^
+	checkTypes := !(HybridQueue.{Tuple.{BoxExeObj^,Type^,bool},10} objs, Vector.{BoxExeConstObj^} consts, AVLMap.{Str,BoxUnit^} resCnsts) -> TypeFunc^
 	{
 		//TODO , multi round check
 
@@ -289,11 +289,11 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		fTyps := Type^[100]
 		iRef := bool[100]
 
-		inObjs := HybridQueue.{BoxExeObj^,20}
+		inObjs := MakeVectorOnStack.{BoxExeObj^,20}()
 		inObjs.Push(objs[^].0)
-		inObjsTypes := HybridQueue.{Type^,20}
+		inObjsTypes := MakeVectorOnStack.{Type^,20}()
 		inObjsTypes.Push(objs[^].1)
-		inTokens := HybridQueue.{Token^,20}
+		inTokens := MakeVectorOnStack.{Token^,20}()
 		inTokens.Push(hData.Types[^].ItToken)
 		if not TempPrefix.CheckConsts(consts,resCnsts,inObjs,inObjsTypes,inTokens)
 			return null
@@ -383,7 +383,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		cnsts := Vector.{BoxExeConstObj^}
 		return GetFuncByType(resFuncTyp,cnsts)
 	}
-	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> int
+	CheckPriority := virtual !(TypeFunc^ tp,Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> int
 	{
 		if TemplateProperties.Contain("#FilterBeConst")
 		{

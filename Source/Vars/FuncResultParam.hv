@@ -41,7 +41,7 @@ FuncResultParam := class extend ParamFunc
 	PopulateCalls := virtual !() -> void
 	{
 	}
-	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		return new BoxFuncCall(this&,objs)
 	}

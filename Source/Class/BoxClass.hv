@@ -195,7 +195,7 @@ BoxClass := class extend BoxUnit
 		}
 		PrimeParents.Emplace(this&,this&,0)
 	}
-	populateMethods := !(Str name,Str fieldName, HybridQueue.{BoxUnit^,10} objs) -> void
+	populateMethods := !(Str name,Str fieldName, Vector.{BoxUnit^} objs) -> void
 	{
 		AwaitTypeState()
 		itSpace := DefaultSpace&
@@ -259,17 +259,17 @@ BoxClass := class extend BoxUnit
 		Parents[^].populateMethods(name,fieldName,objs)
 		ApplyedReserve[^].populateMethods(name,fieldName,objs)
 	}
-	GetMethods := virtual !(Str name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	GetMethods := virtual !(Str name, !(Vector.{BoxUnit^})& -> bool cb) -> void
 	{	
 		AwaitTypeState()
 
-		objs := HybridQueue.{BoxUnit^,10}
+		objs := MakeVectorOnStack.{BoxUnit^,10}()
 		populateMethods(name,StringSpan(""),objs)
 
 		if objs.Size() != 0
 			cb(objs)
 	}
-	GetMethodsInFields := virtual !(Str name,FieldSpace^ fieldPtr, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	GetMethodsInFields := virtual !(Str name,FieldSpace^ fieldPtr, !(Vector.{BoxUnit^})& -> bool cb) -> void
 	{	
 		AwaitTypeState()
 
@@ -284,7 +284,7 @@ BoxClass := class extend BoxUnit
 		}
 		assert(fieldName.Size() != 0)
 
-		objs := HybridQueue.{BoxUnit^,10}
+		objs := MakeVectorOnStack.{BoxUnit^,10}()
 		populateMethods(name,fieldName,objs)
 
 		if objs.Size() != 0

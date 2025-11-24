@@ -14,7 +14,7 @@ BuiltInArrayViewCmpVoidP := class extend BoxFuncTemplate
 	{
 		m_isEq = isEq
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
+	ToFuncType := virtual !(Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		if objs.Size() != 2
 			return null

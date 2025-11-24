@@ -1,5 +1,5 @@
 
-MCInterpFunction2 := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inputs = null,void^ resultPtr = null) -> void
+MCInterpFunction2 := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, Vector.{void^} inputs,void^ resultPtr = null) -> void
 {
 	fType := interpFunc.BaseFunction->{BoxFuncBody^}.GetType()->{TypeFunc^}
 
@@ -9,14 +9,11 @@ MCInterpFunction2 := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] in
 
 	if isComplex and resultPtr != null
 	{
-		vars2 := HybridQueue.{void^,120}
+		vars2 := MakeVectorOnStack.{void^,20}()
 		vars2.Push(resultPtr)
-		if inputs != null
+		for it : inputs
 		{
-			for it : inputs
-			{
-				vars2.Push(it)
-			}
+			vars2.Push(it)
 		}
 		MCInterpFunction(iCntx,interpFunc,vars2,null)
 	}else{
@@ -25,13 +22,13 @@ MCInterpFunction2 := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] in
 
 }
 
-MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inputs = null,void^ resultPtr = null) -> void
+MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, Vector.{void^} inputs,void^ resultPtr = null) -> void
 {
 	if interpFunc.Lines.Size() == 0
 		return void
 
 	objCount := 0
-	if inputs != null
+	if inputs.Size() != 0
 	{
 		objCount = 5 + inputs.Size()
 	}
@@ -49,8 +46,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inp
 		retIndex = 1
 		thisFrame.localVarTable[1] = resultPtr
 	}
-	inptsIndexes := HybridQueue.{int,10}
-	if inputs != null
+	inptsIndexes := MakeVectorOnStack.{int,10}()
+	if inputs.Size() != 0
 	{
 		for it,i : inputs
 		{
@@ -62,7 +59,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, void^[] inp
 	MCInterpFunction(iCntx,interpFunc,thisFrame&,inptsIndexes,retIndex)
 }
 
-MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame, int[] callerIndx = null,int returnIndex = 0) -> void
+MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame, Vector.{int} callerIndx,int returnIndex = 0) -> void
 {
 	//interpFunc.Print()
 	//exit(0)
@@ -108,7 +105,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	{
 		thisFrame.localVarTable[interpFunc.ResultIndex] = callerFrame.localVarTable[returnIndex]
 	}
-	if callerIndx != null
+	if callerIndx.Size() != 0
 	{
 		argCount := min(callerIndx.Size(),interpFunc.InputsIndxCount)
 		rng := Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + argCount - 1)
@@ -135,7 +132,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			cs += 1
 
 
-			indxs := HybridQueue.{int,8}
+			indxs := MakeVectorOnStack.{int,20}()
 			while opPtr[cs].opcode != "call_end"
 			{
 				if opPtr[cs].opcode == "load_var"

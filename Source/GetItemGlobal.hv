@@ -1,7 +1,7 @@
 
-GetItemGlobal := !(Str name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
+GetItemGlobal := !(Str name, !(Vector.{BoxUnit^})&->bool cb) -> void
 {
-	lst := HybridQueue.{BoxUnit^,10}
+	lst := MakeVectorOnStack.{BoxUnit^,10}()
 	for spc : CodeSpaces.Reverse
 	{
 		lst.Destroy()
@@ -40,9 +40,9 @@ GetItemGlobal := !(Str name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
 	}
 }
 
-GetItemGlobalFunc := !(Str name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
+GetItemGlobalFunc := !(Str name, !(Vector.{BoxUnit^})&->bool cb) -> void
 {
-	lst := HybridQueue.{BoxUnit^,10}
+	lst := MakeVectorOnStack.{BoxUnit^,10}()
 	for spc : CodeSpaces.Reverse
 	{
 		lst.Destroy()
@@ -62,11 +62,11 @@ GetItemGlobalFunc := !(Str name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
 	}
 }
 
-GetItemGlobal2 := !(Str[] names, !(HybridQueue.{BoxUnit^,10}, Str[])&->bool cb) -> void 
+GetItemGlobal2 := !(Vector.{Str} names, !(Vector.{BoxUnit^}, Vector.{Str})&->bool cb) -> void 
 {
 	
-	lst := HybridQueue.{BoxUnit^,10}
-	resNames := HybridQueue.{Str,10}
+	lst := MakeVectorOnStack.{BoxUnit^,10}()
+	resNames := MakeVectorOnStack.{Str,10}()
 
 	for spc : CodeSpaces.Reverse
 	{
@@ -97,7 +97,7 @@ GetItemGlobal2 := !(Str[] names, !(HybridQueue.{BoxUnit^,10}, Str[])&->bool cb) 
 		}
 		if lst.Size() != 0
 		{
-			if cb(lst,resNames&)
+			if cb(lst,resNames)
 				return void
 		}
 	}

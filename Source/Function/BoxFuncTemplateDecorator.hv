@@ -11,11 +11,11 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 		decoratorToken = tkn
 		baseScope = CurrentScope
 	}
-	GetPriority := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> int
+	GetPriority := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> int
 	{
 		return baseTemplate.GetPriority(objs,consts,iObjs)
 	}
-	GetFunc := virtual !(BoxExeObj^[] objs, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
+	GetFunc := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		return baseTemplate.GetFunc(objs,consts)
 	}
@@ -41,7 +41,7 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 	{
 		baseTemplate.SetName(name)
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateFuncCall := virtual !(Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		buf := char[256]
 		memcpy(buf[0]&,decoratorToken.Value.NonNullStr(),decoratorToken.Value.Size())

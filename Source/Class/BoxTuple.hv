@@ -107,17 +107,17 @@ BoxClassTuple := class extend BoxClassPoison
 		})
 	}
 
-	GetMethods := virtual !(StringSpan name, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	GetMethods := virtual !(StringSpan name, !(Vector.{BoxUnit^})& -> bool cb) -> void
 	{	
 		mthHatch.Await()
 
-		objs := HybridQueue.{BoxUnit^,10}
+		objs := MakeVectorOnStack.{BoxUnit^,10}()
 		populateMethods(name,StringSpan(""),objs)
 
 		if objs.Size() != 0
 			cb(objs)
 	}
-	GetMethodsInFields := virtual !(StringSpan name,FieldSpace^ fieldPtr, !(HybridQueue.{BoxUnit^,10})& -> bool cb) -> void
+	GetMethodsInFields := virtual !(StringSpan name,FieldSpace^ fieldPtr, !(Vector.{BoxUnit^})& -> bool cb) -> void
 	{
 		mthHatch.Await()
 		assert(fieldPtr != null)

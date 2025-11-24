@@ -32,7 +32,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 	this := !() -> void
 	{
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> TypeFunc^
+	ToFuncType := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		if objs.Size() != 1 or consts.Size() != 1
 			return null
@@ -227,7 +227,7 @@ BuiltInVecShuffle := class extend BoxFuncCommon
 
 BuiltInVecConstrTemplate := class extend BoxFuncTemplate
 {
-	ToFuncType := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> TypeFunc^
+	ToFuncType := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		if objs.Size() > 5 or objs.Size() < 2
 			return null
@@ -312,7 +312,7 @@ BuiltInVecModifByScalar:= class extend BoxFuncCommon
 		SetType(fType)
 		operatorType = operType
 	}
-	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		base := objs[0].GetType()
 

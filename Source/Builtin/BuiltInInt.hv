@@ -219,7 +219,7 @@ BuiltInIntSuffixU := class extend BoxFuncCommon
 	{
 		SetType(GetFuncType(![GTypeInt],GTypeU64))
 	}
-	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 1)
 
@@ -235,7 +235,7 @@ BuiltInIntSuffixF := class extend BoxFuncCommon
 	//PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	//{
 	//}
-	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		assert(objs.Size() == 1)
 

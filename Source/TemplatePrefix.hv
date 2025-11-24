@@ -71,12 +71,13 @@ TemplatePrefix := class
 			return false
 		return true
 	}
-	CheckConsts := !(BoxExeConstObj^[] consts, AVLMap.{Str,BoxUnit^} resCnsts,BoxExeObj^[] objs = null,Type^[] objsTypes,Token^[] typeTokens = null) -> bool
+	CheckConsts := !(Vector.{BoxExeConstObj^} consts, AVLMap.{Str,BoxUnit^} resCnsts
+		,Vector.{BoxExeObj^} objs,Vector.{Type^} objsTypes,Vector.{Token^} typeTokens) -> bool
 	{
 		if not CheckByCount(consts.Size())
 			return false
 		
-		if objs != null and typeTokens != null and objsTypes != null
+		if objs.Size() != 0 and typeTokens.Size() != 0 and objsTypes.Size() != 0
 		{
 			for i : min(objs.Size(),typeTokens.Size())
 			{

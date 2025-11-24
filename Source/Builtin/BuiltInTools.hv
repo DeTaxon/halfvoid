@@ -208,7 +208,7 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 	this := !() -> void
 	{
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts) -> TypeFunc^
+	ToFuncType := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		if objs.Size() != 1 or consts.Size() != 1
 			return null
@@ -223,7 +223,7 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 		return GetFuncType(![GTypeVoidP],consts[0]->{Type^})
 		
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateFuncCall := virtual !(Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		getType := consts[0]->{Type^}
 		if targetLinux  or targetWindows

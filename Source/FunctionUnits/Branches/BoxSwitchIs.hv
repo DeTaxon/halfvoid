@@ -88,7 +88,8 @@ ParseBoxSwitchIs := !(Token^ itm) -> BoxExeObj^
 			{
 				tpCheck = CreateTypeIsCheck(mainVar.CreateVarCall(),caseType,isIn,false)
 			}else {
-				tpCheck = innerTryGetMethodCall("is",mainVar.CreateVarCall(),![],![caseType])
+				objs := Vector.{BoxExeObj^}
+				tpCheck = innerTryGetMethodCall("is",mainVar.CreateVarCall(),objs,![caseType])
 
 				if tpCheck == null
 				{

@@ -8,7 +8,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 
 	GetDefaultValuesCount := virtual !() -> int { return 0 }
 
-	GetPriority := virtual !(BoxExeObj^[] objs, BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> int
+	GetPriority := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> int
 	{
 		fTyp := ToFuncType(objs,consts)
 
@@ -16,7 +16,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 			return CmpNoExchange
 		return CheckPriority(fTyp,objs,consts,iObjs)
 	}
-	GetFunc := virtual !(BoxExeObj^[] objs, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
+	GetFunc := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		fTyp := ToFuncType(objs,consts)
 
@@ -52,7 +52,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 
 		return newFunc
 	}
-	ToFuncType := virtual !(BoxExeObj^[] objs,BoxExeConstObj^[] consts) -> TypeFunc^
+	ToFuncType := virtual !(Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts) -> TypeFunc^
 	{
 		tps := MakeVectorOnStack.{Type^,12}()
 		refs := MakeVectorOnStack.{bool,12}()
@@ -69,7 +69,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 
 		return GetFuncType(tps, refs,GTypeVoid,false,false)
 	}
-	CheckPriority := virtual !(TypeFunc^ tp,BoxExeObj^[] objs,BoxExeConstObj^[] consts,FuncInputObjects^ iObjs) -> int
+	CheckPriority := virtual !(TypeFunc^ tp,Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> int
 	{
 		return CmpFuncPriorityAllExchange(tp,objs,GetDefaultValuesCount())
 	}
@@ -91,11 +91,11 @@ BoxFuncTemplate := class extend BoxExeConstObj
 	SetName := virtual !(Str name) -> void
 	{
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
+	CreateFuncCall := virtual !(Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
 	{
 		return CreateFuncCall(objs,consts,null)
 	}
-	CreateFuncCall := virtual !(BoxExeObj^[] objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateFuncCall := virtual !(Vector.{BoxExeObj^} objs,Vector.{BoxExeConstObj^} consts,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		fnc := GetFunc(objs,consts)
 		return fnc.CreateCall(objs,iObjs)

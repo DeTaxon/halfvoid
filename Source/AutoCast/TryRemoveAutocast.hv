@@ -1,7 +1,7 @@
 
-TryRemoveAutoCast := !(BoxExeObj^ vr,BoxExeObj^[] objs, !(BoxExeObj^,BoxExeObj^[])&->BoxExeObj^ cb) -> BoxExeObj^
+TryRemoveAutoCast := !(BoxExeObj^ vr,Vector.{BoxExeObj^} objs, !(BoxExeObj^,Vector.{BoxExeObj^})&->BoxExeObj^ cb) -> BoxExeObj^
 {
-	castedVars := HybridQueue.{LocalVar^,20}
+	castedVars := MakeVectorOnStack.{LocalVar^,20}()
 
 	tempVar := vr
 	metAutoCastReset := tryUncastVar(tempVar,castedVars)
@@ -26,7 +26,7 @@ TryRemoveAutoCast := !(BoxExeObj^ vr,BoxExeObj^[] objs, !(BoxExeObj^,BoxExeObj^[
 	}
 	return res
 }
-tryUncastVar := !(BoxExeObj^& obj, HybridQueue.{LocalVar^,20} castedVars) -> bool
+tryUncastVar := !(BoxExeObj^& obj, Vector.{LocalVar^} castedVars) -> bool
 {
 	cl := obj
 

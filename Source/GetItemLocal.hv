@@ -1,7 +1,7 @@
 
-GetItemLocal := !(Str name, !(HybridQueue.{BoxUnit^,10})&->bool cb) -> void
+GetItemLocal := !(Str name, !(Vector.{BoxUnit^})&->bool cb) -> void
 {
-	lst := HybridQueue.{BoxUnit^,10}
+	lst := MakeVectorOnStack.{BoxUnit^,20}()
 
 	for it : UnitStack
 	{

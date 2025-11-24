@@ -509,7 +509,7 @@ HV_closure_func := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data^ data)
 	fType := hv.GetType()->{TypeFunc^}
 
 	step2 := void^[120]
-	thisArgs := HybridQueue.{void^,120}
+	thisArgs := MakeVectorOnStack.{void^,20}()
 	//printf("closure %i\n",data.interpFunc.InputsIndxCount)
 	for i : data.interpFunc.InputsIndxCount
 	{

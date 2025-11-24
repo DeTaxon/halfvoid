@@ -11,6 +11,8 @@ Vector := class .{@T} extend TArrayView.{T}
 	}
 	"[]" := virtual !(int i) -> ref T
 	{
+		if i < 0
+			return this[itSize + i]
 		return itPointer[i]
 	}
 	Size := virtual !() -> int
@@ -98,6 +100,7 @@ Vector := class .{@T} extend TArrayView.{T}
 			itPointer = null
 		}
 		itSize = 0
+		itCapacity = 0
 	}
 
 	"for" := !() -> HVFixedArrayIterator.{T}
@@ -152,6 +155,10 @@ HVFixedArrayIterator := class .{@T}
 
 MakeVectorOnStack := !(T[Size] buf = #Var) . {@T,@Size} -> Vector.{T}
 {
+	memset(buf[0]&,0,T->TypeSize*Size)
+	if T->TypeGroup == "Class"
+		internalHVInitClass(buf[^])
+
 	result.itPointer = buf[0]&
 	result.itSize = 0
 	result.itCapacity = Size

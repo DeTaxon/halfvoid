@@ -81,14 +81,12 @@ UserModule := class
 			resType := bodyClass.ItType
 			tmpl := intGetTemplate("internalHVCreateBase")
 			assert(tmpl != null)
-			fnc := tmpl.GetFunc(![],![resType])
+			b := Vector.{BoxExeObj^}
+			fnc := tmpl.GetFunc(b,![resType])
 			assert(fnc != null)
 
 			fPtr := RGetFuncPtr(fnc->{BoxFuncBody^})->{!()^->internalHVModuleBase^}
 			impClass = fPtr()
-
-
-
 
 
 			bodyClass.enterScope(() ==> [this&] {

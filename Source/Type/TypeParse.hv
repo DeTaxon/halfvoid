@@ -28,7 +28,7 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{Str,BoxUnit^}^ resCnsts) -> Type^
 		if res3 is TypedefTemplateVar
 		{
 			tmplVar := res3->{TypedefTemplateVar^}
-			cnsts6 := List.{BoxExeConstObj^}
+			cnsts6 := Vector.{BoxExeConstObj^}
 			return tmplVar.Value.GetType(cnsts6)
 		}else if res3 is TemplateTypeVar{
 			return null

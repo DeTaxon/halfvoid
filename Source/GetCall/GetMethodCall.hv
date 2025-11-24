@@ -86,7 +86,7 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 	return null
 }
 
-innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, BoxExeObj^[] sObjs,Vector.{BoxExeConstObj^} consts, FuncInputObjects^ iObjs = null) -> BoxExeObj^
+innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, Vector.{BoxExeObj^} sObjs,Vector.{BoxExeConstObj^} consts, FuncInputObjects^ iObjs = null) -> BoxExeObj^
 {
 	if vr == null
 		return null

@@ -513,7 +513,7 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{Str,BoxUnit^} r
 	//assert(false)
 	return null
 }
-CheckTemplateTypeList := !(BoxExeObj^ obj, Type^[] tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
+CheckTemplateTypeList := !(BoxExeObj^ obj, Vector.{Type^} tp,Token^ tk, AVLMap.{StringSpan,BoxUnit^} resCnsts) -> Type^
 {
 	if tp.Size() == 0
 		return null

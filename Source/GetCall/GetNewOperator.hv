@@ -22,7 +22,8 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 
 	if allocObj == null
 	{
-		allocObj = CreateFuncCall("GetAllocator",![])
+		objs := Vector.{BoxExeObj^}
+		allocObj = CreateFuncCall("GetAllocator",objs)
 	}
 
 	assert(allocObj != null)
@@ -62,9 +63,10 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 			}
 
 		}else{
-			fnc := TemplateInternalNewOne.GetFunc(![],![tp])
+			objs := Vector.{BoxExeObj^}
+			fnc := TemplateInternalNewOne.GetFunc(objs,![tp])
 			assert(fnc != null)
-			resCall = fnc.CreateCall(![])
+			resCall = fnc.CreateCall(objs)
 			resVar = ToLocalVar(resCall)
 		}
 
@@ -79,7 +81,7 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 			{
 				cls := tp->{TypeClass^}.ToClass
 				callFunc := BoxUnit^
-				zeroConsts := List.{BoxExeConstObj^}
+				zeroConsts := Vector.{BoxExeConstObj^}
 				cls.GetMethods("this",x ==> {
 					callFunc = GetBestFunc(x,iObjs.Objs,zeroConsts)
 				})
