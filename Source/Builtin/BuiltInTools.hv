@@ -256,7 +256,7 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 		}
 		return super(objs,consts,iObjs)
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		return new BuiltInVaArg(tp,consts[0]->{Type^})
 	}

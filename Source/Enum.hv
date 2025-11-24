@@ -350,7 +350,7 @@ EnumBuildInStoreTemplate := class extend BoxFuncTemplate
 		
 		return GetFuncType(![a->{Type^},a],![true,false],GTypeVoid)
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		return new BuiltInPrimeStore(tp)
 	}

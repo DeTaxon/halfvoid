@@ -24,7 +24,7 @@ BoxFuncTemplateDecorator := class extend BoxFuncTemplate
 	{
 		return baseTemplate.GetFuncByType(fTyp,consts)
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		return baseTemplate.CreateFunc(tp,consts)
 	}

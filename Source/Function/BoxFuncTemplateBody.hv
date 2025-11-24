@@ -227,7 +227,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		return checkTypes(datas,consts,resConsts)
 	}
 	
-	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		StartParseHeader()
 

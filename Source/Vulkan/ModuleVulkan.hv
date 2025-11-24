@@ -595,7 +595,8 @@ ModuleVulkan := class extend ModuleInterface
 			}
 
 			ItType := newStruct.ItType
-			setFunc := GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),![])
+			mpt := Vector.{BoxExeConstObj^}
+			setFunc := GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),mpt)
 			newStruct.DefaultSpace.Methods[StringSpan("=")].Push(setFunc)
 
 			AllClasses.Push(newStruct)

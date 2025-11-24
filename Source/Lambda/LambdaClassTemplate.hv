@@ -14,7 +14,7 @@ LambdaClassTemplate := class extend BoxClassTemplateBody
 			fType := typ.Base->{TypeFunc^}
 			newFType := FuncTypeSetParam(fType,0,res.ItType,true)
 
-			consts := List.{BoxExeConstObj^}
+			consts := Vector.{BoxExeConstObj^}
 			newFunc := TemplateInternalLambdaCall.CreateFunc(newFType,consts)
 
 			res.DefaultSpace.Methods[StringSpan("()")].Push(newFunc)

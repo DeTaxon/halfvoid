@@ -688,7 +688,7 @@ BoxClassBody := class extend BoxClassPoison
 							assert(GDefaultCompareTemplate != null)
 
 							setFunc := BoxFunc^
-							cnsts := List.{BoxExeConstObj^}
+							cnsts := Vector.{BoxExeConstObj^}
 							switch name
 							{
 								case "="

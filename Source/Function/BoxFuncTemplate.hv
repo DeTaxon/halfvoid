@@ -73,7 +73,7 @@ BoxFuncTemplate := class extend BoxExeConstObj
 	{
 		return CmpFuncPriorityAllExchange(tp,objs,GetDefaultValuesCount())
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		assert(false)
 		return null

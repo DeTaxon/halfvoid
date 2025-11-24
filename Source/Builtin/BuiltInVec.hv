@@ -89,7 +89,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 		inpMem := objs[0].IsMem()
 		return GetFuncType(1,![a],![inpMem],a.Base,inpMem,false)
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		str := StringSpan(consts[0]->{BoxExeString^}.Value.Str())
 		vecInd := 0
@@ -250,7 +250,7 @@ BuiltInVecConstrTemplate := class extend BoxFuncTemplate
 		
 		return GetFuncType(objs.Size(),typs[0]&,isRefs[0]&,GTypeVoid,false,false)
 	}
-	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		assert(GVectorConstructor4 != null)
 		if tp.Params.Size() == 5

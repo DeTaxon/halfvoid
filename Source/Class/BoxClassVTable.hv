@@ -152,10 +152,7 @@ AppendClass BoxClass
 				and it->{VTableVar^}.Name == val
 			{
 				asVar := it->{VTableVar^}
-				cnsts := List.{BoxExeConstObj^}
-				cnsts.Push(GetExeInt(i))
-				res := TemplateInternalGetVTableVariable.CreateFunc(GetFuncType(1,![ItType][0]&,![true][0]&,asVar.GetType(),true,false), cnsts)
-				cnsts.Destroy()
+				res := TemplateInternalGetVTableVariable.CreateFunc(GetFuncType(1,![ItType][0]&,![true][0]&,asVar.GetType(),true,false), ![GetExeInt(i)])
 				return res
 			}
 		}

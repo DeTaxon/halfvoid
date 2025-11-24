@@ -69,7 +69,7 @@ TemplateTypeIdCmp := class extends BoxFuncTemplate
 		return setType
 	}
 
-	CreateFunc := virtual !(TypeFunc^ tp, BoxExeConstObj^[] consts) -> BoxFunc^
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
 	{
 		return new BuiltInIntBase(tp,"icmp eq")
 	}

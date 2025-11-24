@@ -74,7 +74,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		//TODO, temporary fix , that probably gonna be forever
 		tmpl.Attrs.IsLambda = false
 		tmpl.Attrs.IsAutoResult = true
-		cnsts := List.{BoxExeConstObj^}
+		cnsts := Vector.{BoxExeConstObj^}
 		return tmpl.CreateFunc(toType.Base->{TypeFunc^},cnsts)
 	}
 	CreateLambda := virtual !(Type^ toType) -> BoxExeObj^
@@ -97,7 +97,7 @@ BoxLambdaHolder := class extend BoxExeObj
 			return null
 		fTyp := cnstTyp.Base->{TypeFunc^}
 		return createLambd(() ==> {
-			cnsts := List.{BoxExeConstObj^}
+			cnsts := Vector.{BoxExeConstObj^}
 			tmpl.Attrs.IsAutoResult = false
 			return tmpl.CreateFunc(fTyp,cnsts)->{BoxFuncBody^}
 		})
