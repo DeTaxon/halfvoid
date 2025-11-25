@@ -1,5 +1,5 @@
 
-"in" := !(char^[] strs, char^ value) -> bool
+"in" := !(Vector.{char^} strs, char^ value) -> bool
 {
 	for it : strs
 	{
