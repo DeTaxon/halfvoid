@@ -198,12 +198,12 @@ VulkanInstance := class
 		useMeshShader = true
 	}
 
-	LayerStep := virtual !(VkLayerProperties[] supportedLayers, List.{char^} usingLayers) -> void { assert(false) }
-	ExtensionStep := virtual !(VkExtensionProperties[] supportedExtensions, List.{char^} usingExtensions) -> void { assert(false) }
+	LayerStep := virtual !(Vector.{VkLayerProperties} supportedLayers, List.{char^} usingLayers) -> void { assert(false) }
+	ExtensionStep := virtual !(Vector.{VkExtensionProperties} supportedExtensions, List.{char^} usingExtensions) -> void { assert(false) }
 	AppInfoStep := virtual !(VkApplicationInfo appInfo) -> void { assert(false) }
 	DebugStep := virtual !() -> void { assert(false) }
-	DeviceSelectStep := virtual !(VkPhysicalDevice[] deviceList) -> int { assert(false) }
-	DeviceExtensionStep := virtual !(VkExtensionProperties[] deviceExtensions, List.{char^} expectDeviceExtensions) -> void { assert(false) }
+	DeviceSelectStep := virtual !(Vector.{VkPhysicalDevice} deviceList) -> int { assert(false) }
+	DeviceExtensionStep := virtual !(Vector.{VkExtensionProperties} deviceExtensions, List.{char^} expectDeviceExtensions) -> void { assert(false) }
 }
 
 

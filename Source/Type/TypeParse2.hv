@@ -465,7 +465,11 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{Str,BoxUnit^} r
 		if cnst == null
 			return null
 
-		assert(cnst is in BoxExeConstObj)
+		// if cnst is not in BoxExeConstObj
+		// {
+		// 	printf("why %s\n",cnst.UnitName)
+		// }
+		// assert(cnst is in BoxExeConstObj)
 		if not (cnst is in BoxExeConstObj)
 			return null
 		val := cnst

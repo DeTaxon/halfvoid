@@ -103,7 +103,7 @@ TVkTexture := class
 		itInstance.itStageMemory.Unmap()
 		vStageCpyToImage(itInstance,itImg,itW,itH) //TODO
 	}
-	CreateTexture := !(int w, int h, u8[] data) -> void
+	CreateTexture := !(int w, int h, Blob data) -> void
 	{	
 
 		useAlpha := true

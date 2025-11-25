@@ -13,7 +13,7 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 
 		CreateSamples()
 	}
-	LayerStep := virtual !(VkLayerProperties[] supportedLayers, List.{char^} usingLayers) -> void
+	LayerStep := virtual !(Vector.{VkLayerProperties} supportedLayers, List.{char^} usingLayers) -> void
 	{
 		for i : supportedLayers.Size()
 		{
@@ -35,7 +35,7 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		addLayer("VK_LAYER_LUNARG_vktrace")
 		addLayer("VK_LAYER_AMD_switchable_graphics")
 	}
-	ExtensionStep := virtual !(VkExtensionProperties[] supportedExtensions, List.{char^} usingExtensions) -> void
+	ExtensionStep := virtual !(Vector.{VkExtensionProperties} supportedExtensions, List.{char^} usingExtensions) -> void
 	{
 		for it : supportedExtensions
 		{
@@ -82,7 +82,7 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 			Funcs.vkCreateDebugReportCallbackEXT(Instance,debPrint&,null,vkDebugObj&)
 		}
 	}
-	DeviceSelectStep := virtual !(VkPhysicalDevice[] deviceList) -> int
+	DeviceSelectStep := virtual !(Vector.{VkPhysicalDevice} deviceList) -> int
 	{
 		preferedCards := int[3]
 		preferedCards[^] = -1
@@ -147,7 +147,7 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		}
 		return 0
 	}
-	DeviceExtensionStep := virtual !(VkExtensionProperties[] deviceExtensions, List.{char^} expectDeviceExtensions) -> void 
+	DeviceExtensionStep := virtual !(Vector.{VkExtensionProperties} deviceExtensions, List.{char^} expectDeviceExtensions) -> void 
 	{ 
 		expectDeviceExtensions.Push("VK_KHR_swapchain") //TODO check for swapchains
 		expectDeviceExtensions.Push("VK_KHR_imageless_framebuffer")

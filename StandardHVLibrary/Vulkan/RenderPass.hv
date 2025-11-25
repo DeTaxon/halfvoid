@@ -1,6 +1,6 @@
 AppendClass VulkanInstance
 {
-	CreateRenderPass := !(TRenderPassFrame[] lst, bool useDepth) -> TRenderPass^
+	CreateRenderPass := !(Vector.{TRenderPassFrame} lst, bool useDepth) -> TRenderPass^
 	{
 		result = new TRenderPass
 		result.itInstance = this&
@@ -12,11 +12,11 @@ TRenderPass := class
 {
 	itInstance := VulkanInstance^
 	itPass := VkRenderPass
-	itFrames := TRenderPassFrame[]
+	itFrames := Vector.{TRenderPassFrame}
 	itUseDepth := bool
 
 	Get := !() -> VkRenderPass { return itPass }
-	CreatePass := !(VulkanInstance^ inst,TRenderPassFrame[] lst, bool useDepth) -> void
+	CreatePass := !(VulkanInstance^ inst,Vector.{TRenderPassFrame} lst, bool useDepth) -> void
 	{
 		assert(lst.Size() <= 10)
 		attmDesc := VkAttachmentDescription[11]
@@ -87,8 +87,8 @@ TRenderPass := class
 		inst.Funcs.vkCreateRenderPass(inst.LogicalDevice,rpC&,null,itPass&)
 	}
 	CreateLayout := !(
-		TShaderInputVertexInfo input = ![],TShaderSet^[] sets = ![],
-		TPushConstant^[] pushConstants = ![], int resultImageCount = 0,
+		TShaderInputVertexInfo input,Vector.{TShaderSet^} sets,
+		Vector.{TPushConstant^} pushConstants, int resultImageCount = 0,
 		VkInputTopology topology = "Triangles"
 		) -> TShaderInput^
 	{

@@ -2,12 +2,12 @@
 
 TShaderInputVertexInfo := class
 {
-	VertTypes := VKType[]
+	VertTypes := Vector.{VKType}
 
 	inputObjs := HybridQueue.{VKType,20} //TODOTODOTODO SOMEHOW CLEANUP THIS
 
 
-	"{}<-" := !(VKType[] vInputs) -> void
+	"{}<-" := !(Vector.{VKType} vInputs) -> void
 	{
 		VertTypes = vInputs
 
@@ -47,7 +47,7 @@ TShaderInput := class
 		return itLayout
 	}
 
-	CreateInput := !(TShaderInputVertexInfo vInput,TShaderSet^[] sets,TPushConstant^[] cnsts,int outputImageCount,VkInputTopology top) -> void
+	CreateInput := !(TShaderInputVertexInfo vInput,Vector.{TShaderSet^} sets,Vector.{TPushConstant^} cnsts,int outputImageCount,VkInputTopology top) -> void
 	{
 		resultImageCount = outputImageCount
 		topology = top
