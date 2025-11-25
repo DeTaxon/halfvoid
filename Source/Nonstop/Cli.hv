@@ -1,9 +1,9 @@
 
 CliWin := class extend WindowCli
 {
-	StatusList := List.{Str}
-	HotloadList := List.{Str}
-	ConsoleList := List.{Str}
+	StatusList := Vector.{Str}
+	HotloadList := Vector.{Str}
+	ConsoleList := Vector.{Str}
 
 	ConsoleStream := Stream^
 
@@ -14,17 +14,17 @@ CliWin := class extend WindowCli
 		tabs = new  LayoutTabs(![
 			new LayoutTab("Status",
 				new LayoutHorizontal(![
-					new MultilineText(StatusList)
+					new MultilineText(StatusList&)
 				])
 			),
 			new LayoutTab("Hotload",
 				new LayoutHorizontal(![
-					new MultilineText(HotloadList)
+					new MultilineText(HotloadList&)
 				])
 			),
 			new LayoutTab("Console",
 				new LayoutHorizontal(![
-					new MultilineText(ConsoleList)
+					new MultilineText(ConsoleList&)
 				])
 			),
 		])

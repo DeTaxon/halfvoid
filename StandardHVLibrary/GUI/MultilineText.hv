@@ -1,16 +1,16 @@
 MultilineText := class extend GUIObject
 {
-	lines := Str[]
+	lines := Vector.{Str}^
 	this := !() -> void
 	{
 		SetSize("",1,"",1)
 	}
-	this := !(Str[] newLines) -> void
+	this := !(Vector.{Str}^ newLines) -> void
 	{
 		this."this"()
 		AddLinesLink(newLines)
 	}
-	AddLinesLink := !(Str[] newLines) -> void
+	AddLinesLink := !(Vector.{Str}^ newLines) -> void
 	{
 		lines = newLines
 	}
