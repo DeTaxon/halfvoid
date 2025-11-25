@@ -6,8 +6,8 @@ HVB_Function := class
 
 	IsVArgs := bool
 
-	Objects := MCObject[]
-	Lines := MCLine[]
+	Objects := Vector.{MCObject}
+	Lines := Vector.{MCLine}
 
 	BaseFunction := void^ //BoxFuncBody^
 
