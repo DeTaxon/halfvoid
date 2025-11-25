@@ -1,6 +1,6 @@
 AppendClass VkOverlayContext
 {
-	CreateLayoutTabs := !(GUIObject^[] objs) -> LayoutTabs^
+	CreateLayoutTabs := !(Vector.{GUIObject^} objs) -> LayoutTabs^
 	{
 		result = new LayoutTabs(objs)
 		result.baseContext = this&
@@ -39,10 +39,10 @@ LayoutTabs := class extend GUIObject
 	Glue := LayoutVertical^
 	Header := LayoutTabsHeader^
 	Content := LayoutTabsObjectHolder^
-	this := !(GUIObject^[] objs) -> void
+	this := !(Vector.{GUIObject^} objs) -> void
 	{
-		names := HybridQueue.{Str,20}
-		newObjs := HybridQueue.{GUIObject^,20}
+		names := MakeVectorOnStack.{Str,20}()
+		newObjs := MakeVectorOnStack.{GUIObject^,20}()
 
 		for it : objs
 		{
@@ -81,11 +81,11 @@ LayoutTabsHeader := class extend LayoutHorizontal
 {
 	currentIndex := int
 
-	this := !(Str[] names) -> void
+	this := !(Vector.{Str} names) -> void
 	{
 		SetSize("full",0,"static",1) //TODO instead 1 maybe get from text size?
 		
-		labels := HybridQueue.{GUIObject^,20}
+		labels := MakeVectorOnStack.{GUIObject^,20}()
 
 		for it : names
 		{
@@ -121,7 +121,7 @@ LayoutTabsObjectHolder := class extend GUIObject//LayoutBase
 	objects := List.{TabObjDataType} // obj, offset, size, is staticInLayoutTerms (width for vertical)
 	//baseContext := VkOverlayContext^
 	currentIndex := int
-	this := !(GUIObject^[] objs) -> void
+	this := !(Vector.{GUIObject^} objs) -> void
 	{
 		for it : objs
 		{

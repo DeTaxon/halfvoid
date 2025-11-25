@@ -29,6 +29,10 @@ RunFunc := !() -> void
 	// TSleep(6.0)
 }
 
+//TODO invalid exchange fail hides other errors
+//TODO Funct := !(int x = #Var) , x is not initialized,  FIX UPPER TODO FIRST!
+//TODO Func(![]) does not work if input is Vector.{@T}
+//TODO Vector.{Vector.{int}} broke Vector, remove weirdness in Vector.hv
 //TODO TypesAllocator for all TypeClass
 //TODO recursive #Mark("JIT") for classes
 //TODO there is some trickary with GTypeStr in PassRemoveReferences

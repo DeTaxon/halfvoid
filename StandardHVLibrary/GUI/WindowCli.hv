@@ -9,7 +9,8 @@ WindowCli := class
 
 	InitWindow := virtual !() -> GUIObject^
 	{
-		return new LayoutVertical(![])
+		obj := Vector.{GUIObject^}
+		return new LayoutVertical(obj)
 	}
 
 	Quit := !() -> void

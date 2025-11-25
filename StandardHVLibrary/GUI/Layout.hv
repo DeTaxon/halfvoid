@@ -83,7 +83,7 @@ LayoutBase := class extend GUIObject
 	foundFullSizeW := bool 
 	foundFullSizeH := bool 
 
-	this := !(GUIObject^[] objs) -> void
+	this := !(Vector.{GUIObject^} objs) -> void
 	{
 		for it : objs
 		{
