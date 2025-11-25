@@ -168,7 +168,7 @@ GetLibrary := !(Str libName) -> Library^
 	return gLibDB.GetLib(libName)
 }
 
-GetLibrary := !(char^[] lbs) -> Library^
+GetLibrary := !(Vector.{char^} lbs) -> Library^
 {
 	for i : lbs.Size()
 	{
