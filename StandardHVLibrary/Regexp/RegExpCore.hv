@@ -120,8 +120,8 @@ RegexpAsBlob := class extend Regexp
 
 WordDetermMachine := class extend Regexp
 {
-	Table := int[][]
-	IsEndNode := int[]
+	Table := Vector.{Vector.{int}}
+	IsEndNode := Vector.{int}
 	CharToGo := u8[256]
 
 	ComputeBlobSize := !() -> int{
@@ -156,15 +156,15 @@ WordDetermMachine := class extend Regexp
  		itr = itr[256]&
 
  		lineSize := states*4
- 		IsEndNode = new Vector.{int}(states)
+ 		IsEndNode.Resize(states)
  		memcpy(IsEndNode.GetPointer(),itr,lineSize)
  		itr = itr[lineSize]&
  		lineSize = lines*4
 
- 		Table = new Vector.{int[]}(states)
+ 		Table.Resize(states)
  		for tb : Table
  		{
- 			tb = new Vector.{int}(lines)
+ 			tb.Resize(lines)
  			memcpy(tb.GetPointer(),itr,lineSize)
  			itr = itr[lineSize]&
  		}

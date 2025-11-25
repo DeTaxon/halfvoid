@@ -109,9 +109,9 @@ DeterminateMachine := !(NonDetMachine input) -> DetMachine
 		}
 	}
 
-	result.Table = new Vector.{int[]}(NewNodes.Size())
+	result.Table = new Vector.{Vector.{int}}(NewNodes.Size())
 	for result.Table {
-		it = new Vector.{int}(Letters.Size())
+		it.Resize(Letters.Size())
 		it[^] = -1
 	}
 

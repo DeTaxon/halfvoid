@@ -30,7 +30,7 @@ LexTreeNode := class
 	}
 }
 
-CheckRule := !(int[] rule,int res, LexTreeNode^ nowNode) -> bool
+CheckRule := !(Vector.{int} rule,int res, LexTreeNode^ nowNode) -> bool
 {
 	gotSome := false
 	itr := nowNode
@@ -41,7 +41,7 @@ CheckRule := !(int[] rule,int res, LexTreeNode^ nowNode) -> bool
 		for i : rule.Size()
 		{
 			if c == null return gotSome
-			switch rule[i] //BUG: can not return/continue/break from switch
+			switch rule[i]
 			{
 				case '3'
 					if c.nodeType in "2RSPMQBOAE" {

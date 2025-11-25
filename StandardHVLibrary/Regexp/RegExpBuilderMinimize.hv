@@ -58,10 +58,10 @@ MinimizeMachine := !(DetMachine input) -> DetMachine
 		}
 	}
 
-	result.Table = new Vector.{int[]}(setSize)
+	result.Table.Resize(setSize)
 	for it :  result.Table
 	{
-		it = new Vector.{int}(input.NodeId.Size())
+		it.Resize(input.NodeId.Size())
 		for itm : it itm = -1
 	}
 	result.NodeId = new Vector.{int}(input.NodeId.Size())

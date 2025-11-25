@@ -52,10 +52,10 @@ MakeWordDetermMachine := !(DetMachine input) -> WordDetermMachine^
 		posInT := totalItems.FindIndex(borrow[i])
 		result.CharToGo[lt] = posInT
 	}
-	result.Table = new Vector.{int[]}(input.IsEndNode.Size())
+	result.Table.Resize(input.IsEndNode.Size())
 	for it,i : result.Table
 	{
-		it = new Vector.{int}(newSize)
+		it.Resize(newSize)
 		for frm,j : totalItems
 		{
 			it[j] = input.Table[i][frm]

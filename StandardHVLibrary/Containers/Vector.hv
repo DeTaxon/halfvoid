@@ -13,7 +13,7 @@ Vector := class .{@T} extend TArrayView.{T}
 	{
 		if i < 0
 			return this[itSize + i]
-		return itPointer[i]
+		return itPointer->{u8^}[T->TypeSize*i]&->{T^}^
 	}
 	Size := virtual !() -> int
 	{
@@ -66,13 +66,13 @@ Vector := class .{@T} extend TArrayView.{T}
 		{
 			for i : count
 			{
-				internalHVInitClass(newPointer[i])
+				internalHVInitClass(newPointer->{u8^}[T->TypeSize*i]&->{T^}^)
 			}
 		}
 
 		for i : itSize
 		{
-			newPointer[i] = itPointer[i]
+			newPointer->{u8^}[i*T->TypeSize]&->{T^}^ = this[i]
 		}
 
 		if not isBorrowed
@@ -123,7 +123,7 @@ HVFixedArrayIterator := class .{@T}
 	ind := int
 	"()" := !() -> ref T
 	{
-		result = pointer[ind]&
+		result = pointer->{u8^}[ind*T->TypeSize]&->{T^}
 		ind += 1
 	}
 	HaveValue := !() -> bool
