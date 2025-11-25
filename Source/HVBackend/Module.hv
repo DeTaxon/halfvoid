@@ -1,7 +1,0 @@
-HVModule := class
-{
-	DebugMode := bool
-	Functions := MCFunction^[]
-
-	makeVirtual := virtual !() -> void {}
-}

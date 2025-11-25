@@ -2,7 +2,7 @@ AppendClass FuncPointerParam
 {
 	IsMCInlined := virtual true
 
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		fncRes := ctx.AddFuncConst(func)
 		funcPtr := ctx.CreateVar(func.GetType().GetPoint())

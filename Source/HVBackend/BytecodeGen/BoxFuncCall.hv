@@ -176,7 +176,8 @@ AppendClass BoxFuncCall
 
 AppendClass BuildInVirtualCall
 {
-	GetFuncIdMC := virtual !(MCBuildContext^ ctx,int[] indx) -> int
+	//TODO delete it? never used
+	GetFuncIdMC := virtual !(MCBuildContext^ ctx,Vector.{int} indx) -> int
 	{
 		return 0
 	}
@@ -206,7 +207,7 @@ AppendClass BoxFuncPointerCall
 AppendClass BoxFunc
 {
 	IsMCInlined := virtual false
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		assert(false)
 	}

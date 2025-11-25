@@ -45,7 +45,7 @@ BuiltInMinMaxInt := class extend BoxFuncCommon
 		f^ << "\n"
 	}
 	IsConstexpr := virtual true
-	Execute := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
+	Execute := virtual !(Vector.{BoxExeObj^} objs) -> BoxExeObj^
 	{
 		assert(objs[0] is BoxExeInt)
 		assert(objs[1] is BoxExeInt)

@@ -9,13 +9,12 @@ TryGetPrefixOperator := !(Token^ itm) -> BoxExeObj^
 		if itm.Down.GetValue() == "yield"
 			isYield = true
 
-		resultCalls := new List.{BoxExeObj^}
+		resultCalls := MakeVectorOnStack.{BoxExeObj^,10}()
 
 		preRes := ReturnHalfState^
 
 		if itm.Down.Right is TokenIndent and itm.Down.Right->{TokenIndent^}.Value == "void" //TODO void AND multiple vars?
 		{
-			resultCalls = null
 		}else{
 			dwnRes := TryGetExeCall(itm.Down.Right)
 			if dwnRes == null

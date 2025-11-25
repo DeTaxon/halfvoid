@@ -1,7 +1,7 @@
 AppendClass BuiltInPointGetItem
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		var1 := indexes[0].WriteMC(ctx)
 		var2 := indexes[1].WriteMC(ctx)
@@ -14,7 +14,7 @@ AppendClass BuiltInPointGetItem
 AppendClass BuiltInPointSpaceship
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		res := ctx.CreateVar(GTypeInt);
 

@@ -13,7 +13,7 @@ AppendClass BoxExeNone
 AppendClass BuiltInVoidStore
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		indexes[^].WriteMC(ctx)
 	}

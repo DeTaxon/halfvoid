@@ -111,7 +111,7 @@ AppendClass BoxClass
 	{
 		if VTable.Size() == 0
 			return void
-		tps := List.{Type^}
+		tps := MakeVectorOnStack.{Type^,20}()
 
 		for it : VTable
 		{

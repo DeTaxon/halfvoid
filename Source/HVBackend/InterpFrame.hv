@@ -4,7 +4,7 @@ MCInterpFuncFrame := class
 	func := MCFunction^
 	iCntx := MCInterpContext^
 
-	callerIndx := int[] 
+	callerIndx := Vector.{int} 
 
 	localVarBlob := u8^
 	//localVarTable := AVLMap.{int,void^}
@@ -158,7 +158,7 @@ MCInterpFuncFrame := class
 		}
 	}
 
-	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,int[] indexes,int resultIndex) -> void
+	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,Vector.{int} indexes,int resultIndex) -> void
 	{
 		fType = NormalizeFuncType(fType)
 		varsCount := fType.Params.Size()

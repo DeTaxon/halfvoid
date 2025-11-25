@@ -13,7 +13,7 @@ CacheModule := class
 		LoadMeta()
 	}
 
-	getCacheKey := !(Str st, File^[] files) -> Str
+	getCacheKey := !(Str st, Vector.{File^} files) -> Str
 	{
 		allKey := TEchoStream
 
@@ -25,7 +25,7 @@ CacheModule := class
 		resKey := allKey.GetStr()
 		result->AsString = Base64Encode(resKey.Str(),resKey.Size())
 	}
-	TryGetCacheValue := !(Str st, File^[] files) -> Blob^
+	TryGetCacheValue := !(Str st, Vector.{File^} files) -> Blob^
 	{
 		base64Key := getCacheKey(st,files)
 		for it : cacheBlobList
@@ -47,7 +47,7 @@ CacheModule := class
 		}
 		return null
 	}
-	WriteCacheOfFile := !(Str st, File^[] files,Blob^ data) -> void
+	WriteCacheOfFile := !(Str st, Vector.{File^} files,Blob^ data) -> void
 	{
 		base64Key := getCacheKey(st,files)
 
@@ -77,9 +77,9 @@ CacheModule := class
 
 		base.zipFile.WriteFile(itPath,data)
 	}
-	getFilesCache := !(File^[] fl) -> Str
+	getFilesCache := !(Vector.{File^} fl) -> Str
 	{
-		if fl == null or fl.Size() == 0
+		if fl.Size() == 0
 			return new String("empty")
 
 		maxTime := 0
@@ -138,7 +138,7 @@ CacheModule := class
 			base.zipFile.WriteFile(StringConcat(moduleName,"/BlobCache.txt"),tempBlob)
 		}
 	}
-	GetCachedValue := !(Str stv, File^[] files, !()&->Blob^ cb) -> Blob^
+	GetCachedValue := !(Str stv, Vector.{File^} files, !()&->Blob^ cb) -> Blob^
 	{
 		inDB := TryGetCacheValue(stv,files)
 		if inDB != null

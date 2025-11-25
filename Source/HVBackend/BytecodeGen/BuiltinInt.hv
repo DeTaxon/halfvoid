@@ -1,7 +1,7 @@
 AppendClass BuiltInIntEqAndOper
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		var1 := indexes[0].WriteMC(ctx)
 		var2 := indexes[1].WriteMC(ctx)
@@ -27,7 +27,7 @@ AppendClass BuiltInIntEqAndOper
 AppendClass BuiltInIntBase
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		var1 := indexes[0].WriteMC(ctx)
 		var2 := indexes[1].WriteMC(ctx)
@@ -113,7 +113,7 @@ AppendClass BuiltInIntBase
 AppendClass BuiltInIntDecInc
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		tp := GetType()->{TypeFunc^}.ResultType
 		obj := indexes[0].WriteMC(ctx).CreatedId
@@ -148,7 +148,7 @@ AppendClass BuiltInIntDecInc
 AppendClass BuiltInIntMinus
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		resType := ObjType->{TypeFunc^}.ResultType
 
@@ -190,7 +190,7 @@ AppendClass BuiltInIntMinus
 AppendClass BuiltInPrimeStore
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		var1 := indexes[0].WriteMC(ctx)
 		var2 := indexes[1].WriteMC(ctx)
@@ -200,7 +200,7 @@ AppendClass BuiltInPrimeStore
 AppendClass BuiltInFloatSpaceship
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		v1 := indexes[0].WriteMC(ctx).CreatedId
 		v2 := indexes[1].WriteMC(ctx).CreatedId
@@ -211,7 +211,7 @@ AppendClass BuiltInFloatSpaceship
 AppendClass BuiltinSpaceShipUnsigned
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		res := ctx.CreateVar(GTypeInt)
 		cmpVal := ctx.CreateVar(GTypeBool)
@@ -242,7 +242,7 @@ AppendClass BuiltinSpaceShipUnsigned
 AppendClass BuiltInFloatCosSin
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		resType := ObjType->{TypeFunc^}.ResultType
 
@@ -262,7 +262,7 @@ AppendClass BuiltInFloatCosSin
 AppendClass BuiltInFloatSqrt
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		resType := ObjType->{TypeFunc^}.ResultType
 
@@ -278,7 +278,7 @@ AppendClass BuiltInFloatSqrt
 AppendClass BuiltInInterlockOper
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		var1 := indexes[0].WriteMC(ctx)
 		var2 := indexes[1].WriteMC(ctx)

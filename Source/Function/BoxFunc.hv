@@ -337,7 +337,7 @@ NormalizeFuncType := !(TypeFunc^ inp) -> TypeFunc^
 
 	if inp.ExtraResults.Size() != 0
 	{
-		typs2 := HybridQueue.{Type^,50}
+		typs2 := MakeVectorOnStack.{Type^,50}()
 
 		if inp.ResultRef
 		{

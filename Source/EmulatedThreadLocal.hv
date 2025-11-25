@@ -9,7 +9,7 @@ TLSStep := !() -> void
 	if not EmulateTLS
 		return void
 
-	tlsTypes := List.{Type^}
+	tlsTypes := MakeVectorOnStack.{Type^,20}()
 	tlsVars := List.{GlobalVar2^}
 	
 	for it :  GlobalVars2

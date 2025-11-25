@@ -188,7 +188,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		getTupleVar := BoxExeObj^
 
 	
-		tplTypes := List.{Type^}	
+		tplTypes := MakeVectorOnStack.{Type^,20}()
 		for it : capturedVars
 		{
 			tplTypes.Push(it.1.GetType())

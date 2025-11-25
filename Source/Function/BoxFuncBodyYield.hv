@@ -68,7 +68,7 @@ AppendClass BoxFuncBody
 	}
 	GetYieldTuple := !() -> BoxClass^
 	{
-		tps := List.{Type^}
+		tps := Vector.{Type^}
 
 		if not IsGenerator()
 			return GetTuple(tps,true)

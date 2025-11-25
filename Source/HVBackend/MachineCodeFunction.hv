@@ -170,7 +170,7 @@ AppendClass HVB_Function
 	}
 	//optimization info
 	StackFrameSize := int
-	StackOffsets := int[] // Also contains lable positions
+	StackOffsets := Vector.{int} // Also contains lable positions
 
 	CreateBaseFunc := !() -> MCFunction^
 	{
@@ -207,7 +207,7 @@ AppendClass HVB_Function
 		//useStackSize = (useStackSize + 15) and_b 0xFFFFF0
 		//StackFrameSize = useStackSize
 
-		objOffsets := List.{int}
+		objOffsets := ref StackOffsets
 		offset := int
 		for it,i : Objects
 		{
@@ -233,7 +233,7 @@ AppendClass HVB_Function
 			}
 		}
 		StackFrameSize = (offset + 15) and_b 0xFFFFF0
-		StackOffsets = objOffsets.ToVector()
+		// StackOffsets = objOffsets.ToVector()
 
 		if Objects.Size() != 0
 		{

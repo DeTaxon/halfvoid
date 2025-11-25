@@ -176,7 +176,7 @@ MCBuildFuncContext_x86_64 := class
 			return obj.GetValue()
 
 
-		assert(fnc.StackOffsets != null)
+		assert(index < fnc.StackOffsets.Size())
 
 		plainOffset := fnc.StackOffsets[index]
 		return plainOffset - fnc.StackFrameSize

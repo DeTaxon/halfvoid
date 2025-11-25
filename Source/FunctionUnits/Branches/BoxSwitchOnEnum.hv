@@ -30,7 +30,7 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 
 	defaultNode := BoxBlock^
 
-	cases := HybridQueue.{SwitchCase^,13}
+	cases := MakeVectorOnStack.{SwitchCase^,13}()
 
 	checkCase := () ==> bool {
 		if currentCase == null

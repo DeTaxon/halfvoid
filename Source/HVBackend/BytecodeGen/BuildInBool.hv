@@ -1,7 +1,7 @@
 AppendClass BuiltInBoolNot
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		resObj := indexes[0].WriteMC(ctx).CreatedId
 		newVar := ctx.CreateVar(GTypeBool)

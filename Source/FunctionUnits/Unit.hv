@@ -49,7 +49,7 @@ BoxUnit := class extend HV_Object
 	GetQLabel := virtual !() -> BoxLabel^ { return null}
 
 	IsExecutable := virtual false
-	Execute := virtual !(BoxExeObj^[] objs) -> BoxExeObj^
+	Execute := virtual !(Vector.{BoxExeObj^} objs) -> BoxExeObj^
 	{
 		assert(false)
 	}

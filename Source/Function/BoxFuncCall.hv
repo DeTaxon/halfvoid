@@ -26,7 +26,7 @@ BoxFuncCall := class extend BoxExeObj
 		empty := CheckExeDownList
 		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,empty)
 	}
-	this := !(BoxFunc^ fnc, BoxExeObj^[] objs) -> void
+	this := !(BoxFunc^ fnc, Vector.{BoxExeObj^} objs) -> void
 	{
 		callObj = fnc
 		assert(callObj != null)
@@ -36,7 +36,7 @@ BoxFuncCall := class extend BoxExeObj
 
 		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,objs)
 	}
-	this := !(BoxFunc^ fnc, BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> void //TODO default values for constructors
+	this := !(BoxFunc^ fnc, Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> void //TODO default values for constructors
 	{
 		callObj = fnc
 		assert(callObj != null)
@@ -46,7 +46,7 @@ BoxFuncCall := class extend BoxExeObj
 
 		CheckInputs(fnc.GetType()->{TypeFunc^},fnc,objs,iObjs)
 	}
-	CheckInputs := !(TypeFunc^ fType,BoxFunc^ fnc, BoxExeObj^[] objs,FuncInputObjects^ iObjs = null) -> void
+	CheckInputs := !(TypeFunc^ fType,BoxFunc^ fnc, Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs = null) -> void
 	{
 		itType := NormalizeFuncType(fType)
 
@@ -583,7 +583,7 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	PreVars := List.{LocalVar^}
 	PreCalls := List.{BoxExeObj^}
 	ItPtrFunc := BoxExeObj^
-	this := !(BoxExeObj^ ptrVal,BoxExeObj^[] objs) -> void
+	this := !(BoxExeObj^ ptrVal,Vector.{BoxExeObj^} objs) -> void
 	{
 		ItPtrFunc = ptrVal
 		CheckInputs(ptrVal.GetType().Base->{TypeFunc^},null,objs)

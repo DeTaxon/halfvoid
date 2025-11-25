@@ -11,7 +11,7 @@ PFunctionParser := class
 	bodyToken := Token^
 
 	runToken := Token^
-	compilerCommands := List.{Token^}
+	compilerCommands := Vector.{Token^}
 
 	this := !(Token^ obj) -> void
 	{

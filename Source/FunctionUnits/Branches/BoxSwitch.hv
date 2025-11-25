@@ -62,7 +62,7 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 
 	defaultNode := BoxBlock^
 
-	cases := HybridQueue.{SwitchCase^,13}
+	cases := MakeVectorOnStack.{SwitchCase^,13}()
 
 	checkCase := () ==> {
 		if currentCase == null
@@ -224,7 +224,7 @@ BoxSwitch := class extend BoxExeObj
 	defaultLabel := BoxLabel^
 	defaultNode := BoxBlock^
 
-	this := !(BoxExeObj^ mCall, LocalVar^ mVar , SwitchCase^[] cases,BoxBlock^ defNode) -> void
+	this := !(BoxExeObj^ mCall, LocalVar^ mVar , Vector.{SwitchCase^} cases,BoxBlock^ defNode) -> void
 	{
 		ObjType = GTypeVoid
 		quitNode = new BoxLabel()

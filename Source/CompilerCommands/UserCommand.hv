@@ -114,7 +114,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			}
 		}
 
-		usedFiles := List.{File^}
+		usedFiles := Vector.{File^}
 
 		valBoxes := s64[120]
 		inptPointers := Vector.{void^}

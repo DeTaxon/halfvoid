@@ -21,7 +21,7 @@ TryGetTemplateCall := !(Token^ itm) -> BoxExeObj^
 		itr = itr.Right
 	}
 
-	tps := List.{Type^}
+	tps := MakeVectorOnStack.{Type^,20}()
 	tps.Push(objs[^].GetType())
 	tplType := GetTuple(tps).ItType
 	tps.Destroy()

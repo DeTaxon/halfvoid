@@ -71,12 +71,9 @@ CheckTemplateBodyCommandsSingle := !(BoxFuncTemplateBody^ fnc, Token^ cmd) -> vo
 	}
 	
 }
-CheckTemplateBodyCommands := !(BoxFuncTemplateBody^ fnc,Token^[] cmds) -> void
+CheckTemplateBodyCommands := !(BoxFuncTemplateBody^ fnc,Vector.{Token^} cmds) -> void
 {
-	if cmds != null
-	{
-		CheckTemplateBodyCommandsSingle(fnc,cmds[^])
-	}
+	CheckTemplateBodyCommandsSingle(fnc,cmds[^])
 
 	if fnc.RunToken != null
 	{

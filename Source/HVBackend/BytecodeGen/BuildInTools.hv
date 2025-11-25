@@ -1,7 +1,7 @@
 AppendClass BuiltInMemsetInlineInt
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		//TODO memleak
 		cl := CreateFuncCall(StringSpan("memset"),![indexes[0],indexes[1],indexes[2]])
@@ -12,7 +12,7 @@ AppendClass BuiltInMemsetInlineInt
 AppendClass BuiltInDegreeSuffix
 {
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		resType := ObjType->{TypeFunc^}.ResultType
 
@@ -31,7 +31,7 @@ AppendClass BuiltInLLVMProxy
 {
 
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		dwn := indexes[0].WriteMC(ctx).CreatedId
 		switch funcName
@@ -47,7 +47,7 @@ AppendClass BuiltInVaArg
 {
 
 	IsMCInlined := virtual true
-	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,BoxExeObj^[] indexes) -> WriteMCResult
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
 		dwn := indexes[0].WriteMC(ctx).CreatedId
 		newVar := ctx.CreateVar(TargetType)

@@ -66,10 +66,10 @@ BoxYield := class extend BoxReturn
 ReturnHalfState := class extend BoxExeObj
 {
 	isYield := bool
-	callObjs := BoxExeObj^[]
+	callObjs := Vector.{BoxExeObj^}
 	returnObj := BoxExeObj^
 	errorToken := Token^
-	this := !(Token^ erToken,BoxExeObj^[] toCall,bool iY) -> void
+	this := !(Token^ erToken,Vector.{BoxExeObj^} toCall,bool iY) -> void
 	{
 		errorToken = erToken
 		callObjs = toCall
@@ -81,7 +81,7 @@ ReturnHalfState := class extend BoxExeObj
 		totalObjs := HybridQueue.{BoxExeObj^,50}
 		ft := CurrentFunc.GetType()->{TypeFunc^}
 
-		if callObjs != null and callObjs.Size() != 0
+		if callObjs.Size() != 0
 		{
 			for callObj,callIndx : callObjs
 			{
@@ -212,13 +212,13 @@ ReturnHalfState := class extend BoxExeObj
 	}
 	IsReturnMem := !() -> bool
 	{
-		if callObjs == null or callObjs.Size() == 0
+		if callObjs.Size() == 0
 			return false
 		return callObjs[0].IsMem()
 	}
 	GetSetType := !() -> Type^
 	{
-		if callObjs == null or callObjs.Size() == 0
+		if callObjs.Size() == 0
 			return GTypeVoid
 		return callObjs[0].GetType()
 	}
