@@ -173,3 +173,8 @@ MakeVectorSpanOnPtr := !(@T^ buf, int size) -> Vector.{T}
 	result.itCapacity = size
 	result.isBorrowed = true
 }
+
+internalCreateEmptyVector := !() .{@T} -> Vector.{T}
+{
+	// empty is fine
+}

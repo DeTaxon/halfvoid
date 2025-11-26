@@ -158,7 +158,11 @@ BoxFunc := class extend BoxExeConstObj
 				return Execute(objs)
 			}
 		}
-		fCall := new BoxFuncCall(this&,objs,iObjs) //MUST BE NEW BOXFUNCCALL
+		fCall := new BoxFuncCall //MUST BE NEW BOXFUNCCALL
+
+		if not fCall.Init(this&,objs,iObjs)
+			return null
+
 
 		ft := GetType()->{TypeFunc^}
 

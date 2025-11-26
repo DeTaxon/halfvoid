@@ -80,7 +80,15 @@ ExchangeArrayHolderToVector := class extend ExchangeUnit
 	}
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
 	{
+		hldr := obj->{BoxArrayHolder^}
 		typ := expType->{TypeClass^}.ToClass.Constants.Constants[0]->{Type^}
-		return obj->{BoxArrayHolder^}.createUse(typ)
+
+		if hldr.GetArraySize() == 0
+		{
+			objs := Vector.{BoxExeObj^}
+			return CreateFuncCall("internalCreateEmptyVector",objs,![typ])
+		}
+
+		return hldr.createUse(typ)
 	}
 }

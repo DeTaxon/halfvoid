@@ -8,14 +8,21 @@ a2 := class extends a1
 
 }
 
-Test := !(Vector.{a1^} g) -> int
+Garb := !() -> void
 {
+	x := 12
+	y := 13
+	z := 100
+}
 
+Test := !(int x = #Var, int y = #Var) -> int
+{
+	printf("why %i %i\n",x,y)
 }
 main := !(char^[] args) -> int
 {
-	c := a2^
-	Test(![c])
+	Garb()
+	Test()
 }
 
 
@@ -29,9 +36,6 @@ RunFunc := !() -> void
 	// TSleep(6.0)
 }
 
-//TODO invalid exchange fail hides other errors
-//TODO Funct := !(int x = #Var) , x is not initialized,  FIX UPPER TODO FIRST!
-//TODO Func(![]) does not work if input is Vector.{@T}
 //TODO Vector.{Vector.{int}} broke Vector, remove weirdness in Vector.hv
 //TODO TypesAllocator for all TypeClass
 //TODO recursive #Mark("JIT") for classes
