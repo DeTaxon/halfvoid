@@ -73,11 +73,9 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	}
 
 
-	TSpawnTask(() ==> [argv,argc] {	
-		spn := ArraySpan.{char^}//(argv,argc)
-		spn.pointer = argv
-		spn.itSize = argc
-		main(spn&)
+	TSpawnTask(() ==> [argv,argc] {
+		spn := MakeVectorSpanOnPtr(argv,argc)
+		main(spn)
 	})
 
 	EnterTaskThreadCycle(true)

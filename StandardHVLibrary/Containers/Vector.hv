@@ -1,4 +1,4 @@
-Vector := class .{@T} extend TArrayView.{T}
+Vector := class .{@T} //extend TArrayView.{T}
 {
 	itPointer := T^
 	itSize := int
@@ -114,6 +114,19 @@ Vector := class .{@T} extend TArrayView.{T}
 		Resize(other.Size())
 		this[^i] = other[i]
 	}
+
+	Reverse := fake
+	{
+		// "[]" := !(int indx) -> ref T
+		// {
+		//
+		// }
+		"for" := !() -> HVFixedArrayIteratorReverse.{T}
+		{
+			result.pointer = GetPointer()
+			result.ind = Size() - 1
+		}
+	}
 }
 
 HVFixedArrayIterator := class .{@T}
@@ -129,6 +142,20 @@ HVFixedArrayIterator := class .{@T}
 	HaveValue := !() -> bool
 	{
 		result = ind < size
+	}
+}
+HVFixedArrayIteratorReverse := class .{@T}
+{
+	pointer := T^
+	ind := int
+	"()" := !() -> ref T
+	{
+		result = pointer->{u8^}[ind*T->TypeSize]&->{T^}
+		ind -= 1
+	}
+	HaveValue := !() -> bool
+	{
+		return ind >= 0
 	}
 }
 

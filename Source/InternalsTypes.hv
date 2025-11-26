@@ -11,6 +11,8 @@ GBlobType := Type^
 
 GRepoFileType := Type^
 
+GVectorTemplate := BoxClassTemplate^
+
 InitInternalsTypes := !() -> void
 {
 	ArrayViewTemplate = intGetClassTemplate2("TArrayView")
@@ -24,6 +26,8 @@ InitInternalsTypes := !() -> void
 	GBlobType = GBlobClass.ItType
 
 	GRepoFileType = intGetClass2("File").ItType
+
+	GVectorTemplate = intGetClassTemplate("Vector")
 }
 
 intGetClass := !(char^ name) -> BoxClass^

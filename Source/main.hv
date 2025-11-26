@@ -53,7 +53,7 @@ GTestCode := false
 FastestRunner := false
 
 OutputFile := Str
-main := !(char^[] args) -> int
+main := !(Vector.{char^} args) -> int
 {
 	GCompileThread = CurrentThread 
 	HotloadStream& = new VoidStream

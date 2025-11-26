@@ -1,28 +1,19 @@
 
-a1 := class
+
+RevTest := !(@T[] x) -> void
 {
 
-}
-a2 := class extends a1
-{
-
+	printf("Hhey %s\n",T->TypeName)
 }
 
-Garb := !() -> void
-{
-	x := 12
-	y := 13
-	z := 100
-}
-
-Test := !(int x = #Var, int y = #Var) -> int
-{
-	printf("why %i %i\n",x,y)
-}
 main := !(char^[] args) -> int
 {
-	Garb()
-	Test()
+	c := Vector.{Vector.{int}}
+
+	RevTest(c)
+
+	c.Resize(10)
+	c.GetPointer()[0].Resize(10)
 }
 
 

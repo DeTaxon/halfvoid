@@ -213,7 +213,9 @@ LexBuilder := class extend TGCObject
 		AddNodeLine(nowNodes,0,mstart,-1)
 		newMachine := new NonDetMachine
 		newMachine.Lines = nowNodes.ToVector()
-		newMachine.EndNodeData = ![!{mend,val}].ToVector()
+
+		newMachine.EndNodeData.Resize(1)
+		newMachine.EndNodeData[0] = !{mend,val}
 		
 		Nfas.Push(newMachine)
 

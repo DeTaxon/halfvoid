@@ -100,24 +100,21 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 			return null
 		if dObj.GetType() == null
 			return null
-		if dObj.GetType() is TypeArrayView
-			dObj = new PtrToRef(new PtrExchange(dObj,dObj.GetType()->{TypeArrayView^}.viewClassType.GetPoint()))
 		Objs.Push(dObj)
 		SyntaxCompress(itm.Down.Right,PriorityData)
 		namedInputs := AVLMap.{Str,BoxExeObj^} //TODO use varaible
 		if not CheckFuncCallBrackets(itm.Down.Right,Objs,namedInputs)
 			return null
 
-
 		cnsts := Vector.{BoxExeConstObj^}
-		return CreateFuncCallOperator(StringSpan("[]"),Objs,cnsts)?
+		return CreateFuncCallOperator("[]",Objs,cnsts)?
 
 		if Objs.Size() >= 1 and Objs[0].GetType() == GTypeStr
 		{
 			asSt := strAsString(Objs[0])
 			asSt = new PtrToRef(asSt)
 			Objs[0] = asSt
-			return CreateFuncCallOperator(StringSpan("[]"),Objs,cnsts)?
+			return CreateFuncCallOperator("[]",Objs,cnsts)?
 			Objs[0] = dObj
 		}
 

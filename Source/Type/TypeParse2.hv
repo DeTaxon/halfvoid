@@ -304,39 +304,16 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		if tk.Down.Right.Down == null
 		{
 			dwnType := Type^
-			if tp? is in TypeClass or (tp? is in TypePoint and tp?.Base is in TypeClass)
-			{
-				tpClass := BoxClass^
-				if tp is in TypeClass
-				{
-					tpClass = tp->{TypeClass^}.ToClass
-				}else{
-					tpClass = tp.Base->{TypeClass^}.ToClass
-				}
-				if not tpClass.IsViewType()
-					return null
 
-				clItr := tpClass
-				while clItr.TemplateParent != ArrayViewTemplate
-				{
-					assert(clItr.Parents.Size() != 0)
-					clItr = clItr.Parents[0] //todo Multi inherence support
-				}
-				dwnType = clItr.Constants?.Constants[0]->{Type^}
-			}
-			if tp? is TypeArr
+			if tp? is TypeClass and tp->{TypeClass^}.ToClass.TemplateParent == GVectorTemplate
 			{
-				dwnType = tp.Base
+				dwnType = tp->{TypeClass^}.ToClass.Constants.Constants[0]->{Type^}
 			}
-			if tp? is TypeArrayView
-			{
-				dwnType = tp.Base
-			}
+
 			dTyp2 := CheckTemplateType(dwnType,tk.Down,resCnsts) //TODO: unnull
 			if dTyp2 == null
 				return null
-			return dTyp2.GetArrayView()
-
+			return GVectorTemplate.GetClass(![dTyp2]).ItType
 		}
 
 		baseType := Type^
