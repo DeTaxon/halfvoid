@@ -28,7 +28,6 @@ RunFunc := !() -> void
 }
 
 //TODO Vector.{Vector.{int}} broke Vector, remove weirdness in Vector.hv
-//TODO TypesAllocator for all TypeClass
 //TODO recursive #Mark("JIT") for classes
 //TODO there is some trickary with GTypeStr in PassRemoveReferences
 //TODO x86, make passing vec4f abi compatable, windows, linux

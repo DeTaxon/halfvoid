@@ -1,6 +1,6 @@
 TryGetCommand := !(Token^ itm) -> BoxExeObj^ 
 {
-	if itm == null or itm.Down == null
+	if itm == null or itm.Down == null or itm.Down is not TokenIndent
 		return null
 	cmd := itm.Down->{TokenIndent^}.Value
 
