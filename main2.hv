@@ -27,6 +27,7 @@ RunFunc := !() -> void
 	// TSleep(6.0)
 }
 
+//TODO broken feature: only used virtual functions are loaded, this caused to break OptCodeGen
 //TODO Vector.{Vector.{int}} broke Vector, remove weirdness in Vector.hv
 //TODO recursive #Mark("JIT") for classes
 //TODO there is some trickary with GTypeStr in PassRemoveReferences

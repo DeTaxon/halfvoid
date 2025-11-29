@@ -239,6 +239,8 @@ CollectFunctionsCtx := class
 	{
 		while checkFunctions.Size() != 0 or checkClasses.Size() != 0 or checkGlobals.Size() != 0
 		{
+
+
 			if checkFunctions.Size() != 0
 			{
 				fnc := checkFunctions.Pop()
@@ -277,7 +279,11 @@ CollectFunctionsCtx := class
 				assert(cls != null)
 
 				if not cls.IsComplete()
-					continue
+				{
+					//TODO not all virtual functions are used
+					cls.StartParseBody()
+					WaitForParsingObjects()
+				}
 
 				checkType(cls.VTableType?.ItType)
 				checkType(cls.Fields[^].Value)
