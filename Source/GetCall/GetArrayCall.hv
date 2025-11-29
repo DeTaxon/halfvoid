@@ -116,25 +116,6 @@ BoxArrayHolder := class extend BoxExeObj
 	{
 		return vals.Size()
 	}
-	CreateViewArray := !(Type^ tp) -> BoxExeObj^
-	{
-		bs := GetViewBaseType(tp)
-
-		if vals.Size() == 0
-		{
-			objs := CheckExeDownList
-			cnsts := List.{BoxExeConstObj^}
-			cnsts.Push(bs)
-			resFunc := ArrayViewCreateEmptyArray.GetFunc(objs,cnsts)
-			cnsts.Destroy()
-			return resFunc.CreateCall()
-		}
-		if TypeFight(defaultType,bs) != bs
-		{
-			return null
-		}
-		return createUse(bs)
-	}
 	CreateDefaultUse := !() -> BoxExeObj^
 	{
 		return createUse(defaultType)
@@ -173,33 +154,4 @@ BoxArrayHolder := class extend BoxExeObj
 		return cnst
 	}
 
-}
-
-IsViewType := !(Type^ tp) -> bool
-{
-	if not (tp is in TypePoint)
-		return false
-	if not (tp.Base is in TypeClass)
-		return false
-	cls := tp.Base->{TypeClass^}.ToClass
-
-	assert(ArrayViewTemplate != null)
-	if cls.TemplateParent != ArrayViewTemplate
-		return false
-	return true
-}
-
-GetViewBaseType := !(Type^ tp) -> Type^
-{
-	if not (tp is in TypePoint)
-		return null
-	if not (tp.Base is in TypeClass)
-		return null
-	cls := tp.Base->{TypeClass^}.ToClass
-
-	assert(ArrayViewTemplate != null)
-	if cls.TemplateParent != ArrayViewTemplate
-		return null
-	return cls.Constants?.Constants[0]->{ConstType^}.Value
-	return null
 }

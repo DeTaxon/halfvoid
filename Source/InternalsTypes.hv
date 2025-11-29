@@ -1,5 +1,4 @@
 
-ArrayViewTemplate := BoxClassTemplate^
 OptionalTemplate := BoxClassTemplate^
 
 GCILambda := BoxClass^
@@ -15,7 +14,6 @@ GVectorTemplate := BoxClassTemplate^
 
 InitInternalsTypes := !() -> void
 {
-	ArrayViewTemplate = intGetClassTemplate2("TArrayView")
 	OptionalTemplate = intGetClassTemplate2("Optional")
 
 	GCILambda = intGetClass2("TILambda")

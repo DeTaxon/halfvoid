@@ -66,7 +66,7 @@ PointStoreTemplate := class extend BoxFuncTemplate
 		if not objs[0].IsMem()
 			return null
 		a := objs[0].GetType()
-		if a is in TypePoint or a is TypeArrayView
+		if a is in TypePoint
 		{
 			return GetFuncType(2,![a,a],![true,false],GTypeVoid,false,false)
 		}
@@ -94,13 +94,6 @@ PointArrayGetTemplate := class extend BoxFuncTemplate
 		if a is in TypePoint or a is TypeArr
 		{
 			a2 := a.Base.GetPoint()
-			if a is in TypePoint and a.Base is TypeClass
-			{
-				if a.Base->{TypeClass^}.ToClass.IsViewType()
-				{
-					return null
-				}
-			}
 			empt := Vector.{bool}
 			return GetFuncType(2,![a2,GTypeInt],empt,a.Base,true,false)
 		}

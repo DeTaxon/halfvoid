@@ -100,7 +100,7 @@ AppendClass BoxClass
 				vFunc.SetName(fncName)
 				DefaultSpace.VirtualCleanMethods[fncName].Push(fnc)
 				DefaultSpace.VirtualMethods[fncName].Push(vFunc)
-				if DisableScary or TemplateParent == ArrayViewTemplate //TODO don't know why, but ArrayView functions must be loaded
+				if DisableScary
 				{
 					fnc.ParseBody()
 				}

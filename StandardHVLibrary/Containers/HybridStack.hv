@@ -1,4 +1,4 @@
-HybridStack := class .{@T,@HSize} extend TArrayView.{T}
+HybridStack := class .{@T,@HSize} //extend TArrayView.{T}
 {
 	StaticSize := int
 	StaticArray := T[HSize]
@@ -82,4 +82,23 @@ HybridStack := class .{@T,@HSize} extend TArrayView.{T}
 	//	}
 	//	return lmbd.Capture()
 	//}
+	"for" := !() -> HybridStackIterator.{T,HSize}
+	{
+		result.ptr = this&
+	}
+}
+
+HybridStackIterator := class.{@T,@Size}
+{
+	ptr := HybridStack.{T,Size}^
+	indx := int
+
+	HaveValue := !() -> bool
+	{
+		return indx < ptr.Size()
+	}
+	"()" := !() -> ref T
+	{
+		return ptr^[indx++]
+	}
 }

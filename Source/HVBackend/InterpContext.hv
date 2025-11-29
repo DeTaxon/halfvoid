@@ -350,8 +350,6 @@ MCInterpContext := class
 			return ffi_type_pointer
 		}else if itType is in  TypePoint{
 			return ffi_type_pointer
-		}else if itType is in  TypeArrayView{
-			return ffi_type_pointer
 		}else if itType == GTypeDouble{
 			return ffi_type_double
 		}else if itType == GTypeInt or itType == GTypeTypeId {

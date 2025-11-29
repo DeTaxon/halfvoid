@@ -1,4 +1,4 @@
-FixedSizeRing := class .{@T,@ArraySize} extend TArrayView.{T}
+FixedSizeRing := class .{@T,@ArraySize} //extend TArrayView.{T}
 {
 	fixedArray := T[ArraySize]
 	itSize := int

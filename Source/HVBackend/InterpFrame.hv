@@ -193,11 +193,6 @@ MCInterpFuncFrame := class
 				values[i] = GetObjectPtr(it)->{void^^}^
 				valuesPtr[i] = values[i]&
 				valuesTypes[i] = ffi_type_pointer
-			}else if itType is in  TypeArrayView
-			{
-				values[i] = GetObjectPtr(it)->{void^^}^
-				valuesPtr[i] = values[i]&
-				valuesTypes[i] = ffi_type_pointer
 			}else if itType == GTypeDouble{
 				values[i]&->{double^}^ = GetDouble(it)
 				valuesPtr[i] = values[i]&

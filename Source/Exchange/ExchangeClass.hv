@@ -55,38 +55,6 @@ ExchangeRefClassToBase := class extend ExchangeUnit
 		return new RefExchange(obj,expType)
 	}
 }
-ExchangeRefClassToArrayView := class extend ExchangeUnit
-{
-	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
-	{
-		frm := obj.GetType()
-
-		if not (newType is in TypePoint)
-			return CmpNoExchange
-
-		if not (newType.Base is TypeClass)
-			return CmpNoExchange
-		
-		if not (frm is TypeClass)
-			return CmpNoExchange
-
-
-		assert(ArrayViewTemplate != null)
-		toCls := newType.Base->{TypeClass^}.ToClass
-		if not (toCls.TemplateParent == ArrayViewTemplate)
-			return CmpNoExchange
-		
-		if TypeFight(frm,newType.Base) == newType.Base
-		{
-			return 1000 //todo rethink
-		}
-		return CmpNoExchange
-	}
-	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
-	{
-		return new UnrefFuncCall(obj)
-	}
-}
 
 ClassFromExchangeSet := class extend ExchangeUnit
 {

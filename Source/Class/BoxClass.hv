@@ -302,20 +302,6 @@ BoxClass := class extend BoxUnit
 		while stackSize < UnitStack.Size()
 			UnitStack.Pop()
 	}
-	IsViewType := !() -> bool
-	{
-		AwaitTypeState()
-		assert(ArrayViewTemplate != null)
-		if TemplateParent == ArrayViewTemplate
-			return true
-
-		for it : Parents
-		{
-			if it.IsViewType()
-				return true
-		}
-		return false
-	}
 
 	itDynamicSize := VarIntObj^
 	GetClassSize := virtual !() -> BoxExeObj^

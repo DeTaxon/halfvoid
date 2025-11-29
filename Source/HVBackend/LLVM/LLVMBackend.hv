@@ -1080,8 +1080,6 @@ IsPointLikeType := !(Type^ ptr) -> bool
 		return true
 	if ptr is in TypePoint
 		return true
-	if ptr is in TypeArrayView
-		return true
 	return false
 }
 

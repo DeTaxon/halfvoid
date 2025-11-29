@@ -12,7 +12,6 @@ TemplateInternalIsInSameType := BoxFuncTemplate^
 
 GInternalSetType := BoxFuncTemplate^
 
-ArrayViewCreateEmptyArray := BoxFuncTemplate^
 GZeroMemTemplate := BoxFuncTemplate^
 
 GVectorConstructor2 := BoxFuncTemplate^
@@ -59,7 +58,6 @@ InitInternals := !() -> void
 
 	GInternalSetType = intGetTemplate("internalHVSetType")
 
-	ArrayViewCreateEmptyArray = intGetTemplate("internalCreateEmptyArray")
 
 	GZeroMemTemplate = intGetTemplate("ZeroMem")
 

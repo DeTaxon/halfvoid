@@ -1297,8 +1297,6 @@ IsPtrLikeType := !(Type^ tp) -> bool
 {
 	if tp is in TypePoint
 		return true
-	if tp is in TypeArrayView
-		return true
 	if tp == GTypeStr
 		return true
 	return false

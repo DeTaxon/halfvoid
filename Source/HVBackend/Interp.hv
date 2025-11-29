@@ -546,7 +546,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			ptr2 := thisFrame.GetObjectPtr(thisLine.var4)
 			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
 
-			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp) or objTyp is in TypeArrayView or objTyp is TypeEnum
+			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp) or objTyp is TypeEnum
 			{
 				spc := s64
 
@@ -559,7 +559,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 						case 4 spc = ptr1->{s32^}^ - (ptr2->{s32^}^)
 						case 8 spc = ptr1->{s64^}^ - (ptr2->{s64^}^)
 					}
-				}else if objTyp is in TypePoint or objTyp is in TypeArrayView
+				}else if objTyp is in TypePoint
 				{
 					spc = ptr1->{size_t^^}^ <=> ptr2->{size_t^^}^
 				}else if IsFloat(objTyp)
@@ -633,7 +633,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					memset(v1,0,typeSize)
 					memcpy(v1,v2,min(typeSize,oldType.GetSize()) )
 				}
-			}else if toType is in TypePoint or toType is in TypeArrayView
+			}else if toType is in TypePoint
 			{
 				//memset(v1,0,typeSize)
 				memcpy(v1,v2,typeSize)

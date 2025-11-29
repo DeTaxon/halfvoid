@@ -140,8 +140,6 @@ CollectFunctionsCtx := class
 		UsedTypes.Insert(tp)
 		while tp.Base != null
 		{
-			if tp is TypeArrayView
-				checkType(tp->{TypeArrayView^}.viewClassType)
 			tp = tp.Base
 			UsedTypes.Insert(tp)
 		}
@@ -278,11 +276,13 @@ CollectFunctionsCtx := class
 
 				assert(cls != null)
 
+				if not cls.IsComplete()
+					continue
+
 				checkType(cls.VTableType?.ItType)
 				checkType(cls.Fields[^].Value)
 				checkType(cls.Parents[^].ItType)
 				checkGlobal(cls.VTableValue?)
-
 
 				for it : cls.VTable
 				{

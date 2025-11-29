@@ -106,12 +106,6 @@ innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, Vector.{BoxExeObj^} sObjs,Vec
 
 	clsType := vrObj.GetType()
 
-	if clsType is  TypeArrayView
-	{
-		clsType = clsType->{TypeArrayView^}.viewClassType
-		Objs[0] = new PtrExchange(vrObj,clsType.GetPoint())
-	}
-
 	if clsType is in TypePoint
 	{
 		clsType = clsType.Base

@@ -38,13 +38,6 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 		cls := BoxClass^
 		typ := val.GetType()
 
-		if typ is TypeArrayView
-		{
-			newTp := typ->{TypeArrayView^}.viewClassType.GetPoint()
-			val = new PtrExchange(val,newTp)
-			typ = newTp
-		}
-
 		if typ is TypeClass
 		{
 			cls = typ->{TypeClass^}.ToClass

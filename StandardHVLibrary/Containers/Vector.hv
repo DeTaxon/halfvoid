@@ -9,7 +9,7 @@ Vector := class .{@T} //extend TArrayView.{T}
 	{
 		Resize(count)
 	}
-	"[]" := virtual !(int i) -> ref T
+	"[]" := !(int i) -> ref T
 	{
 		if i < 0
 			return this[itSize + i]

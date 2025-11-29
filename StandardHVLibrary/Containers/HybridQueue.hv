@@ -1,11 +1,11 @@
-HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
+HybridQueue := class .{@T,@HSize} //extend TArrayView.{T}
 {
 	StaticSize := int
 	FullSize := int
 	StaticArray := T[HSize]
 	ListArray := List.{T}
 
-	"[]" := virtual !(int i) -> ref T
+	"[]" := !(int i) -> ref T
 	{
 		if i < 0
 		{
@@ -101,4 +101,22 @@ HybridQueue := class .{@T,@HSize} extend TArrayView.{T}
 	//	}
 	//	return lmbd.Capture()
 	//}
+	"for" := !() -> HybridQueueIterator.{T,HSize}
+	{
+		result.ptr = this&
+	}
+}
+HybridQueueIterator := class.{@T,@Size}
+{
+	ptr := HybridQueue.{T,Size}^
+	indx := int
+
+	HaveValue := !() -> bool
+	{
+		return indx < ptr.Size()
+	}
+	"()" := !() -> ref T
+	{
+		return ptr^[indx++]
+	}
 }
