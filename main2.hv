@@ -1,19 +1,19 @@
 
-
-RevTest := !(@T[] x) -> void
+if true
 {
-
-	printf("Hhey %s\n",T->TypeName)
+	cc := class
+	{
+		Test := !() -> void
+		{
+			printf("yep\n")
+		}
+	}
 }
 
 main := !(char^[] args) -> int
 {
-	c := Vector.{Vector.{int}}
-
-	RevTest(c)
-
-	c.Resize(10)
-	c.GetPointer()[0].Resize(10)
+	c := cc
+	c.Test()
 }
 
 

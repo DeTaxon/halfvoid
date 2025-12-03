@@ -109,9 +109,12 @@ BoxFile := class extend BoxUnit
 		}
 		return resultTokens
 	}
-	ParseClasses := !(ReloadFileOldData^ oldData = null) -> void
+	ParseClasses := !(ReloadFileOldData^ oldData = null, Token^ checkToken = null) -> void
 	{
-		classes := ParseClasses(fileTokens)
+		if checkToken == null
+			checkToken = fileTokens
+
+		classes := ParseClasses(checkToken)
 
 		for iter : classes
 		{
@@ -377,9 +380,12 @@ BoxFile := class extend BoxUnit
 			iter = iter.Right
 		}
 	}
-	ParseFunctions := !(ReloadFileOldData^ oldData = null) -> void
+	ParseFunctions := !(ReloadFileOldData^ oldData = null,Token^ checkToken = null) -> void
 	{
-		res := ParseFunctions(fileTokens)
+		if checkToken == null
+			checkToken = fileTokens
+
+		res := ParseFunctions(checkToken)
 
 		for iter : res
 		{
@@ -701,12 +707,35 @@ CWorkBaseFile := class extend CWorkUnit
 			itState = "Complete"
 			return "Complete"
 		}else{
+
 			cmdRes := TryGetCommand(itToken)
 			if cmdRes == null
 			{
-				itError = itToken.MakeError("Unknown object")
-				itState = "Failed"
-				return "Failed"
+				comp := TryParseBlockInFile(itToken)
+
+				if comp is BoxBlock
+				{
+					SyntaxCompress(comp.down,LexHVFileRoot)
+					itFile.ParseClasses(null,comp.down)
+					itFile.ParseFunctions(null,comp.down)
+
+					iter := comp.down.Down
+					while iter != null
+					{
+						if itFile.ParsedTokens.Contain(iter)
+						{
+							iter = iter.Right
+							continue
+						}
+						WorkBag.AddWork(new CWorkBaseFile(itFile,iter))
+						iter = iter.Right
+					}
+				}else{
+				
+					itError = itToken.MakeError("Unknown object")
+					itState = "Failed"
+					return "Failed"
+				}
 			}
 		}
 
@@ -717,4 +746,9 @@ CWorkBaseFile := class extend CWorkUnit
 	IsDone := virtual !() -> bool {
 		return false
 	}
+}
+
+TryParseBlockInFile := !(Token^ it) -> BoxExeObj^
+{
+	return TryParseIf(it,true)?
 }

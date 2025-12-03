@@ -1,4 +1,4 @@
-TryParseIf := !(Token^ itm) -> BoxExeObj^
+TryParseIf := !(Token^ itm, bool nonFunc = false) -> BoxExeObj^
 {
 	if itm == null or itm.Down.GetValue() != "if"
 		return null
@@ -42,18 +42,41 @@ TryParseIf := !(Token^ itm) -> BoxExeObj^
 	{
 		if cmpExe == GBoolTrue
 		{
+			if nonFunc
+			{
+				res := new BoxBlock
+				res.down = tryToken
+				return res
+			}
 			return new BoxBlock(tryToken)
 		}else{
 			if flsToken == null
 			{
+				if nonFunc
+				{
+					fakeBlock := new TokenSymbol(StringSpan("{}"),0)
+					res := new BoxBlock
+					res.down = fakeBlock
+					return res
+				}
+
 				fakeBlock := TokenSymbol(StringSpan("{}"),0)
 				fakeBlock.Line = itm.Line
 				return new BoxBlock(fakeBlock&)
 			}else{
+				if nonFunc
+				{
+					res := new BoxBlock
+					res.down = flsToken
+					return res
+				}
 				return new BoxBlock(flsToken)
 			}
 		}
 	}
+
+	if nonFunc
+		return null
 
 	tru := BoxBlock^
 	fls := BoxBlock^
