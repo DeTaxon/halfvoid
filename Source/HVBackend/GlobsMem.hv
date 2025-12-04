@@ -1,0 +1,260 @@
+GlobsMem := GlobsMemType
+
+GlobsMemType := class
+{
+	
+	globalVariables := AVLMap.{GlobalVar2^,void^}
+
+	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
+	{
+		if vr.ItName == "HV"
+		{
+			InitRunContext()
+			return HV&
+		}
+
+		return globalVariables[vr]?
+
+		vr.NotifyUseAndWait()
+
+		varSize := vr.GetType().GetSize()
+		result = calloc(varSize,1)
+		globalVariables[vr] = result
+
+		classVar := BoxClass^
+		VirtualTables.Value.Get(vr, (x) ==> { classVar = x})
+
+		if classVar != null
+		{
+			if classVar.Name == "BlobOnVector"
+			{
+				free(result)
+				result = BlobOnVector->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "File"
+			{
+				free(result)
+				result = File->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "vRepoObject"
+			{
+				free(result)
+				result = vRepoObject->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "StringSpan"
+			{
+				free(result)
+				result = StringSpan->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "String"
+			{
+				free(result)
+				result = String->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "XML"
+			{
+				free(result)
+				result = XML->VTable
+				globalVariables[vr] = result
+				return void
+			}
+
+			if classVar.Name == "MCObject"
+			{
+				free(result)
+				result = MCObject->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "MCConstValue"
+			{
+				free(result)
+				result = MCConstValue->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "MCGlobalVariable"
+			{
+				free(result)
+				result = MCGlobalVariable->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "MCConstInteger"
+			{
+				free(result)
+				result = MCConstInteger->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "MCReference"
+			{
+				free(result)
+				result = MCReference->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			//if classVar.Name == "THatch"
+			//{
+			//	free(result)
+			//	result = THatch->VTable
+			//	globalVariables[vr] = result
+			//	return void
+			//}
+			if classVar.Name == "Task"
+			{
+				free(result)
+				result = Task->VTable
+				globalVariables[vr] = result
+				return void
+			}
+
+			vTable := classVar.VTableType
+			fldsCount := vTable.GetFieldsCount()
+
+			for i : fldsCount
+			{
+				val := ref classVar.VTable[i]
+
+				pth := vTable.GetFieldByIndexRaw(i)
+				memPtr := result->{u8^}[pth.MemOffset]&
+
+				if i == 0 and val is VTableVar //TODO less hardcoded
+				{
+					itVal := val->{VTableVar^}.ItConst
+					baseVal := itVal->{CheckInfoConst^}.ItGlobVar.value
+					newArr := malloc(baseVal.GetType().GetSize()) //TODO mem leak
+					WriteGlobToMem(baseVal,newArr)
+					memPtr->{void^^}^ = newArr
+				}
+
+				if val is VTableFunc
+				{
+					asFnc := val->{VTableFunc^}
+					fnc := asFnc.Value->{BoxFuncBody^}
+					if fnc is ResistFunc
+					{
+						fnc = fnc->{ResistFunc^}.base->{BoxFuncBody^}
+					}
+					assert(fnc is in BoxFuncBody)
+
+
+					// TODOTODO i broke another feature of compiler
+					// it's not suppose to parse all virtual functions, only used
+					// but interpreter is very lazy and uses function when it's too late
+					fnc.ParseBody()
+					for i : 50
+					{
+						if fnc.IsParsed()
+						{
+							break
+						}else{
+							TaskYield()
+						}
+					}
+
+					if fnc->{BoxFuncBody^}.IsParsed() //TODOTODO maybe someone used function an now it's parsed
+					{
+						fncPointer := RGetFuncPtr(fnc)
+						memPtr->{void^^}^ = fncPointer
+
+						//memPtr->{void^^}^ = asFnc.Value
+						GInterpCntx.vtableFunctions.Add(asFnc.Value->{BoxFuncBody^},fncPointer)
+					}
+				}
+			}
+		}else if vr.value != null
+		{
+			WriteGlobToMem(vr.value,result)
+		}
+
+		for space : CodeSpaces //TODO too bad, cycle in cycle in cycle
+		{
+			for module : space.Modules
+			{
+				if module is not CLib
+					continue
+
+				cLib := module->{CLib^}
+
+				for it, ind : cLib.itFuncs
+				{
+					if it == vr
+					{
+						lib := GInterpCntx.GetClibDll(cLib,ind)
+						fncPtr := lib.Get(ind.AsStringSpan())
+						result->{void^^}^ = fncPtr
+					}
+				}
+			}
+		}
+	}
+	WriteGlobToMem := !(BoxExeConstObj^ obj,void^ mem)-> void
+	{
+		tp := obj.GetType()
+
+		if obj is BoxArrayConst
+		{
+			arr := obj->{BoxArrayConst^}
+			elemSize := tp.Base.GetSize()
+
+			for it,i : arr.dwns
+			{
+				WriteGlobToMem(it,mem->{u8^}[i*elemSize]&)
+			}
+
+		}else if obj is BoxExeInt{
+			mem->{s32^}^ = obj->{BoxExeInt^}.Value
+		}else if obj is BoxExeDouble{
+			mem->{double^}^ = obj->{BoxExeDouble^}.Value
+		}else if obj is BoxExeString
+		{
+			mem->{char^^}^ = obj->{BoxExeString^}.Value.Str()
+		} else if obj is ClassConstValue {
+			cnst := obj->{ClassConstValue^}
+			cls := cnst.ItType->{TypeClass^}.ToClass
+
+			for it,i : cnst.Value
+			{
+				pth := cls.GetFieldByIndexRaw(i)
+				WriteGlobToMem(it,mem->{u8^}[pth.MemOffset]&)
+			}
+		} else if obj is ClassVTablePtrConst {
+			mem->{void^^}^ = GetGlobalVarMem(obj->{ClassVTablePtrConst^}.itClass.VTableValue)
+		} else if obj is ZeroClassConst {
+			memset(mem,0,obj->{ZeroClassConst^}.GetType().GetSize())
+		} else if obj is ClassArray {
+			objSize := obj->{ClassArray^}.ObjType.Base.GetSize()
+			for it,ind : obj->{ClassArray^}.Value
+			{
+				WriteGlobToMem(it,mem->{u8^}[ind*objSize]&)
+			}
+		} else if obj is BoxExeNull {
+			mem->{void^^}^ = null
+		} else if obj is BoxExeBool {
+			mem->{bool^}^ = (obj == GBoolTrue)
+		}else{
+			printf("Unknown const %s\n",obj.UnitName)
+			assert(false)
+		}
+	}
+	GetGlobalVarFromMem := !(void^ val) -> GlobalVar2^
+	{
+		for it, ind : globalVariables
+		{
+			if it == val
+				return ind
+		}
+		return null
+	}
+}

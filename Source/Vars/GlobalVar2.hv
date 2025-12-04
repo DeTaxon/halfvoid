@@ -107,7 +107,7 @@ GlobalVar2 := class extend BoxUnit
 					if GVInitInterpreted
 					{
 						fncMC := GInterpCntx.GetMCFunc(newFunc)
-						thisVarPtr := GInterpCntx.GetGlobalVarMem(this&)
+						thisVarPtr := GlobsMem.GetGlobalVarMem(this&)
 						MCInterpFunction2(GInterpCntx&,fncMC,![thisVarPtr&],null)
 
 						if value == null

@@ -336,7 +336,7 @@ CliParseMain := !() -> void
 	if conVar != null
 	{
 		conVar.NotifyUseAndWait()
-		globVar := GInterpCntx.GetGlobalVarMem(conVar)
+		globVar := GlobsMem.GetGlobalVarMem(conVar)
 
 		newStream := Stream^
 		newStream = new StreamOnLambda(null,(data,sLen) ==> {

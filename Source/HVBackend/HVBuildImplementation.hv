@@ -111,9 +111,7 @@ HVContextImplementation := class extend HV_Context
 		func->{BoxFuncBody^}.ParseBody()
 		func.WaitReadyState()
 
-		CodeCheckCtx := MCInterpContext
-
-		c := CollectFunctionsCtx(CodeCheckCtx&,func->{BoxFuncBody^})
+		c := CollectFunctionsCtx(func->{BoxFuncBody^})
 
 		// c.Workarounds()
 		c.Collect()

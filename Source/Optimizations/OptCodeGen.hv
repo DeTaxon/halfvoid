@@ -5,9 +5,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	mainFunc := intGetFunc(mainFuncName)
 	assert(mainFunc != null)
 
-	CodeCheckCtx := MCInterpContext
-
-	c := CollectFunctionsCtx(CodeCheckCtx&,mainFunc->{BoxFuncBody^})
+	c := CollectFunctionsCtx(mainFunc->{BoxFuncBody^})
 
 	c.Workarounds()
 	c.Collect()
@@ -20,7 +18,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	
 	c.UsedStrings[^].PrintCode(ctx)
 	c.UsedClasses[^].PrintAsType(ctx)
-	OptPrintGlobals(GInterpCntx&,ctx,c.WriteGlobals)
+	OptPrintGlobals(ctx,c.WriteGlobals)
 	c.DeclareFunctions[^].PrintCode(ctx)
 
 	if GTestCode 
@@ -71,8 +69,6 @@ CollectFunctionsCtx := class
 	UsedStrings := AVLSet.{BoxExeString^}
 
 	UsedTypes := AVLSet.{Type^}
-	
-	iCtx := MCInterpContext^
 
 	checkedClasses := AVLSet.{BoxClass^}
 	checkClasses := HybridStack.{BoxClass^,20}
@@ -83,14 +79,8 @@ CollectFunctionsCtx := class
 	checkedGlobals := AVLSet.{GlobalVar2^}
 	checkGlobals := HybridStack.{GlobalVar2^,20}
 
-	this := !(MCInterpContext^ interpContext) -> void
+	this := !(BoxFuncBody^ mainFunc) -> void
 	{
-		iCtx = interpContext
-	}
-	this := !(MCInterpContext^ interpContext,BoxFuncBody^ mainFunc) -> void
-	{
-		iCtx = interpContext
-	
 		assert(mainFunc is in BoxFuncBody)
 	
 		checkFunction(mainFunc)
@@ -202,7 +192,7 @@ CollectFunctionsCtx := class
 		})
 
 		if varType != null
-			checkGlobVal(varType,GInterpCntx.GetGlobalVarMem(glb))
+			checkGlobVal(varType,GlobsMem.GetGlobalVarMem(glb))
 	}
 	checkGlobVal := !(Type^ varType,void^ varPtr) -> void
 	{
@@ -355,13 +345,13 @@ CollectFunctionsCtx := class
 			
 	}
 }
-OptPrintGlobals := !(MCInterpContext^ iCtx,LLVMWriteContext^ ctx,Vector.{GlobalVar2^} globals) -> void
+OptPrintGlobals := !(LLVMWriteContext^ ctx,Vector.{GlobalVar2^} globals) -> void
 {
 	wr := ref ctx.writeStream^
 	for glob : globals
 	{
 		echo := TEchoStream
-		if GlobTryPrintConst(iCtx,glob,echo)
+		if GlobTryPrintConst(glob,echo)
 		{
 			glob.PrintOutputName(ctx)
 			wr << " = global "
@@ -373,16 +363,16 @@ OptPrintGlobals := !(MCInterpContext^ iCtx,LLVMWriteContext^ ctx,Vector.{GlobalV
 	}
 }
 
-GlobTryPrintConst := !(MCInterpContext^ iCtx,GlobalVar2^ var,Stream strm) -> bool
+GlobTryPrintConst := !(GlobalVar2^ var,Stream strm) -> bool
 {
 	tp := var.GetType()
 
 	if tp == null
 		return false
 
-	return GlobTryPrintConst2(iCtx,tp,iCtx.GetGlobalVarMem(var),strm)
+	return GlobTryPrintConst2(tp,GlobsMem.GetGlobalVarMem(var),strm)
 }
-GlobTryPrintConst2 := !(MCInterpContext^ iCtx,Type^ varType,void^ varPtr,Stream strm) -> bool
+GlobTryPrintConst2 := !(Type^ varType,void^ varPtr,Stream strm) -> bool
 {
 	ctx := LLVMWriteContext
 	ctx.writeStream = strm&
@@ -402,7 +392,7 @@ GlobTryPrintConst2 := !(MCInterpContext^ iCtx,Type^ varType,void^ varPtr,Stream 
 
 			if i != 0
 				strm << ","
-			if not GlobTryPrintConst2(iCtx,varType.Base,subPtr,strm)
+			if not GlobTryPrintConst2(varType.Base,subPtr,strm)
 				return false
 		}
 

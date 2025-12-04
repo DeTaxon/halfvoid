@@ -128,7 +128,7 @@ UserModule := class
 			})
 
 			{
-				c := CollectFunctionsCtx(GInterpCntx&)
+				c := CollectFunctionsCtx
 				c.checkClass(bodyClass)
 				c.Collect()
 				c.WriteFunctions[^].WaitReadyState()

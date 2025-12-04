@@ -92,7 +92,7 @@ MCInterpFuncFrame := class
 		if obj& is MCGlobalVariable
 		{
 			glbVar := obj&->{MCGlobalVariable^}.GetValueObject()
-			memObj := iCntx.GetGlobalVarMem(glbVar)
+			memObj := GlobsMem.GetGlobalVarMem(glbVar)
 			assert(memObj != null)
 			return memObj
 		}

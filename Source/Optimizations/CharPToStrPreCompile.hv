@@ -54,7 +54,7 @@ CarPToStrPreCompile := !() -> void
 				newVar := CreateGlobalVar("",GTypeStrBase,false)
 				gVars[val] = newVar
 
-				newString := ref GInterpCntx.GetGlobalVarMem(newVar)->{String^}^
+				newString := ref GlobsMem.GetGlobalVarMem(newVar)->{String^}^
 
 				newString.itSize = val.itSize
 				newString.charPtr = val.charPtr

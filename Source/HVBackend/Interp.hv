@@ -238,7 +238,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			} else if fncObj& is MCGlobalVariable
 			{
 				glbVar := fncObj&->{MCGlobalVariable^}.GetValueObject()
-				memObj := iCntx.GetGlobalVarMem(glbVar)
+				memObj := GlobsMem.GetGlobalVarMem(glbVar)
 				assert(memObj != null)
 				fncVal := iCntx.GetFuncByPointer(memObj->{void^^}^)
 				if fncVal != null
@@ -749,7 +749,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else if obj& is MCVariable{
 				res->{void^^}^ = thisFrame.localVarTable[thisLine.var2]
 			}else if obj& is MCGlobalVariable {
-				res->{void^^}^ = iCntx.GetGlobalVarMem(obj&->{MCGlobalVariable^}.GetValueObject())
+				res->{void^^}^ = GlobsMem.GetGlobalVarMem(obj&->{MCGlobalVariable^}.GetValueObject())
 			}else if obj& is MCConstInteger{
 				res->{void^^}^ = obj&->{MCConstInteger^}.GetValue()&
 			}else if obj& is MCConstVoid{

@@ -845,7 +845,7 @@ MCBuildFuncContext_x86_64 := class
 					WriteData(0x41,0xFF,0xD2) // call *r10
 				}else if fncObj is MCGlobalVariable {
 					glb := fncObj&->{MCGlobalVariable^}.GetValueObject()
-					memPtr := GInterpCntx.GetGlobalVarMem(glb)
+					memPtr := GlobsMem.GetGlobalVarMem(glb)
 					MovPtrToReg(fnc,"r10",memPtr)
 					WriteData(0x4D,0x8B,0x12) // mov r10, (r10)
 					WriteData(0x41,0xFF,0xD2) // call *r10
@@ -945,7 +945,7 @@ MCBuildFuncContext_x86_64 := class
 					assert(objs[line.var1] is MCConstRegisterX86)
 
 					glb := obj&->{MCGlobalVariable^}.GetValueObject()
-					memPtr := GInterpCntx.GetGlobalVarMem(glb)
+					memPtr := GlobsMem.GetGlobalVarMem(glb)
 					MovPtrToReg(fnc,objs[line.var1]&->{MCConstRegisterX86^}.GetValue(),memPtr)
 					//WriteData(0x48,0x8B,0x12) // mov r10, (rax)
 				}else if obj is MCVariable {
@@ -1192,7 +1192,7 @@ MCBuildFuncContext_x86_64 := class
 		}else if obj is MCGlobalVariable {
 
 			glb := obj.GetValueObject()
-			memPtr := GInterpCntx.GetGlobalVarMem(glb)
+			memPtr := GlobsMem.GetGlobalVarMem(glb)
 			if reg >= 16 {
 				regIndx := reg mod 8
 				MovPtrToReg(fnc,"r10",memPtr)
