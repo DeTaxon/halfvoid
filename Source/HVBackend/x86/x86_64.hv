@@ -71,7 +71,7 @@ MCBuildContext_x86_64 := class
 		{
 			fnc := funcsToCompile.Pop()
 
-			bc := GInterpCntx.GetMCFunc(fnc)
+			bc := BCFuncs.GetInterpFunc(fnc)
 			
 			ctx2 := MCBuildFuncContext_x86_64
 			ctx2.eng = this&

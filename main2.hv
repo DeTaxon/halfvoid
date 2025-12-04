@@ -22,9 +22,10 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	@work tst()
+	// @work tst()
 
 	// TSleep(6.0)
+	tst()
 }
 
 //TODO broken feature: only used virtual functions are loaded, this caused to break OptCodeGen
@@ -83,6 +84,7 @@ Allc := class extends IAllocator
 tst := !() -> void {
 	nums := 1_000
 	// nums = 10
+	nums = 5_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

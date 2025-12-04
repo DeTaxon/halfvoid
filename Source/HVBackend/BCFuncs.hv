@@ -1,0 +1,40 @@
+
+BCFuncs := BCFuncsType
+
+BCFuncsType := class
+{
+	
+	baseFuncs := AVLMap.{BoxFuncBody^,MCFunction^}
+	interpFuncs := AVLMap.{BoxFuncBody^,MCFunction^}
+
+	GetBaseFunc := !(BoxFuncBody^ itm) -> MCFunction^
+	{
+		if baseFuncs.Contain(itm)
+			return baseFuncs[itm]
+
+		itm.ParseBody()
+		itm.WaitReadyState()
+
+		buildCtx := MCBuildContext
+		buildCtx.Init()
+		itm.CreateMCFunction(buildCtx&)
+		result = buildCtx.CreateMCFunction()
+		result.BaseFunction = itm
+
+		baseFuncs[itm] = result
+	}
+	GetInterpFunc := !(BoxFuncBody^ itm) -> MCFunction^
+	{
+		if interpFuncs.Contain(itm)
+			return interpFuncs[itm]
+
+		result = GetBaseFunc(itm)
+		result = PassFirstOpt(result,false)
+		result = InterpPassPrepare(result)
+		result.ComputeStackFrame()
+		result.BaseFunction = itm
+
+		interpFuncs[itm] = result
+	}
+}
+

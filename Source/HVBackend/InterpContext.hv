@@ -15,8 +15,6 @@ MCInterpContext := class
 	
 	vtableFunctions := HVTable2.{BoxFuncBody^,void^}
 
-	InterpMode := bool
-
 	GetGlobalVarMem := !(GlobalVar2^ vr) -> void^
 	{
 		if vr.ItName == "HV"
@@ -405,23 +403,7 @@ MCInterpContext := class
 
 		assert(itm is in BoxFuncBody)
 
-		itm.ParseBody()
-		itm.WaitReadyState()
-
-		buildCtx := MCBuildContext
-		buildCtx.Init()
-		itm.CreateMCFunction(buildCtx&)
-		result = buildCtx.CreateMCFunction()
-
-		if InterpMode
-		{
-			// result = PassFirstOpt(result,true)
-			result = PassFirstOpt(result,false)
-		// result.Print()
-			result = InterpPassPrepare(result)
-			result.ComputeStackFrame()
-		}
-		result.BaseFunction = itm
+		result = BCFuncs.GetInterpFunc(itm)
 
 		funcs[itm] = result
 	}

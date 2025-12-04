@@ -27,7 +27,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	{
 		for func : c.WriteFunctions
 		{
-			LLVMWriteBodyFunction(CodeCheckCtx.GetMCFunc(func),ctx)
+			LLVMWriteBodyFunction(BCFuncs.GetBaseFunc(func),ctx)
 		}
 	}else{
 		c.WriteFunctions[^].PrintCode(ctx)
@@ -247,7 +247,7 @@ CollectFunctionsCtx := class
 
 				if fnc is in BoxFuncBody and not fnc->{BoxFuncBody^}.IsParsed()
 					continue
-				mcFnc := iCtx.GetMCFunc(fnc)
+				mcFnc := BCFuncs.GetBaseFunc(fnc)
 
 				checkType(fnc.GetType())
 
