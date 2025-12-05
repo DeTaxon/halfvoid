@@ -1,19 +1,8 @@
 
-if true
-{
-	cc := class
-	{
-		Test := !() -> void
-		{
-			printf("yep\n")
-		}
-	}
-}
 
 main := !(char^[] args) -> int
 {
-	c := cc
-	c.Test()
+	RunFunc()
 }
 
 
@@ -25,11 +14,18 @@ RunFunc := !() -> void
 	// @work tst()
 
 	// TSleep(6.0)
-	tst()
+	// tst()
+	x := 5
+
+	if x >= 2
+	{
+		printf("true\n")
+	}else{
+		printf("false\n")
+	}
 }
 
 //TODO broken feature: only used virtual functions are loaded, this caused to break OptCodeGen
-//TODO Vector.{Vector.{int}} broke Vector, remove weirdness in Vector.hv
 //TODO recursive #Mark("JIT") for classes
 //TODO there is some trickary with GTypeStr in PassRemoveReferences
 //TODO x86, make passing vec4f abi compatable, windows, linux
