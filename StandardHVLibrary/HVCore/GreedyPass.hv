@@ -32,8 +32,8 @@ GreedyPass := class
 
 		result = new HVB_Function
 
-		result.Objects = objs
-		result.Lines = cmds
+		result.Objects.MoveFrom(objs)
+		result.Lines.MoveFrom(cmds)
 
 		result.BaseFunction = originalFunc.BaseFunction
 		result.IsVArgs = originalFunc.IsVArgs

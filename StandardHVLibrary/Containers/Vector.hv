@@ -115,6 +115,19 @@ Vector := class .{@T} //extend TArrayView.{T}
 		this[^i] = other[i]
 	}
 
+	MoveFrom := !(Vector.{T} other) -> void
+	{
+		itPointer = other.itPointer
+		itSize = other.itSize
+		itCapacity = other.itCapacity
+		isBorrowed = other.isBorrowed
+
+		other.itPointer = null
+		other.itSize = 0
+		other.itCapacity = 0
+		other.isBorrowed = false
+	}
+
 	Reverse := fake
 	{
 		// "[]" := !(int indx) -> ref T
