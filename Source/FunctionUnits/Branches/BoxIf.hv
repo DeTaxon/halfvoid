@@ -1,6 +1,6 @@
 TryParseIf := !(Token^ itm, bool nonFunc = false) -> BoxExeObj^
 {
-	if itm == null or itm.Down.GetValue() != "if"
+	if itm == null or itm.Down == null or itm.Down.GetValue() != "if"
 		return null
 
 	qc := new QCatch
