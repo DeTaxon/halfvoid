@@ -108,8 +108,9 @@ VulkanShaderLoader := class
 
 				if file.End == ".vert" or file.End == ".frag"
 				{
-					newName := StrConcat(file[0..-3],"json")
-					printf("ptr %p\n",newName)
+					newName := StrConcat(file[0..-4],"json")
+
+					newShdr = LoadShader(newName,true)
 				}
 
 				if file.End == ".comp"

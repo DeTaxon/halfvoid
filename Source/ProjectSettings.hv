@@ -80,6 +80,8 @@ SettingsSet := class
 	BytecodeFilePath := Str?
 	OutputFilePath := Str?
 
+	FastestRunner := bool
+
 	ClangFlags := Str?
 
 	ParseJson := !(JsonNode^ node) -> void
@@ -99,5 +101,7 @@ SettingsSet := class
 		OutputFilePath = node^["OutputFilePath"]?.GetStr()
 
 		VulkanProtocolFile = node^["VulkanProtocolFile"]?.GetStr()
+
+		FastestRunner = node^["FastestRunner"]? == "true"
 	}
 }

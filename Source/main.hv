@@ -153,6 +153,8 @@ main := !(Vector.{char^} args) -> int
 				CodeSpaces[-1].Modules.Push(new ModuleVulkan(CompileSettings.VulkanProtocolFile.Get()))
 			}
 			NonStopBuild = true
+
+			FastestRunner = CompileSettings.FastestRunner
 		}
 	}
 

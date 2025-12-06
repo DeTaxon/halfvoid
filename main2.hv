@@ -32,7 +32,7 @@ RunFunc := !() -> void
 	}
 }
 
-//TODO StrConcat does not work
+//TODO printf does not work in nonstop
 
 // TODO this does not compile
 // AsyncMonitorFolderNonStop(folderPath,true, (x) ==> {
