@@ -60,7 +60,11 @@ inotify_wrapper_fd := class
 					sBuf := TEchoStream
 
 					if node.objectName != "."
-						sBuf << node.objectName << "/" 
+					{
+						sBuf << node.objectName
+						if node.objectName[node.objectName.Size() - 1] != '/'
+							sBuf << "/"
+					}
 					sBuf << fileName
 
 					fullPath := sBuf.GetStr()

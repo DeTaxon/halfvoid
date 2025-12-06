@@ -1,23 +1,19 @@
 
 
 VulkanShaderLoader := class
+	#LazyClass()
 {
 	inputTypes := AVLMap.{Str,TShaderInput^}
-	shaderCompiler := ShaderCompiler
 
-    this := !() -> void
-    {
-        shaderCompiler."this"()
-    }
-	SetCacheFile := !(CacheFile^ cacheFile) -> void
-	{
-		shaderCompiler.SetCacheFile(cacheFile)
-	}
+	hotloadNames := vShader^[Str]
+	// hotloadedShaders := TShaderInput^[Blob^]
+	changedFiles := Str[]
+
 	SetInput := !(Str name,TShaderInput^ model) -> void
 	{
 		inputTypes[name] = model
 	}
-	LoadShader := !(Str shaderInfo) -> vShader^
+	LoadShader := !(Str shaderInfo, bool ignoreHotload = false) -> vShader^
 	{
 		fil := FSGetFile(shaderInfo)
 		flMap := fil.GetMap()
@@ -49,9 +45,18 @@ VulkanShaderLoader := class
 		vertBlob := fil.GetFile(vertName).GetBlob()
 		fragBlob := fil.GetFile(fragName).GetBlob()
 
-		return shaderType.CreateShader(vertBlob,fragBlob)
+		result = shaderType.CreateShader(vertBlob,fragBlob)
+
+		// if #DebugMode() // TODO weakly check SetFolderHotload
+		if not ignoreHotload
+		{
+			hotloadNames[fil.GetFile(vertName).GetPath()] = result
+			hotloadNames[fil.GetFile(fragName).GetPath()] = result
+
+			printf("vert %s\n",fil.GetFile(vertName).GetPath())
+		}
 	}
-	LoadComputeShader := !(VulkanDefaultInstance^ inst,TShaderInput^ pass,Str vertName) -> vShader^
+	LoadComputeShader := !(VulkanDefaultInstance^ inst,TShaderInput^ pass,Str vertName, bool ignoreHotload = false) -> vShader^
 	{
 		vertBlob := FSGetFile(vertName).GetBlob()
 
@@ -68,6 +73,63 @@ VulkanShaderLoader := class
 
 		result = new vShader
 		result.itLayout = pass.itLayout
+		result.itPass = pass
 		inst.Funcs.vkCreateComputePipelines(inst.LogicalDevice,null,1,createInfo&,null,result.itPipe&)
+
+		// if #DebugMode() // TODO weakly check SetFolderHotload
+		if not ignoreHotload
+			hotloadNames[vertName] = result
+	}
+
+	SetFolderHotload := !(Str folderPath) -> void
+	{
+		TSpawnTask(() ==> [folderPath] {
+			AsyncMonitorFolderNonStop(folderPath,true, (x,t) ==> {
+				printf("test %s\n",x.GetPath())
+				changedFiles.Push(x.GetPath().CStr())
+			})
+		})
+
+	}
+
+	UpdateShaders := !(VulkanDefaultInstance^ inst) -> void
+	{
+		if changedFiles.Size() != 0
+		{
+			inst.Funcs.vkQueueWaitIdle(inst.DrawQueue)
+
+			for file : changedFiles
+			{
+				if not hotloadNames.Contain(file)
+					continue
+
+				sh := ref hotloadNames[file]
+				newShdr := vShader^
+
+				if file.End == ".vert" or file.End == ".frag"
+				{
+					newName := StrConcat(file[0..-3],"json")
+					printf("ptr %p\n",newName)
+				}
+
+				if file.End == ".comp"
+				{
+					newShdr = LoadComputeShader(inst,sh.itPass,file,true)
+
+					// TODO delete old shader
+				}
+
+				if newShdr != null
+				{
+					sh.itPass = newShdr.itPass
+					sh.itPipe = newShdr.itPipe
+					sh.itLayout = newShdr.itLayout
+				}
+			}
+
+			inst.Funcs.vkQueueWaitIdle(inst.DrawQueue)
+
+			changedFiles.Destroy()
+		}
 	}
 }

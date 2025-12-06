@@ -20,6 +20,7 @@
 		{
 			AsyncMonitorFolderNonStop("Shaders/",true,(x,y) ==> {
 				CheckFile(x)
+				printf("Shader changed %s\n",x.GetPath())
 			})
 		}
 	}

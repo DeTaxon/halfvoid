@@ -162,6 +162,8 @@ vShader := class
 {
 	itPipe := VkPipeline
 	itLayout := VkPipelineLayout
+	itPass := TShaderInput^
+
 	this := !() -> void {}
 
 	ApplyShaderToQueue := !(VulkanInstance^ inst,VkCommandBuffer itBuf,float surfWidth, float surfHeight) -> void

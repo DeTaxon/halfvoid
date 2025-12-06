@@ -1,5 +1,12 @@
 
 
+ccc := class
+	#LazyClass()
+{
+	x := int
+	y := float
+}
+
 main := !(char^[] args) -> int
 {
 	RunFunc()
@@ -24,6 +31,13 @@ RunFunc := !() -> void
 		printf("false\n")
 	}
 }
+
+//TODO StrConcat does not work
+
+// TODO this does not compile
+// AsyncMonitorFolderNonStop(folderPath,true, (x) ==> {
+//
+// })
 
 //TODO broken feature: only used virtual functions are loaded, this caused to break OptCodeGen
 //TODO recursive #Mark("JIT") for classes
