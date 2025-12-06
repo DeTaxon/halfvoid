@@ -1,0 +1,90 @@
+
+
+#Module
+{
+	rep := vRepo
+	shaderCompiler := ShaderCompiler
+
+	errors := AVLMap.{Str,void^}
+
+	Init := !() -> void
+	{
+		shaderCompiler."this"()
+
+		rep.ReadFolder("Shaders/",true, x ==> {
+			CheckFile(x)
+		})
+
+
+		if HV.IsNonStopMode()
+		{
+			AsyncMonitorFolderNonStop("Shaders/",true,(x,y) ==> {
+				CheckFile(x)
+			})
+		}
+	}
+	CheckFile := !(FSObject^ x) -> void
+	{
+		if x is not File
+			return void
+
+		nm := x.GetName()
+
+		shaderFile := false
+
+		if nm.End == ".vert"
+			shaderFile = true
+		if nm.End == ".frag"
+			shaderFile = true
+		if nm.End == ".mesh"
+			shaderFile = true
+		if nm.End == ".task"
+			shaderFile = true
+		if nm.End == ".comp"
+			shaderFile = true
+
+		ech := TEchoStream
+		ech << "ShadersBin/" << x.GetPath()->AsString^[8..0]
+		binPath := ech.GetStr()
+
+		if shaderFile
+		{
+			pth := x.GetPath()
+
+			if errors.Contain(pth)
+			{
+				HV.RemoveBuildError(errors[pth])
+				errors.Remove(pth)
+			}
+
+			res := shaderCompiler.Compile(x->{File^})
+
+			if res.ResultShader == null
+			{
+				obj := HV.CreateBuildError(res.ErrorMessage)
+				errors[x.GetPath()] = obj
+				// Console << "Error message " << res.ErrorMessage << "\n"
+			}else{
+				// Console << "Compiled " << binPath << "\n"
+
+				outFile := TFile(binPath,"wb")
+				outFile.Write(res.ResultShader.GetPointer(),res.ResultShader.Size())
+				outFile.Close()
+			}
+		}
+		if nm.End == ".json"
+		{
+			blb := x.GetBlob()
+
+			outFile := TFile(binPath,"wb")
+			outFile.Write(blb.GetPointer(),blb.Size())
+			outFile.Close()
+		}
+	}
+
+
+	// GetItem := virtual !(Str name) -> void^
+	// {
+	// }
+	
+}

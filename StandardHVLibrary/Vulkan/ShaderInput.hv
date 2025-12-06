@@ -4,10 +4,7 @@ TShaderInputVertexInfo := class
 {
 	VertTypes := Vector.{VKType}
 
-	inputObjs := HybridQueue.{VKType,20} //TODOTODOTODO SOMEHOW CLEANUP THIS
-
-
-	"{}<-" := !(Vector.{VKType} vInputs) -> void
+	"{}<-" := !(VKType[] vInputs) -> void
 	{
 		VertTypes = vInputs
 
@@ -17,9 +14,8 @@ TShaderInputVertexInfo := class
 		c := Cls
 		for it : c->#AllFields
 		{
-			inputObjs.Push(VKTypeFromType().{it->Type})
+			VertTypes.Push(VKTypeFromType().{it->Type})
 		}
-		VertTypes = inputObjs
 	}
 }
 

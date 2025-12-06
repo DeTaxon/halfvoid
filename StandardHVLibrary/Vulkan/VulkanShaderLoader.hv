@@ -53,7 +53,7 @@ VulkanShaderLoader := class
 	}
 	LoadComputeShader := !(VulkanDefaultInstance^ inst,TShaderInput^ pass,Str vertName) -> vShader^
 	{
-		vertBlob := shaderCompiler.Compile(FSGetFile(vertName)).ResultShader
+		vertBlob := FSGetFile(vertName).GetBlob()
 
 		shdr2 := LoadShaderModule3(inst,vertBlob)
 
