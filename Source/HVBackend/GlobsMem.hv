@@ -163,7 +163,7 @@ GlobsMemType := class
 						}
 					}
 
-					if fnc->{BoxFuncBody^}.IsParsed() //TODOTODO maybe someone used function an now it's parsed
+					if fnc->{BoxFuncBody^}.IsParsed() //TODOTODO maybe someone used function and now it's parsed
 					{
 						fncPointer := RGetFuncPtr(fnc)
 						memPtr->{void^^}^ = fncPointer

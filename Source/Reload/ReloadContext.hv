@@ -9,8 +9,6 @@ HotloadContext := class
 
 	FailedToCompile := List.{BoxFuncBody^}
 
-	OutdatedFunctions := List.{MCFunction^}
-
 	fileDatas := AVLMap.{BoxFile^,Blob^}
 
 	AddFunction := !(BoxFunc^ x) -> void

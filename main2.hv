@@ -1,36 +1,18 @@
 
 
-ccc := class
-	#LazyClass()
-{
-	x := int
-	y := float
-}
-
 main := !(char^[] args) -> int
 {
-	RunFunc()
+	Func2()
+	printf("testlsdf\n")
 }
 
-
-
-
-
-RunFunc := !() -> void
+Func2 := !() -> void
 {
-	// @work tst()
-
-	// TSleep(6.0)
-	// tst()
-	x := 5
-
-	if x >= 2
-	{
-		printf("true\n")
-	}else{
-		printf("false\n")
-	}
 }
+
+
+
+
 
 //TODO printf does not work in nonstop
 

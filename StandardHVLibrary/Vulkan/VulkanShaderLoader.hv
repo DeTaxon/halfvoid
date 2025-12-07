@@ -52,8 +52,6 @@ VulkanShaderLoader := class
 		{
 			hotloadNames[fil.GetFile(vertName).GetPath()] = result
 			hotloadNames[fil.GetFile(fragName).GetPath()] = result
-
-			printf("vert %s\n",fil.GetFile(vertName).GetPath())
 		}
 	}
 	LoadComputeShader := !(VulkanDefaultInstance^ inst,TShaderInput^ pass,Str vertName, bool ignoreHotload = false) -> vShader^
@@ -111,6 +109,7 @@ VulkanShaderLoader := class
 					newName := StrConcat(file[0..-4],"json")
 
 					newShdr = LoadShader(newName,true)
+					// printf("changed cc %s\n",newName)
 				}
 
 				if file.End == ".comp"

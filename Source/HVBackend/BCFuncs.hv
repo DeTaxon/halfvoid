@@ -7,6 +7,13 @@ BCFuncsType := class
 	baseFuncs := AVLMap.{BoxFuncBody^,MCFunction^}
 	interpFuncs := AVLMap.{BoxFuncBody^,MCFunction^}
 
+
+	ForgetFunction := !(BoxFuncBody^ fnc) -> void
+	{
+		baseFuncs.Remove(fnc)
+		interpFuncs.Remove(fnc)
+	}
+
 	GetBaseFunc := !(BoxFuncBody^ itm) -> MCFunction^
 	{
 		if baseFuncs.Contain(itm)

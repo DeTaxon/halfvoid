@@ -19,7 +19,7 @@ CommonTree := class .{@DATA}
 	Start := CommonTreeNode.{DATA}^
 	CreatedNodes := CommonTreeNode.{DATA}^
 	
-	FindNode := virtual !(DATA dat) -> CommonTreeNode.{DATA}^
+	FindNode := !(DATA dat) -> CommonTreeNode.{DATA}^
 	{
 		itr := Start
 		while itr != null

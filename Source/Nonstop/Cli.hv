@@ -190,12 +190,19 @@ StartWorkBox := !() -> void
 
 		WaitForParsingObjects()
 
+		for fnc : GHotloadCntx.ChangedFunctions
+		{
+			BCFuncs.ForgetFunction(fnc)
+		}
+
 		if WorkBag.WorkCount() != 0
 			WorkBag.CancelAll()
 
 		GInterpCntx.ReloadFunctions(GHotloadCntx&)
 		if FastestRunner
 			GX86Cntx.ReloadFunctions(GHotloadCntx&)
+
+		GHotloadCntx.ChangedFunctions.Destroy()
 
 		gSomeOneOnWork = false
 	})
