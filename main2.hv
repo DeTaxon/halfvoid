@@ -10,9 +10,15 @@ Func2 := !() -> void
 {
 }
 
+RunFunc := !() -> void
+{
+	tst()
+}
 
 
 
+
+//TODO LazyClass does not work if some class uses it as a field
 
 //TODO printf does not work in nonstop
 
@@ -76,7 +82,7 @@ Allc := class extends IAllocator
 tst := !() -> void {
 	nums := 1_000
 	// nums = 10
-	nums = 5_000
+	// nums = 5_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

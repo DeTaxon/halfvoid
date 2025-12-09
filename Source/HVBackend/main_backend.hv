@@ -13,9 +13,11 @@ CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	oldWork := CurrentWork
 	CurrentWork = result
 
-	fnc := GInterpCntx.GetMCFunc(funcToRun)
-	inputs := Vector.{void^}
-	MCInterpFunction(GInterpCntx&,fnc,inputs)
+	// fnc := GInterpCntx.GetMCFunc(funcToRun)
+	// inputs := Vector.{void^}
+	// MCInterpFunction(GInterpCntx&,fnc,inputs)
+	initFunc := RGetFuncPtr(funcToRun)->{!()^->void}
+	initFunc()
 
 	CurrentWork->{InterpWork^}.isDone = true
 	CurrentWork = oldWork

@@ -6,6 +6,7 @@ BCFuncsType := class
 	
 	baseFuncs := AVLMap.{BoxFuncBody^,MCFunction^}
 	interpFuncs := AVLMap.{BoxFuncBody^,MCFunction^}
+	x8664Funcs := AVLMap.{BoxFuncBody^,MCFunction^}
 
 
 	ForgetFunction := !(BoxFuncBody^ fnc) -> void
@@ -36,12 +37,36 @@ BCFuncsType := class
 			return interpFuncs[itm]
 
 		result = GetBaseFunc(itm)
+		// assert(false)
+
+		// result = PassRemoveReferences(result)
+
+		// result = PassAddStackInterp(result)
+		// result = PassStackRemovePushPop(result)
+
 		result = PassFirstOpt(result,false)
+
 		result = InterpPassPrepare(result)
 		result.ComputeStackFrame()
 		result.BaseFunction = itm
 
 		interpFuncs[itm] = result
+	}
+
+	GetFunc_x86_64 := !(BoxFuncBody^ itm) -> MCFunction^
+	{
+		if x8664Funcs.Contain(itm)
+			return x8664Funcs[itm]
+
+		result = GetBaseFunc(itm)
+
+		result = PassFirstOpt(result,false)
+
+		result = InterpPassPrepare(result)
+		result.ComputeStackFrame()
+		result.BaseFunction = itm
+
+		x8664Funcs[itm] = result
 	}
 }
 

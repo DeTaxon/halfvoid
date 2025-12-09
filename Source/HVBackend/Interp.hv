@@ -61,7 +61,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, Vector.{voi
 
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame, Vector.{int} callerIndx,int returnIndex = 0) -> void
 {
-	//interpFunc.Print()
+	// interpFunc.Print()
 	//exit(0)
 
 	if interpFunc.Lines.Size() == 0
@@ -1074,6 +1074,86 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			cs += 1
 		case "assert"
 			//TODO
+			cs += 1
+
+		case "stack_push"
+			valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
+			valPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
+
+			value := s64
+
+			if valType.GetSize() == 8
+			{
+				value = valPtr->{u64^}^
+
+			}else if IsInt(valType) or valType is TypeEnum {
+				if IsUInt(valType) or valType is TypeEnum
+				{
+					switch valType.GetSize()
+					{
+						case 1 value = valPtr->{u8^}^
+						case 2 value = valPtr->{u16^}^
+						case 4 value = valPtr->{u32^}^
+					}
+				}else{
+					switch valType.GetSize()
+					{
+						case 1 value = valPtr->{s8^}^
+						case 2 value = valPtr->{s16^}^
+						case 4 value = valPtr->{s32^}^
+					}
+				}
+			} else if valType == GTypeFloat {
+				value&->{double^}^ = valPtr->{float^}^
+			}else {
+				assert(false)
+			}
+			thisFrame.StackPushInt(value)
+			cs += 1
+
+		case "stack_pop"
+			valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
+			valPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
+
+			value := thisFrame.StackGetPtr()->{s64^}^
+
+			if valType.GetSize() == 8
+			{
+				valPtr->{u64^}^ = value
+			}else if IsInt(valType) or valType is TypeEnum {
+				switch valType.GetSize()
+				{
+					case 1 valPtr->{u8^}^ = value
+					case 2 valPtr->{u16^}^ = value
+					case 4 valPtr->{u32^}^ = value
+				}
+			} else if valType == GTypeFloat {
+				 valPtr->{float^}^ = value&->{double^}^
+			}else {
+				assert(false)
+			}
+			thisFrame.StackPop()
+			cs += 1
+		
+		case in ![
+				"stack_add_int","stack_sub_int",
+				"stack_smul_int","stack_umul_int",
+				"stack_sdiv_int","stack_udiv_int",
+				"stack_smod_int","stack_umod_int",
+			]
+			ptr := thisFrame.StackGetPtr()->{s64^}
+			switch thisLine.opcode
+			{
+			case "stack_add_int" ptr[1] = ptr[0] + ptr[1]
+			case "stack_sub_int" ptr[1] = ptr[0] - ptr[1]
+			case "stack_smul_int" ptr[1] = ptr[0] * ptr[1]
+			case "stack_umul_int" ptr[1] = ptr[0]->{u64} * ptr[1]->{u64}
+			case "stack_sdiv_int" ptr[1] = ptr[0] div ptr[1]
+			case "stack_udiv_int" ptr[1] = ptr[0]->{u64} div ptr[1]->{u64}
+			case "stack_smod_int" ptr[1] = ptr[0] mod ptr[1]
+			case "stack_umod_int" ptr[1] = ptr[0]->{u64} mod ptr[1]->{u64}
+			}
+			thisFrame.StackPop()
 			cs += 1
 
 		case void

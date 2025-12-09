@@ -57,7 +57,7 @@ VulkanInstance := class
 		for fnc , fncName : Funcs->AllFields
 		{
 			fnc&->{void^^}^ = vkGetInstanceProcAddr(Instance,fncName)
-			//printf("GetInstClass %p %s %p\n",fnc,fncName, fnc&->{u64^}^ - this.Funcs->{u64^}^)
+			// printf("GetInstClass %p %s %p %p\n",fnc,fncName, fnc&->{u64^}^ - this.Funcs->{u64^}^,fnc)
 		}
 
 		DebugStep() //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<DebugStep

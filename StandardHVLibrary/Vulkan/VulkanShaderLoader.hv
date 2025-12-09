@@ -1,7 +1,7 @@
 
 
 VulkanShaderLoader := class
-	#LazyClass()
+	// #LazyClass()
 {
 	inputTypes := AVLMap.{Str,TShaderInput^}
 

@@ -1,0 +1,48 @@
+
+PassStackRemovePushPop := !(MCFunction^ fnc) ->MCFunction^
+{
+	ctx := MakeGreedyPass(fnc,1,2,true)
+
+	oPtr := ctx.oPtr
+	cPtr := ctx.cPtr
+
+	o := ref ctx.objsSize
+	c := ref ctx.cmdsSize
+
+	iPtr := fnc.Lines.GetPointer(
+
+	)
+	usages := Vector.{int}
+	usages.Resize(fnc.Objects.Size())
+
+	for i : fnc.Lines.Size()
+	{
+		for j : 5
+		{
+			ob := iPtr[i].var1&[j]
+			if ob < usages.Size()
+				usages[ob] += 1
+		}
+	}
+
+	iSize := fnc.Lines.Size()
+	i := 0
+	while i < iSize
+	{
+		line := iPtr[i]
+
+		if  i + 1 < iSize 
+			and line.opcode == "stack_pop" 
+			and iPtr[i+1].opcode == "stack_push"
+			and line.var1 == iPtr[i+1].var1
+			and usages[line.var1] == 2
+		{
+			i += 2
+		}else{
+			cPtr[c++] = line
+			i += 1
+		}
+	}
+
+	return ctx.GenerateFunc()
+}

@@ -14,6 +14,7 @@ MCInterpFuncFrame := class
 	objs := MCObject^
 
 	StackPointer := u8^
+	RevStackState := u8^
 	StackAllocated := int
 
 	DebugFileName := char^
@@ -25,7 +26,9 @@ MCInterpFuncFrame := class
 
 	CreateStack := !() -> void
 	{
-		StackPointer = malloc(8*1024*1024)->{u8^} //TODO unconst
+		stackSize := 8*1024*1024 //TODO unconst
+		StackPointer = malloc(stackSize)->{u8^}
+		RevStackState = StackPointer[stackSize]&
 	}
 	DestroyStack := !() -> void
 	{
@@ -36,6 +39,7 @@ MCInterpFuncFrame := class
 	{
 		StackPointer = inherStack.StackPointer
 		StackAllocated = inherStack.StackAllocated
+		RevStackState = inherStack.RevStackState
 	}
 
 	AllocateOnStack := !(int allocSize) -> void^
@@ -156,6 +160,25 @@ MCInterpFuncFrame := class
 		}else{
 			return GetObjectPtr(index)->{double^}^
 		}
+	}
+
+	StackGetPtr := !() -> u8^
+	{
+		return RevStackState
+	}
+	StackPushInt := !(s64 value) -> void
+	{
+		RevStackState = RevStackState[-8]&
+		RevStackState->{s64^}^ = value
+	}
+	StackPushFloat := !(double value) -> void
+	{
+		RevStackState = RevStackState[-8]&
+		RevStackState->{double^}^ = value
+	}
+	StackPop := !() -> void
+	{
+		RevStackState = RevStackState[8]&
 	}
 
 	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,Vector.{int} indexes,int resultIndex) -> void

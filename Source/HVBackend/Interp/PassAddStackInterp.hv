@@ -1,0 +1,78 @@
+
+PassAddStackInterp := !(MCFunction^ fnc) ->MCFunction^
+{
+	ctx := MakeGreedyPass(fnc,1,2,true)
+
+	oPtr := ctx.oPtr
+	cPtr := ctx.cPtr
+
+	o := ref ctx.objsSize
+	c := ref ctx.cmdsSize
+
+	iPtr := fnc.Lines.GetPointer()
+
+	for i : fnc.Lines.Size()
+	{
+		line := iPtr[i]
+
+		switch line.opcode
+		{
+		case "cast"
+			tpFrom := oPtr[line.var2].GetType()
+			tpTo := oPtr[line.var1].GetType()
+
+			if IsRAXCastType(tpTo) and IsRAXCastType(tpFrom)
+			{
+				cPtr[c++] = MCLine("stack_push",line.var2)
+				cPtr[c++] = MCLine("stack_pop",line.var1)
+			}else{
+				cPtr[c++] = line
+			}
+		case in !["add","sub","mul","div","mod"]
+			objType := oPtr[line.var1].GetType()
+
+			if IsInt(objType)
+			{
+
+				cPtr[c++] = MCLine("stack_push",line.var3)
+				cPtr[c++] = MCLine("stack_push",line.var2)
+
+				resOpcode := MCBaseOpcodes
+				switch line.opcode
+				{
+				case "add" resOpcode = "stack_add_int"
+				case "sub" resOpcode = "stack_sub_int"
+				case "mul"
+					if IsUInt(objType) {
+						resOpcode = "stack_umul_int"
+					}else{
+						resOpcode = "stack_smul_int"
+					}
+				case "div"
+					if IsUInt(objType) {
+						resOpcode = "stack_udiv_int"
+					}else{
+						resOpcode = "stack_sdiv_int"
+					}
+				case "mod"
+					if IsUInt(objType) {
+						resOpcode = "stack_umod_int"
+					}else{
+						resOpcode = "stack_smod_int"
+					}
+				}
+				cPtr[c++] = MCLine(resOpcode)
+				cPtr[c++] = MCLine("stack_pop",line.var1)
+			}else{
+				cPtr[c++] = line
+			}
+
+
+		case void
+			cPtr[c] = line
+			c += 1
+		}
+	}
+
+	return ctx.GenerateFunc()
+}

@@ -93,6 +93,21 @@ MCBaseOpcodes := enum extend u16
 	"get_array_elem_ptr", // var1 = var2[var3]&
 
 	//BACKEND interpreter
+	"stack_push",
+	"stack_pop",
+
+	"stack_add_int",
+	"stack_sub_int",
+	"stack_smul_int",
+	"stack_umul_int",
+	"stack_sdiv_int",
+	"stack_udiv_int",
+	"stack_smod_int",
+	"stack_umod_int",
+
+	"stack_add_float",
+	"stack_sub_float",
+
 	//Optimizations
 	"load_element_opt_class_const"
 
