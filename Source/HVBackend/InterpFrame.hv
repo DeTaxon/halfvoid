@@ -77,13 +77,6 @@ MCInterpFuncFrame := class
 	GetObjectPtr := !(int index) -> void^
 	{
 		obj := ref objs[index]
-		if obj& is MCReference
-		{
-			//assert(localVarTable.Contain(index))
-			assert(localVarTable[index] != null)
-			return localVarTable[index]->{void^^}^
-		}
-		//return localVarTable[index]?
 
 		if obj& is MCConstString
 		{

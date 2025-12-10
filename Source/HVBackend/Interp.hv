@@ -87,7 +87,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	for it,i : interpFunc.Objects
 	{
 		offset := interpFunc.StackOffsets[i]
-		if it& is MCVariable
+		if it& is MCVariable or it is MCConstValue
 		{
 			thisFrame.localVarTable[i] = thisFrame.localVarBlob[offset]&
 		}
@@ -224,7 +224,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			} else if fncObj& is MCConstPointerTyped {
 				fType := fncObj.GetType().Base->{TypeFunc^}
 				thisFrame.CallFuncPtr(fType,fncObj&->{MCConstPointer^}.GetValue(),resultPtr,indxs,0)
-			} else if fncObj& is MCVariable or fncObj& is MCReference{
+			} else if fncObj& is MCVariable or fncObj& is MCReference or fncObj is MCConstValue {
 				functionPointer := thisFrame.GetObjectPtr(thisLine.var2)->{void^^}^
 				assert(functionPointer != null) //TODO emit error
 				fncVal := iCntx.GetFuncByPointer(functionPointer)
@@ -693,42 +693,42 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(false)
 			}
 			cs += 1
-		case "load_element"
-			varType := interpFunc.Objects[thisLine.var2].GetType()
-			indType := interpFunc.Objects[thisLine.var3].GetType()
-
-			assert(indType == GTypeInt)
-
-			v2 := thisFrame.GetObjectPtr(thisLine.var2)
-			v3 := thisFrame.GetObjectPtr(thisLine.var3)
-
-
-			if varType is in TypePoint or varType == GTypeStr
-			{
-				objSet := ref interpFunc.Objects[thisLine.var1]
-				assert(objSet& is MCReference)
-				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-				setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * varType.Base.GetSize()]&
-			}else if varType is in TypeClass{
-				asClass := varType->{TypeClass^}.ToClass
-				fld := asClass.GetFieldByIndexRaw(v3->{int^}^)
-
-				objSet := ref interpFunc.Objects[thisLine.var1]
-				assert(objSet& is MCReference)
-				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-				setPtr->{u8^^}^ = v2->{u8^}[fld.MemOffset]&
-			}else if IsVecType(varType) or varType == GTypeQuantf {
-				assert(varType.Base != null)
-				elementSize := varType.Base.GetSize()
-				elementNum := v3->{s32^}^
-				setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-				setPtr->{u8^^}^ = v2->{u8^}[elementSize*elementNum]&
-			}else{
-				printf("No load_element for %s\n",varType.GetBADStr().Str())
-				assert(false)
-			}
-
-			cs += 1
+		// case "load_element"
+		// 	varType := interpFunc.Objects[thisLine.var2].GetType()
+		// 	indType := interpFunc.Objects[thisLine.var3].GetType()
+		//
+		// 	assert(indType == GTypeInt)
+		//
+		// 	v2 := thisFrame.GetObjectPtr(thisLine.var2)
+		// 	v3 := thisFrame.GetObjectPtr(thisLine.var3)
+		//
+		//
+		// 	if varType is in TypePoint or varType == GTypeStr
+		// 	{
+		// 		objSet := ref interpFunc.Objects[thisLine.var1]
+		// 		assert(objSet& is MCReference)
+		// 		setPtr := thisFrame.GetReferencePtr(thisLine.var1)
+		// 		setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * varType.Base.GetSize()]&
+		// 	}else if varType is in TypeClass{
+		// 		asClass := varType->{TypeClass^}.ToClass
+		// 		fld := asClass.GetFieldByIndexRaw(v3->{int^}^)
+		//
+		// 		objSet := ref interpFunc.Objects[thisLine.var1]
+		// 		assert(objSet& is MCReference)
+		// 		setPtr := thisFrame.GetReferencePtr(thisLine.var1)
+		// 		setPtr->{u8^^}^ = v2->{u8^}[fld.MemOffset]&
+		// 	}else if IsVecType(varType) or varType == GTypeQuantf {
+		// 		assert(varType.Base != null)
+		// 		elementSize := varType.Base.GetSize()
+		// 		elementNum := v3->{s32^}^
+		// 		setPtr := thisFrame.GetReferencePtr(thisLine.var1)
+		// 		setPtr->{u8^^}^ = v2->{u8^}[elementSize*elementNum]&
+		// 	}else{
+		// 		printf("No load_element for %s\n",varType.GetBADStr().Str())
+		// 		assert(false)
+		// 	}
+		//
+		// 	cs += 1
 		case "load_element_opt_class_const"
 			setPtr := thisFrame.GetReferencePtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
@@ -1034,6 +1034,70 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "va_arg"
 			assert(false)
 			cs += 1
+		case "get_array_elem_ptr"
+			varType := interpFunc.Objects[thisLine.var2].GetType()
+			indType := interpFunc.Objects[thisLine.var3].GetType()
+
+			assert(indType == GTypeInt)
+
+			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+			v3 := thisFrame.GetObjectPtr(thisLine.var3)
+
+			assert(varType is in TypePoint or varType == GTypeStr)
+
+
+			setPtr := thisFrame.GetObjectPtr(thisLine.var1)
+			setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * varType.Base.GetSize()]&
+
+			cs += 1
+		case "get_field_ptr"
+			classType := interpFunc.Objects[thisLine.var2].GetType().Base
+			indType := interpFunc.Objects[thisLine.var3].GetType()
+
+			assert(indType == GTypeInt)
+
+			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+			v3 := thisFrame.GetObjectPtr(thisLine.var3)
+
+			assert(classType is in TypeClass)
+
+			asClass := classType->{TypeClass^}.ToClass
+			fld := asClass.GetFieldByIndexRaw(v3->{int^}^)
+
+			setPtr := thisFrame.GetObjectPtr(thisLine.var1)
+			setPtr->{u8^^}^ = v2->{u8^^}^[fld.MemOffset]&
+
+			cs += 1
+		case "store"
+			resType := interpFunc.Objects[thisLine.var2].GetType()
+			v1 := thisFrame.GetObjectPtr(thisLine.var1)
+			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+
+			switch resType.GetSize()
+			{
+			case 1 v1->{u8^^}^^ = v2->{u8^}^
+			case 2 v1->{u16^^}^^ = v2->{u16^}^
+			case 4 v1->{u32^^}^^ = v2->{u32^}^
+			case 8 v1->{u64^^}^^ = v2->{u64^}^
+			case 16 v1->{vec4f^^}^^ = v2->{vec4f^}^
+			case void assert(false)
+			}
+			cs += 1
+		case "load"
+			resType := interpFunc.Objects[thisLine.var1].GetType()
+			v1 := thisFrame.GetObjectPtr(thisLine.var1)
+			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+
+			switch resType.GetSize()
+			{
+			case 1 v1->{u8^}^ = v2->{u8^^}^^
+			case 2 v1->{u16^}^ = v2->{u16^^}^^
+			case 4 v1->{u32^}^ = v2->{u32^^}^^
+			case 8 v1->{u64^}^ = v2->{u64^^}^^
+			case 16 v1->{vec4f^}^ = v2->{vec4f^^}^^
+			case void assert(false)
+			}
+			cs += 1
 
 		case "debug_set_file"
 			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
@@ -1076,85 +1140,85 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			//TODO
 			cs += 1
 
-		case "stack_push"
-			valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
-			valPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
-
-			value := s64
-
-			if valType.GetSize() == 8
-			{
-				value = valPtr->{u64^}^
-
-			}else if IsInt(valType) or valType is TypeEnum {
-				if IsUInt(valType) or valType is TypeEnum
-				{
-					switch valType.GetSize()
-					{
-						case 1 value = valPtr->{u8^}^
-						case 2 value = valPtr->{u16^}^
-						case 4 value = valPtr->{u32^}^
-					}
-				}else{
-					switch valType.GetSize()
-					{
-						case 1 value = valPtr->{s8^}^
-						case 2 value = valPtr->{s16^}^
-						case 4 value = valPtr->{s32^}^
-					}
-				}
-			} else if valType == GTypeFloat {
-				value&->{double^}^ = valPtr->{float^}^
-			}else {
-				assert(false)
-			}
-			thisFrame.StackPushInt(value)
-			cs += 1
-
-		case "stack_pop"
-			valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
-			valPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
-
-			value := thisFrame.StackGetPtr()->{s64^}^
-
-			if valType.GetSize() == 8
-			{
-				valPtr->{u64^}^ = value
-			}else if IsInt(valType) or valType is TypeEnum {
-				switch valType.GetSize()
-				{
-					case 1 valPtr->{u8^}^ = value
-					case 2 valPtr->{u16^}^ = value
-					case 4 valPtr->{u32^}^ = value
-				}
-			} else if valType == GTypeFloat {
-				 valPtr->{float^}^ = value&->{double^}^
-			}else {
-				assert(false)
-			}
-			thisFrame.StackPop()
-			cs += 1
-		
-		case in ![
-				"stack_add_int","stack_sub_int",
-				"stack_smul_int","stack_umul_int",
-				"stack_sdiv_int","stack_udiv_int",
-				"stack_smod_int","stack_umod_int",
-			]
-			ptr := thisFrame.StackGetPtr()->{s64^}
-			switch thisLine.opcode
-			{
-			case "stack_add_int" ptr[1] = ptr[0] + ptr[1]
-			case "stack_sub_int" ptr[1] = ptr[0] - ptr[1]
-			case "stack_smul_int" ptr[1] = ptr[0] * ptr[1]
-			case "stack_umul_int" ptr[1] = ptr[0]->{u64} * ptr[1]->{u64}
-			case "stack_sdiv_int" ptr[1] = ptr[0] div ptr[1]
-			case "stack_udiv_int" ptr[1] = ptr[0]->{u64} div ptr[1]->{u64}
-			case "stack_smod_int" ptr[1] = ptr[0] mod ptr[1]
-			case "stack_umod_int" ptr[1] = ptr[0]->{u64} mod ptr[1]->{u64}
-			}
-			thisFrame.StackPop()
-			cs += 1
+		// case "stack_push"
+		// 	valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
+		// 	valPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
+		//
+		// 	value := s64
+		//
+		// 	if valType.GetSize() == 8
+		// 	{
+		// 		value = valPtr->{u64^}^
+		//
+		// 	}else if IsInt(valType) or valType is TypeEnum {
+		// 		if IsUInt(valType) or valType is TypeEnum
+		// 		{
+		// 			switch valType.GetSize()
+		// 			{
+		// 				case 1 value = valPtr->{u8^}^
+		// 				case 2 value = valPtr->{u16^}^
+		// 				case 4 value = valPtr->{u32^}^
+		// 			}
+		// 		}else{
+		// 			switch valType.GetSize()
+		// 			{
+		// 				case 1 value = valPtr->{s8^}^
+		// 				case 2 value = valPtr->{s16^}^
+		// 				case 4 value = valPtr->{s32^}^
+		// 			}
+		// 		}
+		// 	} else if valType == GTypeFloat {
+		// 		value&->{double^}^ = valPtr->{float^}^
+		// 	}else {
+		// 		assert(false)
+		// 	}
+		// 	thisFrame.StackPushInt(value)
+		// 	cs += 1
+		//
+		// case "stack_pop"
+		// 	valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
+		// 	valPtr := thisFrame.GetObjectPtr(opPtr[cs].var1)
+		//
+		// 	value := thisFrame.StackGetPtr()->{s64^}^
+		//
+		// 	if valType.GetSize() == 8
+		// 	{
+		// 		valPtr->{u64^}^ = value
+		// 	}else if IsInt(valType) or valType is TypeEnum {
+		// 		switch valType.GetSize()
+		// 		{
+		// 			case 1 valPtr->{u8^}^ = value
+		// 			case 2 valPtr->{u16^}^ = value
+		// 			case 4 valPtr->{u32^}^ = value
+		// 		}
+		// 	} else if valType == GTypeFloat {
+		// 		 valPtr->{float^}^ = value&->{double^}^
+		// 	}else {
+		// 		assert(false)
+		// 	}
+		// 	thisFrame.StackPop()
+		// 	cs += 1
+		//
+		// case in ![
+		// 		"stack_add_int","stack_sub_int",
+		// 		"stack_smul_int","stack_umul_int",
+		// 		"stack_sdiv_int","stack_udiv_int",
+		// 		"stack_smod_int","stack_umod_int",
+		// 	]
+		// 	ptr := thisFrame.StackGetPtr()->{s64^}
+		// 	switch thisLine.opcode
+		// 	{
+		// 	case "stack_add_int" ptr[1] = ptr[0] + ptr[1]
+		// 	case "stack_sub_int" ptr[1] = ptr[0] - ptr[1]
+		// 	case "stack_smul_int" ptr[1] = ptr[0] * ptr[1]
+		// 	case "stack_umul_int" ptr[1] = ptr[0]->{u64} * ptr[1]->{u64}
+		// 	case "stack_sdiv_int" ptr[1] = ptr[0] div ptr[1]
+		// 	case "stack_udiv_int" ptr[1] = ptr[0]->{u64} div ptr[1]->{u64}
+		// 	case "stack_smod_int" ptr[1] = ptr[0] mod ptr[1]
+		// 	case "stack_umod_int" ptr[1] = ptr[0]->{u64} mod ptr[1]->{u64}
+		// 	}
+		// 	thisFrame.StackPop()
+		// 	cs += 1
 
 		case void
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)

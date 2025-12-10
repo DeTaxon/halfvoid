@@ -39,7 +39,7 @@ BCFuncsType := class
 		result = GetBaseFunc(itm)
 		// assert(false)
 
-		// result = PassRemoveReferences(result)
+		result = PassRemoveReferences(result)
 
 		// result = PassAddStackInterp(result)
 		// result = PassStackRemovePushPop(result)

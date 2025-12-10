@@ -17,6 +17,18 @@ PassAddStackInterp := !(MCFunction^ fnc) ->MCFunction^
 
 		switch line.opcode
 		{
+		case "mov"
+			tpFrom := oPtr[line.var2].GetType()
+			tpTo := oPtr[line.var1].GetType()
+
+			if tpFrom == tpTo and IsRAXCastType(tpFrom)
+			{
+				cPtr[c++] = MCLine("stack_push",line.var2)
+				cPtr[c++] = MCLine("stack_pop",line.var1)
+			}else{
+				cPtr[c++] = line
+			}
+			
 		case "cast"
 			tpFrom := oPtr[line.var2].GetType()
 			tpTo := oPtr[line.var1].GetType()

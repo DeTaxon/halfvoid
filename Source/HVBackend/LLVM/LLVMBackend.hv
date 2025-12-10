@@ -712,7 +712,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				op1 := ref fnc.Objects[op.var1]
 				op2 := ref fnc.Objects[op.var2]
 
-				if IsObjectVariable(op1) and op2.IsConstant
+				if IsObjectVariable(op1) and (op2.IsConstant or op2 is MCConstValue)
 				{
 					out << "	store "
 					op2.GetType().PrintType(ctx)
@@ -860,7 +860,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 				assert(res is MCConstValue)
 
-				if ob1 is MCVariable or ob1.IsConstant
+				if ob1 is MCVariable or ob1 is MCConstValue or  ob1.IsConstant
 				{
 					bType := ob1.GetType()
 
@@ -888,7 +888,12 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printDebugEnd()
 
 				}else {
-					printf("LLVM: unknown llvm_getelementptr at %s %i\n","unknown",indx)
+					if op.opcode == "get_field_ptr" {
+						printf("LLVM: unknown get_field_ptr at %s %i\n","unknown",indx)
+					}else{
+						printf("LLVM: unknown get_array_elem_ptr at %s %i\n","unknown",indx)
+
+					}
 					ob1 := ref fnc.Objects[op.var1]
 					ob2 := ref fnc.Objects[op.var2]
 					ob3 := ref fnc.Objects[op.var3]

@@ -27,6 +27,13 @@ passRemoveReferencesReplaceLoadElement := !(MCFunction^ fnc) ->MCFunction^
 			}else if objTp is in TypePoint or objTp == GTypeStr
 			{
 				cPtr[c++] = MCLine("get_array_elem_ptr",line.var1,line.var2,line.var3)
+			}else if objTp is TypeVector {
+				ptrObj := grd.PushConstVar(objTp.GetPoint())
+				baseObj := grd.PushConstVar(objTp.Base.GetPoint())
+
+				cPtr[c++] = MCLine("get_pointer",ptrObj,line.var2)
+				cPtr[c++] = MCLine("cast",baseObj,ptrObj)
+				cPtr[c++] = MCLine("get_array_elem_ptr",line.var1,baseObj,line.var3)
 			}else{
 				printf("RemoveRef,unknown type %s\n",objTp.GetBADStr().Str())
 				assert(false)

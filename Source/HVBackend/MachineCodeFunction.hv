@@ -16,7 +16,7 @@ AppendClass MCVariable
 }
 AppendClass MCConstValue
 {
-	IsConstant := virtual true
+	// IsConstant := virtual true
 
 	PrintObject := virtual !() -> void { printf("Const value with type %s", GetType().GetBADStr().Str()) }
 
