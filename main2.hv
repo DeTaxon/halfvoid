@@ -9,30 +9,13 @@ Func2 := !() -> void
 {
 }
 
-TestClass := class
-{
-	a := u8
-	b := u8
-	c := u8
-	d := u8
-}
-
 RunFunc := !() -> void
 {
 	tst()
 }
 
-
-
-
+//TODO closure api?
 //TODO LazyClass does not work if some class uses it as a field
-
-//TODO printf does not work in nonstop
-
-// TODO this does not compile
-// AsyncMonitorFolderNonStop(folderPath,true, (x) ==> {
-//
-// })
 
 //TODO broken feature: only used virtual functions are loaded, this caused to break OptCodeGen
 //TODO recursive #Mark("JIT") for classes

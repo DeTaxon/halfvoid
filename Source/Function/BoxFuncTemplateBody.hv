@@ -245,14 +245,10 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		resConsts := AVLMap.{Str,BoxUnit^}
 		checkTypes(datas,consts,resConsts)
 
-		if Name == "SetVariant"
-		{
-			checkTypes(datas,consts,resConsts)
-		}
-
 
 		names := HybridQueue.{StringSpan,10}
 		names.Push(hData.Types[^].Name)
+
 		newFunc := new BoxFuncBody(tp,Attrs,names,bdy)
 
 		newFunc.VariadicName = hData.VariadicName
@@ -302,7 +298,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 		{
 			if i >= hData.Types.Size()
 			{
-				assert(hData.IsVariadic)
+				assert(hData.IsVariadic or Attrs.IsLambda)
 				fTyps[i] = objs[i].1
 			}else{
 				iRef[i] = hData.Types[i].IsRef

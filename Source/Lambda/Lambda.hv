@@ -47,7 +47,6 @@ BoxLambdaHolder := class extend BoxExeObj
 		}
 
 		attr.IsLambda = true
-		
 		tmpl = new BoxFuncTemplateBody(attr,bPtr,null,null,rToken,itBody,null)
 		tmpl.SetName("lambda")
 
@@ -83,6 +82,7 @@ BoxLambdaHolder := class extend BoxExeObj
 			return null
 		if not (toType.Base is in TypeClass)
 			return null
+
 
 		cls := toType.Base->{TypeClass^}.ToClass
 		if cls.Constants == null or cls.Constants.Constants.Size() != 1

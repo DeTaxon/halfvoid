@@ -71,7 +71,7 @@ MCBuildContext_x86_64 := class
 		{
 			fnc := funcsToCompile.Pop()
 
-			bc := BCFuncs.GetFunc_x86_64(fnc)
+			bc := BCFuncs.GetFunc_Interp_x86_64(fnc)
 			
 			ctx2 := MCBuildFuncContext_x86_64
 			ctx2.eng = this&
@@ -113,22 +113,6 @@ MCBuildFuncContext_x86_64 := class
 
 	Compile := !(MCFunction^ fnc) -> void
 	{
-		tmpAlloc := MakeTempAllocator()
-		oldAlloc := SwapAllocator(tmpAlloc&)
-		// fnc.Print()
-		fnc = PassRemoveSpaceship(fnc)
-		fnc = PassSimplifyVectors(fnc)
-		fnc = PassRemoveVoidParams(fnc)
-		// fnc.Print()
-		fnc = PassRemoveReferences(fnc)
-		// fnc = PassOptimizeJumpX86(fnc)
-		// fnc.Print()
-		fnc = PassApplyRegistersX86(fnc)
-		fnc = PassRemoveBadSets(fnc)
-
-		SetAllocator(oldAlloc)
-		fnc = PassRemoveUnusedObjects(fnc)
-		tmpAlloc.Destroy()
 
 		// fnc.Print()
 

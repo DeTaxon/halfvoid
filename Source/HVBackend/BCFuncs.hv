@@ -53,18 +53,35 @@ BCFuncsType := class
 		interpFuncs[itm] = result
 	}
 
-	GetFunc_x86_64 := !(BoxFuncBody^ itm) -> MCFunction^
+	GetFunc_Interp_x86_64 := !(BoxFuncBody^ itm) -> MCFunction^
 	{
 		if x8664Funcs.Contain(itm)
 			return x8664Funcs[itm]
 
 		result = GetBaseFunc(itm)
 
+		tmpAlloc := MakeTempAllocator()
+		oldAlloc := SwapAllocator(tmpAlloc&)
+
 		result = PassFirstOpt(result,false)
 
 		result = InterpPassPrepare(result)
-		result.ComputeStackFrame()
 		result.BaseFunction = itm
+
+		// result.Print()
+		result = PassRemoveSpaceship(result)
+		result = PassSimplifyVectors(result)
+		result = PassRemoveVoidParams(result)
+		// result.Print()
+		result = PassRemoveReferences(result)
+		// result = PassOptimizeJumpX86(result)
+		// result.Print()
+		result = PassApplyRegistersX86(result)
+		result = PassRemoveBadSets(result)
+
+		SetAllocator(oldAlloc)
+		result = PassRemoveUnusedObjects(result)
+		tmpAlloc.Destroy()
 
 		x8664Funcs[itm] = result
 	}
