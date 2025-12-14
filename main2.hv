@@ -2,11 +2,14 @@
 
 main := !(char^[] args) -> int
 {
-	tst()
+	// tst()
+	c := int[20]
+	printf("hey %i\n",c.Size())
 }
 
 Func2 := !() -> void
 {
+
 }
 
 RunFunc := !() -> void

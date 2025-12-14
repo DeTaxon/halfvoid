@@ -74,6 +74,9 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 
 		newFnc := CreateFuncCall(nm.Value,objs2,consts)
 		return newFnc?
+
+		if nm.Value == "Size" and vr.GetType() is TypeArray and objs2.Size() == 1
+			return GetExeInt(vr.GetType()->{TypeArray^}.len)
 	}
 	
 	ptrCall := innerTryGetFieldCall(vr,itm.Down.Right.Right)
