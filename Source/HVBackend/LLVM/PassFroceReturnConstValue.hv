@@ -141,6 +141,7 @@ RetConstFuncTableInit := !() -> void
 	tbl.Insert("sin")
 
 	tbl.Insert("vec_scalar_mul")
+	tbl.Insert("vec_shuffle_begin")
 
 	tbl.Insert("get_field_ptr")
 	tbl.Insert("get_array_elem_ptr")

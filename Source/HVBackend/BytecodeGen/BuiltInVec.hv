@@ -19,10 +19,9 @@ AppendClass BuiltInVecShuffle
 	IsMCInlined := virtual true
 	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} lst) -> WriteMCResult
 	{
-		typ := lst[0].GetType()
 		inpObj := lst[0].WriteMC(ctx).CreatedId
 
-		newVar := ctx.CreateVar(typ)
+		newVar := ctx.CreateVar(GetType()->{TypeFunc^}.ResultType)
 
 		HVB_ins_vec_shuffle_begin(ctx,newVar,inpObj)
 		for i : vecSize

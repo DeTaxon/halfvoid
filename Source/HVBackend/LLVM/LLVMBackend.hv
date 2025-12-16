@@ -851,6 +851,40 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << siz << "f32(float -0.0,<" << siz << " x float> %Temp" << op.var1 << ")"
 
 				printDebugEnd()
+			case "vec_shuffle_begin"
+
+				tp := fnc.Objects[op.var2].GetType()
+				vecSize := tp->{TypeVector^}.vecElementCount
+				indx += 1
+
+				out << "	%Var" << op.var1 << " =  shufflevector "
+				tp.PrintType(ctx)
+				out << " %Var" << op.var2 << ","
+				tp.PrintType(ctx)
+				out << " zeroinitializer ,"
+				out << "<" << fnc.Objects[op.var1].GetType()->{TypeVector^}.vecElementCount << " x i32 > <"
+
+				printComma := false
+				while fnc.Lines[indx].opcode != "vec_shuffle_end"
+				{
+					line := ref fnc.Lines[indx]
+
+					if printComma
+						out << ","
+					printComma = true
+
+					switch line.opcode
+					{
+					case "vec_shuffle_index"
+						out << "i32 " << fnc.Objects[line.var1]&->{MCConstInteger^}.GetValue()
+					case "vec_shuffle_zero"
+						out << "i32 " << vecSize
+					}
+					indx += 1
+				}
+				out << ">"
+				printDebugEnd()
+				
 			case in !["get_field_ptr","get_array_elem_ptr"]
 				v1 := op.var2
 				v2 := op.var3

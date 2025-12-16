@@ -225,6 +225,11 @@ GenMCTable := !() -> void
 
 	tbl["vec_scalar_mul"] = MCLine("noop",0,1,1)
 
+	tbl["vec_shuffle_begin"] = MCLine("noop",0,1)
+	tbl["vec_shuffle_index"] = MCLine("noop",0,1)
+	tbl["vec_shuffle_zero"] = MCLine("noop",0)
+	tbl["vec_shuffle_end"] = MCLine("noop",0)
+
 	tbl["memset"] = MCLine("noop",1,1,1)
 	tbl["clean"] = MCLine("noop")
 
