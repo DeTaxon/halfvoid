@@ -155,6 +155,103 @@ MCInterpFuncFrame := class
 		}
 	}
 
+	LoadS64 := !(u16 index) -> s64
+	{
+		tp := func.Objects[index].GetType()
+		tpSize := tp.GetSize()
+
+		ptr := GetObjectPtr(index)
+
+		if IsUInt(tp) {
+			switch tpSize
+			{
+			case 1 result = ptr->{u8^}^
+			case 2 result = ptr->{u16^}^
+			case 4 result = ptr->{u32^}^
+			case 8 result = ptr->{u64^}^
+			}
+		}else{
+			switch tpSize
+			{
+			case 1 result = ptr->{s8^}^
+			case 2 result = ptr->{s16^}^
+			case 4 result = ptr->{s32^}^
+			case 8 result = ptr->{s64^}^
+			}
+		}
+	}
+	StoreS64 := !(u16 index,s64 value) -> void
+	{
+		tp := func.Objects[index].GetType()
+
+		ptr := GetObjectPtr(index)
+
+		switch tp.GetSize()
+		{
+		case 1 ptr->{s8^}^ = value
+		case 2 ptr->{s16^}^ = value
+		case 4 ptr->{s32^}^ = value
+		case 8 ptr->{s64^}^ = value
+		}
+	}
+	LoadDouble := !(u16 index) -> double
+	{
+		tp := func.Objects[index].GetType()
+		tpSize := tp.GetSize()
+
+		ptr := GetObjectPtr(index)
+
+		switch tpSize
+		{
+		// case 2 result = ptr->{half^}^
+		case 4 result = ptr->{float^}^
+		case 8 result = ptr->{double^}^
+		}
+	}
+	StoreDouble := !(u16 index, double value) -> void
+	{
+		tp := func.Objects[index].GetType()
+		tpSize := tp.GetSize()
+
+		ptr := GetObjectPtr(index)
+
+		switch tpSize
+		{
+		// case 2 ptr->{half^}^ = value
+		case 4 ptr->{float^}^ = value
+		case 8 ptr->{double^}^ = value
+		}
+	}
+	LoadVec4f := !(u16 index) -> vec4f
+	{
+		tp := func.Objects[index].GetType()
+		tpSize := tp.GetSize()
+
+		ptr := GetObjectPtr(index)
+
+		switch tpSize
+		{
+		case 8 result = ptr->{vec2f^}^.xyxy
+		case 12 result = ptr->{vec3f^}^.xyzx
+		case 16 result = ptr->{vec4f^}^.xyzw
+		}
+	}
+	StoreVec4f := !(u16 index, vec4f value) -> void
+	{
+		tp := func.Objects[index].GetType()
+		tpSize := tp.GetSize()
+
+		ptr := GetObjectPtr(index)
+
+		switch tpSize
+		{
+		case 8 ptr->{vec2f^}^ = value.xy
+		case 12 ptr->{vec3f^}^ = value.xyz
+		case 16 ptr->{vec4f^}^ = value.xyzw
+		}
+	}
+
+
 	StackGetPtr := !() -> u8^
 	{
 		return RevStackState

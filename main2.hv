@@ -3,8 +3,6 @@
 main := !(char^[] args) -> int
 {
 	// tst()
-	c := int[20]
-	printf("hey %i\n",c.Size())
 }
 
 Func2 := !() -> void
@@ -15,6 +13,9 @@ Func2 := !() -> void
 RunFunc := !() -> void
 {
 	tst()
+	// x := 5
+	// y := 0xB
+	// printf("hey %x\n",x and_b y)
 }
 
 //TODO closure api?

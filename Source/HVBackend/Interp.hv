@@ -260,99 +260,23 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			memset(clnVar,0,obj.GetType().GetSize())
 			cs += 1
-		case "and"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+		case in !["and","or","xor","sshr","ushr","shl"]
 
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
+			v1 := thisFrame.LoadS64(thisLine.var2)
+			v2 := thisFrame.LoadS64(thisLine.var3)
+			res := s64
 
-			switch objTyp.GetSize()
+			switch thisLine.opcode
 			{
-				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ and_b ptr2->{s8^}^
-				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ and_b ptr2->{s16^}^
-				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ and_b ptr2->{s32^}^
-				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ and_b ptr2->{s64^}^
-			}
-			cs += 1
-		case "or"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			switch objTyp.GetSize()
-			{
-				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ or_b ptr2->{s8^}^
-				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ or_b ptr2->{s16^}^
-				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ or_b ptr2->{s32^}^
-				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ or_b ptr2->{s64^}^
+			case "and" res = v1 and_b v2
+			case "or" res = v1 or_b v2
+			case "xor" res = v1 xor_b v2
+			case "sshr" res = v1 shr v2
+			case "ushr" res = v1->{u64} shr v2->{u64}
+			case "shl" res = v1 shl v2
 			}
 
-			cs += 1
-		case "xor"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			switch objTyp.GetSize()
-			{
-				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ xor_b ptr2->{s8^}^
-				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ xor_b ptr2->{s16^}^
-				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ xor_b ptr2->{s32^}^
-				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ xor_b ptr2->{s64^}^
-			}
-
-			cs += 1
-		case "sshr"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			switch objTyp.GetSize()
-			{
-				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ shr ptr2->{s8^}^
-				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ shr ptr2->{s16^}^
-				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ shr ptr2->{s32^}^
-				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ shr ptr2->{s64^}^
-			}
-
-			cs += 1
-		case "ushr"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			switch objTyp.GetSize()
-			{
-				case 1 ptrRes->{s8^}^ = ptr1->{u8^}^ shr ptr2->{u8^}^
-				case 2 ptrRes->{s16^}^ = ptr1->{u16^}^ shr ptr2->{u16^}^
-				case 4 ptrRes->{s32^}^ = ptr1->{u32^}^ shr ptr2->{u32^}^
-				case 8 ptrRes->{s64^}^ = ptr1->{u64^}^ shr ptr2->{u64^}^
-			}
-
-			cs += 1
-		case "shl"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			switch objTyp.GetSize()
-			{
-				case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ shl ptr2->{s8^}^
-				case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ shl ptr2->{s16^}^
-				case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ shl ptr2->{s32^}^
-				case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ shl ptr2->{s64^}^
-			}
+			thisFrame.StoreS64(thisLine.var1,res)
 
 			cs += 1
 		case "not"
@@ -368,175 +292,68 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(false)
 			}
 			cs += 1
-		case "add"
+		case in !["add","sub","mul","div","mod"]
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			if IsInt(objTyp)
 			{
-				switch objTyp.GetSize()
-				{
-					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ + ptr2->{s8^}^
-					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ + ptr2->{s16^}^
-					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ + ptr2->{s32^}^
-					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ + ptr2->{s64^}^
-				}
-			}else if IsFloat(objTyp)
-			{
-				switch objTyp.GetSize()
-				{
-					case 4 ptrRes->{float^}^ = ptr1->{float^}^ + ptr2->{float^}^
-					case 8 ptrRes->{double^}^ = ptr1->{double^}^ + ptr2->{double^}^
-				}
-			}else if IsVecType(objTyp){
-				switch objTyp
-				{
-					case GTypeVec2f ptrRes->{vec2f^}^ = ptr1->{vec2f^}^ + ptr2->{vec2f^}^
-					case GTypeVec3f ptrRes->{vec3f^}^ = ptr1->{vec3f^}^ + ptr2->{vec3f^}^
-					case GTypeVec4f ptrRes->{vec4f^}^ = ptr1->{vec4f^}^ + ptr2->{vec4f^}^
-				}
-			}else{
-				printf("some add %s\n",objTyp.GetBADStr().Str())
-				assert(false)
-			}
-			cs += 1
-		case "sub"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+				v1 := thisFrame.LoadS64(thisLine.var2)
+				v2 := thisFrame.LoadS64(thisLine.var3)
+				res := s64
 
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			if IsInt(objTyp)
-			{
-				switch objTyp.GetSize()
-				{
-					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ - (ptr2->{s8^}^)
-					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ - (ptr2->{s16^}^)
-					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ - (ptr2->{s32^}^)
-					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ - (ptr2->{s64^}^)
-				}
-			}else if IsFloat(objTyp)
-			{
-				switch objTyp.GetSize()
-				{
-					case 4 ptrRes->{float^}^ = ptr1->{float^}^ - (ptr2->{float^}^)
-					case 8 ptrRes->{double^}^ = ptr1->{double^}^ - (ptr2->{double^}^)
-				}
-			}else if objTyp == GTypeVec2f {
-				ptrRes->{vec2f^}^ = ptr1->{vec2f^}^ - (ptr2->{vec2f^}^)
-			}else if objTyp == GTypeVec3f {
-				ptrRes->{vec3f^}^ = ptr1->{vec3f^}^ - (ptr2->{vec3f^}^)
-			}else if objTyp == GTypeVec4f {
-				ptrRes->{vec4f^}^ = ptr1->{vec4f^}^ - (ptr2->{vec4f^}^)
-			}else{
-				//interpFunc.Print()
-				//printf("line %i\n",cs)
-				printf("failed to sub, unknown type %s\n",objTyp.GetBADStr().Str())
-				exit(0)
-			}
-			cs += 1
-		case "mul"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			if IsInt(objTyp)
-			{
-				switch objTyp.GetSize()
-				{
-					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ * (ptr2->{s8^}^)
-					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ * (ptr2->{s16^}^)
-					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ * (ptr2->{s32^}^)
-					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ * (ptr2->{s64^}^)
-				}
-			}else if IsFloat(objTyp)
-			{
-				switch objTyp.GetSize()
-				{
-					case 4 ptrRes->{float^}^ = ptr1->{float^}^ * ptr2->{float^}^
-					case 8 ptrRes->{double^}^ = ptr1->{double^}^ * ptr2->{double^}^
-				}
-			}else if objTyp == GTypeQuantf {
-				ptrRes->{quantf^}^ = ptr1->{quantf^}^ * (ptr2->{quantf^}^)
-			}else if objTyp == GTypeVec4f {
-				ptrRes->{vec4f^}^ = ptr1->{vec4f^}^ * (ptr2->{vec4f^}^)
-			}else if objTyp == GTypeVec3f {
-				ptrRes->{vec3f^}^ = ptr1->{vec3f^}^ * (ptr2->{vec3f^}^)
-			}else if objTyp == GTypeVec2f {
-				ptrRes->{vec2f^}^ = ptr1->{vec2f^}^ * (ptr2->{vec2f^}^)
-			}else{
-				printf("failed to mul, unknown type %s\n",objTyp.GetBADStr().Str())
-				assert(false)
-			}
-			cs += 1
-		case "div"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			if IsInt(objTyp)
-			{
-				if IsUInt(objTyp)
-				{
-					switch objTyp.GetSize()
+				if IsUInt(objTyp) {
+					switch thisLine.opcode
 					{
-						case 1 ptrRes->{u8^}^ = ptr1->{u8^}^ div (ptr2->{u8^}^)
-						case 2 ptrRes->{u16^}^ = ptr1->{u16^}^ div (ptr2->{u16^}^)
-						case 4 ptrRes->{u32^}^ = ptr1->{u32^}^ div (ptr2->{u32^}^)
-						case 8 ptrRes->{u64^}^ = ptr1->{u64^}^ div (ptr2->{u64^}^)
+					case "add" res = v1->{u64} + v2->{u64}
+					case "sub" res = v1->{u64} - v2->{u64}
+					case "mul" res = v1->{u64} * v2->{u64}
+					case "div" res = v1->{u64} div v2->{u64}
+					case "mod" res = v1->{u64} mod v2->{u64}
 					}
 				}else{
-					switch objTyp.GetSize()
+					switch thisLine.opcode
 					{
-						case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ div (ptr2->{s8^}^)
-						case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ div (ptr2->{s16^}^)
-						case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ div (ptr2->{s32^}^)
-						case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ div (ptr2->{s64^}^)
+					case "add" res = v1 + v2
+					case "sub" res = v1 - v2
+					case "mul" res = v1 * v2
+					case "div" res = v1 div v2
+					case "mod" res = v1 mod v2
 					}
 				}
+
+
+				thisFrame.StoreS64(thisLine.var1,res)
 			}else if IsFloat(objTyp)
 			{
-				switch objTyp.GetSize()
-				{
-					case 4 ptrRes->{float^}^ = ptr1->{float^}^ / ptr2->{float^}^
-					case 8 ptrRes->{double^}^ = ptr1->{double^}^ / ptr2->{double^}^
-				}
-			}else if objTyp == GTypeVec4f {
-				ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
-				ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-				ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
-				for i : 4
-					ptrRes->{float^}[i] = ptr1->{float^}[i] / ptr2->{float^}[i]
-			}else{
-				assert(false)
-			}
-			cs += 1
-		case "mod"
-			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+				v1 := thisFrame.LoadDouble(thisLine.var2)
+				v2 := thisFrame.LoadDouble(thisLine.var3)
+				res := double
 
-			ptrRes := thisFrame.GetObjectPtr(thisLine.var1)
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
-
-			if IsInt(objTyp)
-			{
-				bigInt := s64
-				switch objTyp.GetSize()
+				switch thisLine.opcode
 				{
-					case 1 ptrRes->{s8^}^ = ptr1->{s8^}^ mod (ptr2->{s8^}^)
-					case 2 ptrRes->{s16^}^ = ptr1->{s16^}^ mod (ptr2->{s16^}^)
-					case 4 ptrRes->{s32^}^ = ptr1->{s32^}^ mod (ptr2->{s32^}^)
-					case 8 ptrRes->{s64^}^ = ptr1->{s64^}^ mod (ptr2->{s64^}^)
+				case "add" res = v1 + v2
+				case "sub" res = v1 - v2
+				case "mul" res = v1 * v2
+				case "div" res = v1 / v2
 				}
+
+				thisFrame.StoreDouble(thisLine.var1,res)
+			}else if IsVecType(objTyp) {
+				v1 := thisFrame.LoadVec4f(thisLine.var2)
+				v2 := thisFrame.LoadVec4f(thisLine.var3)
+				res := vec4f
+
+				switch thisLine.opcode
+				{
+				case "add" res = v1 + v2
+				case "sub" res = v1 - v2
+				case "mul" res = v1 * v2
+				case "div" res = v1 / v2
+				}
+
+				thisFrame.StoreVec4f(thisLine.var1,res)
 			}else{
+				printf("some add %s\n",objTyp.GetBADStr().Str())
 				assert(false)
 			}
 			cs += 1
