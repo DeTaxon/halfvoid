@@ -3,19 +3,15 @@
 main := !(char^[] args) -> int
 {
 	// tst()
-}
-
-Func2 := !() -> void
-{
-
+	RunFunc()
 }
 
 RunFunc := !() -> void
 {
-	tst()
-	// x := 5
-	// y := 0xB
-	// printf("hey %x\n",x and_b y)
+	// tst()
+
+	c := Allc
+	c.AllocMem(16)
 }
 
 //TODO closure api?
@@ -39,38 +35,6 @@ makeSpirv := !() -> void
 	c := #SpirvTest()
 	ts.Write(c.GetPointer(),c.Size())
 	ts.Close()
-}
-
-AllcFree := class
-{
-	left := AllcFree^
-	right := AllcFree^
-	up := AllcFree^ 
-	balance := s8
-
-	size := int
-}
-Allc := class extends IAllocator
-{
-	startPage := PageMemory
-
-	AllocMem := virtual !(int size, bool dirty = false) -> void^
-	{
-		if startPage.memPointer == null
-		{
-			startPage.Create(8*1024*1024)
-		}
-	}
-	FreeMem := virtual !(void^ mem) -> void
-	{
-	}
-
-	GetPointerInfo := !(void^ ptr) -> void
-	{
-		// actual pointer
-		// typeid
-		//
-	}
 }
 
 tst := !() -> void {

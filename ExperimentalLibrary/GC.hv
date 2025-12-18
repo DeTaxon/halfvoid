@@ -1,0 +1,68 @@
+
+
+AllcData := class
+{
+	size := int
+}
+AllocatedDataInfo := class
+{
+	dataSize := u8
+}
+AllocatedPage := class
+{
+	page := PageMemory
+	usedMem := AVLTree.{AllocatedDataInfo^}
+	freeMem := AVLTree.{AllocatedDataInfo^}
+
+	allocLock := int // atomic lock
+}
+Allc := class extends IAllocator
+{
+	pages := AllocatedPage[32]
+
+	AllocMem := virtual !(int size, bool dirty = false) -> void^
+	{
+
+		while true
+		{
+			for page : pages
+			{
+				isSet := InterlockSet(page.allocLock,1)
+				
+				if isSet == 0
+				{
+					defer page.allocLock = 0
+					return allocFromPage(page&,size,dirty)
+				}
+			}
+			TaskYield()
+		}
+	}
+	FreeMem := virtual !(void^ mem) -> void
+	{
+	}
+
+	allocFromPage := !(AllocatedPage^ page, int size, bool dirty) -> void^
+	{
+
+		if page.page.Size() == 0
+		{
+			page.page.Create(32*1024*1024,"rw")
+
+			ptr := page.page.GetPointer()
+
+			memset(ptr,0,AllocatedPage->TypeSize)
+			internalHVInitClass(ptr->{AllocatedPage^}^)
+
+
+		}
+
+	}
+
+	GetPointerInfo := !(void^ ptr) -> void
+	{
+		// actual pointer
+		// typeid
+		//
+	}
+}
