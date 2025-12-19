@@ -1,18 +1,19 @@
 
 
-AllcData := class
-{
-	size := int
-}
 AllocatedDataInfo := class
 {
-	dataSize := u8
+	dataSize := u32
+
+	"<=>" := !(AllocatedDataInfo other) -> int
+	{
+		return thsi& <=> other&
+	}
 }
 AllocatedPage := class
 {
 	page := PageMemory
-	usedMem := AVLTree.{AllocatedDataInfo^}
-	freeMem := AVLTree.{AllocatedDataInfo^}
+	usedMem := AVLTree.{AllocatedDataInfo}
+	freeMem := AVLTree.{AllocatedDataInfo}
 
 	allocLock := int // atomic lock
 }

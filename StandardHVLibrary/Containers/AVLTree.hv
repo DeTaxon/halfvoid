@@ -4,14 +4,20 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 	this := !() -> void
 	{
 		Start = null
-		CreatedNodes = null
 	}
 
-	FindOrCreate := !(DATA dat,CommonTreeNode.{DATA}^^ toRet) -> bool //bool isCreated
+	InsertNode := !(CommonTreeNode.{DATA}^ node) -> void
+	{
+		toRet := CommonTreeNode.{DATA}^
+		FindOrCreate(node.data,toRet&,node)
+	}
+	FindOrCreate := !(DATA dat,CommonTreeNode.{DATA}^^ toRet,CommonTreeNode.{DATA}^ preCreatedNode = null) -> bool //bool isCreated
 	{
 		if Start == null 
 		{
-			this.createNode(Start)
+			Start = preCreatedNode
+			if Start == null
+				this.createNode(Start)
 			toRet^ = Start
 			Start.data = dat
 			//Start.data = dat
@@ -42,10 +48,15 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		
 		cmpRes2 := prev.data <=> dat
 		if cmpRes2 < 0{
-			this.createNode(prev.Right)
+			prev.Right = preCreatedNode
+			if preCreatedNode == null
+				this.createNode(prev.Right)
 			prev.Right.Up = prev
 			iter = prev.Right
 		}else{
+			prev.Left = preCreatedNode
+			if preCreatedNode == null
+				this.createNode(prev.Left)
 			this.createNode(prev.Left)
 			prev.Left.Up = prev
 			iter = prev.Left
@@ -148,6 +159,12 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 	RemoveNode := !(CommonTreeNode.{DATA}^ toRem) -> void
 		#TemplateResist()
 	{
+		if PluckNode(toRem)
+			remNode(toRem)
+	}
+	PluckNode := !(CommonTreeNode.{DATA}^ toRem) -> bool
+		#TemplateResist()
+	{
 		if toRem.Left == null and toRem.Right == null
 		{
 			fth := toRem.Up
@@ -164,8 +181,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 			}else{
 				Start = null
 			}
-			remNode(toRem)
-			return void
+			return true
 		}
 		if toRem.Left == null
 		{
@@ -186,8 +202,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 					RebalanceDown(fth,false)
 				}
 			}
-			remNode(toRem)
-			return void
+			return true
 		}
 		if toRem.Right == null
 		{
@@ -208,8 +223,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 					RebalanceDown(fth,false)
 				}
 			}
-			remNode(toRem)
-			return void
+			return true
 		}
 		//else Left != null and Right != null
 
@@ -252,12 +266,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 
 		cand.balance = toRem.balance
 
-		//swap(toRem.Up,cand.Up)
-		//swap(toRem.Left,cand.Left)
-		//swap(toRem.Right,cand.Right)
-		//printf("swapped\n")
-		//Start.PrintIt(0)
-		RemoveNode(toRem)
+		return PluckNode(toRem)
 	}
 	RebalanceDown := !(CommonTreeNode.{DATA}^ toBal2,bool leftPull2) -> void
 		#TemplateResist()
