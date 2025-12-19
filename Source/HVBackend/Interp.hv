@@ -125,7 +125,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		switch thisLine.opcode
 		{
 		case "noop"
-			cs += 1
 		case "call_start"
 			fncObj := ref interpFunc.Objects[opPtr[cs].var2]
 			returnIndexCall := opPtr[cs].var1
@@ -143,7 +142,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				}
 				cs += 1
 			}
-			cs += 1
 
 			resultPtr := thisFrame.GetObjectPtr(thisLine.var1)
 
@@ -259,7 +257,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			assert(clnVar != null)
 
 			memset(clnVar,0,obj.GetType().GetSize())
-			cs += 1
 		case in !["and","or","xor","sshr","ushr","shl"]
 
 			v1 := thisFrame.LoadS64(thisLine.var2)
@@ -278,7 +275,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			thisFrame.StoreS64(thisLine.var1,res)
 
-			cs += 1
 		case "not"
 			objTyp := interpFunc.Objects[thisLine.var1].GetType()
 
@@ -291,7 +287,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else{
 				assert(false)
 			}
-			cs += 1
 		case in !["add","sub","mul","div","mod"]
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
@@ -356,7 +351,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				printf("some add %s\n",objTyp.GetBADStr().Str())
 				assert(false)
 			}
-			cs += 1
 		case "cmp"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
@@ -411,27 +405,21 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				printf("failed to cmp, unknown type %s\n",objTyp.GetBADStr().Str())
 				assert(false)
 			}
-			cs += 1
 		case "label"
-			cs += 1
 		case "jmp"
 			//cs = getLabel(thisLine.var1)
-			cs = labelsPtr[thisLine.var1]
+			cs = labelsPtr[thisLine.var1] - 1
 		case "jmp_if_bool"
 			boolVar := thisFrame.GetObjectPtr(thisLine.var2)->{u8^}
 			if boolVar^ != 0
 			{
-				//cs = getLabel(thisLine.var1)
-				cs = labelsPtr[thisLine.var1]
-			}else{
-				cs += 1
+				cs = labelsPtr[thisLine.var1] - 1
 			}
 		case "mov"
 			v1 := thisFrame.GetObjectPtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
 			typeSize := interpFunc.Objects[thisLine.var1].GetType().GetSize()
 			memcpy(v1,v2,typeSize)
-			cs += 1
 		case "cast"
 			v1 := thisFrame.GetObjectPtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
@@ -509,53 +497,14 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				printf("can not cast type %s to %s\n",fromType.GetBADStr().Str(),toType.GetBADStr().Str())
 				assert(false)
 			}
-			cs += 1
-		// case "load_element"
-		// 	varType := interpFunc.Objects[thisLine.var2].GetType()
-		// 	indType := interpFunc.Objects[thisLine.var3].GetType()
-		//
-		// 	assert(indType == GTypeInt)
-		//
-		// 	v2 := thisFrame.GetObjectPtr(thisLine.var2)
-		// 	v3 := thisFrame.GetObjectPtr(thisLine.var3)
-		//
-		//
-		// 	if varType is in TypePoint or varType == GTypeStr
-		// 	{
-		// 		objSet := ref interpFunc.Objects[thisLine.var1]
-		// 		assert(objSet& is MCReference)
-		// 		setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-		// 		setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * varType.Base.GetSize()]&
-		// 	}else if varType is in TypeClass{
-		// 		asClass := varType->{TypeClass^}.ToClass
-		// 		fld := asClass.GetFieldByIndexRaw(v3->{int^}^)
-		//
-		// 		objSet := ref interpFunc.Objects[thisLine.var1]
-		// 		assert(objSet& is MCReference)
-		// 		setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-		// 		setPtr->{u8^^}^ = v2->{u8^}[fld.MemOffset]&
-		// 	}else if IsVecType(varType) or varType == GTypeQuantf {
-		// 		assert(varType.Base != null)
-		// 		elementSize := varType.Base.GetSize()
-		// 		elementNum := v3->{s32^}^
-		// 		setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-		// 		setPtr->{u8^^}^ = v2->{u8^}[elementSize*elementNum]&
-		// 	}else{
-		// 		printf("No load_element for %s\n",varType.GetBADStr().Str())
-		// 		assert(false)
-		// 	}
-		//
-		// 	cs += 1
 		case "load_element_opt_class_const"
 			setPtr := thisFrame.GetReferencePtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
 			setPtr->{u8^^}^ = v2->{u8^}[thisLine.ConstValue]&
-			cs += 1
 		case "set_reference"
 			v1 := thisFrame.GetReferencePtr(thisLine.var1)
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
 			v1->{void^^}^ = v2
-			cs += 1
 		case "get_pointer"
 			res := thisFrame.GetObjectPtr(thisLine.var1)
 
@@ -582,7 +531,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				printf("unknown object %s\n",obj.UnitName)
 				assert(false)
 			}
-			cs += 1
 		case "max"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
@@ -609,7 +557,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else{
 				assert(false)
 			}
-			cs += 1
 		case "min"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
@@ -636,7 +583,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else{
 				assert(false)
 			}
-			cs += 1
 		case "sqrt"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
@@ -653,7 +599,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else{
 				assert(false)
 			}
-			cs += 1
 			
 		case "cos"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
@@ -671,7 +616,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else{
 				assert(false)
 			}
-			cs += 1
 		case "sin"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
@@ -688,7 +632,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else{
 				assert(false)
 			}
-			cs += 1
 		case "vec_build"
 			objTyp := interpFunc.Objects[thisLine.var1].GetType()
 			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
@@ -716,7 +659,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				exit(0)
 			}
 
-			cs += 1
 		case "vec_scalar_mul"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 			ptrRes := thisFrame.GetObjectPtr(opPtr[cs].var1)
@@ -736,7 +678,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				printf("unknown vec_scalar_mul on %s\n",objTyp.GetBADStr().Str())
 				exit(0)
 			}
-			cs += 1
 		case "vec_shuffle_begin"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 			vecDest := thisFrame.GetObjectPtr(opPtr[cs].var1)
@@ -760,8 +701,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				ind += 1
 				cs += 1
 			}
-
-			cs += 1
+		case "vec_shuffle_end"
 			
 			
 		case "memset"
@@ -777,7 +717,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				case 4 memset(ptr1->{void^^}^,ptr2->{int^}^,ptr3->{int^}^)
 				case 8 memset(ptr1->{void^^}^,ptr2->{int^}^,ptr3->{u64^}^)
 			}
-			cs += 1
 		case "va_start"
 
 			if callerFrame != null
@@ -845,12 +784,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else{
 				assert(false)
 			}
-			cs += 1
 		case "va_end"
-			cs += 1
 		case "va_arg"
 			assert(false)
-			cs += 1
 		case "get_array_elem_ptr"
 			varType := interpFunc.Objects[thisLine.var2].GetType()
 			indType := interpFunc.Objects[thisLine.var3].GetType()
@@ -866,7 +802,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			setPtr := thisFrame.GetObjectPtr(thisLine.var1)
 			setPtr->{void^^}^ = v2->{u8^^}^[v3->{int^}^ * varType.Base.GetSize()]&
 
-			cs += 1
 		case "get_field_ptr"
 			classType := interpFunc.Objects[thisLine.var2].GetType().Base
 			indType := interpFunc.Objects[thisLine.var3].GetType()
@@ -884,7 +819,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			setPtr := thisFrame.GetObjectPtr(thisLine.var1)
 			setPtr->{u8^^}^ = v2->{u8^^}^[fld.MemOffset]&
 
-			cs += 1
 		case "store"
 			resType := interpFunc.Objects[thisLine.var2].GetType()
 			v1 := thisFrame.GetObjectPtr(thisLine.var1)
@@ -899,7 +833,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			case 16 v1->{vec4f^^}^^ = v2->{vec4f^}^
 			case void assert(false)
 			}
-			cs += 1
 		case "load"
 			resType := interpFunc.Objects[thisLine.var1].GetType()
 			v1 := thisFrame.GetObjectPtr(thisLine.var1)
@@ -914,16 +847,13 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			case 16 v1->{vec4f^}^ = v2->{vec4f^^}^^
 			case void assert(false)
 			}
-			cs += 1
 
 		case "debug_set_file"
 			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
 			thisFrame.DebugFileName = ptr1->{char^^}^
-			cs += 1
 		case "debug_set_line"
 			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
 			thisFrame.DebugFileLine = ptr1->{int^}^
-			cs += 1
 		case "switch_start"
 
 			valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
@@ -952,10 +882,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				cs += 1
 			}
 		case "switch_end"
-			cs += 1
 		case "assert"
 			//TODO
-			cs += 1
 
 		// case "stack_push"
 		// 	valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
@@ -990,7 +918,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		// 		assert(false)
 		// 	}
 		// 	thisFrame.StackPushInt(value)
-		// 	cs += 1
 		//
 		// case "stack_pop"
 		// 	valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
@@ -1014,7 +941,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		// 		assert(false)
 		// 	}
 		// 	thisFrame.StackPop()
-		// 	cs += 1
 		//
 		// case in ![
 		// 		"stack_add_int","stack_sub_int",
@@ -1035,12 +961,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		// 	case "stack_umod_int" ptr[1] = ptr[0]->{u64} mod ptr[1]->{u64}
 		// 	}
 		// 	thisFrame.StackPop()
-		// 	cs += 1
 
 		case void
 			printf("unknown opcode %s at %i\n",interpFunc.Lines[cs].opcode.ToCStr(),cs)
 			assert(false)
-			cs += 1
 		}
+		cs += 1
 	}
 }
