@@ -4,9 +4,10 @@ AllocatedDataInfo := class
 {
 	dataSize := u32
 
+	"=" := default
 	"<=>" := !(AllocatedDataInfo other) -> int
 	{
-		return thsi& <=> other&
+		return this& <=> other&
 	}
 }
 AllocatedPage := class
@@ -23,6 +24,7 @@ Allc := class extends IAllocator
 
 	AllocMem := virtual !(int size, bool dirty = false) -> void^
 	{
+		size = AlignUp16(size)
 
 		while true
 		{
@@ -33,30 +35,72 @@ Allc := class extends IAllocator
 				if isSet == 0
 				{
 					defer page.allocLock = 0
-					return allocFromPage(page&,size,dirty)
+					ret := allocFromPage(page&,size)
+					if not dirty
+						memset(ret,0,size)
+					return ret
 				}
 			}
-			TaskYield()
+			//TODO wait, but cant use TaskYield, could be called in TaskCode
+			// TaskYield()
 		}
 	}
 	FreeMem := virtual !(void^ mem) -> void
 	{
 	}
 
-	allocFromPage := !(AllocatedPage^ page, int size, bool dirty) -> void^
+	allocFromPage := !(AllocatedPage^ page, int size) -> void^
 	{
+
+		nodeSize := AlignUp16(CommonTreeNode.{AllocatedDataInfo}->TypeSize)
 
 		if page.page.Size() == 0
 		{
-			page.page.Create(32*1024*1024,"rw")
+			alcSize := 32*1024*1024
+			page.page.Create(alcSize,"rw")
 
 			ptr := page.page.GetPointer()
 
 			memset(ptr,0,AllocatedPage->TypeSize)
 			internalHVInitClass(ptr->{AllocatedPage^}^)
 
+			baseSize := AlignUp16(AllocatedPage->TypeSize)
 
+			newNode := ptr->{u8^}[baseSize]&->{CommonTreeNode.{AllocatedDataInfo}^}
+			newNode.data.dataSize = alcSize - (baseSize + nodeSize)
+
+			page.freeMem.InsertNode(newNode)
 		}
+
+		needSize := nodeSize + AlignUp16(size)
+
+		iterStack := CommonTreeNode.{AllocatedDataInfo}^[80]
+		iterStack[0] = page.freeMem.Start
+		stackSize := 1
+
+		while stackSize != 0
+		{
+			p := iterStack[stackSize - 1]
+			stackSize -= 1
+
+			if p.Right != null
+				iterStack[stackSize++] = p.Right
+			if p.Left != null
+				iterStack[stackSize++] = p.Left
+
+			if p.data.dataSize >= needSize
+			{
+				res := p->{u8^}[p.data.dataSize - needSize]&
+				p.data.dataSize -= needSize
+
+				memset(res,0,nodeSize)
+
+				return res[nodeSize]&
+			}
+				
+		}
+
+		return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
 
 	}
 

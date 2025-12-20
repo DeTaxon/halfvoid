@@ -397,4 +397,8 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 			}
 		}
 	}
+	"for" := !() -> SetCommonIterator.{DATA}
+	{
+		result.itr = itTree.Start
+	}
 }

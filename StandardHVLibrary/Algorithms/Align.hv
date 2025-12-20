@@ -1,0 +1,4 @@
+AlignUp16 := !(int size) -> int
+{
+	return (size + 0xF) and_b 0xFFFFFFF0
+}
