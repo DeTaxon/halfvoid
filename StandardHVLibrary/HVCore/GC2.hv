@@ -89,10 +89,13 @@ Allc := class extends IAllocator
 
 			if p.data.dataSize >= needSize
 			{
-				res := p->{u8^}[p.data.dataSize - needSize]&
-				p.data.dataSize -= needSize
+				res := p->{u8^}[nodeSize + p.data.dataSize - needSize]&
+				p.data.dataSize -= size
 
 				memset(res,0,nodeSize)
+				node := res->{CommonTreeNode.{AllocatedDataInfo}^}
+				page.usedMem.InsertNode(node)
+				// node.data.dataSize = size
 
 				return res[nodeSize]&
 			}

@@ -40,6 +40,7 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 			}else {
 				iter = iter.Left
 			}
+
 		}
 		if iter != null {
 			toRet^ = iter
@@ -57,8 +58,11 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 			prev.Left = preCreatedNode
 			if preCreatedNode == null
 				this.createNode(prev.Left)
-			this.createNode(prev.Left)
+			assert(prev.Left != prev)
+			oldUp := prev.Left.Up
+			oldLeft := prev.Left
 			prev.Left.Up = prev
+			assert(prev.Left != prev)
 			iter = prev.Left
 		}
 		iter.data = dat
