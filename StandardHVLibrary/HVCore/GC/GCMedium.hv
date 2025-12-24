@@ -1,0 +1,106 @@
+
+AllocatedDataInfo := class
+{
+	dataSize := u32
+
+	"=" := default
+	"<=>" := !(AllocatedDataInfo other) -> int
+	{
+		return this& <=> other&
+	}
+}
+AllocatedPage := class
+{
+	page := PageMemory
+	usedMem := AVLTree.{AllocatedDataInfo}
+	freeMem := AVLTree.{AllocatedDataInfo}
+
+	allocLock := int // atomic lock
+}
+
+AllocatorGCMedium := class
+{
+	pages := AllocatedPage[32]
+
+	AllocMem := virtual !(int size, bool dirty = false) -> void^
+	{
+		size = AlignUp16(size)
+
+		while true
+		{
+			for page : pages
+			{
+				isSet := InterlockSet(page.allocLock,1)
+				
+				if isSet == 0
+				{
+					defer page.allocLock = 0
+					ret := allocFromPage(page&,size)
+					if not dirty
+						memset(ret,0,size)
+					return ret
+				}
+			}
+			//TODO wait, but cant use TaskYield, could be called in TaskCode
+			// TaskYield()
+		}
+	}
+
+	allocFromPage := !(AllocatedPage^ page, int size) -> void^
+	{
+
+		nodeSize := AlignUp16(CommonTreeNode.{AllocatedDataInfo}->TypeSize)
+
+		if page.page.Size() == 0
+		{
+			alcSize := 32*1024*1024
+			page.page.Create(alcSize,"rw")
+
+			ptr := page.page.GetPointer()
+
+			memset(ptr,0,AllocatedPage->TypeSize)
+			internalHVInitClass(ptr->{AllocatedPage^}^)
+
+			baseSize := AlignUp16(AllocatedPage->TypeSize)
+
+			newNode := ptr->{u8^}[baseSize]&->{CommonTreeNode.{AllocatedDataInfo}^}
+			newNode.data.dataSize = alcSize - (baseSize + nodeSize)
+
+			page.freeMem.InsertNode(newNode)
+		}
+
+		needSize := nodeSize + AlignUp16(size)
+
+		iterStack := CommonTreeNode.{AllocatedDataInfo}^[80]
+		iterStack[0] = page.freeMem.Start
+		stackSize := 1
+
+		while stackSize != 0
+		{
+			p := iterStack[stackSize - 1]
+			stackSize -= 1
+
+			if p.Right != null
+				iterStack[stackSize++] = p.Right
+			if p.Left != null
+				iterStack[stackSize++] = p.Left
+
+			if p.data.dataSize >= needSize
+			{
+				res := p->{u8^}[nodeSize + p.data.dataSize - needSize]&
+				p.data.dataSize -= needSize
+
+				memset(res,0,nodeSize)
+				node := res->{CommonTreeNode.{AllocatedDataInfo}^}
+				page.usedMem.InsertNode(node)
+				node.data.dataSize = size
+
+				return res[nodeSize]&
+			}
+				
+		}
+
+		return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
+
+	}
+}

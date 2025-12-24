@@ -1,0 +1,104 @@
+
+
+
+
+Allc := class extends IAllocator
+{
+
+	pages32 := Allc128.{32}
+	pages64 := Allc128.{64}
+	pages128 := Allc128.{128}
+
+
+	memMedium := AllocatorGCMedium
+
+	currentGeneration := u8
+	gcThread := Thread
+
+	AllocMem := virtual !(int size, bool dirty = false) -> void^
+	{
+		size = AlignUp16(size)
+
+		if size <= 32
+			return pages32.AllocMem()
+		if size <= 64
+			return pages64.AllocMem()
+		if size <= 128
+			return pages128.AllocMem()
+
+		return memMedium.AllocMem(size,dirty)
+	}
+
+	FreeMem := virtual !(void^ mem) -> void
+	{
+
+	}
+
+	GetMemInfo := !(void^ mem) -> void
+	{
+		c := pages32.GetMemInfo(mem)
+	}
+
+
+	GetPointerInfo := !(void^ ptr) -> void
+	{
+		// actual pointer
+		// typeid
+		//
+	}
+
+	StartGCThread := !() -> void
+	{
+		gcThread."this"(() ==> [c = this&]{
+			c.threadLoop()
+		})
+
+	}
+	threadLoop := !() -> void
+	{
+		while true
+		{
+			currentGeneration += 1
+
+			inf := MainTask.GetStackUsage()
+
+			checkRootRange(inf.StackPointer,inf.TotalSize)
+
+			checkGlobals()
+		}
+	}
+
+	checkGlobals := !() -> void
+	{
+		for it : $GlobalVariables
+		{
+			checkRootRange(it&,it->TypeSize)
+		}
+	}
+
+	checkRootRange := !(void^ inPtr, size_t size) -> void
+	{
+		ptr := inPtr->{void^^}
+		size = size div 8
+
+		for i : size
+		{
+			memInf := this.pages32.GetMemInfo(ptr[i])
+
+			if memInf.IsFound
+			{
+				itr := pages32.pages128[memInf.BucketIndex]&
+
+				for j : (memInf.PageIndex - 1)
+					itr = itr.page.GetPointer()->{AllocatedStaticSize^}
+
+
+				pagePtr := itr.page.GetPointer()->{u8^}
+
+				pagePtr[itr.metaOffset]&->{AllocatedStaticInfo^}[memInf.ObjectIndex].generation = currentGeneration
+			}
+
+		}
+
+	}
+}

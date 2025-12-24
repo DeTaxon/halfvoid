@@ -1,0 +1,134 @@
+
+AllocatedStaticSize := class
+{
+	page := PageMemory
+	allocLock := int
+
+	memLeft := int
+	bitIndex := int
+	
+	bitCount := int
+	metaOffset := int
+	dataOffset := int
+}
+AllocatedStaticInfo := class
+{
+	generation := u8
+}
+AllocatedStaticPtrInfo := class
+{
+	IsFound := bool
+
+	BucketIndex := int
+	PageIndex := int
+	ObjectIndex := int
+
+	Generation := int
+}
+
+Allc128 := class .{@ObjSize}
+{
+	pages128 := AllocatedStaticSize[32]
+
+	AllocMem := !() -> void^
+	{
+		while true
+		{
+			for page : pages128
+			{
+				isSet := InterlockSet(page.allocLock,1)
+				
+				if isSet == 0
+				{
+					defer page.allocLock = 0
+					ret := allocFromPage(page&)
+					memset(ret,0,ObjSize)
+					return ret
+				}
+			}
+		}
+	}
+
+	allocFromPage := !(AllocatedStaticSize^ page) -> void^
+	{
+		headerSize := AlignUp16(AllocatedStaticSize->TypeSize)
+		bitCount := (4096*32 - headerSize)*8
+
+		// assert((bitCount div 8) + headerSize == 4096)
+		assert(bitCount mod 16 == 0)
+
+
+		if page.page.Size() == 0
+		{
+			alcSize := headerSize + (bitCount div 8) + bitCount*(AllocatedStaticInfo->TypeSize + ObjSize)
+			page.page.Create(alcSize,"rw")
+
+			ptr := page.page.GetPointer()->{AllocatedStaticSize^}
+			ptr.memLeft = bitCount
+
+			page.bitCount = bitCount
+		}
+
+		ptr := page.page.GetPointer()->{u8^}
+
+		thisInfo := ptr->{AllocatedStaticSize^}
+
+		if thisInfo.memLeft == 0
+			return allocFromPage(thisInfo)
+
+		bitPtr := ptr[headerSize]&
+		infoPtr := bitPtr[bitCount div 8]&->{AllocatedStaticInfo^}
+		blocksPtr := infoPtr[bitCount]&->{u8[ObjSize]^}
+
+		page.metaOffset = infoPtr->{size_t} - ptr->{size_t}
+		page.dataOffset = blocksPtr->{size_t} - ptr->{size_t}
+
+
+		{
+			i := page.bitIndex div 8
+			j := page.bitIndex mod 8
+
+			bitPtr[i] = bitPtr[i] or_b (1 shl j)
+
+			page.bitIndex += 1
+			thisInfo.memLeft -= 1
+			return blocksPtr[i*8 + j]&
+		}
+
+		assert(false)
+	}
+	GetMemInfo := !(void^ ptr) -> AllocatedStaticPtrInfo
+	{
+		for page,i : pages128
+		{
+			itr := page&
+			pageIndex := 0
+
+			while itr != null and itr.page.Size() != 0
+			{
+				pgPtr := itr.page.GetPointer()->{u8^}
+				begin := pgPtr->{u8^}[itr.dataOffset]&
+				end := begin[itr.page.Size()]&
+
+				if ptr >= begin and ptr < end
+				{
+					indx := (ptr->{size_t} - begin->{size_t}) div ObjSize
+
+					result.IsFound = true
+
+					result.BucketIndex = i
+					result.PageIndex = pageIndex
+					result.ObjectIndex = indx
+
+					result.Generation = pgPtr[page.metaOffset]&->{AllocatedStaticInfo^}[indx].generation
+
+					return void
+
+				}else{
+					itr = itr.page.GetPointer()->{AllocatedStaticSize^}
+					pageIndex += 1
+				}
+			}
+		}
+	}
+}
