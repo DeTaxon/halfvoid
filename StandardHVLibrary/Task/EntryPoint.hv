@@ -49,6 +49,8 @@ ucontextStartTask := !() -> void
 }
 
 
+MainTask := Task^
+
 internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 {
 	InitTaskContext()
@@ -73,7 +75,7 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 	}
 
 
-	TSpawnTask(() ==> [argv,argc] {
+	MainTask = TSpawnTask(() ==> [argv,argc] {
 		spn := MakeVectorSpanOnPtr(argv,argc)
 		main(spn)
 	})

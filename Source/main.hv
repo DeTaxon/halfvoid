@@ -405,44 +405,44 @@ main := !(Vector.{char^} args) -> int
 		WriteCodeToStream(ctx&)
 	}
 	printf("done\n")
-	datas := Vector.{int}
-	datas.Resize(1024)
+	//datas := Vector.{int}
+	//datas.Resize(1024)
 
-	for page : ccc.pages
-	{
-		iterStack := CommonTreeNode.{AllocatedDataInfo}^[80]
-		stackSize := 0
+	//for page : ccc.pages
+	//{
+	//	iterStack := CommonTreeNode.{AllocatedDataInfo}^[80]
+	//	stackSize := 0
 
-		if page.usedMem.Start != null
-		{
-		iterStack[0] = page.usedMem.Start
-		stackSize += 1
-		}
+	//	if page.usedMem.Start != null
+	//	{
+	//	iterStack[0] = page.usedMem.Start
+	//	stackSize += 1
+	//	}
 
-		while stackSize != 0
-		{
-			p := iterStack[stackSize - 1]
-			stackSize -= 1
+	//	while stackSize != 0
+	//	{
+	//		p := iterStack[stackSize - 1]
+	//		stackSize -= 1
 
-			if p.Right != null
-				iterStack[stackSize++] = p.Right
-			if p.Left != null
-				iterStack[stackSize++] = p.Left
+	//		if p.Right != null
+	//			iterStack[stackSize++] = p.Right
+	//		if p.Left != null
+	//			iterStack[stackSize++] = p.Left
 
-			if p.data.dataSize < 1024 and p.data.dataSize >= 0
-			{
-				datas[p.data.dataSize] += 1
-			}
-		}
-	}
-	printf("meminfo\n")
+	//		if p.data.dataSize < 1024 and p.data.dataSize >= 0
+	//		{
+	//			datas[p.data.dataSize] += 1
+	//		}
+	//	}
+	//}
+	//printf("meminfo\n")
 
-	for it , i : datas
-	{
-		if it == 0
-			continue
-		printf("usage %i = %i\n",i,it)
-	}
+	//for it , i : datas
+	//{
+	//	if it == 0
+	//		continue
+	//	printf("usage %i = %i\n",i,it)
+	//}
 
 	outFile.Close()
 

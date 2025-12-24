@@ -85,6 +85,7 @@ TaskStackUsageInfo := class
 {
 	TotalSize := size_t
 	UsedSize := size_t
+	StackPointer := void^
 
 	Used := !() -> size_t
 	{

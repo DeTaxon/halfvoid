@@ -6,12 +6,42 @@ main := !(char^[] args) -> int
 	RunFunc()
 }
 
+
+tst := void^
+tst2 := void^
 RunFunc := !() -> void
 {
+	MainTask = CurrentTask
+	r := new int
+
+	tst = r&
+	tst2 = r
+
+	MainGC.StartGCThread()
+
+	c := 20
+
+	while true
+	{
+		a:= MainGC.pages32.GetMemInfo(tst2)
+
+		printf("Generation %i\n",MainGC.currentGeneration)
+		printf("Test ptr %p, Index %i, PageIndex %i, ObjectIndex %i , Generation %i\n", tst2,a.BucketIndex,a.PageIndex,a.ObjectIndex,a.Generation)
+		printf("C %i\n",c)
+
+		c -= 1
+
+		if c < 0
+		{
+			r = null
+		}
+		TSleep(0.2)
+	}
+	
 	// tst()
 
-	c := Allc
-	c.AllocMem(16)
+	// c := Allc
+	// c.AllocMem(16)
 }
 
 //TODO closure api?

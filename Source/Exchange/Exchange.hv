@@ -59,6 +59,10 @@ GetExchange2 := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 	{
 		return new PtrToSizeT(obj)
 	}
+	if inType == GTypeSizeT and expType is in TypePoint
+	{
+		return new SizeTToPtr(obj,expType)
+	}
 
 	return null
 }
@@ -84,6 +88,37 @@ PtrToSizeT := class extend BoxExeObj
 		f^ << " "
 		Down.PrintUse(ctx)
 		f^ << " to " << GArchLLVMTypeSizeT
+		if DebugMode
+			f^ << ", !dgb !" << GDebugLineCallId
+		f^ << "\n"
+	}
+	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.writeStream^ << "%TUnref" << resId
+	}
+}
+SizeTToPtr := class extend BoxExeObj
+{
+	resId := int
+	Down := BoxExeObj^
+	this := !(BoxExeObj^ obj, Type^ expType) -> void
+	{
+		resId = GetNewId()
+		Down = obj
+		ObjType = expType
+	}
+	IsMem := virtual !() -> bool { return false }
+	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void //todo remove copy of code, at UnrefObj.hv
+	{
+		f := ctx.writeStream
+		Down.PrintPre(ctx)
+
+		f^ << "%TUnref" << resId << " = inttoptr "
+		Down.GetType().PrintType(ctx)
+		f^ << " "
+		Down.PrintUse(ctx)
+		f^ << " to "
+		ObjType.PrintType(ctx)
 		if DebugMode
 			f^ << ", !dgb !" << GDebugLineCallId
 		f^ << "\n"

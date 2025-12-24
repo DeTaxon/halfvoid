@@ -54,6 +54,7 @@ AppendClass Task
 		c := anyVar&->{size_t} - stackPtr->{size_t}
 		result.UsedSize = thisTaskStackSize - c
 		result.TotalSize = thisTaskStackSize
+		result.StackPointer = stackPtr
 	}
 	firstStartOS := !() -> void
 	{
