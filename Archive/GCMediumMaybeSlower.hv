@@ -1,0 +1,103 @@
+AllocatedMediumBlock := class
+{
+	memOffset := int
+	memSize := int
+
+	"=" := default
+}
+
+AllocatedPage := class
+{
+	page := PageMemory
+
+	allocLock := int // atomic lock
+
+	usedMemTemp := AllocatedMediumBlock[20000]
+	ringStart := u32
+	ringEnd := u32
+
+	freeMem := AllocatedMediumBlock[1024]
+	freeCount := int
+
+	createdObjects := int
+
+}
+
+AllocatorGCMedium := class
+{
+	pages := AllocatedPage[32]
+
+	AllocMem := virtual !(int size, bool dirty = false) -> void^
+	{
+		size = AlignUp16(size)
+
+		while true
+		{
+			for page : pages
+			{
+				isSet := InterlockSet(page.allocLock,1)
+				
+				if isSet == 0
+				{
+					defer page.allocLock = 0
+					ret := allocFromPage(page&,size)
+					if not dirty
+						memset(ret,0,size)
+					return ret
+				}
+			}
+			//TODO wait, but cant use TaskYield, could be called in TaskCode
+			// TaskYield()
+		}
+	}
+
+	allocFromPage := !(AllocatedPage^ page, int size) -> void^
+	{
+		if page.page.Size() == 0
+		{
+			alcSize := 32*1024*1024
+			page.page.Create(alcSize,"rw")
+
+			ptr := page.page.GetPointer()
+
+			memset(ptr,0,AllocatedPage->TypeSize)
+			internalHVInitClass(ptr->{AllocatedPage^}^)
+
+			baseSize := AlignUp16(AllocatedPage->TypeSize)
+
+			page.freeMem[0].memOffset = baseSize
+			page.freeMem[0].memSize = alcSize - baseSize
+			page.freeCount = 1
+		}
+
+		if page.createdObjects >= page.usedMemTemp.Size()
+			return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
+
+		for i : page.freeCount
+		{
+			if page.freeMem[i].memSize < size
+				continue
+
+			block := ref page.freeMem[i]
+
+			p := page.page.GetPointer()->{u8^}
+
+			res := p[block.memOffset + (block.memSize - size)]&
+			block.memSize -= size
+
+
+			setIndx := InterlockAdd(page.ringEnd,1) mod page.usedMemTemp.Size()
+
+			setBlock := ref page.usedMemTemp[setIndx]
+
+			setBlock.memOffset = res->{size_t} - p->{size_t}
+			setBlock.memSize = size
+
+			page.createdObjects += 1
+
+			return res
+		}
+
+		return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
+	}
+}

@@ -19,6 +19,8 @@ RunFunc := !() -> void
 
 	MainGC.StartGCThread()
 
+	hj := AllocatorGCMedium
+
 	c := 20
 
 	while true
