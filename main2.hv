@@ -23,6 +23,8 @@ RunFunc := !() -> void
 
 	c := 20
 
+	bigTest := MainGC.AllocMem(300)->{u8^}
+
 	while true
 	{
 		a:= MainGC.pages32.GetMemInfo(tst2)
@@ -30,6 +32,10 @@ RunFunc := !() -> void
 		printf("Generation %i\n",MainGC.currentGeneration)
 		printf("Test ptr %p, Index %i, PageIndex %i, ObjectIndex %i , Generation %i\n", tst2,a.BucketIndex,a.PageIndex,a.ObjectIndex,a.Generation)
 		printf("C %i\n",c)
+
+		zt := MainGC.memMedium.GetMemInfo(bigTest[20]&)
+
+		printf("TEST %i %p %i\n",zt.IsFound,zt.OriginalPointer,zt.MemSize)
 
 		c -= 1
 
