@@ -23,7 +23,7 @@ AllocatedStaticPtrInfo := class
 	PageIndex := int
 	ObjectIndex := int
 
-	Generation := int
+	GenerationPointer := u8^
 }
 
 Allc128 := class .{@ObjSize}
@@ -120,7 +120,7 @@ Allc128 := class .{@ObjSize}
 					result.PageIndex = pageIndex
 					result.ObjectIndex = indx
 
-					result.Generation = pgPtr[page.metaOffset]&->{AllocatedStaticInfo^}[indx].generation
+					result.GenerationPointer = pgPtr[page.metaOffset]&->{AllocatedStaticInfo^}[indx].generation&
 
 					return void
 

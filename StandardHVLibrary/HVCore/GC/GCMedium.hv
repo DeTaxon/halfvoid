@@ -156,8 +156,7 @@ AllocatorGCMedium := class
 				return void
 			}
 
-
-			break
+			return void
 		}
 	}
 }
