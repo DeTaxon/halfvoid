@@ -10,3 +10,16 @@ AppendClass Thread
 		pthread_join(itData,null)
 	}
 }
+
+BasicThread := class
+{
+	itData := u64
+	Start := !(void^ fnc,void^ data) -> void
+	{
+		pthread_create(itData&,null,fnc,data)
+	}
+	Join := !() -> void
+	{
+		pthread_join(itData,null)
+	}
+}

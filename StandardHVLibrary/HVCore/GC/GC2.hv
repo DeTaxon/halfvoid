@@ -13,7 +13,8 @@ Allc := class extends IAllocator
 	memMedium := AllocatorGCMedium
 
 	currentGeneration := u8
-	gcThread := Thread
+	gcThread := BasicThread
+	quit := bool
 
 	AllocMem := virtual !(int size, bool dirty = false) -> void^
 	{
@@ -34,9 +35,53 @@ Allc := class extends IAllocator
 
 	}
 
-	GetMemInfo := !(void^ mem) -> void
+	GetMemInfo := !(void^ mem) -> GC2MemInfo
 	{
-		c := pages32.GetMemInfo(mem)
+		{
+			c := pages32.GetMemInfo(mem)
+			if c.IsFound
+			{
+				result.IsFound = true
+				result.OriginalPointer = c.OriginalPointer
+				result.GenerationPointer = c.GenerationPointer
+				result.MemSize = c.MemSize
+				return void
+			}
+		}
+		{
+			c := pages64.GetMemInfo(mem)
+			if c.IsFound
+			{
+				result.IsFound = true
+				result.OriginalPointer = c.OriginalPointer
+				result.GenerationPointer = c.GenerationPointer
+				result.MemSize = c.MemSize
+				return void
+			}
+		}
+		{
+			c := pages128.GetMemInfo(mem)
+			if c.IsFound
+			{
+				result.IsFound = true
+				result.OriginalPointer = c.OriginalPointer
+				result.GenerationPointer = c.GenerationPointer
+				result.MemSize = c.MemSize
+				return void
+			}
+		}
+
+		{
+			c := memMedium.GetMemInfo(mem)
+			if c.IsFound
+			{
+				result.IsFound = true
+				result.OriginalPointer = c.OriginalPointer
+				result.GenerationPointer = c.GenerationPointer
+				result.MemSize = c.MemSize
+				return void
+			}
+		}
 	}
 
 
@@ -49,15 +94,15 @@ Allc := class extends IAllocator
 
 	StartGCThread := !() -> void
 	{
-		gcThread."this"(() ==> [c = this&]{
-			c.threadLoop()
-		})
-
+		gcThread.Start(_callGC2Loop,this&)
 	}
 	threadLoop := !() -> void
 	{
-		while true
+		while not quit
 		{
+			if MainTask == null
+				continue
+
 			currentGeneration += 1
 
 			inf := MainTask.GetStackUsage()
@@ -83,22 +128,27 @@ Allc := class extends IAllocator
 
 		for i : size
 		{
-			memInf := this.pages32.GetMemInfo(ptr[i])
+			memInf := this.GetMemInfo(ptr[i])
 
 			if memInf.IsFound
 			{
-				itr := pages32.pages128[memInf.BucketIndex]&
-
-				for j : (memInf.PageIndex - 1)
-					itr = itr.page.GetPointer()->{AllocatedStaticSize^}
-
-
-				pagePtr := itr.page.GetPointer()->{u8^}
-
-				pagePtr[itr.metaOffset]&->{AllocatedStaticInfo^}[memInf.ObjectIndex].generation = currentGeneration
+				// memInfo.GenerationPointer^ = currentGeneration
 			}
 
 		}
-
 	}
+}
+
+_callGC2Loop := !(void^ data) -> void
+{
+	data->{Allc^}.threadLoop()
+}
+
+GC2MemInfo := class
+{
+	IsFound := bool
+
+	OriginalPointer := void^
+	GenerationPointer := u8^
+	MemSize := int
 }

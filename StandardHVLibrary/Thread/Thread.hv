@@ -35,4 +35,3 @@ Thread := class
 	//Join := !() -> void {}
 }
 
-

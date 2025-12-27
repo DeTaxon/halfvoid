@@ -3,6 +3,9 @@ HvArg0 := char^ //TODO move it away
 
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
+	// InitMainGC()
+	// defer StopMainGC()
+
 	HvArg0 = argv[0]
 	TLSMutex."this"() //TODO only if TLS used
 	

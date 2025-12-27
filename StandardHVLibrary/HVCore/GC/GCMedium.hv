@@ -1,22 +1,28 @@
-
-AllocatedDataInfo := class
+AllocatedMediumBlock := class
 {
-	dataSize := u32
+	memOffset := int
+	memSize := int
+
 	generation := u8
 
 	"=" := default
-	"<=>" := !(AllocatedDataInfo other) -> int
-	{
-		return this& <=> other&
-	}
 }
+
 AllocatedPage := class
 {
 	page := PageMemory
-	usedMem := AVLTree.{AllocatedDataInfo}
-	freeMem := AVLTree.{AllocatedDataInfo}
 
 	allocLock := int // atomic lock
+
+	usedMemTemp := AllocatedMediumBlock[80000]
+	ringStart := u32
+	ringEnd := u32
+
+	freeMem := AllocatedMediumBlock[1024]
+	freeCount := int
+
+	createdObjects := int
+
 }
 
 AllocatorGCMedium := class
@@ -47,14 +53,11 @@ AllocatorGCMedium := class
 		}
 	}
 
-	allocFromPage := !(AllocatedPage^ page, int size) -> void^
+	allocFromPage := !(AllocatedPage^ page, int size,int indx = 0) -> void^
 	{
-
-		nodeSize := AlignUp16(CommonTreeNode.{AllocatedDataInfo}->TypeSize)
-
 		if page.page.Size() == 0
 		{
-			alcSize := 32*1024*1024
+			alcSize := 64*1024*1024
 			page.page.Create(alcSize,"rw")
 
 			ptr := page.page.GetPointer()
@@ -64,51 +67,45 @@ AllocatorGCMedium := class
 
 			baseSize := AlignUp16(AllocatedPage->TypeSize)
 
-			newNode := ptr->{u8^}[baseSize]&->{CommonTreeNode.{AllocatedDataInfo}^}
-			newNode.data.dataSize = alcSize - (baseSize + nodeSize)
-
-			page.freeMem.InsertNode(newNode)
+			page.freeMem[0].memOffset = baseSize
+			page.freeMem[0].memSize = alcSize - baseSize
+			page.freeCount = 1
 		}
 
-		needSize := nodeSize + AlignUp16(size)
+		if page.createdObjects >= page.usedMemTemp.Size() {
+			return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
+		}
 
-		iterStack := CommonTreeNode.{AllocatedDataInfo}^[80]
-		iterStack[0] = page.freeMem.Start
-		stackSize := 1
-
-		while stackSize != 0
+		for i : page.freeCount
 		{
-			p := iterStack[stackSize - 1]
-			stackSize -= 1
+			if page.freeMem[i].memSize < size
+				continue
 
-			if p.Right != null
-				iterStack[stackSize++] = p.Right
-			if p.Left != null
-				iterStack[stackSize++] = p.Left
+			block := ref page.freeMem[i]
 
-			if p.data.dataSize >= needSize
-			{
-				res := p->{u8^}[nodeSize + p.data.dataSize - needSize]&
-				p.data.dataSize -= needSize
+			p := page.page.GetPointer()->{u8^}
 
-				memset(res,0,nodeSize)
-				node := res->{CommonTreeNode.{AllocatedDataInfo}^}
-				page.usedMem.InsertNode(node)
-				node.data.dataSize = size
+			res := p[block.memOffset + (block.memSize - size)]&
+			block.memSize -= size
 
-				return res[nodeSize]&
-			}
-				
+			setIndx := InterlockAdd(page.ringEnd,1) mod page.usedMemTemp.Size()
+
+			setBlock := ref page.usedMemTemp[setIndx]
+
+			setBlock.memOffset = res->{size_t} - p->{size_t}
+			setBlock.memSize = size
+
+			page.createdObjects += 1
+
+			return res
 		}
 
 		return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
 	}
-
-	GetMemInfo := !(void^ mem) -> AllocatorMediumMemInfo
+	GetMemInfo := !(void^ mem) -> GCMediumMemInfo
 	{
-		nodeSize := AlignUp16(CommonTreeNode.{AllocatedDataInfo}->TypeSize)
 
-		for page,i : pages
+		for page : pages
 		{
 			itr := page&
 
@@ -117,57 +114,50 @@ AllocatorGCMedium := class
 				begin := itr.page.GetPointer()->{u8^}
 				end := begin[itr.page.Size()]&
 
-				if mem >= begin and mem < end
+				if begin <= mem and mem < end
 					break
 
 				itr = itr.page.GetPointer()->{AllocatedPage^}
 			}
 
-			if itr == null
-				continue
+			if itr == null continue
 
-			while InterlockSet(pages[i].allocLock,1) != 0 {}
+			
+			rb := itr.ringStart mod page.usedMemTemp.Size()
+			re := itr.ringEnd mod page.usedMemTemp.Size()
 
-			defer InterlockSet(pages[i].allocLock,0)
+			if re < rb
+				re += page.usedMemTemp.Size()
 
-			iter := itr.usedMem.Start
-			prev := iter
+			ptr := itr.page.GetPointer()->{u8^}
 
-			while iter != null
+			i := rb
+			while i < re
 			{
-				prev = iter
+				bb := ptr[page.usedMemTemp[i].memOffset]&
+				be := bb[page.usedMemTemp[i].memSize]&
 
-				if iter > mem {
-					iter = iter.Left
-				}else{
-					iter = iter.Right
+				if bb <= mem and mem < be
+				{
+					result.IsFound = true
+					result.OriginalPointer = bb
+					result.GenerationPointer = page.usedMemTemp[i].generation&
+					result.MemSize = page.usedMemTemp[i].memSize
+
+					return void
 				}
+
+				i++
 			}
-
-			if prev != null and prev <= mem and mem < prev->{u8^}[nodeSize + prev.data.dataSize]&
-			{
-				result.IsFound = true
-				result.OriginalPointer = prev->{u8^}[nodeSize]&
-				result.GenerationPointer = prev.data.generation&
-				result.MemSize = prev.data.dataSize
-
-				result.BucketIndex = i
-
-				return void
-			}
-
-			return void
 		}
 	}
 }
 
-AllocatorMediumMemInfo := class 
+GCMediumMemInfo := class
 {
-	IsFound := bool
+	IsFound := bool 
 
 	OriginalPointer := void^
 	GenerationPointer := u8^
 	MemSize := int
-
-	BucketIndex := int
 }
