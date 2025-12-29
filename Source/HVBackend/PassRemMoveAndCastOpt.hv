@@ -1,6 +1,11 @@
 
-PassStackRemovePushPop := !(MCFunction^ fnc) ->MCFunction^
+
+PassRemMoveAndCastOpt := !(MCFunction^ fnc) ->MCFunction^
 {
+	@once RetConstFuncTableInit()
+
+	tbl := ref RetConstFuncTable
+
 	ctx := MakeGreedyPass(fnc,1,2,true)
 
 	oPtr := ctx.oPtr
@@ -23,23 +28,23 @@ PassStackRemovePushPop := !(MCFunction^ fnc) ->MCFunction^
 		}
 	}
 
-	iSize := fnc.Lines.Size()
+	lSize := fnc.Lines.Size()
 	i := 0
-	while i < iSize
+	while i < lSize
 	{
 		line := iPtr[i]
 
-		if  i + 1 < iSize 
-			and line.opcode == "stack_pop" 
-			and iPtr[i+1].opcode == "stack_push"
-			and line.var1 == iPtr[i+1].var1
-			and usages[line.var1] == 2
+		twoAvail := i + 1 < lSize
+
+		if line.opcode == "mov" and c > 0 and usages[line.var2] == 2
+			and tbl.Contain(cPtr[c-1].opcode) and cPtr[c-1].var1 == line.var2
 		{
-			i += 2
+			cPtr[c-1].var1 = line.var1
 		}else{
 			cPtr[c++] = line
-			i += 1
 		}
+
+		i += 1
 	}
 
 	return ctx.GenerateFunc()

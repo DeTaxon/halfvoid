@@ -44,7 +44,9 @@ BCFuncsType := class
 		// result = PassAddStackInterp(result)
 		// result = PassStackRemovePushPop(result)
 
-		result = PassFirstOpt(result,false)
+		result = PassFirstOpt(result,true)
+
+		result = PassRemMoveAndCastOpt(result)
 
 		result = InterpPassPrepare(result)
 		result.ComputeStackFrame()

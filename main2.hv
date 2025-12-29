@@ -10,7 +10,7 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	
-	// tst()
+	tst()
 
 	// c := Allc
 	// c.AllocMem(16)
