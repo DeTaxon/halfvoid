@@ -415,75 +415,22 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			fromType := interpFunc.Objects[thisLine.var2].GetType()
 			typeSize := toType.GetSize()
 
-			if IsInt(toType) and IsInt(fromType)
+			if IsRAXCastType(toType) and IsRAXCastType(fromType)
 			{
-				oldType := interpFunc.Objects[thisLine.var2].GetType()
-				if typeSize > oldType.GetSize() and not IsUInt(toType)
-				{
-					memset(v1,0,typeSize)
-					memcpy(v1,v2,min(typeSize,oldType.GetSize()) )
-				}else{
-					memset(v1,0,typeSize)
-					memcpy(v1,v2,min(typeSize,oldType.GetSize()) )
-				}
-			}else if toType is in TypePoint
-			{
-				//memset(v1,0,typeSize)
-				memcpy(v1,v2,typeSize)
+				v1 := thisFrame.LoadS64(thisLine.var2)
+				thisFrame.StoreS64(thisLine.var1,v1)
 			}else if IsFloat(toType) and IsInt(fromType)
 			{
-				val := s64
-				memcpy(val&,v2,fromType.GetSize())
-				if not IsUInt(fromType)
-				{
-					shift := (8 - fromType.GetSize()) * 8
-					val = val shl shift
-					val = val shr shift
-				}
-				switch toType
-				{
-				case GTypeFloat v1->{float^}^ = val
-				case GTypeDouble v1->{double^}^ = val
-				case void
-					assert(false)
-				}
+				val := thisFrame.LoadS64(thisLine.var2)
+				thisFrame.StoreDouble(thisLine.var1,val)
 			}else if IsFloat(toType) and IsFloat(fromType)
 			{
-				bigFloat := double
-				switch fromType.GetSize()
-				{
-					case 4 bigFloat = v2->{float^}^
-					case 8 bigFloat = v2->{double^}^
-				}
-				switch toType.GetSize()
-				{
-					case 4 v1->{float^}^ = bigFloat
-					case 8 v1->{double^}^ = bigFloat
-				}
+				val := thisFrame.LoadDouble(thisLine.var2)
+				thisFrame.StoreDouble(thisLine.var1,val)
 			}else if IsInt(toType) and IsFloat(fromType)
 			{
-				bigFloat := double
-				switch fromType.GetSize()
-				{
-					case 4 bigFloat = v2->{float^}^
-					case 8 bigFloat = v2->{double^}^
-				}
-				switch toType.GetSize()
-				{
-					case 1 v1->{s8^}^ = bigFloat
-					case 2 v1->{s16^}^ = bigFloat
-					case 4 v1->{s32^}^ = bigFloat
-					case 8 v1->{s64^}^ = bigFloat
-				}
-
-			}else if IsInt(toType) and fromType is in TypeEnum {
-				minSize := min(toType.GetSize(),fromType.GetSize())
-				memset(v1,0,toType.GetSize())
-				memcpy(v1,v2,minSize)
-			}else if toType is in TypeEnum and IsInt(fromType) {
-				minSize := min(toType.GetSize(),fromType.GetSize())
-				memset(v1,0,toType.GetSize())
-				memcpy(v1,v2,minSize)
+				val := thisFrame.LoadDouble(thisLine.var2)
+				thisFrame.StoreS64(thisLine.var1,val)
 			} else
 			{
 				printf("can not cast type %s to %s\n",fromType.GetBADStr().Str(),toType.GetBADStr().Str())
@@ -494,9 +441,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			v2 := thisFrame.GetObjectPtr(thisLine.var2)
 			setPtr->{u8^^}^ = v2->{u8^}[thisLine.ConstValue]&
 		case "set_reference"
-			v1 := thisFrame.GetReferencePtr(thisLine.var1)
-			v2 := thisFrame.GetObjectPtr(thisLine.var2)
-			v1->{void^^}^ = v2
+			assert(false)
+			// v1 := thisFrame.GetReferencePtr(thisLine.var1)
+			// v2 := thisFrame.GetObjectPtr(thisLine.var2)
+			// v1->{void^^}^ = v2
 		case "get_pointer"
 			res := thisFrame.GetObjectPtr(thisLine.var1)
 
