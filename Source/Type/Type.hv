@@ -410,6 +410,13 @@ IsComplexType := !(Type^ obj) -> bool
 		return true
 	return false
 }
+IsSInt := !(Type^ obj) -> bool
+{
+	for i : 4
+		if TypeTable[i + 4] == obj
+			return true
+	return false
+}
 IsUInt := !(Type^ obj) -> bool
 {
 	for i : 4

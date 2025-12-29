@@ -353,57 +353,45 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 		case "cmp"
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
-			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
-			ptr2 := thisFrame.GetObjectPtr(thisLine.var4)
 			resBool := thisFrame.GetObjectPtr(thisLine.var1)->{bool^}
 
-			if IsInt(objTyp) or objTyp is in TypePoint or IsFloat(objTyp) or objTyp is TypeEnum
+			spc := s64
+
+			if IsInt(objTyp) or objTyp is TypeEnum or objTyp is in TypePoint
 			{
-				spc := s64
+				v1 := thisFrame.LoadS64(thisLine.var2)
+				v2 := thisFrame.LoadS64(thisLine.var4)
 
-				if IsInt(objTyp) or objTyp is TypeEnum
-				{
-					switch objTyp.GetSize()
-					{
-						case 1 spc = ptr1->{s8^}^ - (ptr2->{s8^}^)
-						case 2 spc = ptr1->{s16^}^ - (ptr2->{s16^}^)
-						case 4 spc = ptr1->{s32^}^ - (ptr2->{s32^}^)
-						case 8 spc = ptr1->{s64^}^ - (ptr2->{s64^}^)
-					}
-				}else if objTyp is in TypePoint
-				{
-					spc = ptr1->{size_t^^}^ <=> ptr2->{size_t^^}^
-				}else if IsFloat(objTyp)
-				{
-					spcFloat := 0.0
-					switch objTyp.GetSize()
-					{
-						case 4 spcFloat = ptr1->{float^}^ - (ptr2->{float^}^)
-						case 8 spcFloat = ptr1->{double^}^ - (ptr2->{double^}^)
-					}
-					if spcFloat > 0
-						spc = 1
-					if spcFloat < 0
-						spc = -1
+				if IsSInt(objTyp) {
+					spc = v1 <=> v2
 				}else{
-					assert(false)
+					spc = v1->{u64} <=> v2->{u64}
 				}
-
-				switch thisLine.V3Cond()
-				{
-					case "==" resBool^ = (spc == 0)
-					case "!=" resBool^ = (spc != 0)
-					case "<=" resBool^ = (spc <= 0)
-					case "<" resBool^ = (spc < 0)
-					case ">=" resBool^ = (spc >= 0)
-					case ">" resBool^ = (spc > 0)
-					case "<=>" resBool->{int^}^ = spc
-					case void
-						assert(false)
-				}
+			}else if IsFloat(objTyp)
+			{
+				v1 := thisFrame.LoadDouble(thisLine.var2)
+				v2 := thisFrame.LoadDouble(thisLine.var4)
+				spcFloat := v1 - v2
+				if spcFloat > 0
+					spc = 1
+				if spcFloat < 0
+					spc = -1
 			}else{
 				printf("failed to cmp, unknown type %s\n",objTyp.GetBADStr().Str())
 				assert(false)
+			}
+
+			switch thisLine.V3Cond()
+			{
+				case "==" resBool^ = (spc == 0)
+				case "!=" resBool^ = (spc != 0)
+				case "<=" resBool^ = (spc <= 0)
+				case "<" resBool^ = (spc < 0)
+				case ">=" resBool^ = (spc >= 0)
+				case ">" resBool^ = (spc > 0)
+				case "<=>" resBool->{int^}^ = spc
+				case void
+					assert(false)
 			}
 		case "label"
 		case "jmp"
@@ -489,6 +477,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				}
 
 			}else if IsInt(toType) and fromType is in TypeEnum {
+				minSize := min(toType.GetSize(),fromType.GetSize())
+				memset(v1,0,toType.GetSize())
+				memcpy(v1,v2,minSize)
+			}else if toType is in TypeEnum and IsInt(fromType) {
 				minSize := min(toType.GetSize(),fromType.GetSize())
 				memset(v1,0,toType.GetSize())
 				memcpy(v1,v2,minSize)
