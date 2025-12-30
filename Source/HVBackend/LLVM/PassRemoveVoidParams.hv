@@ -53,5 +53,5 @@ PassRemoveVoidParams:= !(MCFunction^ fnc) ->MCFunction^
 			newCmds.Push(it)
 		}
 	}
-	return bCtx.CreateMCFunction(false)
+	return bCtx.CreateMCFunction()
 }

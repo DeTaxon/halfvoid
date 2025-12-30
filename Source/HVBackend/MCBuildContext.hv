@@ -199,7 +199,7 @@ MCBuildContext := class
 		result = objects.Size()
 		objects.Push(setVal)
 	}
-	CreateMCFunction := !(bool computeStack = true) -> MCFunction^
+	CreateMCFunction := !() -> MCFunction^
 	{
 		result = new MCFunction
 
@@ -211,9 +211,6 @@ MCBuildContext := class
 		result.InputsIndxStart = this.InputsIndxStart
 		result.InputsIndxCount = this.InputsIndxCount
 		result.IsVArgs = this.IsVArgs
-
-		if computeStack
-			result.ComputeStackFrame() //TODO remove it from here, it is called in ebery optiimzation
 	}
 	WriteExitPathsMC := !() -> void
 	{

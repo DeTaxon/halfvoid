@@ -27,5 +27,5 @@ PassSimplifyVectors := !(MCFunction^ fnc) ->MCFunction^
 		HVB_ins_cast(bCtx&,floatPtr,vecPtr)
 		HVB_ins_load_element(bCtx&,it.var1,floatPtr,it.var3)
 	}
-	return bCtx.CreateMCFunction(false)
+	return bCtx.CreateMCFunction()
 }

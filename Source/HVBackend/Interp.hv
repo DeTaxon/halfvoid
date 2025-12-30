@@ -95,10 +95,22 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		{
 			thisFrame.localVarTable[i] = thisFrame.localVarBlob[offset]&
 		}
-		//if it.IsConstant
-		//{
-		//	thisFrame.localVarTable[i] = it.Value&
-		//}
+		if it.IsConstant
+		{
+			thisFrame.localVarTable[i] = it.Value&
+		}
+		if it& is MCConstString
+		{
+			thisFrame.localVarTable[i] = it&->{MCConstString^}.GetValue().charPtr&
+		}
+		if it is MCGlobalVariable
+		{
+			glbVar := it&->{MCGlobalVariable^}.GetValueObject()
+			memObj := GlobsMem.GetGlobalVarMem(glbVar)
+			assert(memObj != null)
+			thisFrame.localVarTable[i] = memObj
+			continue
+		}
 		
 	}
 	if callerFrame != null and returnIndex != 0

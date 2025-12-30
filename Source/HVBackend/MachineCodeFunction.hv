@@ -171,6 +171,10 @@ AppendClass HVB_Function
 	//optimization info
 	StackFrameSize := int
 	StackOffsets := Vector.{int} // Also contains lable positions
+	ObjectsSizes := Vector.{int}
+
+	LocalPointers := Vector.{int}
+	GlobalPointers := Vector.{void^}
 
 	CreateBaseFunc := !() -> MCFunction^
 	{
@@ -207,8 +211,8 @@ AppendClass HVB_Function
 		//useStackSize = (useStackSize + 15) and_b 0xFFFFF0
 		//StackFrameSize = useStackSize
 
-		objOffsets := ref StackOffsets
 		offset := int
+		StackOffsets.Resize(Objects.Size())
 		for it,i : Objects
 		{
 			typ := Type^
@@ -225,18 +229,47 @@ AppendClass HVB_Function
 					offset = ((offset + al - 1) div al) * al
 				}
 
-				objOffsets.Push(offset)
+				StackOffsets[i] = offset
 
 				offset += typ.GetSize()
-			}else{
-				objOffsets.Push(0)
 			}
 		}
+
+		GlobalPointers.Resize(Objects.Size())
+
+		for it, i : Objects
+		{
+			if it& is MCConstString
+			{
+				GlobalPointers[i] = it&->{MCConstString^}.GetValue().charPtr&
+				continue
+			}
+			if it&.IsConstant
+			{
+				GlobalPointers[i] = it.Value&
+				continue
+			}
+			if it is MCGlobalVariable
+			{
+				glbVar := it&->{MCGlobalVariable^}.GetValueObject()
+				memObj := GlobsMem.GetGlobalVarMem(glbVar)
+				assert(memObj != null)
+				GlobalPointers[i] = memObj
+				continue
+			}
+		}
+
 		StackFrameSize = (offset + 15) and_b 0xFFFFF0
-		// StackOffsets = objOffsets.ToVector()
 
 		if Objects.Size() != 0
 		{
+			ObjectsSizes.Resize(Objects.Size())
+
+			for it, i : Objects
+			{
+				ObjectsSizes[i] = it.GetType()?.GetSize()
+			}
+
 			for it,i : Lines
 			{
 				if it.opcode == "label"

@@ -42,6 +42,10 @@ TypeFunc := class extend Type
 			MetaId = GetNewId()
 		}
 	}
+	GetSize := virtual !() -> int
+	{
+		return 0
+	}
 	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		if ResultType == null

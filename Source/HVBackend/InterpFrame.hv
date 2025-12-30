@@ -67,35 +67,14 @@ MCInterpFuncFrame := class
 
 		objs = func.Objects.GetPointer()
 	}
-	//Destroy := virtual !() -> void
-	//{
-	//	if localVarTable != null
-	//		free(localVarTable)
-	//	localVarTable = null
-	//}
 
 	GetObjectPtr := !(int index) -> void^
 	{
-		obj := ref objs[index]
-
-		if obj& is MCConstString
-		{
-			return obj&->{MCConstString^}.GetValue().charPtr&
-		}
-		if obj&.IsConstant
-		{
-			return obj.Value&
-		}
-		if obj& is MCGlobalVariable
-		{
-			glbVar := obj&->{MCGlobalVariable^}.GetValueObject()
-			memObj := GlobsMem.GetGlobalVarMem(glbVar)
-			assert(memObj != null)
-			return memObj
-		}
 		return localVarTable[index]
-		
-		assert(false)
+	}
+	GetObjectSize := !(int index) -> int
+	{
+		return func.ObjectsSizes[index]
 	}
 	GetReferencePtr := !(int index) -> void^
 	{
@@ -158,8 +137,7 @@ MCInterpFuncFrame := class
 	LoadS64 := !(u16 index) -> s64
 	{
 		tp := func.Objects[index].GetType()
-		tpSize := tp.GetSize()
-
+		tpSize := GetObjectSize(index)
 		ptr := GetObjectPtr(index)
 
 		if IsUInt(tp) {
@@ -182,11 +160,9 @@ MCInterpFuncFrame := class
 	}
 	StoreS64 := !(u16 index,s64 value) -> void
 	{
-		tp := func.Objects[index].GetType()
-
 		ptr := GetObjectPtr(index)
 
-		switch tp.GetSize()
+		switch GetObjectSize(index)
 		{
 		case 1 ptr->{s8^}^ = value
 		case 2 ptr->{s16^}^ = value
@@ -196,10 +172,8 @@ MCInterpFuncFrame := class
 	}
 	LoadDouble := !(u16 index) -> double
 	{
-		tp := func.Objects[index].GetType()
-		tpSize := tp.GetSize()
-
 		ptr := GetObjectPtr(index)
+		tpSize := GetObjectSize(index)
 
 		switch tpSize
 		{
@@ -210,10 +184,8 @@ MCInterpFuncFrame := class
 	}
 	StoreDouble := !(u16 index, double value) -> void
 	{
-		tp := func.Objects[index].GetType()
-		tpSize := tp.GetSize()
-
 		ptr := GetObjectPtr(index)
+		tpSize := GetObjectSize(index)
 
 		switch tpSize
 		{
