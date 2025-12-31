@@ -1,5 +1,5 @@
 
-PassRemoveBadSets := !(MCFunction^ fnc) ->MCFunction^
+PassRemoveRegCopies := !(MCFunction^ fnc) ->MCFunction^
 {
 	bldr := MakeGreedyPass(fnc,4,6)
 
@@ -28,33 +28,59 @@ PassRemoveBadSets := !(MCFunction^ fnc) ->MCFunction^
 	i := 0
 	while i < cmdsSize
 	{
-		line := iCmds[i]
+		skips := 0
 
-		canRemove := false
 
-		if i < cmdsSize - 1
-			and iCmds[i].opcode == "mov" and used[iCmds[i].var1] == 2
-			and iCmds[i+1].opcode == "mov"
-			and iCmds[i].var1 == iCmds[i+1].var2
+
+		if iCmds[i].opcode == "mov" and oPtr[iCmds[i].var2]& is MCConstRegisterX86 and oPtr[iCmds[i].var1]& is in MCVariable
 		{
-			ob1 := ref oPtr[iCmds[i].var2]
-			ob2 := ref oPtr[iCmds[i+1].var1]
-			cntr := ref oPtr[iCmds[i].var1]
-			
-
-			if ob1.Value == ob2.Value
-				and ob1 is MCConstRegisterX86
-				and (cntr is MCVariable or cntr is MCConstValue)
+			if i == 25
 			{
-				canRemove = true
+				v := 494
+			}
+
+			k := 1
+		
+			while true
+			{
+				if (i + k + 1) >= cmdsSize
+					break
+				ln1 := iCmds[i+k]
+				ln2 := iCmds[i+k+1]
+				lnPrev := iCmds[i+k-1]
+				if ln1.opcode != "mov"
+					break
+
+				usd := used[ln1.var2]
+
+				if ln1.var2 != lnPrev.var1 or used[ln1.var2] != 2
+					break
+
+
+				if ln2.opcode != "mov"
+					break
+
+				if oPtr[ln1.var1] is not MCConstRegisterX86 or oPtr[ln2.var2] is not MCConstRegisterX86
+					break
+
+				if oPtr[ln1.var1].Value != oPtr[ln2.var2].Value
+					break
+
+				if oPtr[ln2.var1]& is not in MCVariable
+					break
+
+				skips += 2
+				k += 2
 			}
 
 		}
-		if canRemove
+
+		if skips != 0
 		{
-			i += 2
+			cPtr[c++] = MCLine("mov",iCmds[i + skips].var1,iCmds[i].var2)
+			i += skips + 1
 		}else{
-			cPtr[c++] = line
+			cPtr[c++] = iCmds[i]
 			i += 1
 		}
 	}

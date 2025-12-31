@@ -199,6 +199,9 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		case "call_start"
 			resInd := it.var1
 
+			cPtr[c++] = MCLine("call_start",0,it.var2)
+			i += 1
+
 			while fnc.Lines[i].opcode != "call_end"
 			{
 				cPtr[c++] = fnc.Lines[i]

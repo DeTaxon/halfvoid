@@ -79,7 +79,9 @@ BCFuncsType := class
 		// result = PassOptimizeJumpX86(result)
 		// result.Print()
 		result = PassApplyRegistersX86(result)
-		result = PassRemoveBadSets(result)
+		// if itm.OutputName == "tst"
+		// 	assert(false)
+		result = PassRemoveRegCopies(result)
 
 		SetAllocator(oldAlloc)
 		result = PassRemoveUnusedObjects(result)
