@@ -85,6 +85,9 @@ BCFuncsType := class
 		result = PassRemoveUnusedObjects(result)
 		tmpAlloc.Destroy()
 
+		// if itm.OutputName == "tst"
+		// 	result.Print()
+
 		x8664Funcs[itm] = result
 	}
 }

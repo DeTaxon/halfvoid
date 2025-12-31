@@ -691,7 +691,6 @@ MCBuildFuncContext_x86_64 := class
 
 			case "call_start"
 				fncId := line.var2
-				resId := line.var1
 				i += 1
 
 				usedInts := 0
@@ -836,18 +835,6 @@ MCBuildFuncContext_x86_64 := class
 				}else{
 					printf("wut %s %s %i\n",fncObj.UnitName,fileName,fileLine)
 					assert(false)
-				}
-
-				if resId != 0
-				{
-					resTyp := objs[resId].GetType()
-
-					if resTyp == GTypeFloat or resTyp == GTypeDouble or resTyp is TypeVector
-					{
-						Mov(fnc,resId,"xmm0")
-					}else{
-						Mov(fnc,resId,"rax")
-					}
 				}
 
 				callSize := stackPassed.Size() * 8

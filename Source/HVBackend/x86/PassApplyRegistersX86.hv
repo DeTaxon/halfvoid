@@ -196,6 +196,31 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		//case "debug_set_file"
 		//case "debug_set_line" // delete debug info
 
+		case "call_start"
+			resInd := it.var1
+
+			while fnc.Lines[i].opcode != "call_end"
+			{
+				cPtr[c++] = fnc.Lines[i]
+				i += 1
+			}
+			cPtr[c++] = MCLine("call_end")
+
+			if resInd != 0
+			{
+				resTyp := oPtr[resInd].GetType()
+				resReg := X86Register
+
+				if resTyp == GTypeFloat or resTyp == GTypeDouble or resTyp is TypeVector
+				{
+					resReg = "xmm0"
+				}else{
+					resReg = "rax"
+				}
+				resRegId := bldr.PushReg(resReg,resTyp)
+				cPtr[c++] = MCLine("mov",resInd,resRegId)
+			}
+			
 		case "switch_start"
 			cmpObj := it.var1
 		
@@ -503,7 +528,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c] = MCLine("call_start",it.var1,fncId)
 			cPtr[c+1] = MCLine("load_var",it.var2)
 			cPtr[c+2] = MCLine("call_end")
-			c += 3
+			cPtr[c+3] = MCLine("mov",it.var1,bldr.PushReg("xmm0",tp))
+			c += 4
 		case "memset"
 			newObj := MCConstPointerTyped
 			newObj.GetValue() = memset

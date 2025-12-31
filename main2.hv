@@ -9,8 +9,7 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	
-	tst()
+ 	tst()
 
 	// c := Allc
 	// c.AllocMem(16)
@@ -42,7 +41,7 @@ makeSpirv := !() -> void
 tst := !() -> void {
 	nums := 1_000
 	// nums = 10
-	// nums = 5_000
+	nums = 5_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

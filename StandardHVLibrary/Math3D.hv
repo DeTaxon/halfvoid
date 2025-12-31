@@ -147,7 +147,9 @@ centf := class
 	}
 	StrTmp := !() -> char^
 	{
-		return "{"sbt + pos.x +"," +  pos.y +","+ pos.z +"," + pos.w+ ":" + ang.x +"," + ang.y +"," + ang.z + "," + ang.w + "}"
+		echo := TEchoStream
+		echo << "{" << pos.x << "," <<  pos.y <<","<< pos.z <<"," << pos.w<< ":" << ang.x <<"," << ang.y <<"," << ang.z << "," << ang.w << "}"
+		return echo.GetStr()
 	}
 	"->{}" := !() .{char^} -> char^
 	{
