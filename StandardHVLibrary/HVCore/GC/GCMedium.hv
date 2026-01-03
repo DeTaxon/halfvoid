@@ -13,7 +13,10 @@ AllocatedPage := class
 	page := PageMemory
 
 	allocLock := int // atomic lock
+}
 
+AllocatedMediumBlockData := class
+{
 	usedMemTemp := AllocatedMediumBlock[80000]
 	ringStart := u32
 	ringEnd := u32
@@ -22,7 +25,6 @@ AllocatedPage := class
 	freeCount := int
 
 	createdObjects := int
-
 }
 
 AllocatorGCMedium := class
@@ -55,6 +57,9 @@ AllocatorGCMedium := class
 
 	allocFromPage := !(AllocatedPage^ page, int size,int indx = 0) -> void^
 	{
+		linkSize := AlignUp16(AllocatedPage->TypeSize)
+		blockSize := AlignUp16(AllocatedMediumBlockData->TypeSize)
+
 		if page.page.Size() == 0
 		{
 			alcSize := 64*1024*1024
@@ -65,37 +70,41 @@ AllocatorGCMedium := class
 			memset(ptr,0,AllocatedPage->TypeSize)
 			internalHVInitClass(ptr->{AllocatedPage^}^)
 
-			baseSize := AlignUp16(AllocatedPage->TypeSize)
+			baseSize := linkSize + blockSize
 
-			page.freeMem[0].memOffset = baseSize
-			page.freeMem[0].memSize = alcSize - baseSize
-			page.freeCount = 1
+			dat := page.page.GetPointer()->{u8^}[linkSize]&->{AllocatedMediumBlockData^}
+
+			dat.freeMem[0].memOffset = baseSize
+			dat.freeMem[0].memSize = alcSize - baseSize
+			dat.freeCount = 1
 		}
+		
+		dat := page.page.GetPointer()->{u8^}[linkSize]&->{AllocatedMediumBlockData^}
 
-		if page.createdObjects >= page.usedMemTemp.Size() {
+		if dat.createdObjects >= dat.usedMemTemp.Size() {
 			return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
 		}
 
-		for i : page.freeCount
+		for i : dat.freeCount
 		{
-			if page.freeMem[i].memSize < size
+			if dat.freeMem[i].memSize < size
 				continue
 
-			block := ref page.freeMem[i]
+			block := ref dat.freeMem[i]
 
 			p := page.page.GetPointer()->{u8^}
 
 			res := p[block.memOffset + (block.memSize - size)]&
 			block.memSize -= size
 
-			setIndx := InterlockAdd(page.ringEnd,1) mod page.usedMemTemp.Size()
+			setIndx := InterlockAdd(dat.ringEnd,1) mod dat.usedMemTemp.Size()
 
-			setBlock := ref page.usedMemTemp[setIndx]
+			setBlock := ref dat.usedMemTemp[setIndx]
 
 			setBlock.memOffset = res->{size_t} - p->{size_t}
 			setBlock.memSize = size
 
-			page.createdObjects += 1
+			dat.createdObjects += 1
 
 			return res
 		}
@@ -104,6 +113,8 @@ AllocatorGCMedium := class
 	}
 	GetMemInfo := !(void^ mem) -> GCMediumMemInfo
 	{
+		linkSize := AlignUp16(AllocatedPage->TypeSize)
+		blockSize := AlignUp16(AllocatedMediumBlockData->TypeSize)
 
 		for page : pages
 		{
@@ -122,27 +133,28 @@ AllocatorGCMedium := class
 
 			if itr == null continue
 
+			dat := itr.page.GetPointer()->{u8^}[linkSize]&->{AllocatedMediumBlockData^}
 			
-			rb := itr.ringStart mod page.usedMemTemp.Size()
-			re := itr.ringEnd mod page.usedMemTemp.Size()
+			rb := dat.ringStart mod dat.usedMemTemp.Size()
+			re := dat.ringEnd mod dat.usedMemTemp.Size()
 
 			if re < rb
-				re += page.usedMemTemp.Size()
+				re += dat.usedMemTemp.Size()
 
 			ptr := itr.page.GetPointer()->{u8^}
 
 			i := rb
 			while i < re
 			{
-				bb := ptr[page.usedMemTemp[i].memOffset]&
-				be := bb[page.usedMemTemp[i].memSize]&
+				bb := ptr[dat.usedMemTemp[i].memOffset]&
+				be := bb[dat.usedMemTemp[i].memSize]&
 
 				if bb <= mem and mem < be
 				{
 					result.IsFound = true
 					result.OriginalPointer = bb
-					result.GenerationPointer = page.usedMemTemp[i].generation&
-					result.MemSize = page.usedMemTemp[i].memSize
+					result.GenerationPointer = dat.usedMemTemp[i].generation&
+					result.MemSize = dat.usedMemTemp[i].memSize
 
 					return void
 				}
