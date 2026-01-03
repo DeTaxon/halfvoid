@@ -20,6 +20,10 @@
 		"pthread_create" : "int,u64^,void^,void^,void^",
 		"pthread_join" : "int,u64,void^^",
 		"pthread_self" : "u64",
+
+		"pthread_attr_init" : "void,void^",
+		"pthread_getattr_np" : "void,u64,void^",
+		"pthread_attr_getstack" : "void,void^,void^^,size_t^",
 		
 		"pthread_mutex_init" : "void,void^,void^",
 		"pthread_mutex_lock" : "void,void^",

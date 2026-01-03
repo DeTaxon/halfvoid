@@ -24,6 +24,9 @@ AppendClass Task
 		get_context_x64(fiberContext&)
 		make_context_x64(fiberContext&,ucontextStartTask,stackPtr,stackSize)
 
+		// if #Var("GC")
+		// 	MainGC.AddRoot(stackPtr,stackSize)
+
 
 		//getcontext(uContext[0]&)
 		//stackSize := 4*1024*1024
@@ -86,7 +89,13 @@ AppendClass Task
 				___tracy_emit_memory_free_callstack?(stackPtr,9999,0)
 			}
 
-			free(stackPtr)
+			if #Var("GC")
+			{
+				MainGC.RemoveRoot(stackPtr)
+				MainGC.addFreeCall(stackPtr)
+			}else{
+				free(stackPtr)
+			}
 			//munmap(stackPtr,thisTaskStackSize)
 			stackPtr = null
 		}

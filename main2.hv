@@ -3,7 +3,8 @@
 main := !(char^[] args) -> int
 {
 	// tst()
-	RunFunc()
+	// RunFunc()
+	MemTest()
 }
 
 
@@ -13,6 +14,22 @@ RunFunc := !() -> void
 
 	// c := Allc
 	// c.AllocMem(16)
+}
+
+
+BigMemObj := class
+{
+	data := u8[500]
+}
+MemTest := !() -> void
+{
+	tst := new BigMemObj
+	while true
+	{
+		c := MainGC.GetMemInfo(tst)
+		printf("Test %i %i\n",c.IsFound,c.GenerationPointer^)
+		TSleep(0.5)
+	}
 }
 
 

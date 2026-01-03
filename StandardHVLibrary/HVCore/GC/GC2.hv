@@ -16,6 +16,10 @@ GCAllocator := class extends IAllocator
 	gcThread := BasicThread
 	quit := bool
 
+	rootMutex := Mutex
+	rootCV := ConVar
+
+
 	AllocMem := virtual !(int size, bool dirty = false) -> void^
 	{
 		size = AlignUp16(size)
@@ -98,18 +102,26 @@ GCAllocator := class extends IAllocator
 	}
 	threadLoop := !() -> void
 	{
+		rootMutex.Lock()
+		defer rootMutex.Unlock()
+
 		while not quit
 		{
 			if MainTask == null
 				continue
 
+			checkFreeCalls()
+
 			currentGeneration += 1
 
-			inf := MainTask.GetStackUsage()
-
-			checkRootRange(inf.StackPointer,inf.TotalSize)
+			for i : RootsCount
+			{
+				checkRootRange(Roots[i].0,Roots[i].1)
+			}
 
 			checkGlobals()
+
+			rootCV.WaitFor(rootMutex&,0.1)
 		}
 	}
 
@@ -132,11 +144,71 @@ GCAllocator := class extends IAllocator
 
 			if memInf.IsFound
 			{
-				// memInfo.GenerationPointer^ = currentGeneration
+				memInf.GenerationPointer^ = currentGeneration
 			}
 
 		}
 	}
+
+	freeCalls := void^[512]
+	freeCallsStart := u32
+	freeCallsEnd := u32
+
+	addFreeCall := !(void^ mem) -> void
+	{
+		if mem == null
+			return void
+
+		ind := InterlockAdd(freeCallsEnd,1) mod freeCalls.Size()
+		freeCalls[ind] = mem
+	}
+
+	checkFreeCalls := !() -> void
+	{
+		while freeCallsStart != freeCallsEnd
+		{
+			ind := freeCallsStart mod freeCalls.Size()
+
+			while freeCalls[ind] == null {}
+			c := freeCalls[ind]
+			freeCalls[ind] = null
+
+			free(c)
+
+			freeCallsStart += 1
+		}
+	}
+
+	Roots := Tuple.{void^,size_t}[2048]
+	RootsCount := int
+
+	AddRoot := !(void^ mem,size_t size) -> void
+	{
+		if mem == null or size == 0
+			return void
+
+		// rootMutex.Lock()
+		// defer rootMutex.Unlock()
+
+		Roots[InterlockAdd(RootsCount,1)] = !{mem,size}
+	}
+	RemoveRoot := !(void^ mem) -> void
+	{
+		// rootMutex.Lock()
+		// defer rootMutex.Unlock()
+
+		for i : RootsCount
+		{
+			if Roots[i].0 == mem
+			{
+				RootsCount -= 1
+				if RootsCount != 0
+					Roots[i] = Roots[RootsCount]
+				return void
+			}
+		}
+	}
+
 }
 
 _callGC2Loop := !(void^ data) -> void
@@ -151,4 +223,47 @@ GC2MemInfo := class
 	OriginalPointer := void^
 	GenerationPointer := u8^
 	MemSize := int
+}
+
+GCThreadBegin := !() -> void
+{
+	buf := u8[256]
+	pthread_getattr_np(pthread_self(),buf[0]&)
+
+	ptr := void^
+	size := size_t
+	pthread_attr_getstack(buf[0]&,ptr&,size&)
+
+	MainGC.AddRoot(ptr,size)
+}
+GCThreadEnd := !() -> void
+{
+	buf := u8[256]
+	pthread_attr_init(buf[0]&)
+
+	ptr := void^
+	size := size_t
+	pthread_attr_getstack(buf[0]&,ptr&,size&)
+
+	MainGC.RemoveRoot(ptr)
+}
+
+MainGC := GCAllocator^
+GCPage := PageMemory
+
+InitMainGC := !() -> void
+{
+	#MarkFunction("ThreadBegin",GCThreadBegin)
+	#MarkFunction("ThreadEnd",GCThreadEnd)
+
+	GCPage.Create(GCAllocator->TypeSize,"rw")
+	MainGC = GCPage.GetPointer()->{GCAllocator^}
+	internalHVInitClass(MainGC^)
+	MainGC.StartGCThread()
+}
+StopMainGC := !() -> void
+{
+	MainGC.quit = true
+	MainGC.gcThread.Join()
+
 }
