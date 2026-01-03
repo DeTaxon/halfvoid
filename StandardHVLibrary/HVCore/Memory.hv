@@ -25,13 +25,13 @@ internalHVDelete := !(void^ x) -> void
 CurrentAllocator := task_local IAllocator^
 
 
-// MainGC := Allc^
-// GCPage := PageMemory
+MainGC := GCAllocator^
+GCPage := PageMemory
 
 InitMainGC := !() -> void
 {
-	GCPage.Create(Allc->TypeSize,"rw")
-	MainGC = GCPage.GetPointer()->{Allc^}
+	GCPage.Create(GCAllocator->TypeSize,"rw")
+	MainGC = GCPage.GetPointer()->{GCAllocator^}
 	internalHVInitClass(MainGC^)
 	MainGC.StartGCThread()
 }
@@ -46,9 +46,13 @@ StopMainGC := !() -> void
 GetDefaultAllocator := !() -> IAllocator^
 	#Mark("JITPass")
 {
-	// return MainGC
-	defAlloc := static DefaultAllocator
-	return defAlloc&
+	if #Var("GC")
+	{
+		return MainGC
+	}else{
+		defAlloc := static DefaultAllocator
+		return defAlloc&
+	}
 }
 
 GetAllocator := !() -> IAllocator^

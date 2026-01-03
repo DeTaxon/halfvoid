@@ -2,7 +2,7 @@
 
 
 
-Allc := class extends IAllocator
+GCAllocator := class extends IAllocator
 {
 
 	pages32 := Allc128.{32}
@@ -141,7 +141,7 @@ Allc := class extends IAllocator
 
 _callGC2Loop := !(void^ data) -> void
 {
-	data->{Allc^}.threadLoop()
+	data->{GCAllocator^}.threadLoop()
 }
 
 GC2MemInfo := class

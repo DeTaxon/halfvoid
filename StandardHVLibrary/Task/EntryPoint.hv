@@ -3,8 +3,8 @@ HvArg0 := char^ //TODO move it away
 
 internalHVEntryPoint := !(int argc,char^^ argv) -> int
 {
-	// InitMainGC()
-	// defer StopMainGC()
+	if #Var("GC")
+		InitMainGC()
 
 	HvArg0 = argv[0]
 	TLSMutex."this"() //TODO only if TLS used
@@ -28,6 +28,9 @@ internalHVEntryPoint := !(int argc,char^^ argv) -> int
 	CurrentThread.ThreadMainTask = null
 	CurrentThread = null
 	internalThreadDestructor()
+
+	if #Var("GC")
+		StopMainGC()
 }
 
 internalInitThread := !() -> void

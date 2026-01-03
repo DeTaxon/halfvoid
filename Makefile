@@ -57,8 +57,12 @@ ifeq ($(test),yes)
 	Test := -test
 endif
 
+ifeq ($(gc),yes)
+	GCFlag := -var GC
+endif
 
-flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test)
+
+flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test) $(GCFlag)
 
 MainTarget: test
 
