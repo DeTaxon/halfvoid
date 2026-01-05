@@ -20,14 +20,27 @@ RunFunc := !() -> void
 BigMemObj := class
 {
 	data := u8[500]
+	subPtr := int^^
 }
 MemTest := !() -> void
 {
 	tst := new BigMemObj
+	tst.subPtr = GetAllocator().AllocMem(5*8)->{int^^}
+
+	for i : 5
+	{
+		tst.subPtr[i] = new int
+	}
 	while true
 	{
 		c := MainGC.GetMemInfo(tst)
-		printf("Test %i %i\n",c.IsFound,c.GenerationPointer^)
+		printf("Test1 %p %i %i\n",tst,c.IsFound,c.GenerationPointer^)
+
+		for i : 5
+		{
+			d := MainGC.GetMemInfo(tst.subPtr[i])
+			printf("Test2 %p %i %i\n",tst.subPtr,d.IsFound,d.GenerationPointer^)
+		}
 		TSleep(0.5)
 	}
 }

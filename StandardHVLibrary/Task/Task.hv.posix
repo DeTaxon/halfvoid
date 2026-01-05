@@ -24,8 +24,8 @@ AppendClass Task
 		get_context_x64(fiberContext&)
 		make_context_x64(fiberContext&,ucontextStartTask,stackPtr,stackSize)
 
-		// if #Var("GC")
-		// 	MainGC.AddRoot(stackPtr,stackSize)
+		if #Var("GC")
+			MainGC.AddRoot(stackPtr,stackSize)
 
 
 		//getcontext(uContext[0]&)

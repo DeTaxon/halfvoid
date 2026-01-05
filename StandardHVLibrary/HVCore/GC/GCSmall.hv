@@ -28,8 +28,9 @@ AllocatedStaticPtrInfo := class
 	MemSize := int
 }
 
-Allc128 := class .{@ObjSize}
+Allc128 := class
 {
+	ObjSize := int
 	pages128 := AllocatedStaticSize[32]
 
 	AllocMem := !() -> void^
@@ -80,7 +81,7 @@ Allc128 := class .{@ObjSize}
 
 		bitPtr := ptr[headerSize]&
 		infoPtr := bitPtr[bitCount div 8]&->{AllocatedStaticInfo^}
-		blocksPtr := infoPtr[bitCount]&->{u8[ObjSize]^}
+		blocksPtr := infoPtr[bitCount]&->{u8^}
 
 		page.metaOffset = infoPtr->{size_t} - ptr->{size_t}
 		page.dataOffset = blocksPtr->{size_t} - ptr->{size_t}
@@ -94,7 +95,9 @@ Allc128 := class .{@ObjSize}
 
 			page.bitIndex += 1
 			thisInfo.memLeft -= 1
-			return blocksPtr[i*8 + j]&
+
+			ind := i*8 + j
+			return blocksPtr[ind*ObjSize]&
 		}
 
 		assert(false)

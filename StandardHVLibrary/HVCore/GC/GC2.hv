@@ -5,9 +5,9 @@
 GCAllocator := class extends IAllocator
 {
 
-	pages32 := Allc128.{32}
-	pages64 := Allc128.{64}
-	pages128 := Allc128.{128}
+	pages32 := Allc128
+	pages64 := Allc128
+	pages128 := Allc128
 
 
 	memMedium := AllocatorGCMedium
@@ -41,30 +41,9 @@ GCAllocator := class extends IAllocator
 
 	GetMemInfo := !(void^ mem) -> GC2MemInfo
 	{
+		for pg : ![pages32&,pages64&,pages128&]
 		{
-			c := pages32.GetMemInfo(mem)
-			if c.IsFound
-			{
-				result.IsFound = true
-				result.OriginalPointer = c.OriginalPointer
-				result.GenerationPointer = c.GenerationPointer
-				result.MemSize = c.MemSize
-				return void
-			}
-		}
-		{
-			c := pages64.GetMemInfo(mem)
-			if c.IsFound
-			{
-				result.IsFound = true
-				result.OriginalPointer = c.OriginalPointer
-				result.GenerationPointer = c.GenerationPointer
-				result.MemSize = c.MemSize
-				return void
-			}
-		}
-		{
-			c := pages128.GetMemInfo(mem)
+			c := pg.GetMemInfo(mem)
 			if c.IsFound
 			{
 				result.IsFound = true
@@ -107,22 +86,41 @@ GCAllocator := class extends IAllocator
 
 		while not quit
 		{
-			if MainTask == null
-				continue
-
 			checkFreeCalls()
 
 			currentGeneration += 1
 
 			for i : RootsCount
 			{
-				checkRootRange(Roots[i].0,Roots[i].1)
+				ptr := Roots[i].0
+				size := Roots[i].1
+				if ptr == null or size == 0
+					continue
+
+				checkRootRange(ptr,size)
 			}
 
 			checkGlobals()
 
+			for pg : ![pages32&,pages64&,pages128&]
+			{
+				
+			}
+
 			rootCV.WaitFor(rootMutex&,0.1)
 		}
+	}
+
+	checkDistance := !(u8 left,u8 right) -> bool
+	{
+		if left == right
+			return false
+		if left < right
+			return right - left > 10
+		c := u32
+		c = right
+		c += 256
+		return c - left > 10
 	}
 
 	checkGlobals := !() -> void
@@ -144,7 +142,11 @@ GCAllocator := class extends IAllocator
 
 			if memInf.IsFound
 			{
-				memInf.GenerationPointer^ = currentGeneration
+				if memInf.GenerationPointer^ != currentGeneration
+				{
+					memInf.GenerationPointer^ = currentGeneration
+					checkRootRange(memInf.OriginalPointer,memInf.MemSize)
+				}
 			}
 
 		}
@@ -204,6 +206,7 @@ GCAllocator := class extends IAllocator
 				RootsCount -= 1
 				if RootsCount != 0
 					Roots[i] = Roots[RootsCount]
+				Roots[RootsCount].0 = null
 				return void
 			}
 		}
@@ -259,6 +262,9 @@ InitMainGC := !() -> void
 	GCPage.Create(GCAllocator->TypeSize,"rw")
 	MainGC = GCPage.GetPointer()->{GCAllocator^}
 	internalHVInitClass(MainGC^)
+	MainGC.pages32.ObjSize = 32
+	MainGC.pages64.ObjSize = 64
+	MainGC.pages128.ObjSize = 128
 	MainGC.StartGCThread()
 }
 StopMainGC := !() -> void
