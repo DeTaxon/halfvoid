@@ -61,8 +61,12 @@ ifeq ($(gc),yes)
 	GCFlag := -var GC
 endif
 
+ifeq ($(emulatetls),yes)
+	emtls := -emulate-tls
+endif
 
-flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test) $(GCFlag)
+
+flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test) $(GCFlag) $(emtls)
 
 MainTarget: test
 

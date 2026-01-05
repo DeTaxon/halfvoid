@@ -102,9 +102,43 @@ GCAllocator := class extends IAllocator
 
 			checkGlobals()
 
+			if TaskMainTaskWorker != null
+				checkRootRange(TaskMainTaskWorker,TaskWorker->TypeSize)
+
 			for pg : ![pages32&,pages64&,pages128&]
 			{
-				
+				headerSize := AlignUp16(AllocatedStaticSize->TypeSize)
+				for it,i : pg.pages128
+				{
+					while InterlockSet(it.allocLock,1) != 0 {}
+
+					itr := it&
+
+					while itr != null
+					{
+						ptStart := itr.page.GetPointer()->{u8^}
+						bts := ptStart[headerSize]&
+						pt := ptStart[itr.metaOffset]&->{AllocatedStaticInfo^}
+
+						for j : itr.bitCount
+						{
+							if (bts[j div 8] and_b (1 shl (j mod 8))) == 0
+								continue
+
+							if checkDistance(pt[j].generation,currentGeneration)
+							{
+								objPtr := ptStart[itr.dataOffset]&[j*pg.ObjSize]&
+
+								// printf("must delete %p %i %p %i %i\n",objPtr,j,bts,pt[j].generation,currentGeneration)
+								// memset(objPtr,0,pg.ObjSize)
+							}
+						}
+
+						itr = itr.page.GetPointer()->{AllocatedStaticSize^}
+					}
+
+					InterlockSet(it.allocLock,0)
+				}
 			}
 
 			rootCV.WaitFor(rootMutex&,0.1)
@@ -138,6 +172,8 @@ GCAllocator := class extends IAllocator
 
 		for i : size
 		{
+			if ptr[i] == null
+				continue
 			memInf := this.GetMemInfo(ptr[i])
 
 			if memInf.IsFound

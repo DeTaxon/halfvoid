@@ -27,6 +27,7 @@ MemTest := !() -> void
 	tst := new BigMemObj
 	tst.subPtr = GetAllocator().AllocMem(5*8)->{int^^}
 
+	ccc := 5
 	for i : 5
 	{
 		tst.subPtr[i] = new int
@@ -39,8 +40,17 @@ MemTest := !() -> void
 		for i : 5
 		{
 			d := MainGC.GetMemInfo(tst.subPtr[i])
-			printf("Test2 %p %i %i\n",tst.subPtr,d.IsFound,d.GenerationPointer^)
+			if d.IsFound
+			{
+				printf("Test2 %p %i %i\n",tst.subPtr[i],d.IsFound,d.GenerationPointer^)
+			}else{
+				printf("Test2 %p not found\n",tst.subPtr[i])
+			}
 		}
+		ccc -= 1
+
+		if ccc < 0
+			tst.subPtr[2] = null
 		TSleep(0.5)
 	}
 }

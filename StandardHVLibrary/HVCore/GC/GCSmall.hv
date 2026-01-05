@@ -97,7 +97,8 @@ Allc128 := class
 			thisInfo.memLeft -= 1
 
 			ind := i*8 + j
-			return blocksPtr[ind*ObjSize]&
+			resPtr :=blocksPtr[ind*ObjSize]&
+			return resPtr 
 		}
 
 		assert(false)
