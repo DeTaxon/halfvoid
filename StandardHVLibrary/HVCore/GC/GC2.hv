@@ -154,14 +154,16 @@ GCAllocator := class extends IAllocator
 
 	checkDistance := !(u8 left,u8 right) -> bool
 	{
+		limit := 20
+
 		if left == right
 			return false
 		if left < right
-			return right - left > 10
+			return right - left > limit
 		c := u32
 		c = right
 		c += 256
-		return c - left > 10
+		return c - left > limit
 	}
 
 	checkGlobals := !() -> void
