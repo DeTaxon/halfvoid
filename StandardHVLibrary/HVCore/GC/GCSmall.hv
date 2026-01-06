@@ -72,6 +72,12 @@ Allc128 := class
 			ptr.memLeft = bitCount
 
 			page.bitCount = bitCount
+
+			infoPtr := ptr[headerSize + (bitCount div 8)]&->{AllocatedStaticInfo^}
+			blocksPtr := infoPtr[bitCount]&->{u8^}
+
+			page.metaOffset = infoPtr->{size_t} - ptr->{size_t}
+			page.dataOffset = blocksPtr->{size_t} - ptr->{size_t}
 		}
 
 		ptr := page.page.GetPointer()->{u8^}
@@ -79,44 +85,40 @@ Allc128 := class
 		thisInfo := ptr->{AllocatedStaticSize^}
 
 		bitPtr := ptr[headerSize]&
-		infoPtr := bitPtr[bitCount div 8]&->{AllocatedStaticInfo^}
-		blocksPtr := infoPtr[bitCount]&->{u8^}
+		blocksPtr := ptr[page.dataOffset]&
 
-		if page.freeBlock != null
-		{
-			indx := page.freeBlock->{size_t} - blocksPtr->{size_t}
-			indx = indx div ObjSize
-
-			i := page.bitIndex div 8
-			j := page.bitIndex mod 8
-
-			bitPtr[i] = bitPtr[i] or_b (1 shl j)
-
-			res := page.freeBlock
-			page.freeBlock = page.freeBlock->{void^^}^
-			// printf("refurbished %p\n",res)
-			return res
-		}
+		// if page.freeBlock != null
+		// {
+		// 	indx := page.freeBlock->{size_t} - blocksPtr->{size_t}
+		// 	indx = indx div ObjSize
+		//
+		// 	i := indx div 8
+		// 	j := indx mod 8
+		//
+		// 	bitPtr[i] = bitPtr[i] or_b (1 shl j)
+		//
+		// 	res := page.freeBlock
+		// 	page.freeBlock = page.freeBlock->{void^^}^
+		// 	// printf("refurbished %p\n",res)
+		// 	return res
+		// }
 
 		if thisInfo.memLeft == 0
 			return allocFromPage(thisInfo)
 
 
-		page.metaOffset = infoPtr->{size_t} - ptr->{size_t}
-		page.dataOffset = blocksPtr->{size_t} - ptr->{size_t}
-
-
 		{
 			i := page.bitIndex div 8
 			j := page.bitIndex mod 8
 
-			bitPtr[i] = bitPtr[i] or_b (1 shl j)
+			ind := page.bitIndex
+
+			bitPtr[i] = bitPtr[i] xor_b (1 shl j)
 
 			page.bitIndex += 1
 			thisInfo.memLeft -= 1
 
-			ind := i*8 + j
-			resPtr :=blocksPtr[ind*ObjSize]&
+			resPtr := blocksPtr[ind*ObjSize]&
 			return resPtr 
 		}
 
@@ -133,7 +135,7 @@ Allc128 := class
 			{
 				pgPtr := itr.page.GetPointer()->{u8^}
 				begin := pgPtr->{u8^}[itr.dataOffset]&
-				end := begin[itr.page.Size()]&
+				end := pgPtr[itr.page.Size()]&
 
 				if ptr >= begin and ptr < end
 				{

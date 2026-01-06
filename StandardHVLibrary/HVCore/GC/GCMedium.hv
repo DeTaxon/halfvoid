@@ -60,7 +60,7 @@ AllocatorGCMedium := class
 		linkSize := AlignUp16(AllocatedPage->TypeSize)
 		blockSize := AlignUp16(AllocatedMediumBlockData->TypeSize)
 
-		if page.page.Size() == 0
+		if page.page.GetPointer() == null
 		{
 			alcSize := 64*1024*1024
 			page.page.Create(alcSize,"rw")
