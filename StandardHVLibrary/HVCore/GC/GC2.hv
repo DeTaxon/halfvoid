@@ -23,7 +23,13 @@ GCAllocator := class extends IAllocator
 	AllocMem := virtual !(int size, bool dirty = false) -> void^
 	{
 		size = AlignUp16(size)
+	
+		// if size > 128
+		// 	return memMedium.AllocMem(size,dirty)
 
+		// res :=  malloc(size)
+		// memset(res,0,size)
+		// return res
 		if size <= 32
 			return pages32.AllocMem()
 		if size <= 64
@@ -109,48 +115,48 @@ GCAllocator := class extends IAllocator
 			if TaskMainTaskWorker != null
 				checkRootRange(TaskMainTaskWorker,TaskWorker->TypeSize)
 
-			// for pg : ![pages32&,pages64&,pages128&]
-			// {
-			// 	headerSize := AlignUp16(AllocatedStaticSize->TypeSize)
-			// 	for it,i : pg.pages128
-			// 	{
-			// 		while InterlockSet(it.allocLock,1) != 0 {}
-			//
-			// 		itr := it&
-			//
-			// 		while itr != null
-			// 		{
-			// 			ptStart := itr.page.GetPointer()->{u8^}
-			// 			bts := ptStart[headerSize]&
-			// 			pt := ptStart[itr.metaOffset]&->{AllocatedStaticInfo^}
-			//
-			// 			for j : itr.bitCount
-			// 			{
-			// 				bIndx := j div 8
-			// 				mIndx := 1 shl (j mod 8)
-			// 				if (bts[bIndx] and_b mIndx) == 0
-			// 					continue
-			//
-			// 				if checkDistance(pt[j].generation,currentGeneration)
-			// 				{
-			// 					objPtr := ptStart[itr.dataOffset]&[j*pg.ObjSize]&
-			//
-			// 					objPtr->{void^^}^ = itr.freeBlock
-			// 					itr.freeBlock = objPtr
-			//
-			// 					bts[bIndx] = bts[bIndx] xor_b mIndx
-			//
-			// 					// printf("must delete %p %i %p %i %i\n",objPtr,j,bts,pt[j].generation,currentGeneration)
-			// 					// memset(objPtr,0,pg.ObjSize)
-			// 				}
-			// 			}
-			//
-			// 			itr = itr.page.GetPointer()->{AllocatedStaticSize^}
-			// 		}
-			//
-			// 		InterlockSet(it.allocLock,0)
-			// 	}
-			// }
+			for pg : ![pages32&,pages64&,pages128&]
+			{
+				headerSize := AlignUp16(AllocatedStaticSize->TypeSize)
+				for it,i : pg.pages128
+				{
+					while InterlockSet(it.allocLock,1) != 0 {}
+
+					itr := it&
+
+					while itr != null
+					{
+						ptStart := itr.page.GetPointer()->{u8^}
+						bts := ptStart[headerSize]&
+						pt := ptStart[itr.metaOffset]&->{AllocatedStaticInfo^}
+
+						for j : itr.bitCount
+						{
+							bIndx := j div 8
+							mIndx := 1 shl (j mod 8)
+							if (bts[bIndx] and_b mIndx) == 0
+								continue
+
+							if checkDistance(pt[j].generation,currentGeneration)
+							{
+								objPtr := ptStart[itr.dataOffset]&[j*pg.ObjSize]&
+
+								objPtr->{void^^}^ = itr.freeBlock
+								itr.freeBlock = objPtr
+
+								bts[bIndx] = bts[bIndx] xor_b mIndx
+
+								// printf("must delete %p %i %p %i %i\n",objPtr,j,bts,pt[j].generation,currentGeneration)
+								// memset(objPtr,0,pg.ObjSize)
+							}
+						}
+
+						itr = itr.page.GetPointer()->{AllocatedStaticSize^}
+					}
+
+					InterlockSet(it.allocLock,0)
+				}
+			}
 
 			rootCV.WaitFor(rootMutex&,0.1)
 		}
@@ -193,11 +199,10 @@ GCAllocator := class extends IAllocator
 			{
 				if memInf.GenerationPointer^ != currentGeneration
 				{
-					// memInf.GenerationPointer^ = currentGeneration
-					// checkRootRange(memInf.OriginalPointer,memInf.MemSize)
+					memInf.GenerationPointer^ = currentGeneration
+					checkRootRange(memInf.OriginalPointer,memInf.MemSize)
 				}
 			}
-
 		}
 	}
 

@@ -1,4 +1,3 @@
-
 AllocatedStaticSize := class
 {
 	page := PageMemory
@@ -73,11 +72,11 @@ Allc128 := class
 
 			page.bitCount = bitCount
 
-			infoPtr := ptr[headerSize + (bitCount div 8)]&->{AllocatedStaticInfo^}
+			infoPtr := ptr->{u8^}[headerSize + (bitCount div 8)]&->{AllocatedStaticInfo^}
 			blocksPtr := infoPtr[bitCount]&->{u8^}
 
-			page.metaOffset = infoPtr->{size_t} - ptr->{size_t}
-			page.dataOffset = blocksPtr->{size_t} - ptr->{size_t}
+			ptr.metaOffset = infoPtr->{size_t} - ptr->{size_t}
+			ptr.dataOffset = blocksPtr->{size_t} - ptr->{size_t}
 		}
 
 		ptr := page.page.GetPointer()->{u8^}
@@ -85,23 +84,23 @@ Allc128 := class
 		thisInfo := ptr->{AllocatedStaticSize^}
 
 		bitPtr := ptr[headerSize]&
-		blocksPtr := ptr[page.dataOffset]&
+		blocksPtr := ptr[thisInfo.dataOffset]&
 
-		// if page.freeBlock != null
-		// {
-		// 	indx := page.freeBlock->{size_t} - blocksPtr->{size_t}
-		// 	indx = indx div ObjSize
-		//
-		// 	i := indx div 8
-		// 	j := indx mod 8
-		//
-		// 	bitPtr[i] = bitPtr[i] or_b (1 shl j)
-		//
-		// 	res := page.freeBlock
-		// 	page.freeBlock = page.freeBlock->{void^^}^
-		// 	// printf("refurbished %p\n",res)
-		// 	return res
-		// }
+		if page.freeBlock != null
+		{
+			indx := page.freeBlock->{size_t} - blocksPtr->{size_t}
+			indx = indx div ObjSize
+
+			i := indx div 8
+			j := indx mod 8
+
+			bitPtr[i] = bitPtr[i] or_b (1 shl j)
+
+			res := page.freeBlock
+			page.freeBlock = page.freeBlock->{void^^}^
+			// printf("refurbished %p\n",res)
+			return res
+		}
 
 		if thisInfo.memLeft == 0
 			return allocFromPage(thisInfo)
@@ -134,11 +133,13 @@ Allc128 := class
 			while itr != null and itr.page.Size() != 0
 			{
 				pgPtr := itr.page.GetPointer()->{u8^}
-				begin := pgPtr->{u8^}[itr.dataOffset]&
+				pageInfo := pgPtr->{AllocatedStaticSize^}
+				begin := pgPtr->{u8^}[pageInfo.dataOffset]&
 				end := pgPtr[itr.page.Size()]&
 
 				if ptr >= begin and ptr < end
 				{
+
 					indx := (ptr->{size_t} - begin->{size_t}) div ObjSize
 
 					result.IsFound = true
@@ -148,7 +149,7 @@ Allc128 := class
 					result.ObjectIndex = indx
 
 					result.OriginalPointer = begin[ObjSize*indx]&
-					result.GenerationPointer = pgPtr[page.metaOffset]&->{AllocatedStaticInfo^}[indx].generation&
+					result.GenerationPointer = pgPtr[pageInfo.metaOffset]&->{AllocatedStaticInfo^}[indx].generation&
 					result.MemSize = ObjSize
 
 					return void
