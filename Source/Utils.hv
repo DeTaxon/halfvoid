@@ -6,7 +6,7 @@ GetConstStringSpan := !(StringSpan val) -> ref StringSpan
 {
 	return ConstStringsSpans[val]?
 
-	stCpy := malloc(val.Size() + 1)->{char^}
+	stCpy := GetAllocator().AllocMem(val.Size() + 1)->{char^}
 	if val.Size() != 0
 		memcpy(stCpy,val.NonNullStr(),val.Size())
 	stCpy[val.Size()] = 0

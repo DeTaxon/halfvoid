@@ -6,6 +6,8 @@ AllocatedStaticSize := class
 
 	memLeft := int
 	bitIndex := int
+
+	freeBlock := void^
 	
 	bitCount := int
 	metaOffset := int
@@ -76,12 +78,29 @@ Allc128 := class
 
 		thisInfo := ptr->{AllocatedStaticSize^}
 
-		if thisInfo.memLeft == 0
-			return allocFromPage(thisInfo)
-
 		bitPtr := ptr[headerSize]&
 		infoPtr := bitPtr[bitCount div 8]&->{AllocatedStaticInfo^}
 		blocksPtr := infoPtr[bitCount]&->{u8^}
+
+		if page.freeBlock != null
+		{
+			indx := page.freeBlock->{size_t} - blocksPtr->{size_t}
+			indx = indx div ObjSize
+
+			i := page.bitIndex div 8
+			j := page.bitIndex mod 8
+
+			bitPtr[i] = bitPtr[i] or_b (1 shl j)
+
+			res := page.freeBlock
+			page.freeBlock = page.freeBlock->{void^^}^
+			// printf("refurbished %p\n",res)
+			return res
+		}
+
+		if thisInfo.memLeft == 0
+			return allocFromPage(thisInfo)
+
 
 		page.metaOffset = infoPtr->{size_t} - ptr->{size_t}
 		page.dataOffset = blocksPtr->{size_t} - ptr->{size_t}

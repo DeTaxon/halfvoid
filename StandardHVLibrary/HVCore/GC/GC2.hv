@@ -122,12 +122,19 @@ GCAllocator := class extends IAllocator
 
 						for j : itr.bitCount
 						{
-							if (bts[j div 8] and_b (1 shl (j mod 8))) == 0
+							bIndx := j div 8
+							mIndx := 1 shl (j mod 8)
+							if (bts[bIndx] and_b mIndx) == 0
 								continue
 
 							if checkDistance(pt[j].generation,currentGeneration)
 							{
 								objPtr := ptStart[itr.dataOffset]&[j*pg.ObjSize]&
+
+								objPtr->{void^^}^ = itr.freeBlock
+								itr.freeBlock = objPtr
+
+								bts[bIndx] = bts[bIndx] xor_b mIndx
 
 								// printf("must delete %p %i %p %i %i\n",objPtr,j,bts,pt[j].generation,currentGeneration)
 								// memset(objPtr,0,pg.ObjSize)
