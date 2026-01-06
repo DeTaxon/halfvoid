@@ -161,4 +161,44 @@ Allc128 := class
 			}
 		}
 	}
+
+	DeleteOldObjects := !(u8 currentGeneration) -> void
+	{
+		headerSize := AlignUp16(AllocatedStaticSize->TypeSize)
+		for it,i : pages128
+		{
+			while InterlockSet(it.allocLock,1) != 0 {}
+
+			itr := it&
+
+			while itr != null
+			{
+				ptStart := itr.page.GetPointer()->{u8^}
+				bts := ptStart[headerSize]&
+				pt := ptStart[itr.metaOffset]&->{AllocatedStaticInfo^}
+
+				for j : itr.bitCount
+				{
+					bIndx := j div 8
+					mIndx := 1 shl (j mod 8)
+					if (bts[bIndx] and_b mIndx) == 0
+						continue
+
+					if GCCheckDistance(pt[j].generation,currentGeneration)
+					{
+						objPtr := ptStart[itr.dataOffset]&[j*ObjSize]&
+
+						objPtr->{void^^}^ = itr.freeBlock
+						itr.freeBlock = objPtr
+
+						bts[bIndx] = bts[bIndx] xor_b mIndx
+					}
+				}
+
+				itr = itr.page.GetPointer()->{AllocatedStaticSize^}
+			}
+
+			InterlockSet(it.allocLock,0)
+		}
+	}
 }
