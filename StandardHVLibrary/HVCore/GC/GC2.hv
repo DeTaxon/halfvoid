@@ -99,6 +99,7 @@ GCAllocator := class extends IAllocator
 			checkFreeCalls()
 
 			currentGeneration += 1
+			// printf("wave %i\n",currentGeneration)
 
 			for i : RootsCount
 			{
@@ -120,14 +121,17 @@ GCAllocator := class extends IAllocator
 				pg.DeleteOldObjects(currentGeneration)
 			}
 
-			rootCV.WaitFor(rootMutex&,0.1)
+			// printf("step\n")
+
+			rootCV.WaitFor(rootMutex&,1.0)
 		}
 	}
 
 	checkGlobals := !() -> void
 	{
-		for it : $GlobalVariables
+		for it,name : $GlobalVariables
 		{
+			// printf("name %s\n",name)
 			checkRootRange(it&,it->TypeSize)
 		}
 	}
@@ -154,7 +158,7 @@ GCAllocator := class extends IAllocator
 		}
 	}
 
-	freeCalls := void^[512]
+	freeCalls := void^[2048]
 	freeCallsStart := u32
 	freeCallsEnd := u32
 
@@ -163,12 +167,21 @@ GCAllocator := class extends IAllocator
 		if mem == null
 			return void
 
-		ind := InterlockAdd(freeCallsEnd,1) mod freeCalls.Size()
-		freeCalls[ind] = mem
+		rootMutex.Lock()
+		defer rootMutex.Unlock()
+
+		free(mem)
+
+		return void
+		// assert(CyclicDistance(freeCallsStart,freeCallsEnd,freeCalls.Size()) < 1024)
+		//
+		// ind := InterlockAdd(freeCallsEnd,1) mod freeCalls.Size()
+		// freeCalls[ind] = mem
 	}
 
 	checkFreeCalls := !() -> void
 	{
+		return void
 		while freeCallsStart != freeCallsEnd
 		{
 			ind := freeCallsStart mod freeCalls.Size()
@@ -277,7 +290,17 @@ StopMainGC := !() -> void
 }
 
 GCCheckDistance := !(u8 left,u8 right) -> bool
+// {
+// 	result = GCCheckDistance2(left,right)
+//
+// 	if result 
+// 		printf("yep %i %i\n",left,right)
+//
+// 	return false
+// }
+// GCCheckDistance2 := !(u8 left,u8 right) -> bool
 {
+	// return false
 	limit := 10
 
 	if left == right

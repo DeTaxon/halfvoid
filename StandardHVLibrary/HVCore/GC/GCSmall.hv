@@ -70,7 +70,7 @@ Allc128 := class
 			ptr := page.page.GetPointer()->{AllocatedStaticSize^}
 			ptr.memLeft = bitCount
 
-			page.bitCount = bitCount
+			ptr.bitCount = bitCount
 
 			infoPtr := ptr->{u8^}[headerSize + (bitCount div 8)]&->{AllocatedStaticInfo^}
 			blocksPtr := infoPtr[bitCount]&->{u8^}
@@ -171,11 +171,12 @@ Allc128 := class
 
 			itr := it&
 
-			while itr != null
+			while itr != null and itr.page.GetPointer() != null
 			{
 				ptStart := itr.page.GetPointer()->{u8^}
+				pgData := ptStart->{AllocatedStaticSize^}
 				bts := ptStart[headerSize]&
-				pt := ptStart[itr.metaOffset]&->{AllocatedStaticInfo^}
+				pt := ptStart[pgData.metaOffset]&->{AllocatedStaticInfo^}
 
 				for j : itr.bitCount
 				{
@@ -186,7 +187,9 @@ Allc128 := class
 
 					if GCCheckDistance(pt[j].generation,currentGeneration)
 					{
-						objPtr := ptStart[itr.dataOffset]&[j*ObjSize]&
+						objPtr := ptStart[pgData.dataOffset]&[j*ObjSize]&
+
+						// memset(objPtr,0xDD,ObjSize)
 
 						objPtr->{void^^}^ = itr.freeBlock
 						itr.freeBlock = objPtr

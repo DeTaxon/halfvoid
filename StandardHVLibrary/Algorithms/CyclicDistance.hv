@@ -1,0 +1,12 @@
+
+CyclicDistance := !(u64 a, u64 b, u64 cycleSize) -> u32
+{
+	a = a mod cycleSize
+	b = b mod cycleSize
+	
+	if a <= b
+		return b - a
+	
+	b += cycleSize
+	return b - a
+}
