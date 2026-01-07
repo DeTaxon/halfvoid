@@ -94,36 +94,45 @@ GCAllocator := class extends IAllocator
 		rootMutex.Lock()
 		defer rootMutex.Unlock()
 
+		prevTime := GetSteadyTime()
+
 		while not quit
 		{
-			checkFreeCalls()
+			addRootCheck()
+			removeRootCheck()
+			// checkFreeCalls()
 
-			currentGeneration += 1
-			// printf("wave %i\n",currentGeneration)
-
-			for i : RootsCount
+			nowTime := GetSteadyTime()
+			if nowTime - prevTime > 1.0
 			{
-				ptr := Roots[i].0
-				size := Roots[i].1
-				if ptr == null or size == 0
-					continue
+				prevTime = nowTime
 
-				checkRootRange(ptr,size)
+				currentGeneration += 1
+				// printf("wave %i\n",currentGeneration)
+				//
+
+				for i : RootsCount
+				{
+					ptr := Roots[i].0
+					size := Roots[i].1
+					if ptr == null or size == 0
+						continue
+
+					checkRootRange(ptr,size)
+				}
+
+				checkGlobals()
+
+				if TaskMainTaskWorker != null
+					checkRootRange(TaskMainTaskWorker,TaskWorker->TypeSize)
+
+				for pg : ![pages32&,pages64&,pages128&]
+				{
+					pg.DeleteOldObjects(currentGeneration)
+				}
 			}
 
-			checkGlobals()
-
-			if TaskMainTaskWorker != null
-				checkRootRange(TaskMainTaskWorker,TaskWorker->TypeSize)
-
-			for pg : ![pages32&,pages64&,pages128&]
-			{
-				pg.DeleteOldObjects(currentGeneration)
-			}
-
-			// printf("step\n")
-
-			rootCV.WaitFor(rootMutex&,1.0)
+			rootCV.WaitFor(rootMutex&,0.1)
 		}
 	}
 
@@ -158,75 +167,243 @@ GCAllocator := class extends IAllocator
 		}
 	}
 
-	freeCalls := void^[2048]
-	freeCallsStart := u32
-	freeCallsEnd := u32
+	// freeCalls := void^[2048]
+	// freeCallsStart := u32
+	// freeCallsEnd := u32
+	//
+	// addFreeCall := !(void^ mem) -> void
+	// {
+	// 	if mem == null
+	// 		return void
+	//
+	// 	// rootMutex.Lock()
+	// 	// defer rootMutex.Unlock()
+	// 	//
+	// 	// free(mem)
+	// 	//
+	// 	// return void
+	// 	assert(CyclicDistance(freeCallsStart,freeCallsEnd,freeCalls.Size()) < 1024)
+	//
+	// 	ind := InterlockAdd(freeCallsEnd,1) mod freeCalls.Size()
+	// 	freeCalls[ind] = mem
+	// }
 
-	addFreeCall := !(void^ mem) -> void
-	{
-		if mem == null
-			return void
+	// checkFreeCalls := !() -> void
+	// {
+	// 	// return void
+	// 	while freeCallsStart != freeCallsEnd
+	// 	{
+	// 		ind := freeCallsStart mod freeCalls.Size()
+	//
+	// 		while freeCalls[ind] == null {}
+	// 		c := freeCalls[ind]
+	// 		freeCalls[ind] = null
+	//
+	// 		free(c)
+	//
+	// 		freeCallsStart += 1
+	// 	}
+	// }
 
-		rootMutex.Lock()
-		defer rootMutex.Unlock()
-
-		free(mem)
-
-		return void
-		// assert(CyclicDistance(freeCallsStart,freeCallsEnd,freeCalls.Size()) < 1024)
-		//
-		// ind := InterlockAdd(freeCallsEnd,1) mod freeCalls.Size()
-		// freeCalls[ind] = mem
-	}
-
-	checkFreeCalls := !() -> void
-	{
-		return void
-		while freeCallsStart != freeCallsEnd
-		{
-			ind := freeCallsStart mod freeCalls.Size()
-
-			while freeCalls[ind] == null {}
-			c := freeCalls[ind]
-			freeCalls[ind] = null
-
-			free(c)
-
-			freeCallsStart += 1
-		}
-	}
-
-	Roots := Tuple.{void^,size_t}[2048]
+	Roots := Tuple.{void^,int,bool}[2048]
 	RootsCount := int
 
-	AddRoot := !(void^ mem,size_t size) -> void
+	AddRootsBuf := Tuple.{void^,int,bool}[512]
+	AddRootsBufIsSet := u8[512]
+	AddRootsStart := u32
+	AddRootsEnd := u32
+
+	addRootCheck := !() -> void
 	{
+		left := AddRootsStart mod AddRootsBuf.Size()
+		right := AddRootsEnd mod AddRootsBuf.Size()
+
+		if left > right
+			right += AddRootsBuf.Size()
+
+		// printf("test %i\n",CyclicDistance(AddRootsStart,AddRootsEnd,AddRootsBuf.Size()))
+
+		while left != right
+		{
+			// printf("called\n")
+			assert(RootsCount < Roots.Size() - 100)
+			ind := left mod AddRootsBuf.Size()
+
+			while AddRootsBufIsSet[ind] == 0 {}
+
+			Roots[RootsCount++] = AddRootsBuf[ind]
+
+			InterlockSet(AddRootsBufIsSet[ind],0)
+
+			left += 1
+			AddRootsStart += 1
+		}
+	}
+	AddRoot := !(void^ mem,int size, bool freeOnRemove = false) -> void
+	{
+		// printf("Add %p\n",mem)
 		if mem == null or size == 0
 			return void
 
-		rootMutex.Lock()
-		defer rootMutex.Unlock()
+		while CyclicDistance(AddRootsStart,AddRootsEnd,AddRootsBuf.Size()) > 128 {
+			rootCV.Notify()
+		}
 
-		Roots[InterlockAdd(RootsCount,1)] = !{mem,size}
+		ind := InterlockAdd(AddRootsEnd,1) mod AddRootsBuf.Size()
+
+		AddRootsBuf[ind] = !{mem,size,freeOnRemove}
+
+		InterlockSet(AddRootsBufIsSet[ind],1)
+
+		rootCV.Notify()
+	}
+
+	
+	RemRootInd := int
+	RemRootBufs := RemRootBufType[2]
+
+	removeRootCheck := !() -> void
+	{
+		nowBuf := ref RemRootBufs[RemRootInd]
+
+		if nowBuf.ItSize == 0
+			return void
+
+		InterlockedXor(RemRootInd,1)
+
+		while nowBuf.Users != 0 {}
+
+		// sortPointers(nowBuf.ToRem[0]&->{void^^},nowBuf.ItSize)
+
+		i := 0
+
+		while i < RootsCount
+		{
+			inSet := false
+
+			for j : nowBuf.ItSize
+			{
+				if nowBuf.ToRem[j] == Roots[i].0
+				{
+					inSet = true
+					break
+				}
+			}
+
+			// left := 0
+			// right := nowBuf.ItSize - 1
+			//
+			// while left <= right
+			// {
+			// 	mdl := (left + right) div 2
+			//
+			// 	cmpRes := nowBuf.ToRem[mdl] <=> Roots[i].0
+			//
+			// 	if cmpRes == 0
+			// 	{
+			// 		inSet = true
+			// 		break
+			// 	}else if cmpRes < 0 
+			// 	{
+			// 		left = mdl + 1
+			// 	}else{
+			// 		right = mdl - 1
+			// 	}
+			// }
+
+			if inSet
+			{
+				oldPtr := Roots[i].0
+				useFree := Roots[i].2
+
+				Roots[i] = Roots[RootsCount -= 1]
+
+				// printf("removin %p\n",oldPtr)
+
+				if useFree
+					free(oldPtr)
+			}else {
+				i += 1
+			}
+		}
+
+		nowBuf.ItSize = 0
+	}
+	sortPointers := !(void^^ buf,int size) -> void
+	{
+		for i : size
+		{
+			for j : (i+1)..size
+			{
+				if buf[i] > buf[j]
+				{
+					tmp := buf[i]
+					buf[i] = buf[j]
+					buf[j] = tmp
+				}
+			}
+		}
+		// if size == 0
+		// 	return void
+		// mdl := buf[0]
+		//
+		// i := 0
+		// j := size - 1
+		//
+		// while i < j
+		// {
+		// 	while buf[i] < mdl
+		// 		i += 1
+		// 	while buf[j] > mdl
+		// 		j -= 1
+		//
+		// 	if j <= i
+		// 		break
+		//
+		// 	tmp := buf[j]
+		// 	buf[j] = buf[i]
+		// 	buf[i] = tmp
+		// }
+		//
+		// sortPointers(buf,j)
+		// sortPointers(buf[i]&, size - (i + 1))
 	}
 	RemoveRoot := !(void^ mem) -> void
 	{
-		rootMutex.Lock()
-		defer rootMutex.Unlock()
+		// printf("Rem %p\n",mem)
 
-		for i : RootsCount
+		nowInd := RemRootInd
+		nowBuf := ref RemRootBufs[nowInd]
+
+		if nowBuf.ItSize > 400
 		{
-			if Roots[i].0 == mem
-			{
-				RootsCount -= 1
-				if RootsCount != 0
-					Roots[i] = Roots[RootsCount]
-				Roots[RootsCount].0 = null
-				return void
-			}
+			rootCV.Notify()
+			while nowInd == RemRootInd {}
+			RemoveRoot(mem)
+			return void
 		}
-	}
 
+		InterlockAdd(nowBuf.Users,1)
+
+		if nowInd != RemRootInd
+		{
+			InterlockSub(nowBuf.Users,1)
+			RemoveRoot(mem)
+			return void
+		}
+
+		newInd := InterlockAdd(nowBuf.ItSize,1)
+		nowBuf.ToRem[newInd] = mem
+
+		InterlockSub(nowBuf.Users,1)
+	}
+}
+
+RemRootBufType := class
+{
+	ToRem := void^[512]
+	Users := int
+	ItSize := int
 }
 
 _callGC2Loop := !(void^ data) -> void

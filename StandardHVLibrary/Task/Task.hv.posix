@@ -1,3 +1,8 @@
+
+ReadyStacks := void^[20]
+ReadyStacksSize := int
+ReadyStackMutex := Mutex
+
 AppendClass Task
 {
 	//OS Dependent
@@ -17,15 +22,26 @@ AppendClass Task
 		if stackPtr != null
 			return void
 
-		itTaskWorker = CurrentThread
 		stackSize := 2*1024*1024 //TODO var
-		stackPtr = malloc(stackSize) //TODO set stack size
+		ptr := void^
+
+		ReadyStackMutex.Lock()
+		if ReadyStacksSize != 0
+		{
+			ptr = ReadyStacks[ReadyStacksSize -= 1]
+		}else{
+			ptr = malloc(stackSize)
+			if #Var("GC")
+				MainGC.AddRoot(ptr,stackSize,true)
+		}
+		ReadyStackMutex.Unlock()
+
+		itTaskWorker = CurrentThread
+		stackPtr = ptr //TODO set stack size
 		thisTaskStackSize = stackSize
 		get_context_x64(fiberContext&)
 		make_context_x64(fiberContext&,ucontextStartTask,stackPtr,stackSize)
 
-		if #Var("GC")
-			MainGC.AddRoot(stackPtr,stackSize)
 
 
 		//getcontext(uContext[0]&)
@@ -89,13 +105,19 @@ AppendClass Task
 				___tracy_emit_memory_free_callstack?(stackPtr,9999,0)
 			}
 
+		ReadyStackMutex.Lock()
+		if ReadyStacksSize == 20
+		{
 			if #Var("GC")
 			{
 				MainGC.RemoveRoot(stackPtr)
-				MainGC.addFreeCall(stackPtr)
 			}else{
 				free(stackPtr)
 			}
+		}else{
+			ReadyStacks[ReadyStacksSize++] = stackPtr
+		}
+		ReadyStackMutex.Unlock()
 			//munmap(stackPtr,thisTaskStackSize)
 			stackPtr = null
 		}

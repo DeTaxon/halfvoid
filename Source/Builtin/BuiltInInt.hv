@@ -321,6 +321,8 @@ CreateBuiltinsInt := !() -> void
 		bSpace.Functions["InterlockAdd"].Push(new BuiltInInterlockOper(baseRefed,"add") )
 		bSpace.Functions["InterlockSub"].Push(new BuiltInInterlockOper(baseRefed,"sub") )
 		bSpace.Functions["InterlockSet"].Push(new BuiltInInterlockOper(baseRefed,"xchg"))
+		bSpace.Functions["InterlockedXor"].Push(new BuiltInInterlockOper(baseRefed,"xor"))
+
 
 		bSpace.Functions["++"].Push(new BuiltInIntDecInc(incType,"add") )
 		bSpace.Functions["--"].Push(new BuiltInIntDecInc(incType,"sub") )
