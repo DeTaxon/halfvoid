@@ -24,12 +24,6 @@ GCAllocator := class extends IAllocator
 	{
 		size = AlignUp16(size)
 	
-		// if size > 128
-		// 	return memMedium.AllocMem(size,dirty)
-
-		// res :=  malloc(size)
-		// memset(res,0,size)
-		// return res
 		if size <= 32
 			return pages32.AllocMem()
 		if size <= 64
@@ -102,37 +96,45 @@ GCAllocator := class extends IAllocator
 			removeRootCheck()
 			// checkFreeCalls()
 
-			nowTime := GetSteadyTime()
-			if nowTime - prevTime > 5.0
+
+			for i : RootsCount
 			{
-				prevTime = nowTime - 4.0
-
-				currentGeneration += 1
-				// printf("wave %i\n",currentGeneration)
-				//
-
-				for i : RootsCount
+				ptr := Roots[i].0
+				size := Roots[i].1
+				if ptr == null or size == 0
 				{
-					ptr := Roots[i].0
-					size := Roots[i].1
-					if ptr == null or size == 0
-						continue
-
-					checkRootRange(ptr,size)
+					RootsGens[i] = currentGeneration
+					continue
 				}
 
-				checkGlobals()
-
-				if TaskMainTaskWorker != null
-					checkRootRange(TaskMainTaskWorker,TaskWorker->TypeSize)
-
-				for pg : ![pages32&,pages64&,pages128&]
-				{
-					pg.DeleteOldObjects(currentGeneration)
-				}
+				checkRootRange(ptr,size)
 			}
 
-			rootCV.WaitFor(rootMutex&,0.1)
+			for i : TaskRootsCount
+			{
+				ptr := TaskRoots[i].0
+				size := TaskRoots[i].1
+				if ptr == null or size == 0
+					continue
+
+				if TaskRoots[i].2 == 1
+					continue
+
+				checkRootRange(ptr,size)
+			}
+
+			checkGlobals()
+
+			if TaskMainTaskWorker != null
+				checkRootRange(TaskMainTaskWorker,TaskWorker->TypeSize)
+
+			for pg : ![pages32&,pages64&,pages128&]
+			{
+				pg.DeleteOldObjects(currentGeneration)
+			}
+			currentGeneration += 1
+
+			// rootCV.WaitFor(rootMutex&,0.1)
 		}
 	}
 
@@ -167,45 +169,8 @@ GCAllocator := class extends IAllocator
 		}
 	}
 
-	// freeCalls := void^[2048]
-	// freeCallsStart := u32
-	// freeCallsEnd := u32
-	//
-	// addFreeCall := !(void^ mem) -> void
-	// {
-	// 	if mem == null
-	// 		return void
-	//
-	// 	// rootMutex.Lock()
-	// 	// defer rootMutex.Unlock()
-	// 	//
-	// 	// free(mem)
-	// 	//
-	// 	// return void
-	// 	assert(CyclicDistance(freeCallsStart,freeCallsEnd,freeCalls.Size()) < 1024)
-	//
-	// 	ind := InterlockAdd(freeCallsEnd,1) mod freeCalls.Size()
-	// 	freeCalls[ind] = mem
-	// }
-
-	// checkFreeCalls := !() -> void
-	// {
-	// 	// return void
-	// 	while freeCallsStart != freeCallsEnd
-	// 	{
-	// 		ind := freeCallsStart mod freeCalls.Size()
-	//
-	// 		while freeCalls[ind] == null {}
-	// 		c := freeCalls[ind]
-	// 		freeCalls[ind] = null
-	//
-	// 		free(c)
-	//
-	// 		freeCallsStart += 1
-	// 	}
-	// }
-
 	Roots := Tuple.{void^,int,bool}[2048]
+	RootsGens := u8[2048]
 	RootsCount := int
 
 	AddRootsBuf := Tuple.{void^,int,bool}[512]
@@ -231,7 +196,9 @@ GCAllocator := class extends IAllocator
 
 			while AddRootsBufIsSet[ind] == 0 {}
 
-			Roots[RootsCount++] = AddRootsBuf[ind]
+			rInd := RootsCount++  
+			Roots[rInd] = AddRootsBuf[ind]
+			RootsGens[rInd] = currentGeneration - 1
 
 			InterlockSet(AddRootsBufIsSet[ind],0)
 
@@ -317,6 +284,7 @@ GCAllocator := class extends IAllocator
 				useFree := Roots[i].2
 
 				Roots[i] = Roots[RootsCount -= 1]
+				RootsGens[i] = RootsGens[RootsCount]
 
 				// printf("removin %p\n",oldPtr)
 
@@ -397,6 +365,44 @@ GCAllocator := class extends IAllocator
 
 		InterlockSub(nowBuf.Users,1)
 	}
+
+	TaskRoots := Tuple.{void^,size_t,u64}[512]
+	TaskRootsCount := int
+
+	GetTaskRootStackSize := !() -> int 
+	{
+		return 2*1024*1024
+	}
+	GetTaskRoot := !() -> void^
+	{
+		for i : TaskRootsCount
+		{
+			prev := InterlockSet(TaskRoots[i].2,0)
+			if prev == 1
+				return TaskRoots[i].0
+		}
+
+		newAddr := malloc(GetTaskRootStackSize())
+
+		id := InterlockAdd(TaskRootsCount,1)
+
+		TaskRoots[id].0 = newAddr
+		TaskRoots[id].1 = GetTaskRootStackSize()
+
+		return TaskRoots[id].0
+
+	}
+
+	RemoveTaskRoot := !(void^ mem) -> void
+	{
+		for i : TaskRootsCount
+		{
+			if TaskRoots[i].0 == mem
+			{
+				InterlockSet(TaskRoots[i].2,1)
+			}
+		}
+	}
 }
 
 RemRootBufType := class
@@ -429,7 +435,7 @@ GCThreadBegin := !() -> void
 	size := size_t
 	pthread_attr_getstack(buf[0]&,ptr&,size&)
 
-	MainGC.AddRoot(ptr,size)
+	// MainGC.AddRoot(ptr,size)
 }
 GCThreadEnd := !() -> void
 {

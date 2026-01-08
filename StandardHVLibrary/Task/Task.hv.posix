@@ -17,15 +17,22 @@ AppendClass Task
 		if stackPtr != null
 			return void
 
+
+		stackSize := 0
+
+		if #Var("GC")
+		{
+			stackSize = MainGC.GetTaskRootStackSize()
+			stackPtr = MainGC.GetTaskRoot()
+		}else{
+			stackSize = 2*1024*1024 //TODO var
+			stackPtr = malloc(stackSize) //TODO set stack size
+		}
+
 		itTaskWorker = CurrentThread
-		stackSize := 2*1024*1024 //TODO var
-		stackPtr = malloc(stackSize) //TODO set stack size
 		thisTaskStackSize = stackSize
 		get_context_x64(fiberContext&)
 		make_context_x64(fiberContext&,ucontextStartTask,stackPtr,stackSize)
-
-		if #Var("GC")
-			MainGC.AddRoot(stackPtr,stackSize,true)
 
 
 		//getcontext(uContext[0]&)
@@ -91,7 +98,7 @@ AppendClass Task
 
 			if #Var("GC")
 			{
-				MainGC.RemoveRoot(stackPtr)
+				MainGC.RemoveTaskRoot(stackPtr)
 			}else{
 				free(stackPtr)
 			}
