@@ -25,7 +25,7 @@ AppendClass Task
 		make_context_x64(fiberContext&,ucontextStartTask,stackPtr,stackSize)
 
 		if #Var("GC")
-			MainGC.AddRoot(stackPtr,stackSize)
+			MainGC.AddRoot(stackPtr,stackSize,true)
 
 
 		//getcontext(uContext[0]&)
@@ -92,7 +92,6 @@ AppendClass Task
 			if #Var("GC")
 			{
 				MainGC.RemoveRoot(stackPtr)
-				MainGC.addFreeCall(stackPtr)
 			}else{
 				free(stackPtr)
 			}

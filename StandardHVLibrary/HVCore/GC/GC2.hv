@@ -103,9 +103,9 @@ GCAllocator := class extends IAllocator
 			// checkFreeCalls()
 
 			nowTime := GetSteadyTime()
-			if nowTime - prevTime > 1.0
+			if nowTime - prevTime > 5.0
 			{
-				prevTime = nowTime
+				prevTime = nowTime - 4.0
 
 				currentGeneration += 1
 				// printf("wave %i\n",currentGeneration)
