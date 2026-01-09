@@ -10,7 +10,9 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
- 	tst()
+	z := 0
+	printf("why %p\n",z&)
+ 	// tst()
 
 	// c := Allc
 	// c.AllocMem(16)

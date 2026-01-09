@@ -13,6 +13,14 @@ GlobsMemType := class
 			return HV&
 		}
 
+		if #Var("GC")
+		{
+			if vr.ItName == "MainGC"
+			{
+				return MainGC
+			}
+		}
+
 		return globalVariables[vr]?
 
 		vr.NotifyUseAndWait()

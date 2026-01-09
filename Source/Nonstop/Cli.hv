@@ -4,6 +4,7 @@ CliWin := class extend WindowCli
 	StatusList := Vector.{Str}
 	HotloadList := Vector.{Str}
 	ConsoleList := Vector.{Str}
+	GCList := Vector.{Str}
 
 	ConsoleStream := Stream^
 
@@ -25,6 +26,11 @@ CliWin := class extend WindowCli
 			new LayoutTab("Console",
 				new LayoutHorizontal(![
 					new MultilineText(ConsoleList&)
+				])
+			),
+			new LayoutTab("GCStatus",
+				new LayoutHorizontal(![
+					new MultilineText(GCList&)
 				])
 			),
 		])
@@ -64,6 +70,8 @@ StartInterpreter := !() -> void
 			toRun := intGetFunc("main")
 			toRun.ParseBody()
 			WaitForParsingObjects()
+
+			InterpTask = CurrentTask.stackPtr->{u64}
 
 			if FastestRunner {
 				CompileAndRunCode_x86_64(toRun->{BoxFuncBody^})
@@ -162,6 +170,7 @@ EnterCliMode := !() -> int
 	})
 
 	StartStatusMonitor()
+	StartGCStatusMonitor()
 
 	cliWin.Run()
 	exit(0) 

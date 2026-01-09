@@ -1,7 +1,3 @@
-
-
-
-
 GCAllocator := class extends IAllocator
 {
 
@@ -375,6 +371,9 @@ GCAllocator := class extends IAllocator
 	}
 	GetTaskRoot := !() -> void^
 	{
+		mtx2.Lock()
+		defer mtx2.Unlock()
+
 		for i : TaskRootsCount
 		{
 			prev := InterlockSet(TaskRoots[i].2,0)
@@ -383,6 +382,9 @@ GCAllocator := class extends IAllocator
 		}
 
 		newAddr := malloc(GetTaskRootStackSize())
+
+		prevGotPtr = lastGotPtr
+		lastGotPtr = newAddr->{size_t}
 
 		id := InterlockAdd(TaskRootsCount,1)
 
@@ -403,6 +405,41 @@ GCAllocator := class extends IAllocator
 			}
 		}
 	}
+
+}
+
+lastGotPtr  := u64
+prevGotPtr  := u64
+mtx2 := Mutex
+
+
+debugGetMainGC := !() -> GCAllocator^
+	#Mark("JITPass")
+{
+	return MainGC
+}
+
+WUT := u64
+InterpTask := u64
+debugIsRootActive := !(void^ mem) -> bool
+	#Mark("JITPass")
+{
+	WUT = mem->{size_t}
+	if #Var("GC")
+	{
+		for i : MainGC.TaskRootsCount
+		{
+			root := ref MainGC.TaskRoots[i]
+			beg := root.0
+			end := root.0->{u8^}[root.1]&
+
+			if beg <= mem and mem < end
+			{
+				return true
+			}
+		}
+	}
+	return false
 }
 
 RemRootBufType := class
