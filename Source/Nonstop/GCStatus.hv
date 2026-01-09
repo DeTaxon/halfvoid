@@ -22,6 +22,7 @@ gcStatusFunc := !() -> void
 		lst.Push(StrConcat("WUT  = ",ToString(WUT)))
 		lst.Push(StrConcat("LAST = ",ToString(lastGotPtr)))
 		lst.Push(StrConcat("PREV = ",ToString(prevGotPtr)))
+		lst.Push(StrConcat("CALLER TASK = ",ToString(calldTask)))
 		lst.Push(StrConcat("WUT TASk = ",ToString(InterpTask)))
 		lst.Push(StrConcat("Generation = ",ToString(MainGC.currentGeneration)))
 		lst.Push(StrConcat("TaskRoots = ",ToString(MainGC.TaskRootsCount)))

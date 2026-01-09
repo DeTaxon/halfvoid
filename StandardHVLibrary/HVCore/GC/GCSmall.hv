@@ -34,7 +34,7 @@ Allc128 := class
 	ObjSize := int
 	pages128 := AllocatedStaticSize[32]
 
-	AllocMem := !() -> void^
+	AllocMem := !(u8 generation) -> void^
 	{
 		while true
 		{
@@ -45,7 +45,7 @@ Allc128 := class
 				if isSet == 0
 				{
 					defer page.allocLock = 0
-					ret := allocFromPage(page&)
+					ret := allocFromPage(page&,generation)
 					memset(ret,0,ObjSize)
 					return ret
 				}
@@ -53,7 +53,7 @@ Allc128 := class
 		}
 	}
 
-	allocFromPage := !(AllocatedStaticSize^ page) -> void^
+	allocFromPage := !(AllocatedStaticSize^ page,u8 generation) -> void^
 	{
 		headerSize := AlignUp16(AllocatedStaticSize->TypeSize)
 		bitCount := (4096*32 - headerSize)*8
@@ -84,6 +84,7 @@ Allc128 := class
 		thisInfo := ptr->{AllocatedStaticSize^}
 
 		bitPtr := ptr[headerSize]&
+		infoPtr := ptr[thisInfo.metaOffset]&->{AllocatedStaticInfo^}
 		blocksPtr := ptr[thisInfo.dataOffset]&
 
 		if page.freeBlock != null
@@ -98,12 +99,14 @@ Allc128 := class
 
 			res := page.freeBlock
 			page.freeBlock = page.freeBlock->{void^^}^
+			infoPtr[indx].generation = generation
+
 			// printf("refurbished %p\n",res)
 			return res
 		}
 
 		if thisInfo.memLeft == 0
-			return allocFromPage(thisInfo)
+			return allocFromPage(thisInfo,generation)
 
 
 		{
@@ -113,6 +116,7 @@ Allc128 := class
 			ind := page.bitIndex
 
 			bitPtr[i] = bitPtr[i] xor_b (1 shl j)
+			infoPtr[ind].generation = generation
 
 			page.bitIndex += 1
 			thisInfo.memLeft -= 1

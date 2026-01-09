@@ -21,11 +21,11 @@ GCAllocator := class extends IAllocator
 		size = AlignUp16(size)
 	
 		if size <= 32
-			return pages32.AllocMem()
+			return pages32.AllocMem(currentGeneration)
 		if size <= 64
-			return pages64.AllocMem()
+			return pages64.AllocMem(currentGeneration)
 		if size <= 128
-			return pages128.AllocMem()
+			return pages128.AllocMem(currentGeneration)
 
 		return memMedium.AllocMem(size,dirty)
 	}
@@ -410,6 +410,7 @@ GCAllocator := class extends IAllocator
 
 lastGotPtr  := u64
 prevGotPtr  := u64
+calldTask := u64
 mtx2 := Mutex
 
 
@@ -425,8 +426,20 @@ debugIsRootActive := !(void^ mem) -> bool
 	#Mark("JITPass")
 {
 	WUT = mem->{size_t}
+	calldTask = CurrentTask?.stackPtr->{size_t}
 	if #Var("GC")
 	{
+		for i : MainGC.RootsCount
+		{
+			root := ref MainGC.Roots[i]
+			beg := root.0
+			end := root.0->{u8^}[root.1]&
+
+			if beg <= mem and mem < end
+			{
+				return true
+			}
+		}
 		for i : MainGC.TaskRootsCount
 		{
 			root := ref MainGC.TaskRoots[i]
@@ -435,7 +448,7 @@ debugIsRootActive := !(void^ mem) -> bool
 
 			if beg <= mem and mem < end
 			{
-				return true
+				return root.2 == 0
 			}
 		}
 	}
@@ -472,7 +485,7 @@ GCThreadBegin := !() -> void
 	size := size_t
 	pthread_attr_getstack(buf[0]&,ptr&,size&)
 
-	// MainGC.AddRoot(ptr,size)
+	MainGC.AddRoot(ptr,size)
 }
 GCThreadEnd := !() -> void
 {
