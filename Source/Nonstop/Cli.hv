@@ -28,11 +28,11 @@ CliWin := class extend WindowCli
 					new MultilineText(ConsoleList&)
 				])
 			),
-			// new LayoutTab("GCStatus",
-			// 	new LayoutHorizontal(![
-			// 		new MultilineText(GCList&)
-			// 	])
-			// ),
+			new LayoutTab("GCStatus",
+				new LayoutHorizontal(![
+					new MultilineText(GCList&)
+				])
+			),
 		])
 	
 		return new FrameCli(tabs)
@@ -168,7 +168,7 @@ EnterCliMode := !() -> int
 	})
 
 	StartStatusMonitor()
-	// StartGCStatusMonitor()
+	StartGCStatusMonitor()
 
 	cliWin.Run()
 	exit(0) 
