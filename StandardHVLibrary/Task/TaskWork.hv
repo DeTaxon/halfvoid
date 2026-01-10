@@ -18,9 +18,9 @@ internalWorkCall := !(!()&->void lmbd) -> void
 
 	TaskWorkersToDo.Push(GetCurrentTask())
 
-	for it : TaskAdditionalWorkers //TODO optimize
+	for i : TaskAdditionalWorkersCount //TODO optimize
 	{
-		it.innerNotify()
+		TaskAdditionalWorkers[i].innerNotify()
 	}
 
 	GetCurrentThread().switchToMain()
@@ -52,9 +52,9 @@ spawnWorkInner := !(!()&->void lmbd) -> Task^
 	TaskCheckMutex.Lock() //TODO optimize
 	TaskWorkersToDo.Push(newTask)
 
-	for it : TaskAdditionalWorkers //TODO optimize
+	for i : TaskAdditionalWorkersCount //TODO optimize
 	{
-		it.innerNotify()
+		TaskAdditionalWorkers[i].innerNotify()
 	}
 
 	TaskCheckMutex.Unlock()
@@ -67,7 +67,7 @@ spawnWorkInner := !(!()&->void lmbd) -> Task^
 ExpectWorkers := !(int x) -> void
 	#Mark("JITPass")
 {
-	diff := x - TaskAdditionalWorkers.Size()
+	diff := x - TaskAdditionalWorkersCount
 
 	if x <= 0
 		return void
@@ -76,6 +76,6 @@ ExpectWorkers := !(int x) -> void
 		newWorker := new TaskWorkerCreated()
 		
 		newWorker.CreateThread()
-		TaskAdditionalWorkers.Push(newWorker)
+		TaskAdditionalWorkers[InterlockAdd(TaskAdditionalWorkersCount,1)] = newWorker
 	}
 }

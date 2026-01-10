@@ -193,12 +193,12 @@ Allc128 := class
 					{
 						objPtr := ptStart[pgData.dataOffset]&[j*ObjSize]&
 
-						memset(objPtr,0xDD,ObjSize)
+						// memset(objPtr,0xDD,ObjSize)
 
-						// objPtr->{void^^}^ = itr.freeBlock
-						// itr.freeBlock = objPtr
+						objPtr->{void^^}^ = itr.freeBlock
+						itr.freeBlock = objPtr
 
-						// bts[bIndx] = bts[bIndx] xor_b mIndx
+						bts[bIndx] = bts[bIndx] xor_b mIndx
 					}
 				}
 
@@ -206,6 +206,30 @@ Allc128 := class
 			}
 
 			InterlockSet(it.allocLock,0)
+		}
+	}
+
+	getMinMax := !() -> Tuple.{void^,void^}
+	{
+		left := void^
+		left&->{size_t^}^ -= 1
+
+		right := void^
+
+		for page : pages128
+		{
+			itr := page&
+
+			while itr != null
+			{
+				l := itr.page.GetPointer()
+				r := l->{u8^}[itr.page.Size()]&->{void^}
+
+				left = min(left,l)
+				right = max(right,r)
+
+				itr = itr.page.GetPointer()->{AllocatedStaticSize^}
+			}
 		}
 	}
 }

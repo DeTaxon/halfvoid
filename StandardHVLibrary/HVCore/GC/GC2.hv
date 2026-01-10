@@ -27,7 +27,7 @@ GCAllocator := class extends IAllocator
 		if size <= 128
 			return pages128.AllocMem(currentGeneration)
 
-		return memMedium.AllocMem(size,dirty)
+		return memMedium.AllocMem(size,currentGeneration,dirty)
 	}
 
 	FreeMem := virtual !(void^ mem) -> void
@@ -75,6 +75,9 @@ GCAllocator := class extends IAllocator
 		//
 	}
 
+
+	memRange := Tuple.{void^,void^}
+
 	StartGCThread := !() -> void
 	{
 		gcThread.Start(_callGC2Loop,this&)
@@ -91,46 +94,69 @@ GCAllocator := class extends IAllocator
 			addRootCheck()
 			removeRootCheck()
 			// checkFreeCalls()
+			
 
+			nowTime := GetSteadyTime()
 
-			for i : RootsCount
+			if nowTime - prevTime > 1.0
 			{
-				ptr := Roots[i].0
-				size := Roots[i].1
-				if ptr == null or size == 0
+				prevTime = nowTime
+
+				memRange.0 = null
+				memRange.0&->{size_t^}^ -= 1
+				memRange.1 = null
+				
+				for pg : ![pages32&,pages64&,pages128&]
 				{
-					RootsGens[i] = currentGeneration
-					continue
+					rang := pg.getMinMax()
+					memRange.0 = min(memRange.0,rang.0)
+					memRange.1 = max(memRange.1,rang.1)
 				}
 
-				checkRootRange(ptr,size)
+
+				for i : RootsCount
+				{
+					ptr := Roots[i].0
+					size := Roots[i].1
+					if ptr == null or size == 0
+					{
+						RootsGens[i] = currentGeneration
+						continue
+					}
+
+					checkRootRange(ptr,size)
+				}
+
+				for i : TaskRootsCount
+				{
+					ptr := TaskRoots[i].0
+					size := TaskRoots[i].1
+					if ptr == null or size == 0
+						continue
+
+					if TaskRoots[i].2 == 1
+						continue
+
+					checkRootRange(ptr,size)
+				}
+
+				checkGlobals()
+
+				if TaskMainTaskWorker != null
+					checkRootRange(TaskMainTaskWorker,TaskWorker->TypeSize)
+
+				for i : TaskAdditionalWorkersCount
+					checkRootRange(TaskAdditionalWorkers[i],TaskWorkerCreated->TypeSize)
+
+				for pg : ![pages32&,pages64&,pages128&]
+				{
+					pg.DeleteOldObjects(currentGeneration)
+				}
+				memMedium.DeleteOldObjects(currentGeneration)
+				currentGeneration += 1
 			}
 
-			for i : TaskRootsCount
-			{
-				ptr := TaskRoots[i].0
-				size := TaskRoots[i].1
-				if ptr == null or size == 0
-					continue
-
-				if TaskRoots[i].2 == 1
-					continue
-
-				checkRootRange(ptr,size)
-			}
-
-			checkGlobals()
-
-			if TaskMainTaskWorker != null
-				checkRootRange(TaskMainTaskWorker,TaskWorker->TypeSize)
-
-			for pg : ![pages32&,pages64&,pages128&]
-			{
-				pg.DeleteOldObjects(currentGeneration)
-			}
-			currentGeneration += 1
-
-			// rootCV.WaitFor(rootMutex&,0.1)
+			rootCV.WaitFor(rootMutex&,0.1)
 		}
 	}
 
@@ -150,8 +176,11 @@ GCAllocator := class extends IAllocator
 
 		for i : size
 		{
-			if ptr[i] == null
+			pt := ptr[i]
+			if pt == null
 				continue
+			// if pt < memRange.0 or pt > memRange.1
+			// 	continue
 			memInf := this.GetMemInfo(ptr[i])
 
 			if memInf.IsFound
@@ -371,9 +400,6 @@ GCAllocator := class extends IAllocator
 	}
 	GetTaskRoot := !() -> void^
 	{
-		mtx2.Lock()
-		defer mtx2.Unlock()
-
 		for i : TaskRootsCount
 		{
 			prev := InterlockSet(TaskRoots[i].2,0)
@@ -411,49 +437,48 @@ GCAllocator := class extends IAllocator
 lastGotPtr  := u64
 prevGotPtr  := u64
 calldTask := u64
-mtx2 := Mutex
 
 
-debugGetMainGC := !() -> GCAllocator^
-	#Mark("JITPass")
-{
-	return MainGC
-}
+// debugGetMainGC := !() -> GCAllocator^
+// 	#Mark("JITPass")
+// {
+// 	return MainGC
+// }
 
 WUT := u64
 InterpTask := u64
-debugIsRootActive := !(void^ mem) -> bool
-	#Mark("JITPass")
-{
-	WUT = mem->{size_t}
-	calldTask = CurrentTask?.stackPtr->{size_t}
-	if #Var("GC")
-	{
-		for i : MainGC.RootsCount
-		{
-			root := ref MainGC.Roots[i]
-			beg := root.0
-			end := root.0->{u8^}[root.1]&
-
-			if beg <= mem and mem < end
-			{
-				return true
-			}
-		}
-		for i : MainGC.TaskRootsCount
-		{
-			root := ref MainGC.TaskRoots[i]
-			beg := root.0
-			end := root.0->{u8^}[root.1]&
-
-			if beg <= mem and mem < end
-			{
-				return root.2 == 0
-			}
-		}
-	}
-	return false
-}
+// debugIsRootActive := !(void^ mem) -> bool
+// 	#Mark("JITPass")
+// {
+// 	WUT = mem->{size_t}
+// 	calldTask = CurrentTask?.stackPtr->{size_t}
+// 	if #Var("GC")
+// 	{
+// 		for i : MainGC.RootsCount
+// 		{
+// 			root := ref MainGC.Roots[i]
+// 			beg := root.0
+// 			end := root.0->{u8^}[root.1]&
+//
+// 			if beg <= mem and mem < end
+// 			{
+// 				return true
+// 			}
+// 		}
+// 		for i : MainGC.TaskRootsCount
+// 		{
+// 			root := ref MainGC.TaskRoots[i]
+// 			beg := root.0
+// 			end := root.0->{u8^}[root.1]&
+//
+// 			if beg <= mem and mem < end
+// 			{
+// 				return root.2 == 0
+// 			}
+// 		}
+// 	}
+// 	return false
+// }
 
 RemRootBufType := class
 {

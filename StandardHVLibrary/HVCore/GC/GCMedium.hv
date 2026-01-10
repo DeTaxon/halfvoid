@@ -21,17 +21,69 @@ AllocatedMediumBlockData := class
 	ringStart := u32
 	ringEnd := u32
 
+	usedMem := AllocatedMediumBlock[80000]
+	usedMemCount := int
+
 	freeMem := AllocatedMediumBlock[1024]
 	freeCount := int
 
 	createdObjects := int
+
+	sortUsedMem := !() -> void
+	{
+		// sortPointers(usedMem[0]&,0,usedMemCount - 1)
+
+		for i : usedMemCount
+		{
+			for j : (i + 1)..(usedMemCount - 1)
+			{
+				if usedMem[i].0 > usedMem[i].0
+				{
+					tmp := usedMem[i]
+					usedMem[i] = usedMem[j]
+					usedMem[j] = tmp
+	
+				}
+			}
+		}
+	}
+	sortPointers := !(AllocatedMediumBlock^ buf,int lo, int hi) -> void
+	{
+		if hi - lo <= 1
+			return void
+		mdl := buf[(lo + hi) div 2].0
+
+		i := lo
+		j := hi
+
+		while true
+		{
+			while buf[i].0 < mdl
+				i += 1
+			while buf[j].0 > mdl
+				j -= 1
+
+			if j <= i
+				break
+
+			tmp := buf[j]
+			buf[j] = buf[i]
+			buf[i] = tmp
+
+			i += 1
+			j += 1
+		}
+
+		sortPointers(buf,lo,j)
+		sortPointers(buf, j + 1, hi)
+	}
 }
 
 AllocatorGCMedium := class
 {
 	pages := AllocatedPage[32]
 
-	AllocMem := virtual !(int size, bool dirty = false) -> void^
+	AllocMem := virtual !(int size,u8 generation, bool dirty = false) -> void^
 	{
 		size = AlignUp16(size)
 
@@ -44,7 +96,7 @@ AllocatorGCMedium := class
 				if isSet == 0
 				{
 					defer page.allocLock = 0
-					ret := allocFromPage(page&,size)
+					ret := allocFromPage(page&,size,generation)
 					if not dirty
 						memset(ret,0,size)
 					return ret
@@ -55,7 +107,7 @@ AllocatorGCMedium := class
 		}
 	}
 
-	allocFromPage := !(AllocatedPage^ page, int size,int indx = 0) -> void^
+	allocFromPage := !(AllocatedPage^ page, int size,u8 generation) -> void^
 	{
 		linkSize := AlignUp16(AllocatedPage->TypeSize)
 		blockSize := AlignUp16(AllocatedMediumBlockData->TypeSize)
@@ -82,7 +134,7 @@ AllocatorGCMedium := class
 		dat := page.page.GetPointer()->{u8^}[linkSize]&->{AllocatedMediumBlockData^}
 
 		if dat.createdObjects >= dat.usedMemTemp.Size() {
-			return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
+			return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size,generation)
 		}
 
 		for i : dat.freeCount
@@ -103,13 +155,14 @@ AllocatorGCMedium := class
 
 			setBlock.memOffset = res->{size_t} - p->{size_t}
 			setBlock.memSize = size
+			setBlock.generation = generation
 
 			dat.createdObjects += 1
 
 			return res
 		}
 
-		return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size)
+		return allocFromPage(page.page.GetPointer()->{AllocatedPage^},size,generation)
 	}
 	GetMemInfo := !(void^ mem) -> GCMediumMemInfo
 	{
@@ -134,33 +187,138 @@ AllocatorGCMedium := class
 			if itr == null continue
 
 			dat := itr.page.GetPointer()->{u8^}[linkSize]&->{AllocatedMediumBlockData^}
-			
-			rb := dat.ringStart mod dat.usedMemTemp.Size()
-			re := dat.ringEnd mod dat.usedMemTemp.Size()
-
-			if re < rb
-				re += dat.usedMemTemp.Size()
-
 			ptr := itr.page.GetPointer()->{u8^}
 
-			i := rb
-			while i < re
+
+			// main check
 			{
-				bb := ptr[dat.usedMemTemp[i].memOffset]&
-				be := bb[dat.usedMemTemp[i].memSize]&
+				l := 0
+				r := dat.usedMemCount - 1
 
-				if bb <= mem and mem < be
+				while i <= j
 				{
-					result.IsFound = true
-					result.OriginalPointer = bb
-					result.GenerationPointer = dat.usedMemTemp[i].generation&
-					result.MemSize = dat.usedMemTemp[i].memSize
+					mdl := (l + r) div 2
 
-					return void
+					memObj := ref dat.usedMem[mdl]
+					bb := ptr[memObj.memOffset]&
+					be := bb[memObj.memSize]&
+
+					if mem < bb {
+						r = mdl - 1
+					}else if mem >= be {
+						l = mdl + 1
+					}else {
+						result.IsFound = true
+						result.OriginalPointer = bb
+						result.GenerationPointer = memObj.generation&
+						result.MemSize = memObj.memSize
+
+						return void
+					}
+				}
+			}
+
+			// temp ring
+			{
+				rb := dat.ringStart mod dat.usedMemTemp.Size()
+				re := dat.ringEnd mod dat.usedMemTemp.Size()
+
+				if re < rb
+					re += dat.usedMemTemp.Size()
+
+				i := rb
+				while i < re
+				{
+					memObj := ref dat.usedMemTemp[i mod dat.usedMemTemp.Size()]
+
+					bb := ptr[memObj.memOffset]&
+					be := bb[memObj.memSize]&
+
+					if bb <= mem and mem < be
+					{
+						result.IsFound = true
+						result.OriginalPointer = bb
+						result.GenerationPointer = memObj.generation&
+						result.MemSize = memObj.memSize
+
+						return void
+					}
+
+					i++
+				}
+			}
+		}
+	}
+	DeleteOldObjects := !(u8 currentGeneration) -> void
+	{
+		linkSize := AlignUp16(AllocatedPage->TypeSize)
+		blockSize := AlignUp16(AllocatedMediumBlockData->TypeSize)
+
+		for page : pages
+		{
+			while InterlockSet(page.allocLock,1) == 0 {}
+
+			itr := page&
+
+			while itr != null and itr.page.GetPointer() != null
+			{
+				pageInfo := itr.page.GetPointer()->{u8^}[linkSize]&->{AllocatedMediumBlockData^}
+
+				if pageInfo.ringStart != pageInfo.ringEnd
+				{
+					i := pageInfo.ringStart mod pageInfo.usedMemTemp.Size()
+					end := pageInfo.ringEnd mod pageInfo.usedMemTemp.Size()
+
+					while i != end
+					{
+						id := pageInfo.usedMemCount++
+						pageInfo.usedMem[id] = pageInfo.usedMemTemp[i]
+						i = (i + 1) mod pageInfo.usedMemTemp.Size()
+					}
+
+					pageInfo.ringStart = pageInfo.ringEnd
+
+					pageInfo.sortUsedMem()
 				}
 
-				i++
+				i := 0
+				while i < pageInfo.usedMemCount
+				{
+					if pageInfo.freeCount >= pageInfo.freeMem.Size()
+						break
+
+					if not GCCheckDistance(pageInfo.usedMem[i].generation,currentGeneration)
+					{
+						i += 1
+						continue
+					}
+
+					old := pageInfo.usedMem[i]
+
+					memset(itr.page.GetPointer()->{u8^}[old.memOffset]&,0xdd,old.memSize)
+					// pageInfo.usedMem[i] = pageInfo.usedMem[pageInfo.usedMemCount - 1]
+					// pageInfo.usedMemCount -= 1
+					//
+					// pageInfo.freeMem[pageInfo.freeCount++] = old
+
+				}
+
+				i = 0
+				while i < pageInfo.freeCount
+				{
+					if pageInfo.freeMem[i].memSize == 0
+					{
+						pageInfo.freeMem[i] = pageInfo.freeMem[pageInfo.freeCount -= 1]
+					}else{
+						i += 1
+					}
+				}
+
+
+				itr = itr.page.GetPointer()->{AllocatedPage^}
 			}
+
+			InterlockSet(page.allocLock,0)
 		}
 	}
 }
