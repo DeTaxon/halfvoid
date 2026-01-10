@@ -44,18 +44,19 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 		}else
 		{
 			TaskPausedWorkers += 1
-			if TaskPausedWorkers == TaskAdditionalWorkers.Size() + 1
+			if TaskPausedWorkers == TaskAdditionalWorkersCount + 1
 			{
 				cntr := TaskMainTaskWorker.AllTasks.Size()
-				for it : TaskAdditionalWorkers
+				for i : TaskAdditionalWorkersCount
 				{
-					cntr += it.AllTasks.Size()
+					cntr += TaskAdditionalWorkers[i].AllTasks.Size()
 				}
 				if cntr == 0
 				{
 					TaskQuitProgram = true
 					TaskMainTaskWorker.innerNotify()
-					TaskAdditionalWorkers[^].innerNotify()
+					for i : TaskAdditionalWorkersCount
+						TaskAdditionalWorkers[i].innerNotify()
 				}else{
 					if TaskMainTaskWorker.PendingTasks.Size() != 0
 						TaskMainTaskWorker.innerNotify()
@@ -75,9 +76,9 @@ EnterTaskThreadCycle := !(bool isMainThread) -> void
 
 	if isMainThread
 	{
-		for it : TaskAdditionalWorkers
+		for i : TaskAdditionalWorkersCount
 		{
-			it.itThread.Join()
+			TaskAdditionalWorkers[i].itThread.Join()
 		}
 	}
 }

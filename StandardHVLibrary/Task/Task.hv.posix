@@ -1,25 +1,3 @@
-createStackPointer := !() -> void^
-	#Mark("JITPass")
-{
-		if #Var("GC")
-		{
-			return MainGC.GetTaskRoot()
-		}else{
-			return malloc(2*1024*1024)			
-		}
-}
-
-removeStackPointer := !(void^ stackPtr) -> void
-	#Mark("JITPass")
-{
-			if #Var("GC")
-			{
-				MainGC.RemoveTaskRoot(stackPtr)
-			}else{
-				free(stackPtr)
-			}
-
-}
 
 AppendClass Task
 {
@@ -43,12 +21,14 @@ AppendClass Task
 
 		stackSize := 0
 
-			// stackSize = 2*1024*1024 //TODO var
-		// 	stackPtr = malloc(stackSize) //TODO set stack size
-		// }
-		//
-		stackSize = 2*1024*1024
-		stackPtr = createStackPointer()
+		if #Var("GC")
+		{
+			stackSize = 2*1024*1024 //TODO var
+			stackPtr = MainGC.GetTaskRoot()
+		}else{
+			stackSize = 2*1024*1024 //TODO var
+			stackPtr = malloc(stackSize) //TODO set stack size
+		}
 
 
 		itTaskWorker = CurrentThread
@@ -118,13 +98,12 @@ AppendClass Task
 				___tracy_emit_memory_free_callstack?(stackPtr,9999,0)
 			}
 
-			removeStackPointer(stackPtr)
-			// if #Var("GC")
-			// {
-			// 	MainGC.RemoveTaskRoot(stackPtr)
-			// }else{
-			// 	free(stackPtr)
-			// }
+			if #Var("GC")
+			{
+				MainGC.RemoveTaskRoot(stackPtr)
+			}else{
+				free(stackPtr)
+			}
 			//munmap(stackPtr,thisTaskStackSize)
 			stackPtr = null
 		}

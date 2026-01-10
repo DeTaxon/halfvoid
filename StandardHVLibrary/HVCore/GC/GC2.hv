@@ -100,6 +100,10 @@ GCAllocator := class extends IAllocator
 
 			if nowTime - prevTime > 1.0
 			{
+
+				// wut := GetMemInfo(TaskMainTaskWorker)
+				// printf("wut %i\n",wut.IsFound)
+
 				prevTime = nowTime
 
 				memRange.0 = null
@@ -409,9 +413,6 @@ GCAllocator := class extends IAllocator
 
 		newAddr := malloc(GetTaskRootStackSize())
 
-		prevGotPtr = lastGotPtr
-		lastGotPtr = newAddr->{size_t}
-
 		id := InterlockAdd(TaskRootsCount,1)
 
 		TaskRoots[id].0 = newAddr
@@ -434,9 +435,6 @@ GCAllocator := class extends IAllocator
 
 }
 
-lastGotPtr  := u64
-prevGotPtr  := u64
-calldTask := u64
 
 
 // debugGetMainGC := !() -> GCAllocator^
@@ -445,8 +443,6 @@ calldTask := u64
 // 	return MainGC
 // }
 
-WUT := u64
-InterpTask := u64
 // debugIsRootActive := !(void^ mem) -> bool
 // 	#Mark("JITPass")
 // {

@@ -37,7 +37,7 @@ AllocatedMediumBlockData := class
 		{
 			for j : (i + 1)..(usedMemCount - 1)
 			{
-				if usedMem[i].0 > usedMem[i].0
+				if usedMem[i].0 > usedMem[j].0
 				{
 					tmp := usedMem[i]
 					usedMem[i] = usedMem[j]
@@ -46,6 +46,16 @@ AllocatedMediumBlockData := class
 				}
 			}
 		}
+
+	}
+	checkIsSorted := !() -> void
+	{
+		if usedMemCount >= 2
+		for i : (usedMemCount - 1)
+		{
+			assert(usedMem[i].0 < usedMem[i+1].0)
+		}
+
 	}
 	sortPointers := !(AllocatedMediumBlock^ buf,int lo, int hi) -> void
 	{
@@ -192,10 +202,26 @@ AllocatorGCMedium := class
 
 			// main check
 			{
+				// for i : dat.usedMemCount
+				// {
+				// 	memObj := ref dat.usedMem[i]
+				// 	bb := ptr[memObj.memOffset]&
+				// 	be := bb[memObj.memSize]&
+				//
+				// 	if mem < bb or mem >= be
+				// 		continue 
+				// 		result.IsFound = true
+				// 		result.OriginalPointer = bb
+				// 		result.GenerationPointer = memObj.generation&
+				// 		result.MemSize = memObj.memSize
+				// }
+
+				// dat.checkIsSorted()
+
 				l := 0
 				r := dat.usedMemCount - 1
 
-				while i <= j
+				while l <= r
 				{
 					mdl := (l + r) div 2
 
@@ -294,6 +320,7 @@ AllocatorGCMedium := class
 					}
 
 					old := pageInfo.usedMem[i]
+					i += 1
 
 					memset(itr.page.GetPointer()->{u8^}[old.memOffset]&,0xdd,old.memSize)
 					// pageInfo.usedMem[i] = pageInfo.usedMem[pageInfo.usedMemCount - 1]
