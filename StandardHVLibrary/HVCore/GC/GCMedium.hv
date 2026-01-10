@@ -42,10 +42,12 @@ AllocatedMediumBlockData := class
 					tmp := usedMem[i]
 					usedMem[i] = usedMem[j]
 					usedMem[j] = tmp
-	
+
 				}
 			}
 		}
+
+		checkIsSorted()
 
 	}
 	checkIsSorted := !() -> void
@@ -59,7 +61,7 @@ AllocatedMediumBlockData := class
 	}
 	sortPointers := !(AllocatedMediumBlock^ buf,int lo, int hi) -> void
 	{
-		if hi - lo <= 1
+		if hi - lo <= 0
 			return void
 		mdl := buf[(lo + hi) div 2].0
 
@@ -81,7 +83,7 @@ AllocatedMediumBlockData := class
 			buf[i] = tmp
 
 			i += 1
-			j += 1
+			j -= 1
 		}
 
 		sortPointers(buf,lo,j)
