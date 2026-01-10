@@ -19,6 +19,8 @@ GCAllocator := class extends IAllocator
 	AllocMem := virtual !(int size, bool dirty = false) -> void^
 	{
 		size = AlignUp16(size)
+
+		// assert( AlignUp16(size) != 0xa0)
 	
 		if size <= 32
 			return pages32.AllocMem(currentGeneration)
@@ -523,10 +525,14 @@ GCThreadEnd := !() -> void
 MainGC := GCAllocator^
 GCPage := PageMemory
 
+GCLog := void^
+
 InitMainGC := !() -> void
 {
 	#MarkFunction("ThreadBegin",GCThreadBegin)
 	#MarkFunction("ThreadEnd",GCThreadEnd)
+
+	GCLog = fopen("log.txt","w")
 
 	GCPage.Create(GCAllocator->TypeSize,"rw")
 	MainGC = GCPage.GetPointer()->{GCAllocator^}

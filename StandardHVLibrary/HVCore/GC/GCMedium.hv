@@ -31,21 +31,21 @@ AllocatedMediumBlockData := class
 
 	sortUsedMem := !() -> void
 	{
-		// sortPointers(usedMem[0]&,0,usedMemCount - 1)
+		sortPointers(usedMem[0]&,0,usedMemCount - 1)
 
-		for i : usedMemCount
-		{
-			for j : (i + 1)..(usedMemCount - 1)
-			{
-				if usedMem[i].0 > usedMem[j].0
-				{
-					tmp := usedMem[i]
-					usedMem[i] = usedMem[j]
-					usedMem[j] = tmp
-
-				}
-			}
-		}
+		// for i : usedMemCount
+		// {
+		// 	for j : (i + 1)..(usedMemCount - 1)
+		// 	{
+		// 		if usedMem[i].0 > usedMem[j].0
+		// 		{
+		// 			tmp := usedMem[i]
+		// 			usedMem[i] = usedMem[j]
+		// 			usedMem[j] = tmp
+		//
+		// 		}
+		// 	}
+		// }
 
 		checkIsSorted()
 
@@ -322,9 +322,17 @@ AllocatorGCMedium := class
 					}
 
 					old := pageInfo.usedMem[i]
+
 					i += 1
 
-					memset(itr.page.GetPointer()->{u8^}[old.memOffset]&,0xdd,old.memSize)
+					// if old.memSize < 0x200 and old.memSize != 0x180 and old.memSize != 0x90 and old.memSize !=  0x1a0
+					// 	and old.memSize != 0xf0 and old.memSize != 0x160
+					// if old.memSize == 0x110 or old.memSize == 0xa0 or old.memSize == 0x1F0
+					if old.memSize != 0xa0
+					{
+						memset(itr.page.GetPointer()->{u8^}[old.memOffset]&,0x00,old.memSize)
+						// fprintf(GCLog,"deleted %p\n",old.memSize)
+					}
 					// pageInfo.usedMem[i] = pageInfo.usedMem[pageInfo.usedMemCount - 1]
 					// pageInfo.usedMemCount -= 1
 					//
