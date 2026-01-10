@@ -323,22 +323,16 @@ AllocatorGCMedium := class
 
 					old := pageInfo.usedMem[i]
 
-					i += 1
-
-					// if old.memSize < 0x200 and old.memSize != 0x180 and old.memSize != 0x90 and old.memSize !=  0x1a0
-					// 	and old.memSize != 0xf0 and old.memSize != 0x160
-					// if old.memSize == 0x110 or old.memSize == 0xa0 or old.memSize == 0x1F0
-					if old.memSize != 0xa0
-					{
-						memset(itr.page.GetPointer()->{u8^}[old.memOffset]&,0x00,old.memSize)
-						// fprintf(GCLog,"deleted %p\n",old.memSize)
-					}
-					// pageInfo.usedMem[i] = pageInfo.usedMem[pageInfo.usedMemCount - 1]
-					// pageInfo.usedMemCount -= 1
+					// i += 1
+					// memset(itr.page.GetPointer()->{u8^}[old.memOffset]&,0x00,old.memSize)
 					//
-					// pageInfo.freeMem[pageInfo.freeCount++] = old
+					pageInfo.usedMem[i] = pageInfo.usedMem[pageInfo.usedMemCount - 1]
+					pageInfo.usedMemCount -= 1
+					pageInfo.freeMem[pageInfo.freeCount++] = old
 
 				}
+
+				//TODO sort by offset, and merge chunks
 
 				i = 0
 				while i < pageInfo.freeCount
@@ -350,6 +344,8 @@ AllocatorGCMedium := class
 						i += 1
 					}
 				}
+
+				//TODO sort by memfree desc
 
 
 				itr = itr.page.GetPointer()->{AllocatedPage^}
