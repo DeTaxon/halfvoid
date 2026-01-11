@@ -32,23 +32,14 @@ AllocatedMediumBlockData := class
 	sortUsedMem := !() -> void
 	{
 		sortPointers(usedMem[0]&,0,usedMemCount - 1)
-
-		// for i : usedMemCount
-		// {
-		// 	for j : (i + 1)..(usedMemCount - 1)
-		// 	{
-		// 		if usedMem[i].0 > usedMem[j].0
-		// 		{
-		// 			tmp := usedMem[i]
-		// 			usedMem[i] = usedMem[j]
-		// 			usedMem[j] = tmp
-		//
-		// 		}
-		// 	}
-		// }
-
-		checkIsSorted()
-
+	}
+	sortFreeMem := !() -> void
+	{
+		sortPointers(freeMem[0]&,0,freeCount - 1)
+	}
+	sortFreeMemBySizeDesc := !() -> void
+	{
+		sortPointersFreeDesc(freeMem[0]&,0,freeCount - 1)
 	}
 	checkIsSorted := !() -> void
 	{
@@ -63,16 +54,16 @@ AllocatedMediumBlockData := class
 	{
 		if hi - lo <= 0
 			return void
-		mdl := buf[(lo + hi) div 2].0
+		mdl := buf[(lo + hi) div 2].memOffset
 
 		i := lo
 		j := hi
 
 		while true
 		{
-			while buf[i].0 < mdl
+			while buf[i].memOffset < mdl
 				i += 1
-			while buf[j].0 > mdl
+			while buf[j].memOffset > mdl
 				j -= 1
 
 			if j <= i
@@ -88,6 +79,36 @@ AllocatedMediumBlockData := class
 
 		sortPointers(buf,lo,j)
 		sortPointers(buf, j + 1, hi)
+	}
+	sortPointersFreeDesc := !(AllocatedMediumBlock^ buf,int lo, int hi) -> void
+	{
+		if hi - lo <= 0
+			return void
+		mdl := buf[(lo + hi) div 2].memSize
+
+		i := lo
+		j := hi
+
+		while true
+		{
+			while buf[i].memSize > mdl
+				i += 1
+			while buf[j].memSize < mdl
+				j -= 1
+
+			if j <= i
+				break
+
+			tmp := buf[j]
+			buf[j] = buf[i]
+			buf[i] = tmp
+
+			i += 1
+			j -= 1
+		}
+
+		sortPointersFreeDesc(buf,lo,j)
+		sortPointersFreeDesc(buf, j + 1, hi)
 	}
 }
 
@@ -126,7 +147,9 @@ AllocatorGCMedium := class
 
 		if page.page.GetPointer() == null
 		{
-			alcSize := 64*1024*1024
+			reqSize := size + linkSize + blockSize
+			alcSize := max(reqSize,64*1024*1024)
+
 			page.page.Create(alcSize,"rw")
 
 			ptr := page.page.GetPointer()
@@ -204,22 +227,6 @@ AllocatorGCMedium := class
 
 			// main check
 			{
-				// for i : dat.usedMemCount
-				// {
-				// 	memObj := ref dat.usedMem[i]
-				// 	bb := ptr[memObj.memOffset]&
-				// 	be := bb[memObj.memSize]&
-				//
-				// 	if mem < bb or mem >= be
-				// 		continue 
-				// 		result.IsFound = true
-				// 		result.OriginalPointer = bb
-				// 		result.GenerationPointer = memObj.generation&
-				// 		result.MemSize = memObj.memSize
-				// }
-
-				// dat.checkIsSorted()
-
 				l := 0
 				r := dat.usedMemCount - 1
 
@@ -324,7 +331,7 @@ AllocatorGCMedium := class
 					old := pageInfo.usedMem[i]
 
 					// i += 1
-					// memset(itr.page.GetPointer()->{u8^}[old.memOffset]&,0x00,old.memSize)
+					memset(itr.page.GetPointer()->{u8^}[old.memOffset]&,0xDD,old.memSize)
 					//
 					pageInfo.usedMem[i] = pageInfo.usedMem[pageInfo.usedMemCount - 1]
 					pageInfo.usedMemCount -= 1
@@ -332,20 +339,52 @@ AllocatorGCMedium := class
 
 				}
 
-				//TODO sort by offset, and merge chunks
 
-				i = 0
-				while i < pageInfo.freeCount
+				//TODO fix below, for some reason it crashes
+				//sort by offset, and merge chunks
+				// pageInfo.sortFreeMem()
+				//
+				// i = 0
+				// while i < (pageInfo.freeCount - 1)
+				// {
+				// 	j := i + 1
+				//
+				// 	while true
+				// 	{
+				// 		if j >= pageInfo.freeCount
+				// 			break
+				//
+				// 		thisPage := ref pageInfo.freeMem[i]
+				// 		nextPage := ref pageInfo.freeMem[j]
+				//
+				// 		thisEnd := thisPage.memOffset + thisPage.memSize
+				// 		nextStart := nextPage.memOffset
+				//
+				// 		if thisEnd != nextStart
+				// 			break
+				//
+				// 		thisPage.memSize += nextPage.memSize
+				// 		nextPage.memSize = 0
+				//
+				// 		j += 1
+				//
+				// 	}
+				//
+				// 	i = j
+				// }
+
+
+				pageInfo.sortFreeMemBySizeDesc()
+
+				while pageInfo.freeCount != 0
 				{
-					if pageInfo.freeMem[i].memSize == 0
+					if pageInfo.freeMem[pageInfo.freeCount - 1].memSize == 0
 					{
-						pageInfo.freeMem[i] = pageInfo.freeMem[pageInfo.freeCount -= 1]
+						pageInfo.freeCount -= 1
 					}else{
-						i += 1
+						break
 					}
 				}
-
-				//TODO sort by memfree desc
 
 
 				itr = itr.page.GetPointer()->{AllocatedPage^}
