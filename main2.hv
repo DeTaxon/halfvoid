@@ -8,9 +8,62 @@ main := !(char^[] args) -> int
 }
 
 
+sortTest := !(int^ buf, int lo, int hi) -> void
+{
+		if hi - lo <= 0
+			return void
+		mdl := buf[(lo + hi) div 2]
+
+		i := lo
+		j := hi
+
+		while true
+		{
+			while buf[i] < mdl
+				i += 1
+			while buf[j] > mdl
+				j -= 1
+
+			if j <= i
+				break
+
+			tmp := buf[j]
+			buf[j] = buf[i]
+			buf[i] = tmp
+
+			i += 1
+			j -= 1
+		}
+
+		sortTest(buf,lo,j)
+		sortTest(buf,j + 1, hi)
+
+}
+
 RunFunc := !() -> void
 {
- 	tst()
+	ints := int[]
+
+	for i : 30
+		ints.Push(RandInt(1..100))
+
+	for i : 30
+		printf("%i ",ints[i])
+	printf("\n")
+
+	sortTest(ints.GetPointer(),0,ints.Size() - 1)
+
+	for i : 30
+		printf("%i ",ints[i])
+	printf("\n")
+
+	for i : (ints.Size() - 1)
+	{
+		if ints[i] > ints[i+1]
+			printf("failed\n")
+	}
+
+ 	// tst()
 
 	// c := Allc
 	// c.AllocMem(16)
@@ -59,6 +112,7 @@ MemTest := !() -> void
 //TODO closure api?
 //TODO LazyClass does not work if some class uses it as a field
 
+//TODO Sort(arr,size, by=.generation)
 //TODO broken feature: only used virtual functions are loaded, this caused to break OptCodeGen
 //TODO recursive #Mark("JIT") for classes
 //TODO there is some trickary with GTypeStr in PassRemoveReferences

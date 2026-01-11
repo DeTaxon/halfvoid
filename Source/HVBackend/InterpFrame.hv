@@ -26,14 +26,26 @@ MCInterpFuncFrame := class
 
 	CreateStack := !() -> void
 	{
-		stackSize := 8*1024*1024 //TODO unconst
-		StackPointer = malloc(stackSize)->{u8^}
+		stackSize := 0
+		if #Var("GC")
+		{
+			stackSize = MainGC.GetTaskRootStackSize() //TODO unconst
+			StackPointer = MainGC.GetTaskRoot()->{u8^}
+		}else{
+			stackSize = 8*1024*1024 //TODO unconst
+			StackPointer = malloc(stackSize)->{u8^}
+		}
+
 		RevStackState = StackPointer[stackSize]&
 	}
 	DestroyStack := !() -> void
 	{
-		free(StackPointer)
-		
+		if #Var("GC")
+		{
+			MainGC.RemoveTaskRoot(StackPointer)
+		}else{
+			free(StackPointer)
+		}
 	}
 	InheritStack := !(MCInterpFuncFrame^ inherStack) -> void
 	{

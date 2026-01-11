@@ -1,0 +1,33 @@
+
+StartGCStatusMonitor := !() -> void
+{
+	TSpawnTask(() ==> {
+		cliWorks += 1
+		while not cliQuit
+		{
+			gcStatusFunc()
+			TSleep(1)
+		}
+		cliWorks -= 1
+	})
+}
+gcStatusFunc := !() -> void
+{
+	lst := ref cliWin.GCList
+
+	if #Var("GC")
+	{
+		lst.Resize(0)
+
+		lst.Push(StrConcat("Generation = ",ToString(MainGC.currentGeneration)))
+		lst.Push(StrConcat("TaskRoots = ",ToString(MainGC.TaskRootsCount)))
+
+		for i : 30
+		{
+			root := ref MainGC.TaskRoots[i]
+			lst.Push(StrConcat("Root i=",ToString(i),", addr =",ToString(root.0->{size_t}),", is free = ",ToString(root.2)))
+		}
+
+		cliWin.Refresh()
+	}
+}

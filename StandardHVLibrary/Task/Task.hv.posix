@@ -1,3 +1,4 @@
+
 AppendClass Task
 {
 	//OS Dependent
@@ -22,12 +23,13 @@ AppendClass Task
 
 		if #Var("GC")
 		{
-			stackSize = MainGC.GetTaskRootStackSize()
+			stackSize = 2*1024*1024 //TODO var
 			stackPtr = MainGC.GetTaskRoot()
 		}else{
 			stackSize = 2*1024*1024 //TODO var
 			stackPtr = malloc(stackSize) //TODO set stack size
 		}
+
 
 		itTaskWorker = CurrentThread
 		thisTaskStackSize = stackSize

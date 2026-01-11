@@ -15,7 +15,9 @@ TaskCheckMutex := Mutex^
 TaskPausedWorkers := int
 TaskQuitProgram := bool
 TaskMainTaskWorker := TaskWorker^
-TaskAdditionalWorkers := List.{TaskWorker^}
+
+TaskAdditionalWorkers := TaskWorker^[128]
+TaskAdditionalWorkersCount := int
 
 TaskPauseList := AVLMap.{double,Task^}
 

@@ -44,7 +44,7 @@ BCFuncsType := class
 		// result = PassAddStackInterp(result)
 		// result = PassStackRemovePushPop(result)
 
-		result = PassFirstOpt(result,true)
+		result = PassFirstOpt(result,false)
 
 		result = PassRemMoveAndCastOpt(result)
 

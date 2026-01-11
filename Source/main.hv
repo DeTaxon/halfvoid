@@ -155,6 +155,7 @@ main := !(Vector.{char^} args) -> int
 			NonStopBuild = true
 
 			FastestRunner = CompileSettings.FastestRunner
+			// FastestRunner = true
 		}
 	}
 
