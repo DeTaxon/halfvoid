@@ -1,4 +1,5 @@
 buttons := bool[256]
+MouseButtons := bool[5]
 
 GLFWWindow := class 
 {
@@ -111,6 +112,7 @@ GLFWWindow := class
 				buttonNum = 2
 		}
 
+		MouseButtons[buttonNum] = action == GLFW_PRESS
 		MousePressed(buttonNum,action == GLFW_PRESS,mods)
 	}
 
