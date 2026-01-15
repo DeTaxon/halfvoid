@@ -1,10 +1,16 @@
 
 
+tst := !(!(int)&->void cb) -> void
+{
+
+}
+
 main := !(char^[] args) -> int
 {
+	tst((x,y) ==> { printf("wut %i %i\n",x)})
 	// tst()
 	// RunFunc()
-	MemTest()
+	// MemTest()
 }
 
 

@@ -112,11 +112,14 @@ BoxExeLineSimple := class extend BoxUnit
 		defer GDebugLineCallId = oldLine
 		GDebugLineCallId = MetaId
 		
-		if Down is in BoxExeObj
+		if Down != null
 		{
-			Down->{BoxExeObj^}.PrintDefaultUse(ctx)
-		}else{
-			Down.PrintCode(ctx)
+			if Down is in BoxExeObj
+			{
+				Down->{BoxExeObj^}.PrintDefaultUse(ctx)
+			}else{
+				Down.PrintCode(ctx)
+			}
 		}
 		el := eLabel()
 		if el != null

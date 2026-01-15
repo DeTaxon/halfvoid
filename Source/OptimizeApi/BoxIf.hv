@@ -1,45 +1,11 @@
-
-AppendClass BoxIfTrueOnly
-{
-	
-	IsEditSupported := virtual true
-	ElementName := virtual "If"
-
-	SubElementsCount := virtual !() -> int { return 2 }
-	GetSubElement := virtual !(int index) -> HV_Object^
-	{ 
-		switch index
-		{
-			case 0
-				return Val
-			case 1
-				return OnTrue 
-			case void
-				return null
-		}
-	}
-	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool
-	{
-		if index != 0
-			return false
-		if newElement is not in BoxExeObj
-			return false
-		asThis := newElement->{BoxExeObj^}
-		if asThis.GetType() != GTypeBool
-			return false
-		Val = asThis
-		notifyEditChange()
-		return true
-	}
-}
-AppendClass BoxIfFull
+AppendClass BoxIf
 {
 	
 	IsEditSupported := virtual true
 	ElementName := virtual "If"
 
 
-	SubElementsCount := virtual !() -> int { return 3 }
+	SubElementsCount := virtual !() -> int {  return OnFalse == null ?: 2 : 3 }
 	GetSubElement := virtual !(int index) -> HV_Object^
 	{ 
 		switch index

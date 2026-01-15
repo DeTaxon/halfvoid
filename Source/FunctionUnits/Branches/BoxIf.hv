@@ -110,7 +110,7 @@ TryParseIf := !(Token^ itm, bool nonFunc = false) -> BoxExeObj^
 
 	if fls == null
 	{
-		retOnlyTrue := new BoxIfTrueOnly(itm.Down.Right,cmpExe,tru,qc)
+		retOnlyTrue := new BoxIf(itm.Down.Right,cmpExe,tru,null,qc)
 		retOnlyTrue.PreTrue.Push(onTrueVars[^])
 
 		if onFalseVars.Size() != 0
@@ -124,7 +124,7 @@ TryParseIf := !(Token^ itm, bool nonFunc = false) -> BoxExeObj^
 
 		return retOnlyTrue
 	}
-	retIfFull := new BoxIfFull(itm.Down.Right,cmpExe,tru,fls,qc)
+	retIfFull := new BoxIf(itm.Down.Right,cmpExe,tru,fls,qc)
 	retIfFull.PreTrue.Push(onTrueVars[^])
 	retIfFull.PreFalse.Push(onFalseVars[^])
 	retIfFull.PreFalse.Push(truHolder.postVars[^])
@@ -142,63 +142,7 @@ MakeItBlock := !(Token^ itm) -> Token^
 	return itm
 }
 
-BoxIfTrueOnly := class extend BoxExeObj
-{
-	Val := BoxExeObj^
-	PreTrue := List.{BoxExeObj^}
-	OnTrue := BoxBlock^
-	TrueWorked := BoxLabel^
-	TrueEndLabel := BoxLabel^
-	PostIf := List.{BoxExeObj^}
-	IfLine := BoxExeLineSimple^
-
-	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue, QCatch^ qc) -> void
-	{
-		ObjType = GTypeVoid
-		Val = val
-		OnTrue = onTrue
-		TrueWorked = new BoxLabel()
-		IfLine = new BoxExeLineSimple(ifToken,val)
-
-		if qc != null 
-		{
-			TrueEndLabel = qc.ItLabel
-		}
-		if TrueEndLabel == null
-			TrueEndLabel = new BoxLabel()
-	}
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		oldLine := GDebugLineCallId
-		defer GDebugLineCallId = oldLine
-		GDebugLineCallId = IfLine.MetaId
-
-		f := ctx.writeStream
-
-		Val.PrintPre(ctx)
-
-		f^ << "br i1 "
-		Val.PrintUse(ctx)
-		f^ << ", label "
-		TrueWorked.PrintLabel(ctx)
-		f^ << ", label "
-		TrueEndLabel.PrintLabel(ctx)
-		f^ << "\n"
-
-		TrueWorked.PrintCode(ctx)
-
-		PreTrue[^].PrintDefaultUse(ctx)
-		OnTrue.PrintCode(ctx)
-		TrueEndLabel.PrintCode(ctx)
-		PostIf[^].PrintDefaultUse(ctx)
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		IfLine.PrintDebugMeta(ctx)
-		OnTrue?.PrintDebugMeta(ctx)
-	}
-}
-BoxIfFull := class extend BoxExeObj
+BoxIf := class extend BoxExeObj
 {
 	Val := BoxExeObj^
 	PreTrue := List.{BoxExeObj^}
@@ -209,6 +153,7 @@ BoxIfFull := class extend BoxExeObj
 	FalsePath := BoxLabel^
 	EndPath := BoxLabel
 	IfLine := BoxExeLineSimple^
+	PostIf := List.{BoxExeObj^}
 
 	this := !(Token^ ifToken,BoxExeObj^ val, BoxBlock^ onTrue,BoxBlock^ onFalse,QCatch^ qc) -> void
 	{
@@ -252,16 +197,17 @@ BoxIfFull := class extend BoxExeObj
 
 		FalsePath.PrintCode(ctx)
 		PreFalse[^].PrintDefaultUse(ctx)
-		OnFalse.PrintCode(ctx)
+		OnFalse?.PrintCode(ctx)
 		EndPath.PrintGo(ctx)
 		
 		EndPath.PrintCode(ctx)
+		PostIf[^].PrintDefaultUse(ctx)
 	}
 	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		IfLine.PrintDebugMeta(ctx)
 		OnTrue.PrintDebugMeta(ctx)
-		OnFalse.PrintDebugMeta(ctx)
+		OnFalse?.PrintDebugMeta(ctx)
 	}
 }
 
