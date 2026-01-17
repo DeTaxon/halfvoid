@@ -45,8 +45,10 @@ HVContextImplementation := class extend HV_Context
 	}
 	GetFuncType := virtual !(Vector.{HV_Object^} types,Vector.{bool} isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ 
 	{
-		rType := resultType->{Type^}
-		fType := GetFuncType(types,isReference,rType,resultReference,isVariadicArguments)
+		rTypeIn := resultType->{Type^}
+		args := Vector.{Type^}
+		args.Push(types[^]->{Type^})
+		fType := GetFuncType(args,isReference,![rTypeIn],![resultReference],isVariadicArguments)
 		return fType
 	}
 	GetTypeGroup := virtual !(HV_Object^ obj) -> TypeGroups

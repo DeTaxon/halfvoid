@@ -1,0 +1,64 @@
+
+OpenFontTest := !() -> void
+{
+	dat := FSGetFile("./Goldman-Regular.ttf").GetBlob()
+
+	printf("yep %p %i\n",dat.GetPointer(),dat.Size())
+
+	ptr := dat.GetPointer()->{u8^}
+
+
+	hdr := ptr->{OpenTypeHeader^}
+
+	printf("ver %i\n",FromBigEndian(hdr.numTables))
+
+	itr := hdr[1]&->{OpenTypeTableHeader^}
+
+	for i : FromBigEndian(hdr.numTables)
+	{
+		spn :=  StringSpan(itr[i].tag[0]&->{char^},4)
+		printf("table %s\n",spn)
+
+		if spn == "glyf"
+		{
+			glyf := ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeGlyf^}
+			printf("ye %i\n",FromBigEndian(glyf.numOfContours))
+		}
+	}
+}
+
+TTFHeader := packed_class
+{
+	tag := u8[4]
+	majorVersion := u16
+	minorVersion := u16
+	numFonts := u32
+}
+OpenTypeHeader := packed_class
+{
+	tag := u8[4]
+	numTables := u16
+	searchRange := u16
+	entrySelector := u16
+	rangeShift := u16
+}
+OpenTypeTableHeader := packed_class
+{
+	tag := u8[4]
+	checksum := u32
+	offset := u32
+	length := u32
+}
+OpenTypeMaxP := packed_class
+{
+	version := u32
+	numGlypths := u16
+}
+OpenTypeGlyf := packed_class
+{
+	numOfContours := u16
+	xMin := float
+	yMin := float
+	xMax := float
+	yMax := float
+}

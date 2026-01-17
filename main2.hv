@@ -1,16 +1,15 @@
 
 
-tst := !(!(int)&->void cb) -> void
-{
-
-}
-
 main := !(char^[] args) -> int
 {
-	tst((x,y) ==> { printf("wut %i %i\n",x)})
-	// tst()
-	// RunFunc()
-	// MemTest()
+	RunFunc()
+}
+
+
+RunFunc := !() -> void
+{
+	// OpenFontTest()
+	makeSpirv()
 }
 
 
@@ -46,73 +45,7 @@ sortTest := !(int^ buf, int lo, int hi) -> void
 
 }
 
-RunFunc := !() -> void
-{
-	ints := int[]
 
-	for i : 30
-		ints.Push(RandInt(1..100))
-
-	for i : 30
-		printf("%i ",ints[i])
-	printf("\n")
-
-	sortTest(ints.GetPointer(),0,ints.Size() - 1)
-
-	for i : 30
-		printf("%i ",ints[i])
-	printf("\n")
-
-	for i : (ints.Size() - 1)
-	{
-		if ints[i] > ints[i+1]
-			printf("failed\n")
-	}
-
- 	// tst()
-
-	// c := Allc
-	// c.AllocMem(16)
-}
-
-
-BigMemObj := class
-{
-	data := u8[500]
-	subPtr := int^^
-}
-MemTest := !() -> void
-{
-	tst := new BigMemObj
-	tst.subPtr = GetAllocator().AllocMem(5*8)->{int^^}
-
-	ccc := 5
-	for i : 5
-	{
-		tst.subPtr[i] = new int
-	}
-	while true
-	{
-		c := MainGC.GetMemInfo(tst)
-		printf("Test1 %p %i %i\n",tst,c.IsFound,c.GenerationPointer^)
-
-		for i : 5
-		{
-			d := MainGC.GetMemInfo(tst.subPtr[i])
-			if d.IsFound
-			{
-				printf("Test2 %p %i %i\n",tst.subPtr[i],d.IsFound,d.GenerationPointer^)
-			}else{
-				printf("Test2 %p not found\n",tst.subPtr[i])
-			}
-		}
-		ccc -= 1
-
-		if ccc < 0
-			tst.subPtr[2] = null
-		TSleep(0.5)
-	}
-}
 
 
 //TODO closure api?
