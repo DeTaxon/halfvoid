@@ -10,8 +10,38 @@ RunFunc := !() -> void
 {
 	// OpenFontTest()
 	makeSpirv()
+	// tst()
 }
 
+
+
+
+
+//TODO closure api?
+//TODO LazyClass does not work if some class uses it as a field
+
+//TODO gc manual deletes
+//TODO gc free unused pages
+//TODO Sort(arr,size, by=.generation)
+//TODO broken feature: only used virtual functions are loaded, this caused to break OptCodeGen
+//TODO recursive #Mark("JIT") for classes
+//TODO there is some trickary with GTypeStr in PassRemoveReferences
+//TODO x86, make passing vec4f abi compatable, windows, linux
+//TODO named input + template, !(@T^ x = null)
+//TODO emit error if named input provided but not used
+//TODO class functions inherit virtual property, and default values
+//TODO lazy class and fake fields
+//TODO lazy class in hotload
+//TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
+//TODO allow !(ref int x) , in functions and function types, lambdas
+
+makeSpirv := !() -> void
+{
+	ts := new TFile("tst.comp","wr")
+	c := #SpirvTest()
+	ts.Write(c.GetPointer(),c.Size())
+	ts.Close()
+}
 
 sortTest := !(int^ buf, int lo, int hi) -> void
 {
@@ -43,35 +73,6 @@ sortTest := !(int^ buf, int lo, int hi) -> void
 		sortTest(buf,lo,j)
 		sortTest(buf,j + 1, hi)
 
-}
-
-
-
-
-//TODO closure api?
-//TODO LazyClass does not work if some class uses it as a field
-
-//TODO gc manual deletes
-//TODO gc free unused pages
-//TODO Sort(arr,size, by=.generation)
-//TODO broken feature: only used virtual functions are loaded, this caused to break OptCodeGen
-//TODO recursive #Mark("JIT") for classes
-//TODO there is some trickary with GTypeStr in PassRemoveReferences
-//TODO x86, make passing vec4f abi compatable, windows, linux
-//TODO named input + template, !(@T^ x = null)
-//TODO emit error if named input provided but not used
-//TODO class functions inherit virtual property, and default values
-//TODO lazy class and fake fields
-//TODO lazy class in hotload
-//TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
-//TODO allow !(ref int x) , in functions and function types, lambdas
-
-makeSpirv := !() -> void
-{
-	ts := new TFile("tst.comp","wr")
-	c := #SpirvTest()
-	ts.Write(c.GetPointer(),c.Size())
-	ts.Close()
 }
 
 tst := !() -> void {

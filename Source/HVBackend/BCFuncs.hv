@@ -39,6 +39,9 @@ BCFuncsType := class
 		result = GetBaseFunc(itm)
 		// assert(false)
 
+		tmpAlloc := MakeTempAllocator()
+		oldAlloc := SwapAllocator(tmpAlloc&)
+
 		result = PassRemoveReferences(result)
 
 		// result = PassAddStackInterp(result)
@@ -49,6 +52,13 @@ BCFuncsType := class
 		result = PassRemMoveAndCastOpt(result)
 
 		result = InterpPassPrepare(result)
+
+		result = PassRemoveUnusedObjects(result)
+
+		SetAllocator(oldAlloc)
+		result = PassFinalizeFunction(result)
+		tmpAlloc.Destroy()
+
 		result.ComputeStackFrame()
 		result.BaseFunction = itm
 

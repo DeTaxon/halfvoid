@@ -47,8 +47,6 @@
 		for fnc : objs.Functions
 		{
 			ctx.GetFunctionIdOffset(HV.GetSSAFunc(fnc))
-
-			
 		}
 
 		ts := new TEchoStream()
@@ -411,6 +409,8 @@ SpirvCompiler := class
 
 				if k != i
 				{
+					printf("type %i %i %i\n",GetTypeId(oPtr[resIndex].GetObjType()),resIndex,startIndex)
+					printf("chain %i\n",chainIndexes[^])
 					indCount := (chainIndexes.Size() + 4) shl 16
 					c.Write32(indCount + 67)
 					c.Write32(GetTypeId(oPtr[resIndex].GetObjType()))

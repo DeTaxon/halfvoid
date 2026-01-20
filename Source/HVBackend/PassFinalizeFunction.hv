@@ -1,0 +1,30 @@
+
+PassFinalizeFunction := !(MCFunction^ fnc) -> MCFunction^
+{
+	alc := GetAllocator()
+
+	codeSize := fnc.Lines.Size()*MCLine->TypeSize
+	objsSize := fnc.Objects.Size()*MCObject->TypeSize
+
+	resMem := alc.AllocMem(MCFunction->TypeSize + codeSize + objsSize)->{u8^}
+
+	codePtr := resMem[MCFunction->TypeSize]&
+	objsPtr := codePtr[codeSize]&
+
+	result = resMem->{MCFunction^}
+	internalHVInitClass(result^)
+
+	result.Lines.SetAsSpan(codePtr->{MCLine^},fnc.Lines.Size())
+	result.Objects.SetAsSpan(objsPtr->{MCObject^},fnc.Objects.Size())
+
+	result.ResultIndex = fnc.ResultIndex
+	result.InputsIndxStart = fnc.InputsIndxStart
+	result.InputsIndxCount = fnc.InputsIndxCount
+	result.IsVArgs = fnc.IsVArgs
+
+	result.BaseFunction = fnc.BaseFunction
+
+	memcpy(codePtr,fnc.Lines.GetPointer(),codeSize)
+	memcpy(objsPtr,fnc.Objects.GetPointer(),objsSize)
+
+}

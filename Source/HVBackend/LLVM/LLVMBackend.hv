@@ -35,9 +35,11 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	if needPrint fnc.Print()
 	fnc = PassRemoveTooManyVars(fnc)
 
+	fnc = PassRemoveUnusedObjects(fnc)
 	SetAllocator(oldAlloc)
 
-	fnc = PassRemoveUnusedObjects(fnc)
+	fnc = PassFinalizeFunction(fnc)
+	// defer delete fnc
 
 	tmpAlloc.Destroy()
 

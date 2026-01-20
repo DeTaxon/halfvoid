@@ -140,6 +140,13 @@ Vector := class .{@T} //extend TArrayView.{T}
 			result.ind = Size() - 1
 		}
 	}
+	SetAsSpan := !(T^ ptr, int newSize) -> void
+	{
+		itPointer = ptr
+		itSize = newSize
+		itCapacity = newSize
+		isBorrowed = true
+	}
 }
 
 HVFixedArrayIterator := class .{@T}

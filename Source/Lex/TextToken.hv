@@ -26,6 +26,7 @@ Token := class
 	MakeError := !(Str info) -> Str
 	{
 		ln := TEchoStream
+		defer ln.Destroy()
 
 		ln << "Error <" << info << ">"
 		if Line != null
