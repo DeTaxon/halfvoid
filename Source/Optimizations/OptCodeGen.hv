@@ -351,6 +351,7 @@ OptPrintGlobals := !(LLVMWriteContext^ ctx,Vector.{GlobalVar2^} globals) -> void
 	for glob : globals
 	{
 		echo := TEchoStream
+		defer echo.Destroy()
 		if GlobTryPrintConst(glob,echo)
 		{
 			glob.PrintOutputName(ctx)

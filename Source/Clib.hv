@@ -22,7 +22,7 @@ CLib := class extend ModuleInterface
 	itPreConsts := AVLMap.{Str,StringSpan}
 
 	dlls := List.{StringSpan}
-	initFuncName := StringSpan
+	initFuncName := Str
 	linkType := StringSpan
 
 	initFunc := BoxFuncBodyStr^
