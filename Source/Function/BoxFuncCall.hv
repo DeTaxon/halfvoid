@@ -8,7 +8,7 @@ GetNewId := !() -> int
 BoxFuncCall := class extend BoxExeObj
 {
 	callObj := BoxFunc^
-	downs := ExeDownList
+	downs := Vector.{BoxExeObj^}
 	resId := int
 	unrefResId := int
 
@@ -30,8 +30,11 @@ BoxFuncCall := class extend BoxExeObj
 	{
 		itType := NormalizeFuncType(fType)
 
+
 		if (fType.ResultType.IsComplexReturn() and not fType.ResultRef) or fType.ExtraResults.Size() != 0
 		{
+			downs.Reserve(objs.Size() + 1)
+
 			ResultVar = new LocalVar("anon",itType.Params[0].ItType,true,false)
 			CurrentFunc.AddLocalVar(ResultVar)
 			downs.Push(ResultVar.CreateVarCall())
@@ -50,6 +53,8 @@ BoxFuncCall := class extend BoxExeObj
 		}
 
 		diffCount := itType.Params.Size() - fType.Params.Size()
+
+		downs.Reserve(objs.Size())
 
 		downs.Push(objs[^])
 
