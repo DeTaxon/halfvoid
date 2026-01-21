@@ -199,6 +199,11 @@ HVB_ins_debug_set_line := !(MCBuildContext^ ctx, int lineNumber) -> void
 	intVal := HVB_ins_const_int32(ctx,lineNumber)
 	ctx.lines.Push(MCLine("debug_set_line",intVal))
 }
+HVB_ins_debug_set_var_name := !(MCBuildContext^ ctx,int varId, char^ varName) -> void
+{
+	intVal := HVB_ins_const_str(ctx,varName)
+	ctx.lines.Push(MCLine("debug_set_var_name",varId,intVal))
+}
 
 HVB_ins_va_start := !(MCBuildContext^ ctx, s32 opr1) -> void
 {

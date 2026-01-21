@@ -94,6 +94,21 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		out << "\n"
 	}
 
+	varDebIds := AVLMap.{int,Tuple.{int,char^}}
+	if DebugMode
+	{
+		for it : fnc.Lines
+		{
+			if it.opcode != "debug_set_var_name"
+				continue
+			val := fnc.Objects[it.var2]&->{MCConstString^}.GetValue()
+			if val == null
+				continue
+			name := val.CStr()
+			varDebIds[it.var1] = !{GetNewId(),name}
+		}
+	}
+
 	
 	nc := false
 	out << "define "
@@ -146,6 +161,23 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		tp.PrintType(ctx)
 		out << "* %Var" << inx
 		printDebugEnd()
+	}
+
+	if DebugMode
+	{
+		for it,ind : varDebIds
+		{
+			varType := fnc.Objects[ind].GetType()
+			varType = NormalizeType(varType) //TODO some pass should remove this
+
+			out << "	call void @llvm.dbg.declare(metadata "
+			varType.PrintType(ctx)
+			//if baseVar.isReference
+			//	f^ << "*"
+			out << "* %Var" << ind
+			out << " , metadata !" << it.0 << " , metadata !DIExpression())"
+			printDebugEnd()
+		}
 	}
 
 	tmpLabelIter := 0
@@ -335,6 +367,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				ob1.GetType().PrintType(ctx)
 				out << "* %Var" << op.var1
 				printDebugEnd()
+			case "debug_set_var_name"
 			case "debug_set_file"
 				currentDbgFileName := fnc.Objects[op.var1]&->{MCConstString^}.GetValue().Str()
 
@@ -1037,6 +1070,25 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		for it, ind : dbgList
 		{
 			out << "!" << ind  << " = !DILocation(line:" << it.1 << ",column:1, scope:!" << it.0 << ")\n"
+		}
+		for it,ind : varDebIds
+		{
+			if it.1 == null
+				continue
+
+			varType := fnc.Objects[ind].GetType()
+			varType = NormalizeType(varType) //TODO some pass should remove this
+			
+			out << "!" << it.0 << " = !DILocalVariable(name: \"" << it.1 << "\" , scope:!" << fncId << " , file:!" << flId
+			out << ", line: " << 0 << ", type:!"
+			// if baseVar.isReference
+			// {
+			// 	f^ <<pType.MakeDebugRef().MetaId
+			// }else{
+				out << varType.MetaId
+			// }
+			out << ")\n"
+			// printDebugEnd()
 		}
 	}
 }
