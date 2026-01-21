@@ -16,7 +16,7 @@ endif
 undefine Stati
 
 ifeq ($(massif),yes)
-	mass_if := valgrind --tool=massif
+	mass_if := valgrind --tool=massif --threshold=0.5
 endif
 
 ifeq ($(opt),yes)
