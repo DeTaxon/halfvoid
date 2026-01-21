@@ -104,6 +104,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			val := fnc.Objects[it.var2]&->{MCConstString^}.GetValue()
 			if val == null
 				continue
+
 			name := val.CStr()
 			varDebIds[it.var1] = !{GetNewId(),name}
 		}
@@ -1079,6 +1080,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			varType := fnc.Objects[ind].GetType()
 			varType = NormalizeType(varType) //TODO some pass should remove this
 			
+			ctx.UsedTypes.Insert(varType)
+
 			out << "!" << it.0 << " = !DILocalVariable(name: \"" << it.1 << "\" , scope:!" << fncId << " , file:!" << flId
 			out << ", line: " << 0 << ", type:!"
 			// if baseVar.isReference

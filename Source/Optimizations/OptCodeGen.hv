@@ -38,6 +38,8 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	PrintEmbeddedFiles(ctx) //TODO only needed
 	if DebugMode
 	{
+		c.UsedTypes.Insert(ctx.UsedTypes[^])
+		
 		c.UsedTypes[^].PrintMeta(ctx)
 
 		for refObj,refInd : GRefTypes
