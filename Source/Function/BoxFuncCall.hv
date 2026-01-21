@@ -14,7 +14,6 @@ BoxFuncCall := class extend BoxExeObj
 
 	ResultVar := LocalVar^
 	BeforeCall := Vector.{BoxExeObj^}
-	ExtraWork := List.{BoxExeObj^}
 
 	Init := !(BoxFunc^ fnc, Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> bool //TODO default values for constructors
 	{
@@ -512,7 +511,6 @@ BoxFuncCall := class extend BoxExeObj
 		ResultVar?.PrintCode(ctx)
 		BeforeCall[^].PrintDefaultUse(ctx)
 		callObj.PrintFuncCall(ctx,resId,0,downs)
-		ExtraWork[^].PrintDefaultUse(ctx)
 	}
 	PrintFuncResult := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -550,7 +548,6 @@ BoxFuncCall := class extend BoxExeObj
 	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		downs[^].PrintDebugMeta(ctx)
-		ExtraWork[^].PrintDebugMeta(ctx)
 	}
 }
 BoxFuncComplexCall := class extend BoxFuncCall

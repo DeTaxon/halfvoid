@@ -21,6 +21,10 @@ GetExeInt := !(int val) -> BoxExeInt^
 {
 	if GlobalInts.Contain(val)
 		return GlobalInts[val]
+
+	oldAlc := SwapAllocator(ConstsAllocator&)
+	defer SetAllocator(oldAlc)
+
 	newObj := new BoxExeInt(val)
 	GlobalInts[val] = newObj
 	return newObj
@@ -30,6 +34,10 @@ GetExeS64 := !(s64 val) -> BoxExeS64^
 {
 	if GlobalInts64.Contain(val)
 		return GlobalInts64[val]
+
+	oldAlc := SwapAllocator(ConstsAllocator&)
+	defer SetAllocator(oldAlc)
+
 	newObj := new BoxExeS64(val)
 	GlobalInts64[val] = newObj
 	return newObj
@@ -43,6 +51,10 @@ GetExeString := !(StringView^ str) -> BoxExeString^
 
 	if GlobalStrings.Contain(str2)
 		return GlobalStrings[str2]
+	
+	oldAlc := SwapAllocator(ConstsAllocator&)
+	defer SetAllocator(oldAlc)
+
 	newVal := new BoxExeString(str2)
 	GlobalStrings[str2] = newVal
 	return newVal
@@ -211,3 +223,6 @@ BoxExeString := class extend BoxExeConstObj
 	}
 
 }
+
+ConstsAllocator := AllocateOnly
+
