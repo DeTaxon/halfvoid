@@ -11,8 +11,17 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
+	x := int
+	y := int
+
+
+	#TryCompile(
+		printf("yep %i\n",x)
+		printf("yop %i\n",y)
+	)
+
 	// OpenFontTest()
-	makeSpirv()
+	// makeSpirv()
 	// tst()
 }
 

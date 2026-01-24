@@ -86,6 +86,35 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 		return itrScope->{BoxClass^}.ItType
 	}
 
+	if cmd == "#CompileAnyLine" or cmd == "#TryCompileAnyLine" or cmd == "#TryCompile"
+	{
+		itr := itm.Down.Right.Down
+
+		while itr != null
+		{
+			obj := TryGetExeCall(itr)
+
+			if obj != null
+			{
+				CurrentFuncWork?.ClearError()
+				return obj
+			}
+			itr = itr.Right
+		}
+		CurrentFuncWork?.ClearError()
+		if cmd == "#CompileAnyLine"
+		{
+			MakeErrorMsg(itm,"Could not compile any of lines")
+			return null
+		}
+		if cmd == "#TryCompileAnyLine" or cmd == "#TryCompile"
+		{	
+			return GObjNone
+		}
+		assert(false)
+		return null
+	}
+
 	return TryAddCallCommand(itm)?
 	return TryAddCreateModule(itm)?
 
