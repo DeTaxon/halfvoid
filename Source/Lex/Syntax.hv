@@ -147,8 +147,8 @@ StupidWhile := !(Token^ begin,PriorityBagOld^ bag) -> bool
 							return true
 					if RuleUse(begin,"case()",RuleCase) return true
 					if RuleUse(begin,"#func()",RuleRunFunc) return true
-				case "#FileCommands"
-					if RuleUse(begin,"~d",RuleFileRun)
+				case "#CommandsBrackets"
+					if RuleUse(begin,"~d",RuleCommandsBrackets)
 						return true
 			}
 		}
@@ -971,11 +971,13 @@ RuleFor := !(void^ itr)-> int
 	return Size
 }
 
-RuleFileRun := !(void^ itr) -> int
+RuleCommandsBrackets := !(void^ itr) -> int
 {
 	It := itr->{Token^}
 
-	if It.GetValue() != "#Run" return 0
+	if It is not TokenIndent return 0
+
+	if It.Value[0] != '#' return 0
 
 	It = It.Right
 	if It == null return 0

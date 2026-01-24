@@ -2,6 +2,12 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 {
 	if itm == null or itm.Down == null or itm.Down is not TokenIndent
 		return null
+
+	brk := itm.Down.Right
+
+	if brk == null or not (brk.GetValue() == "()" or brk.GetValue() == "{}")
+		return null
+
 	cmd := itm.Down->{TokenIndent^}.Value
 
 	for CmpFnc : #MarkedFunctions("CompilerCommand")
@@ -88,6 +94,8 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 
 	if cmd == "#CompileAnyLine" or cmd == "#TryCompileAnyLine" or cmd == "#TryCompile"
 	{
+		SyntaxCompress(itm.Down.Right,PriorityData)
+
 		itr := itm.Down.Right.Down
 
 		while itr != null

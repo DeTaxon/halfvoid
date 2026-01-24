@@ -234,6 +234,8 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 	return TryGetPtrObj(itm)?
 	return TryGetQuickParam(itm)?
 
+	return TryGetCommand(itm)?
+
 	return null
 
 }

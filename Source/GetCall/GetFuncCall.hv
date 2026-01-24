@@ -37,7 +37,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 
 	if itm.Down is TokenIndent and itm.Down->{TokenIndent^}.Value[0] == '#'
 	{
-		return TryGetCommand(itm)
+		return null
 	}
 	if itm.Down is TokenIndent and itm.Down->{TokenIndent^}.Value == "asm"
 	{
