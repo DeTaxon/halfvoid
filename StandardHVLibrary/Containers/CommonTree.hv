@@ -30,6 +30,18 @@ CommonTree := class .{@DATA}
 		}
 		return itr
 	}
+	FindNodeByFirst := !(@SomeKey& key) -> CommonTreeNode.{DATA}^
+	{
+		itr := Start
+		while itr != null
+		{
+			stRes := itr.data.first <=> key
+			if stRes == 0 return itr
+			if stRes < 0 	itr = itr.Right
+			else 		itr = itr.Left
+		}
+		return itr
+	}
 	FindNode := !(!(DATA)&->int cmpFunc) -> CommonTreeNode.{DATA}^
 	{
 		itr := Start
@@ -38,7 +50,7 @@ CommonTree := class .{@DATA}
 			stRes := cmpFunc(itr.data)
 			if stRes == 0 return itr
 			if stRes < 0 	itr = itr.Right
-			se 		itr = itr.Left
+			else 		itr = itr.Left
 		}
 		return itr
 	}

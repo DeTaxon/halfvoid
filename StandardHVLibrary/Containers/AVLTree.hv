@@ -73,6 +73,66 @@ AVLTree := class .{@DATA} extend CommonTree.{DATA}
 		toRet^ = iter
 		return true
 	}
+	FindOrCreateBadPair := !(@SomeKey& key ,CommonTreeNode.{DATA}^^ toRet,CommonTreeNode.{DATA}^ preCreatedNode = null) -> bool //bool isCreated
+	{
+		if Start == null 
+		{
+			Start = preCreatedNode
+			if Start == null
+				this.createNode(Start)
+			toRet^ = Start
+			Start.data.first = key
+			return true
+		}
+		prev := Start
+		iter := Start
+		
+		while iter != null
+		{
+			cmpRes := iter.data.first <=> key
+			if cmpRes == 0{
+				break
+			}else{
+				prev = iter
+			}
+			if  cmpRes < 0
+			{
+				iter = iter.Right
+			}else {
+				iter = iter.Left
+			}
+
+		}
+		if iter != null {
+			toRet^ = iter
+			return false
+		}
+		
+		cmpRes2 := prev.data.first <=> key
+		if cmpRes2 < 0{
+			prev.Right = preCreatedNode
+			if preCreatedNode == null
+				this.createNode(prev.Right)
+			prev.Right.Up = prev
+			iter = prev.Right
+		}else{
+			prev.Left = preCreatedNode
+			if preCreatedNode == null
+				this.createNode(prev.Left)
+			assert(prev.Left != prev)
+			oldUp := prev.Left.Up
+			oldLeft := prev.Left
+			prev.Left.Up = prev
+			assert(prev.Left != prev)
+			iter = prev.Left
+		}
+		iter.data.first = key
+		
+		AVLRepair(iter)
+
+		toRet^ = iter
+		return true
+	}
 	AVLRepair := !(CommonTreeNode.{DATA}^ toRep) -> void
 		#TemplateResist()
 	{

@@ -2,29 +2,15 @@
 
 main := !(char^[] args) -> int
 {
-	// RunFunc()
-	x := 0
-	y := 12
-	c := x + y
+	RunFunc()
 }
 
 
 RunFunc := !() -> void
 {
-	x := int
-	y := int
-
-
-	#TryCompileAnyLine
-
-	{
-		printf("yep %i\n",x)
-		printf("yop %i\n",y)
-	}
-
 	// OpenFontTest()
 	// makeSpirv()
-	// tst()
+	tst()
 }
 
 
@@ -92,7 +78,7 @@ sortTest := !(int^ buf, int lo, int hi) -> void
 tst := !() -> void {
 	nums := 1_000
 	// nums = 10
-	nums = 5_000
+	nums = 10_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

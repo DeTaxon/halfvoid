@@ -12,9 +12,7 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 	}
 	"[]?" := !(KEY dat) -> ref VALUE
 	{
-		cnst := BadPair.{KEY,VALUE}
-		cnst.first = dat
-		resl := itTree.FindNode(cnst)
+		resl := itTree.FindNodeByFirst(dat)
 		if resl != null
 		{
 			return resl.data.second
@@ -23,9 +21,7 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 	"[]" := !(KEY dat) -> ref VALUE
 	{
 		resl := CommonTreeNode.{BadPair.{KEY,VALUE}}^
-		cnst := BadPair.{KEY,VALUE}
-		cnst.first = dat
-		if itTree.FindOrCreate(cnst,resl&)
+		if itTree.FindOrCreateBadPair(dat,resl&)
 		{
 			resl.data.first = dat
 			itSize += 1
