@@ -96,9 +96,9 @@ unit.exe:
 jit:
 	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -jit -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 run:
-	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunFunc $(NoScary) -g $(AddExtra) -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -cache /tmp/TestCache.zip
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunFunc $(NoScary) -g $(AddExtra) -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -cache /tmp/TestCache.zip --vk vk.xml
 run2:
-	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv --vk vk.xml
 run.exe:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 

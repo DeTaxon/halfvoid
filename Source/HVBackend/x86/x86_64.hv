@@ -187,6 +187,8 @@ MCBuildFuncContext_x86_64 := class
 				fileName = objs[line.var1]&->{MCConstString^}.GetValue()
 			case "debug_set_line"
 				fileLine = objs[line.var1]&->{MCConstInteger^}.GetValue()
+			case "debug_set_var_name"
+				//none
 
 			case "get_field_ptr"
 				assert(false)

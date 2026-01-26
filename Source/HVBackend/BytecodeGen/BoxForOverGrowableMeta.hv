@@ -18,17 +18,3 @@ AppendClass BoxForOverGrowableMeta
 		}
 	}
 }
-AppendClass GrowableClassMetaFields
-{
-	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
-	{
-		objRes.WriteMC(ctx)
-	}
-}
-AppendClass GrowableClassMetaFieldsLocal
-{
-	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
-	{
-		objRes.WriteMC(ctx)
-	}
-}

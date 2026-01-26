@@ -28,7 +28,7 @@ AppendClass Window
 
 		mainRenderPass = vkOverlay.CreateRenderPass(vInstance,vInstance.SwapImageFormat)
 
-		vInstance.CreateSwapchain(mainRenderPass,600,600) //TODO unconst
+		vInstance.CreateSwapchain(600,600) //TODO unconst
 
 		vkOverlay.Init(mainRenderPass)
 
@@ -60,7 +60,7 @@ AppendClass Window
 				if not drawRes or outdatedWindowSize
 				{
 					outdatedWindowSize = false
-					vInstance.CreateSwapchain(mainRenderPass,Width,Height)
+					vInstance.CreateSwapchain(Width,Height)
 					vkOverlay.DataGeneration += 1
 					vkOverlay.CmdGeneration += 1
 					continue

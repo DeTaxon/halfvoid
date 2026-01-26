@@ -396,6 +396,17 @@ TryComputeOperators := !(Str oper, Vector.{BoxExeObj^}  objs) -> BoxExeObj^
 			return GBoolTrue
 		}
 
+		if c1 is in Type and c2 is in Type
+		{
+			res := c1 == c2
+
+			if oper == "!="
+				res = not res
+			if res
+				return GBoolTrue
+			return GBoolFalse
+		}
+
 	}
 	if oper == "<=>"
 	{

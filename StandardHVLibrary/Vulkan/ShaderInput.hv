@@ -14,7 +14,12 @@ TShaderInputVertexInfo := class
 		c := Cls
 		for it : c->#AllFields
 		{
-			VertTypes.Push(VKTypeFromType().{it->Type})
+			if it->Type == Color
+			{
+				VertTypes.Push(VKType(u8,4))
+			}else{
+				VertTypes.Push(VKTypeFromType().{it->Type})
+			}
 		}
 	}
 }

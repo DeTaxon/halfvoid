@@ -5,7 +5,15 @@ TryGetMetaFields := !(Token^ itm, bool isLocal = false) -> BoxExeObj^
 	if dwn == null
 		return null
 
-	dwnType := dwn.GetType()
+	dwnType := Type^
+
+	if dwn is in Type
+	{
+		dwnType = dwn->{Type^}
+		dwn = null
+	}else{
+		dwnType = dwn.GetType()
+	}
 
 	cls := BoxClass^
 	if dwnType is in TypeClass
@@ -15,7 +23,8 @@ TryGetMetaFields := !(Token^ itm, bool isLocal = false) -> BoxExeObj^
 	if dwnType is in TypePoint and dwnType.Base is in TypeClass
 	{
 		cls = dwnType.Base->{TypeClass^}.ToClass
-		dwn = new PtrToRef(dwn)
+		if dwn != null
+			dwn = new PtrToRef(dwn)
 	}
 	if cls == null
 	{

@@ -7,32 +7,49 @@ GrowableClassMetaFields := class extend  BoxMetaGrowingObject
 	{
 		itClass = bs
 
-		valueType := itm.GetType()
-		assert(valueType is in TypeClass)
-
-		objRes = ToLocalVar(itm)
+		if itm != null
+		{
+			assert(itm.GetType() is in TypeClass)
+			objRes = ToLocalVar(itm)
+		}
 	}
 
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		objRes.PrintCode(ctx)
+		objRes?.PrintCode(ctx)
 	}
 
 	IsMetaIteratable := virtual !() -> bool { return true }
 	MetaIteretableSize := virtual !() -> int { itClass.AwaitTypeState() return itClass.GetFieldsCount() }
 
+	getFieldPath := virtual !(int ind) -> FieldPath^
+	{
+		return itClass.GetFieldByIndex(ind)
+	}
+
 	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ 
 	{
 		itClass.AwaitTypeState()
-		indCall := itClass.GetFieldByIndex(ind)
-		itms := CheckExeDownList
-		itms.Push(objRes.CreateVarCall())
-		return indCall.CreateCall(itms)
+		indCall := getFieldPath(ind)
+
+		if objRes != null
+		{
+			itms := CheckExeDownList
+			itms.Push(objRes.CreateVarCall())
+			return indCall.CreateCall(itms)
+		}else{
+			return indCall.Field.Value
+		}
 	}
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
 	{
 		itClass.AwaitTypeState()
-		return GetExeString(itClass.GetFieldByIndex(ind).Field.Name.GetString())
+		indCall := getFieldPath(ind)
+		return GetExeString(indCall.Field.Name.GetString())
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		objRes?.WriteMC(ctx)
 	}
 }
 
@@ -61,40 +78,19 @@ VarIntObj := class extend BoxExeObj
 		ctx.writeStream^ << getVal()
 	}
 }
-GrowableClassMetaFieldsLocal := class extend  BoxMetaGrowingObject
+GrowableClassMetaFieldsLocal := class extends GrowableClassMetaFields
 {
-	objRes := LocalVar^
-	itClass := BoxClass^
-
 	this := !(BoxExeObj^ itm,BoxClass^ bs) -> void
 	{
-		itClass = bs
-
-		valueType := itm.GetType()
-		assert(valueType is in TypeClass)
-
-		objRes = ToLocalVar(itm)
+		super(itm,bs)
 	}
 
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	getFieldPath := virtual !(int ind) -> FieldPath^
 	{
-		objRes.PrintCode(ctx)
+		return itClass.GetFieldByIndexTuple(ind)
 	}
 
 	IsMetaIteratable := virtual !() -> bool { return true }
 	MetaIteretableSize := virtual !() -> int { itClass.AwaitTypeState() return itClass.Fields.Size() }
 
-	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ 
-	{
-		itClass.AwaitTypeState()
-		indCall := itClass.GetFieldByIndexTuple(ind)
-		itms := CheckExeDownList
-		itms.Push(objRes.CreateVarCall())
-		return indCall.CreateCall(itms)
-	}
-	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ 
-	{
-		itClass.AwaitTypeState()
-		return GetExeString(itClass.GetFieldByIndexTuple(ind).Field.Name.GetString())
-	}
 }

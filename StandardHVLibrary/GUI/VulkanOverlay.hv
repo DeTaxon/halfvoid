@@ -1,4 +1,11 @@
 
+VkOverlayPointType := class
+{
+	pos := vec2f
+	huh := vec2f
+	color := Color
+}
+
 VkOverlayContext := class
 {
 	inst := VulkanInstance^
@@ -37,11 +44,7 @@ VkOverlayContext := class
 	}
 	Init := !(TRenderPass^ rPass) -> void
 	{
-		drawLayout := rPass.CreateLayout(![
-			VKType(VType_Float,2),
-			VKType(VType_Float,2),
-			VKType(VType_UInt8,4)
-		],![
+		drawLayout := rPass.CreateLayout(VkOverlayPointType,![
 			new TImageSet(1)
 		],![
 			new TVertexPushConstant(32) //5*4 = 20, align up to 16, so 32
@@ -79,7 +82,8 @@ VkOverlayContext := class
 
 		boxIndexes := ![0,1,2,2,3,1]
 
-		boxMesh = inst.CreateMesh(boxVerts,boxIndexes,VKType(VType_UInt32,1))
+		itType := VKType(u32,1)
+		boxMesh = inst.CreateMesh(boxVerts,boxIndexes,itType)
 	}
 }
 

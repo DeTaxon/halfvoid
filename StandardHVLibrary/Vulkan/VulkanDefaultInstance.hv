@@ -73,14 +73,14 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 	}
 	DebugStep := virtual !() -> void
 	{
-		if Funcs.vkCreateDebugReportCallbackEXT != null
-		{
-			debPrint := VkDebugReportCallbackCreateInfoEXT()
-			debPrint.sType = 1000011000
-			debPrint.pfnCallback&->{void^^}^ = VkDebugCallback->{void^}
-			debPrint.flags = 2 + 4 + 8// + 16
-			Funcs.vkCreateDebugReportCallbackEXT(Instance,debPrint&,null,vkDebugObj&)
-		}
+		//if Funcs.vkCreateDebugReportCallbackEXT != null
+		//{
+		//	debPrint := VkDebugReportCallbackCreateInfoEXT()
+		//	debPrint.sType = 1000011000
+		//	debPrint.pfnCallback&->{void^^}^ = VkDebugCallback->{void^}
+		//	debPrint.flags = 2 + 4 + 8// + 16
+		//	Funcs.vkCreateDebugReportCallbackEXT(Instance,debPrint&,null,vkDebugObj&)
+		//}
 	}
 	DeviceSelectStep := virtual !(Vector.{VkPhysicalDevice} deviceList) -> int
 	{

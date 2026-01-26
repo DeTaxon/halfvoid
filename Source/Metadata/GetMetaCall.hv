@@ -202,7 +202,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	{
 		return TryGetMetaFields(obj)
 	}
-	if right.Value == "LocalFields"
+	if right.Value in !["LocalFields","#LocalFields"]
 	{
 		return TryGetMetaFields(obj,true)
 	}
