@@ -1,41 +1,15 @@
 
 
-cd := class
-{
-	a := int
-	b := int
-}
-dd := class extends cd
-{
-	c := int
-	d := int
-}
 
 main := !(char^[] args) -> int
 {
 	RunFunc()
 }
 
-Check := !().{@Cls} -> void
-{
-	c := Cls
-	for  it : c->#LocalFields
-	{
-		// printf("Color %s\n",it->TypeName)
-		if it->Type == Color
-		{
-			printf("Color\n")
-		}else{
-			printf("its other %s\n",it->TypeName)
-		}
-	}
-}
-
 RunFunc := !() -> void
 {
-	Check().{dd}
-	// r := new Window
-	// r.RunVulkan()
+	r := new Window
+	r.RunVulkan()
 	
 	// OpenFontTest()
 	// makeSpirv()

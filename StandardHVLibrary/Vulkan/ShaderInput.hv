@@ -11,14 +11,13 @@ TShaderInputVertexInfo := class
 	}
 	"{}<-" := !().{@Cls} -> void
 	{
-		c := Cls
-		for it : c->#AllFields
+		for it : Cls->#AllFields
 		{
-			if it->Type == Color
+			if it == Color
 			{
 				VertTypes.Push(VKType(u8,4))
 			}else{
-				VertTypes.Push(VKTypeFromType().{it->Type})
+				VertTypes.Push(VKTypeFromType().{it})
 			}
 		}
 	}

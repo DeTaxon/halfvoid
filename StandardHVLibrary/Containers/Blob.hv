@@ -52,3 +52,7 @@ MakeBlob := !(s64 siz) -> Blob^
 {
 	result."this"(vec.GetPointer(),vec.Size()*T->TypeSize)
 }
+"->{}" := !(@T[@Size]& vec) .{Blob} -> BlobSpan
+{
+	result."this"(vec&,Size*T->TypeSize)
+}
