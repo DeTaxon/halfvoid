@@ -10,6 +10,9 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 
 	cmd := itm.Down->{TokenIndent^}.Value
 
+	if cmd.Size() != 0 and cmd[0] != '#'
+		return null
+
 	for CmpFnc : #MarkedFunctions("CompilerCommand")
 	{
 		return CmpFnc(cmd,itm)?
@@ -128,6 +131,7 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 
 	if CurrentFuncWork != null and  not CurrentFuncWork.isFailed
 	{
+		// itm.Up.Up.Print(0)
 		CurrentWork?.SetErrorMessage(itm.MakeError("Command not found"))
 		return null
 	}else{

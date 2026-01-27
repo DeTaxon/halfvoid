@@ -1,6 +1,5 @@
 Window := class extend GLFWWindow
 {
-
 	mainGUIObject := GUIObject^
 	oldW := int
 	oldH := int

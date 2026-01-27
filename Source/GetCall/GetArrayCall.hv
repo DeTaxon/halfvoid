@@ -45,15 +45,6 @@ TryGetArrayCall := !(Token^ itm) -> BoxExeObj^
 	res := new BoxArrayHolder(allType,allConsts,itm)
 	res.vals.Push(objs[^])
 	return res
-
-	resCall := CreateFuncCall(StringSpan("![]"),objs,![allType.GetArray(objs.Size())])
-
-	if resCall == null
-	{
-		CurrentWork?.SetErrorMessage(itm.MakeError("could not create array, function ![] not found"))
-		return null
-	}
-	return resCall
 }
 
 BoxArrayConst := class extend BoxExeConstObj
@@ -128,13 +119,13 @@ BoxArrayHolder := class extend BoxExeObj
 		{
 			if globalVar == null
 			{
-				globalVar = CreateGlobalVar(StringSpan("anon"),bs.GetArray(vals.Size()),false)
+				globalVar = CreateGlobalVar("anon",bs.GetArray(vals.Size()),false)
 				globalVar.value = GetAsConst()
 			}
 			return globalVar.proxy&
 		}
 
-		resCall := CreateFuncCall(StringSpan("![]"),vals,![bs.GetArray(vals.Size())])
+		resCall := CreateFuncCall("![]",vals,![bs.GetArray(vals.Size())])
 
 		if resCall == null
 		{

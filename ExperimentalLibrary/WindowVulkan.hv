@@ -28,7 +28,7 @@ AppendClass Window
 
 		mainRenderPass = vkOverlay.CreateRenderPass(vInstance,vInstance.SwapImageFormat)
 
-		vInstance.CreateSwapchain(600,600) //TODO unconst
+		vInstance.CreateSwapchain(windowSize.x,windowSize.y)
 
 		vkOverlay.Init(mainRenderPass)
 

@@ -8,7 +8,7 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	r := new Window
+	r := new Window(512,512,"hi")
 	r.RunVulkan()
 	
 	// OpenFontTest()

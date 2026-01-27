@@ -39,7 +39,7 @@ VkOverlayContext := class
 	{
 		inst = vInst
 		return inst.CreateRenderPass(![
-			TRenderPassFrame(imageFormat,	VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
+			TRenderPassFrame(imageFormat,VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
 		],false)
 	}
 	Init := !(TRenderPass^ rPass) -> void
@@ -47,7 +47,7 @@ VkOverlayContext := class
 		drawLayout := rPass.CreateLayout(VkOverlayPointType,![
 			new TImageSet(1)
 		],![
-			new TVertexPushConstant(32) //5*4 = 20, align up to 16, so 32
+			new TVertexPushConstant(64) //12*4 = 48, align up to 16, so 64
 		],
 		1
 		)
