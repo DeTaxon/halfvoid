@@ -8,14 +8,6 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	r := new Window(512,512,"hi")
-
-	iv := new ImageViewer
-
-	r.SetWindowLayout(iv)
-	r.StartVulkanBackendTask()
-
-	TaskSleep(0.6)
 
 	img := NewImage_RGBA(512,512)
 
@@ -27,12 +19,8 @@ RunFunc := !() -> void
 			img.Data[i*4 + j] = RandInt(0..255)
 	}
 
-	iv.SetImage(r,img)
+	ShowImagePopup(img)
 
-	while not r.ShouldClose()
-		TaskSleep(1.0)
-	
-	r.DestroyVulkanBackendTask()
 	
 	// OpenFontTest()
 	// makeSpirv()

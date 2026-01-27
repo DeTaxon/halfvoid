@@ -192,4 +192,9 @@ AppendClass Window
 		vInstance.Funcs.vkCmdEndRendering(cmd)
 		//vInstance.Funcs.vkCmdEndRenderPass(cmd)
 	}
+
+	SetImage := !(ImageViewer^ viewer, Image^ img) -> void
+	{
+		viewer.SetImage(this&,img)
+	}
 }

@@ -1,0 +1,20 @@
+
+ShowImagePopup := !(Image^ img) -> void
+{
+	//TODO sizes
+	r := new Window(512,512,"Image")
+
+	iv := new ImageViewer
+
+	r.SetWindowLayout(iv)
+	r.StartVulkanBackendTask()
+
+	TaskSleep(0.6)
+
+	r.SetImage(iv,img)
+
+	while not r.ShouldClose()
+		TaskSleep(1.0)
+	
+	r.DestroyVulkanBackendTask()
+}
