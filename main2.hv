@@ -8,7 +8,14 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
+	ttfTest()
+	// OpenFontTest()
+	// makeSpirv()
+	// tst()
+}
 
+ttfTest := !() -> void
+{
 	img := NewImage_RGBA(512,512)
 
 	memset(img.Data,255,512*512*4)
@@ -20,11 +27,6 @@ RunFunc := !() -> void
 	}
 
 	ShowImagePopup(img)
-
-	
-	// OpenFontTest()
-	// makeSpirv()
-	// tst()
 }
 
 
