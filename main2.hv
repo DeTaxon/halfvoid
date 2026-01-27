@@ -9,15 +9,35 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	r := new Window(512,512,"hi")
-	r.RunVulkan()
+
+	iv := new ImageViewer
+
+	r.SetWindowLayout(iv)
+	r.StartVulkanBackendTask()
+
+	TaskSleep(0.6)
+
+	img := NewImage_RGBA(512,512)
+
+	memset(img.Data,255,512*512*4)
+
+	for i : 512*512
+	{
+		for j : 3
+			img.Data[i*4 + j] = RandInt(0..255)
+	}
+
+	iv.SetImage(r,img)
+
+	while not r.ShouldClose()
+		TaskSleep(1.0)
+	
+	r.DestroyVulkanBackendTask()
 	
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()
 }
-
-
-
 
 
 //TODO closure api?

@@ -88,3 +88,13 @@ Image := class
 		Data = null
 	}
 }
+
+NewImage_RGBA := !(int w, int h) -> Image^
+{
+	result = new Image
+
+	result.Data = malloc(w*h*4)->{u8^}
+	result.Width = w
+	result.Height = h
+	result.ColorType = "RGBA"
+}

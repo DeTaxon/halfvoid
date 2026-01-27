@@ -50,6 +50,10 @@ Window := class extend GLFWWindow
 		objs := Vector.{GUIObject^}
 		return new LayoutVertical(objs)
 	}
+	SetWindowLayout := !(GUIObject^ obj) -> void
+	{
+		mainGUIObject = obj
+	}
 	DrawVulkan := virtual !(VkCommandBuffer cmd,int w, int h) -> void
 	{
 

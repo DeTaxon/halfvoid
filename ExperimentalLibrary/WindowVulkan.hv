@@ -32,18 +32,27 @@ AppendClass Window
 
 		vkOverlay.Init(mainRenderPass)
 
-		mainGUIObject = InitWindow()
+		if mainGUIObject == null
+			mainGUIObject = InitWindow()
 	}
-	RunVulkan := !() -> void
+	StartVulkanBackendTask := !() -> void
 	{
 		//TracyZone("Window main loop")
 		
 		InitVulkan()
 
+		TSpawnTask(() ==> [c = this&]{
+			c.VulkanPollFunc()
+		})
+	}
+
+	VulkanPollFunc := !() -> void
+	{
 		imgGeneration = vkOverlay.DataGeneration - 1
 		cmdGeneration = vkOverlay.CmdGeneration - 1
 
 		lastTime := GetSteadyTime() - 1 //sec
+
 
 		while not ShouldClose()
 		{
@@ -55,7 +64,7 @@ AppendClass Window
 				surfaceIndex := u32
 				drawRes := true
 				//@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
-				vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+				@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 
 				if not drawRes or outdatedWindowSize
 				{
@@ -139,7 +148,10 @@ AppendClass Window
 				@work glfwWaitEventsTimeout(0.01)
 			}	
 		}
+	}
 
+	DestroyVulkanBackendTask := !() -> void
+	{
 		//TODO Destroy Vulkan instance
 		DestroyWindow()
 	}

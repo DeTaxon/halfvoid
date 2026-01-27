@@ -8,7 +8,7 @@ VkOverlayPointType := class
 
 VkOverlayContext := class
 {
-	inst := VulkanInstance^
+	inst := VulkanDefaultInstance^
 	w := float
 	h := float
 
@@ -35,7 +35,7 @@ VkOverlayContext := class
 		vSetTexture(inst,testAtlas.atlasDescriptor,testAtlas.atlasTexture,inst.SamplerNearest)
 	}
 
-	CreateRenderPass := !(VulkanInstance^ vInst, int imageFormat) -> TRenderPass^
+	CreateRenderPass := !(VulkanDefaultInstance^ vInst, int imageFormat) -> TRenderPass^
 	{
 		inst = vInst
 		return inst.CreateRenderPass(![

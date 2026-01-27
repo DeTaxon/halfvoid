@@ -1,13 +1,34 @@
-UIImage := class extends GUIObject
+ImageViewer := class extends GUIObject
 {
 	vImage := TVkTexture^
 	textureSet := VkDescriptorSet
+	w := int
+	h := int
+
+	SetImage := !(Window^ win,Image^ img) -> void
+	{
+		w = img.Width
+		h = img.Height
+
+		baseContext := win.vkOverlay&
+		inst := baseContext.inst
+
+		vkImg := inst.CreateTexture()
+		vkImg.CreateTexture(img)
+
+		textureSet = baseContext.atlasPool.CreateDescriptor()
+		vImage = vkImg
+		vSetTexture(inst,textureSet,vkImg,inst.SamplerNearest)
+	}
 
 	PushDraw := virtual !(VkOverlayContext^ ctx,VkCommandBuffer cmdB,vec2f offset) -> void
 	{
+		if vImage == null
+			return void
+
 		inst := ctx.inst
 
-		ctx.textDrawShader.ApplyShaderToQueue(ctx.inst,cmdB,400,400) //TODO
+		ctx.textDrawShader.ApplyShaderToQueue(ctx.inst,cmdB,w,h)
 
 		dat := CType
 		dat.resol.x = 1.0 
