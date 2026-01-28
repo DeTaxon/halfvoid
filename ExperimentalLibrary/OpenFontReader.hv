@@ -16,6 +16,8 @@ OpenFontTest := !() -> void
 
 	itr := hdr[1]&->{OpenTypeTableHeader^}
 
+	glyf := OpenTypeGlyf^
+
 	for i : FromBigEndian(hdr.numTables)
 	{
 		spn :=  StringSpan(itr[i].tag[0]&->{char^},4)
@@ -23,86 +25,91 @@ OpenFontTest := !() -> void
 
 		if spn == "glyf"
 		{
-			glyf := ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeGlyf^}
+			glyf = ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeGlyf^}
 
-			cntrCount := FromBigEndian(glyf.numOfContours)
-			printf("min %i max %i\n",FromBigEndian(glyf.xMin),FromBigEndian(glyf.xMax))
-			printf("min %i max %i\n",FromBigEndian(glyf.yMin),FromBigEndian(glyf.yMax))
-
-			cntrs := glyf[1]&->{u16^}
-			cntrVec := u16[]
-			cntrVec.Resize(cntrCount)
-
-			for i : FromBigEndian(glyf.numOfContours)
-			{
-				printf("contour %i\n",FromBigEndian(cntrs[i]))
-				cntrVec[i] = FromBigEndian(cntrs[i])
-			}
-			
-			instructionsCount := FromBigEndian(cntrs[cntrCount])
-			printf("intr count %i\n",instructionsCount)
-
-
-
-			instr := cntrs[cntrCount + 1]&->{u8^}
-
-			for i : instructionsCount
-			{
-				// printf("intr %i\n",instr[i])
-			}
-
-			numFlags := FromBigEndian(cntrs[cntrCount - 1]) + 1
-
-			flags := u8[]
-			flags.Reserve(numFlags)
-
-			flgIter := instr[instructionsCount]&->{u8^}
-
-			while flags.Size() < numFlags
-			{
-				flg := flgIter^
-
-				cnt := 1
-				if (flg and_b 0x08) != 0 
-				{
-					flgIter = flgIter[1]&
-					cnt = flgIter^
-				}
-
-				for cnt
-					flags.Push(flg)
-
-				flgIter = flgIter[1]&
-
-			}
-			// printf("flagsCount %i\n",numFlags)
-			// printf("flag %x\n",flags[^])
-
-			pos := vec2f[]
-			pos.Resize(numFlags)
-
-
-			itr := flgIter
-			OpenFontReadCoord(pos[0].x&,itr,numFlags,flags,0x02,0x10,cntrVec)
-			OpenFontReadCoord(pos[0].y&,itr,numFlags,flags,0x04,0x20,cntrVec)
-
-			printf("points %f %f\n",pos[^i].x,pos[i].y)
-
-			prevIndex := 0
-			for it,i : cntrVec
-			{
-				img.DrawLine(pos[prevIndex]*0.25 + 20,pos[it]*0.25 + 20,Color("red"))
-
-				for j : prevIndex..(it - 1)
-				{
-					p1 := pos[j]
-					p2 := pos[j + 1]
-					img.DrawLine(p1*0.25 + 20,p2*0.25 + 20,Color("red"))
-					prevIndex = j
-				}
-				prevIndex = (it + 1)
-			}
 		}
+	}
+
+	for i : 1
+	{
+		cntrCount := FromBigEndian(glyf.numOfContours)
+		printf("min %i max %i\n",FromBigEndian(glyf.xMin),FromBigEndian(glyf.xMax))
+		printf("min %i max %i\n",FromBigEndian(glyf.yMin),FromBigEndian(glyf.yMax))
+
+		cntrs := glyf[1]&->{u16^}
+		cntrVec := u16[]
+		cntrVec.Resize(cntrCount)
+
+		for i : FromBigEndian(glyf.numOfContours)
+		{
+			printf("contour %i\n",FromBigEndian(cntrs[i]))
+			cntrVec[i] = FromBigEndian(cntrs[i])
+		}
+		
+		instructionsCount := FromBigEndian(cntrs[cntrCount])
+		printf("intr count %i\n",instructionsCount)
+
+
+
+		instr := cntrs[cntrCount + 1]&->{u8^}
+
+		for i : instructionsCount
+		{
+			// printf("intr %i\n",instr[i])
+		}
+
+		numFlags := FromBigEndian(cntrs[cntrCount - 1]) + 1
+
+		flags := u8[]
+		flags.Reserve(numFlags)
+
+		flgIter := instr[instructionsCount]&->{u8^}
+
+		while flags.Size() < numFlags
+		{
+			flg := flgIter^
+
+			cnt := 1
+			if (flg and_b 0x08) != 0 
+			{
+				flgIter = flgIter[1]&
+				cnt = flgIter^
+			}
+
+			for cnt
+				flags.Push(flg)
+
+			flgIter = flgIter[1]&
+
+		}
+		// printf("flagsCount %i\n",numFlags)
+		// printf("flag %x\n",flags[^])
+
+		pos := vec2f[]
+		pos.Resize(numFlags)
+
+
+		itr := flgIter
+		OpenFontReadCoord(pos[0].x&,itr,numFlags,flags,0x02,0x10,cntrVec)
+		OpenFontReadCoord(pos[0].y&,itr,numFlags,flags,0x04,0x20,cntrVec)
+
+		printf("points %f %f\n",pos[^i].x,pos[i].y)
+
+		prevIndex := 0
+		for it,i : cntrVec
+		{
+			img.DrawLine(pos[prevIndex]*0.25 + 20,pos[it]*0.25 + 20,Color("red"))
+
+			for j : prevIndex..(it - 1)
+			{
+				p1 := pos[j]
+				p2 := pos[j + 1]
+				img.DrawLine(p1*0.25 + 20,p2*0.25 + 20,Color("red"))
+				prevIndex = j
+			}
+			prevIndex = (it + 1)
+		}
+
 	}
 
 	ShowImagePopup(img)
