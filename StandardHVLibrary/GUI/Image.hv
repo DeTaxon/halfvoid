@@ -92,7 +92,7 @@ Image := class
 			return void
 
 		vec := point2 - point1
-		x := 500
+		x := 300
 		for i : 0..x
 		{
 			proc := i / x

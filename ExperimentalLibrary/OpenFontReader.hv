@@ -17,6 +17,10 @@ OpenFontTest := !() -> void
 	itr := hdr[1]&->{OpenTypeTableHeader^}
 
 	glyf := OpenTypeGlyf^
+	head := OpenTypeHead^
+	maxp := OpenTypeMaxP^
+	cmap := void^
+	loca := void^
 
 	for i : FromBigEndian(hdr.numTables)
 	{
@@ -24,13 +28,84 @@ OpenFontTest := !() -> void
 		printf("table %s\n",spn)
 
 		if spn == "glyf"
-		{
 			glyf = ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeGlyf^}
+		if spn == "head"
+			head = ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeHead^}
+		if spn == "maxp"
+			maxp = ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeMaxP^}
+		if spn == "loca"
+			loca = ptr[FromBigEndian(itr[i].offset)]&
+		if spn == "cmap"
+			cmap = ptr[FromBigEndian(itr[i].offset)]&
+	}
 
+	printf("num of glyphs %i\n",FromBigEndian(maxp.numGlyphs))
+
+	cc := 6
+
+	cmapCount := FromBigEndian(cmap->{u16^}[1])
+	printf("cmap count %i\n",cmapCount)
+	cmapTables := cmap->{u16^}[2]&->{OpenTypeCMapTable^}
+	for i : cmapCount
+	{
+		plat := FromBigEndian(cmapTables[i].platformID)
+		enc := FromBigEndian(cmapTables[i].encodingID)
+		offst := FromBigEndian(cmapTables[i].offset) 
+		printf("Table %i %i\n",plat,enc)
+
+		if plat == 0 and enc == 3
+		{
+			fmt := cmap->{u8^}[offst]&
+			printf("format %i\n",FromBigEndian(fmt->{u16^}^))
+			d := fmt->{OpenTypeFormat4^}
+
+			segCount := FromBigEndian(d.segCountX2) div 2
+
+			ends := d[1]&->{u16^}
+			starts := ends[segCount + 1]&
+			deltas := starts[segCount]&->{s16^}
+			ranges := deltas[segCount]&->{u16^}
+			indx := ranges[segCount]&
+			
+			for i : segCount
+			{
+				start := FromBigEndian(starts[i])
+				range := FromBigEndian(ranges[i])
+				delta := FromBigEndian(deltas[i])
+				// printf("tbl %i %i %i %i\n",start,FromBigEndian(ends[i]),delta,range)
+				if start == 32
+				{
+					if range == 0
+					{
+						cc = delta + 'c'
+						if cc < 0
+							cc += 65536
+						// printf("wot %i\n",cc)
+					}else{
+						gId := FromBigEndian(ranges[i]&[(range div 2) + ('U' - start)])
+						cc = gId
+						// printf("wut %i %i\n",cc,gId)
+					}
+				}
+			}
 		}
 	}
 
-	for i : 1
+	if head.indexToLocFormat == 0
+	{
+		ofsts := loca->{u16^}
+		offset := FromBigEndian(ofsts[cc])*2
+		printf("wut %i\n",offset)
+		glyf = glyf->{u8^}[offset]&->{OpenTypeGlyf^}
+	}else{
+		ofsts := loca->{u32^}
+		offset := FromBigEndian(ofsts[cc])
+		printf("wut %i\n",offset)
+		glyf = glyf->{u8^}[offset]&->{OpenTypeGlyf^}
+
+	}
+
+	for iii : 1
 	{
 		cntrCount := FromBigEndian(glyf.numOfContours)
 		printf("min %i max %i\n",FromBigEndian(glyf.xMin),FromBigEndian(glyf.xMax))
@@ -40,15 +115,20 @@ OpenFontTest := !() -> void
 		cntrVec := u16[]
 		cntrVec.Resize(cntrCount)
 
+		printf("countorCount %i\n",cntrCount)
+
+		if cntrCount == -1
+			break
+
 		for i : FromBigEndian(glyf.numOfContours)
 		{
-			printf("contour %i\n",FromBigEndian(cntrs[i]))
+			// printf("contour %i\n",FromBigEndian(cntrs[i]))
 			cntrVec[i] = FromBigEndian(cntrs[i])
 		}
 		
 		instructionsCount := FromBigEndian(cntrs[cntrCount])
 		printf("intr count %i\n",instructionsCount)
-
+		
 
 
 		instr := cntrs[cntrCount + 1]&->{u8^}
@@ -110,6 +190,8 @@ OpenFontTest := !() -> void
 			prevIndex = (it + 1)
 		}
 
+		glyf = itr->{OpenTypeGlyf^}
+
 	}
 
 	ShowImagePopup(img)
@@ -149,12 +231,46 @@ OpenFontReadCoord := !(float^ arr,u8^& iter, int pointCount , u8[] flags, int si
 
 }
 
+
 TTFHeader := packed_class
 {
 	tag := u8[4]
 	majorVersion := u16
 	minorVersion := u16
 	numFonts := u32
+}
+OpenTypeCMapTable := packed_class
+{
+	platformID := u16
+	encodingID := u16
+	offset := u32
+}
+OpenTypeMaxP := packed_class
+{
+	version := u32
+	numGlyphs := u16
+	//not finished
+}
+OpenTypeHead := packed_class
+{
+	majorVersion := u16
+	minorVersion := u16
+	fontRevision := s32 // 16.16
+	checksum := u32
+	magicNumver := u32
+	flags := u32
+	unitsPerEm := u16
+	created := s64
+	modified := s64
+	xMin := u16
+	yMin := u16
+	xMax := u16
+	yMax := u16
+	macStyle := u16
+	lowestRecPREM := u16
+	fonDirectionHint := s16
+	indexToLocFormat := u16
+	glyphDatFormat := u16
 }
 OpenTypeHeader := packed_class
 {
@@ -171,16 +287,22 @@ OpenTypeTableHeader := packed_class
 	offset := u32
 	length := u32
 }
-OpenTypeMaxP := packed_class
-{
-	version := u32
-	numGlypths := u16
-}
 OpenTypeGlyf := packed_class
 {
-	numOfContours := u16
+	numOfContours := s16
 	xMin := u16
 	yMin := u16
 	xMax := u16
 	yMax := u16
+}
+
+OpenTypeFormat4 := packed_class 
+{
+	format := u16
+	length := u16
+	lang := u16
+	segCountX2 := u16
+	searchRange := u16
+	entrySelector := u16
+	rangeShift := u16
 }
