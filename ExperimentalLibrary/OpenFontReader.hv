@@ -2,13 +2,15 @@
 OpenFontTest := !() -> void
 {
 	dat := FSGetFile("./Goldman-Regular.ttf").GetBlob()
-
-	printf("yep %p %i\n",dat.GetPointer(),dat.Size())
+	// dat := FSGetFile("./JetBrainsMono-Bold.ttf").GetBlob()
 
 	ptr := dat.GetPointer()->{u8^}
 
 
 	hdr := ptr->{OpenTypeHeader^}
+
+	img := NewImage_RGBA(512,512)
+	memset(img.Data,255,512*512*4)
 
 	printf("ver %i\n",FromBigEndian(hdr.numTables))
 
@@ -22,9 +24,122 @@ OpenFontTest := !() -> void
 		if spn == "glyf"
 		{
 			glyf := ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeGlyf^}
-			printf("ye %i\n",FromBigEndian(glyf.numOfContours))
+
+			cntrCount := FromBigEndian(glyf.numOfContours)
+			printf("min %i max %i\n",FromBigEndian(glyf.xMin),FromBigEndian(glyf.xMax))
+			printf("min %i max %i\n",FromBigEndian(glyf.yMin),FromBigEndian(glyf.yMax))
+
+			cntrs := glyf[1]&->{u16^}
+			cntrVec := u16[]
+			cntrVec.Resize(cntrCount)
+
+			for i : FromBigEndian(glyf.numOfContours)
+			{
+				printf("contour %i\n",FromBigEndian(cntrs[i]))
+				cntrVec[i] = FromBigEndian(cntrs[i])
+			}
+			
+			instructionsCount := FromBigEndian(cntrs[cntrCount])
+			printf("intr count %i\n",instructionsCount)
+
+
+
+			instr := cntrs[cntrCount + 1]&->{u8^}
+
+			for i : instructionsCount
+			{
+				// printf("intr %i\n",instr[i])
+			}
+
+			numFlags := FromBigEndian(cntrs[cntrCount - 1]) + 1
+
+			flags := u8[]
+			flags.Reserve(numFlags)
+
+			flgIter := instr[instructionsCount]&->{u8^}
+
+			while flags.Size() < numFlags
+			{
+				flg := flgIter^
+
+				cnt := 1
+				if (flg and_b 0x08) != 0 
+				{
+					flgIter = flgIter[1]&
+					cnt = flgIter^
+				}
+
+				for cnt
+					flags.Push(flg)
+
+				flgIter = flgIter[1]&
+
+			}
+			// printf("flagsCount %i\n",numFlags)
+			// printf("flag %x\n",flags[^])
+
+			pos := vec2f[]
+			pos.Resize(numFlags)
+
+
+			itr := flgIter
+			OpenFontReadCoord(pos[0].x&,itr,numFlags,flags,0x02,0x10,cntrVec)
+			OpenFontReadCoord(pos[0].y&,itr,numFlags,flags,0x04,0x20,cntrVec)
+
+			printf("points %f %f\n",pos[^i].x,pos[i].y)
+
+			prevIndex := 0
+			for it,i : cntrVec
+			{
+				img.DrawLine(pos[prevIndex]*0.25 + 20,pos[it]*0.25 + 20,Color("red"))
+
+				for j : prevIndex..(it - 1)
+				{
+					p1 := pos[j]
+					p2 := pos[j + 1]
+					img.DrawLine(p1*0.25 + 20,p2*0.25 + 20,Color("red"))
+					prevIndex = j
+				}
+				prevIndex = (it + 1)
+			}
 		}
 	}
+
+	ShowImagePopup(img)
+}
+
+OpenFontReadCoord := !(float^ arr,u8^& iter, int pointCount , u8[] flags, int sizeBit, int skipBit,u16[] cntrs) -> void
+{
+	cPos := int
+
+	for flg,i : flags
+	{
+		is8 := (flg and_b sizeBit) != 0
+		isSkip := (flg and_b skipBit) != 0
+
+		val := int
+		if is8 {
+			val = iter^->{u8}
+			if not isSkip
+				val = -val
+			cPos += val
+			iter = iter[1]&
+		}else{
+			if isSkip
+			{
+			}else{
+				val = FromBigEndian(iter->{s16^}^)
+				iter = iter[2]&
+				cPos += val
+			}
+		}
+
+		arr[i*2] = cPos
+
+		// if i == cntrs[^]
+		// 	cPos = 0
+	}
+
 }
 
 TTFHeader := packed_class
@@ -57,8 +172,8 @@ OpenTypeMaxP := packed_class
 OpenTypeGlyf := packed_class
 {
 	numOfContours := u16
-	xMin := float
-	yMin := float
-	xMax := float
-	yMax := float
+	xMin := u16
+	yMin := u16
+	xMax := u16
+	yMax := u16
 }

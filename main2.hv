@@ -8,25 +8,13 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	ttfTest()
-	// OpenFontTest()
+	OpenFontTest()
 	// makeSpirv()
 	// tst()
-}
-
-ttfTest := !() -> void
-{
-	img := NewImage_RGBA(512,512)
-
-	memset(img.Data,255,512*512*4)
-
-	for i : 512*512
-	{
-		for j : 3
-			img.Data[i*4 + j] = RandInt(0..255)
-	}
-
-	ShowImagePopup(img)
+	//
+	// vec := int[]
+	// vec.Push(5[^])
+	// c := 2 in vec
 }
 
 

@@ -1,4 +1,11 @@
 
+ToBigEndian := !(s16 val) -> s16
+{
+	result = val
+	tmp := result&->{u8^}[0]
+	result&->{u8^}[0] = result&->{u8^}[1]
+	result&->{u8^}[1] = tmp
+}
 ToBigEndian := !(u16 val) -> u16
 {
 	result = val
