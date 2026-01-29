@@ -100,7 +100,42 @@ Image := class
 			pos := point1 + vec*proc
 
 			indx := (pos.x->{int} + pos.y->{int}*Width)
-			Data[indx*4]&->{Color^}^ = color
+			colrs := Data[indx*4]&
+			for k : 4
+			{
+				colrs[k] = color.r&[k]*255
+			}
+		}
+	}
+	DrawBezier := !(vec2f point1,vec2f mdl,vec2f point2,Color color) -> void
+	{
+		if point1.x < 0 or point2.x < 0 or mdl.x < 0
+			return void
+		if point1.y < 0 or point2.y < 0 or mdl.y < 0
+			return void
+		if point1.x >= Width or point2.x >= Width or mdl.x >= Width
+			return void
+		if point1.y >= Height or point2.y >= Height or mdl.y >= Height
+			return void
+
+		vec := point2 - point1
+		x := 300
+		for i : 0..x
+		{
+			proc := i / x
+			anti := 1.0 - proc
+
+			t1 := point1*anti + mdl*proc
+			t2 := mdl*anti + point2*proc
+
+			pos := t1*anti + t2*proc
+
+			indx := (pos.x->{int} + pos.y->{int}*Width)
+			colrs := Data[indx*4]&
+			for k : 4
+			{
+				colrs[k] = color.r&[k]*255
+			}
 		}
 	}
 	FlipY := !() -> void

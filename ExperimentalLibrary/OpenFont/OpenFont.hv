@@ -87,7 +87,7 @@ OpenFontLoader := class
 		offset3.x = 20
 		offset3.y = 40
 
-		for c : !['Q']
+		for c : !['u']
 		{
 			id := GetCharId(c)
 
@@ -95,20 +95,67 @@ OpenFontLoader := class
 
 			cntrVec := ref glp.cntrs
 			pos := ref glp.pos
+			onCurve := ref glp.onCurve
 
-			prevIndex := 0
-			for it,i : cntrVec
+			for it : pos //TEMP
+				it = it*0.55 + offset3
+
+
+			startIndex := 0
+			for cntr : cntrVec
 			{
-				img.DrawLine(pos[prevIndex]*0.15 + offset3,pos[it]*0.15 + offset3,Color("red"))
+				crv := bool[]
+				ps := vec2f[]
 
-				for j : prevIndex..(it - 1)
+				for i : startIndex..cntr
 				{
-					p1 := pos[j]
-					p2 := pos[j + 1]
-					img.DrawLine(p1*0.15 + offset3,p2*0.15 + offset3,Color("red"))
-					prevIndex = j
+					ps.Push(pos[i])
+					crv.Push(onCurve[i])
 				}
-				prevIndex = (it + 1)
+				ps.Push(pos[startIndex])
+				crv.Push(onCurve[startIndex])
+
+				startIndex = cntr + 1
+
+				// for i : (ps.Size() - 1)
+				// {
+				// 	img.DrawLine(ps[i],ps[i+1],Color("blue"))
+				// }
+
+				printf("cntr\n")
+				printf("curves %i\n",crv[^])
+				dist := 1
+				prevPos := ps[0]
+				i := 1
+				color := Color("red")
+
+				while i < ps.Size()
+				{
+					if crv[i]
+					{
+						if dist == 1
+						{
+							img.DrawLine(prevPos,ps[i],color)
+						}else{
+							assert(dist == 2)
+							img.DrawBezier(prevPos,ps[i-1],ps[i],color)
+						}
+						dist = 1
+						prevPos = ps[i]
+					}else{
+						if crv[i-1]
+						{
+							dist += 1
+							//skip for now
+						}else{
+							mdl := (ps[i] + ps[i-1])*0.5
+							img.DrawBezier(prevPos,ps[i-1],mdl,color)
+							dist = 2
+							prevPos = mdl
+						}
+					}
+					i += 1
+				}
 			}
 
 			offset3.x += 120
