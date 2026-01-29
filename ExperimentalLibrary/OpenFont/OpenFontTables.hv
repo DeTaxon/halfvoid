@@ -1,0 +1,75 @@
+
+TTFHeader := packed_class
+{
+	tag := u8[4]
+	majorVersion := u16
+	minorVersion := u16
+	numFonts := u32
+}
+OpenTypeCMapTable := packed_class
+{
+	platformID := u16
+	encodingID := u16
+	offset := u32
+}
+OpenTypeMaxP := packed_class
+{
+	version := u32
+	numGlyphs := u16
+	//not finished
+}
+OpenTypeHead := packed_class
+{
+	majorVersion := u16
+	minorVersion := u16
+	fontRevision := s32 // 16.16
+	checksum := u32
+	magicNumver := u32
+	flags := u32
+	unitsPerEm := u16
+	created := s64
+	modified := s64
+	xMin := u16
+	yMin := u16
+	xMax := u16
+	yMax := u16
+	macStyle := u16
+	lowestRecPREM := u16
+	fonDirectionHint := s16
+	indexToLocFormat := u16
+	glyphDatFormat := u16
+}
+OpenTypeHeader := packed_class
+{
+	tag := u8[4]
+	numTables := u16
+	searchRange := u16
+	entrySelector := u16
+	rangeShift := u16
+}
+OpenTypeTableHeader := packed_class
+{
+	tag := u8[4]
+	checksum := u32
+	offset := u32
+	length := u32
+}
+OpenTypeGlyf := packed_class
+{
+	numOfContours := s16
+	xMin := u16
+	yMin := u16
+	xMax := u16
+	yMax := u16
+}
+
+OpenTypeFormat4 := packed_class 
+{
+	format := u16
+	length := u16
+	lang := u16
+	segCountX2 := u16
+	searchRange := u16
+	entrySelector := u16
+	rangeShift := u16
+}

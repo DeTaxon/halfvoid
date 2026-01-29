@@ -1,0 +1,262 @@
+
+OpenFont := class
+{
+	charToGlyph := AVLMap.{int,OFGlyph^}
+}
+
+OFGlyph := class
+{
+	onCurve := bool[]
+	pos := vec2f[]
+}
+
+
+NewOpenFont := !(Blob^ blb,Image^ img) -> OpenFont^
+{
+	result = new OpenFont
+
+	loader := OpenFontLoader
+	loader.Load(blb,img)
+
+}
+
+OpenFontLoader := class
+{
+	glyphs := OFGlyph[int]
+
+	glyf := OpenTypeGlyf^
+	head := OpenTypeHead^
+	maxp := OpenTypeMaxP^
+	cmap := void^
+	loca := void^
+
+	fmt4 := OpenTypeFormat4^
+
+	Load := !(Blob^ blb,Image^ img) -> void
+	{
+		ptr := blb.GetPointer()->{u8^}
+
+		hdr := ptr->{OpenTypeHeader^}
+
+		printf("ver %i\n",FromBigEndian(hdr.numTables))
+
+		itr := hdr[1]&->{OpenTypeTableHeader^}
+
+		for i : FromBigEndian(hdr.numTables)
+		{
+			spn :=  StringSpan(itr[i].tag[0]&->{char^},4)
+			// printf("table %s\n",spn)
+
+			if spn == "glyf"
+				glyf = ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeGlyf^}
+			if spn == "head"
+				head = ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeHead^}
+			if spn == "maxp"
+				maxp = ptr[FromBigEndian(itr[i].offset)]&->{OpenTypeMaxP^}
+			if spn == "loca"
+				loca = ptr[FromBigEndian(itr[i].offset)]&
+			if spn == "cmap"
+				cmap = ptr[FromBigEndian(itr[i].offset)]&
+		}
+
+		printf("num of glyphs %i\n",FromBigEndian(maxp.numGlyphs))
+
+
+		cmapCount := FromBigEndian(cmap->{u16^}[1])
+		printf("cmap count %i\n",cmapCount)
+		cmapTables := cmap->{u16^}[2]&->{OpenTypeCMapTable^}
+		for i : cmapCount
+		{
+			plat := FromBigEndian(cmapTables[i].platformID)
+			enc := FromBigEndian(cmapTables[i].encodingID)
+			offst := FromBigEndian(cmapTables[i].offset) 
+			printf("Table %i %i\n",plat,enc)
+
+			if plat == 0 and enc == 3
+			{
+				fmt := cmap->{u8^}[offst]&
+				printf("format %i\n",FromBigEndian(fmt->{u16^}^))
+				d := fmt->{OpenTypeFormat4^}
+				fmt4 = d
+			}
+		}
+
+
+		glyfBase := glyf
+		
+		offset3 := vec2f
+		offset3.x = 20
+		offset3.y = 40
+
+		for c : !['H','e','l','p']
+		{
+			cc := GetCharId(c)
+
+			if head.indexToLocFormat == 0
+			{
+				ofsts := loca->{u16^}
+				offset := FromBigEndian(ofsts[cc])*2
+				printf("wut %i\n",offset)
+				glyf = glyfBase->{u8^}[offset]&->{OpenTypeGlyf^}
+			}else{
+				ofsts := loca->{u32^}
+				offset := FromBigEndian(ofsts[cc])
+				printf("wut %i\n",offset)
+				glyf = glyfBase->{u8^}[offset]&->{OpenTypeGlyf^}
+			}
+
+			cntrCount := FromBigEndian(glyf.numOfContours)
+			printf("min %i max %i\n",FromBigEndian(glyf.xMin),FromBigEndian(glyf.xMax))
+			printf("min %i max %i\n",FromBigEndian(glyf.yMin),FromBigEndian(glyf.yMax))
+
+			cntrs := glyf[1]&->{u16^}
+			cntrVec := u16[]
+			cntrVec.Resize(cntrCount)
+
+			printf("countorCount %i\n",cntrCount)
+
+			if cntrCount == -1
+				continue
+
+			for i : FromBigEndian(glyf.numOfContours)
+			{
+				printf("contour %i\n",FromBigEndian(cntrs[i]))
+				cntrVec[i] = FromBigEndian(cntrs[i])
+			}
+			
+			instructionsCount := FromBigEndian(cntrs[cntrCount])
+			printf("intr count %i\n",instructionsCount)
+
+			if instructionsCount == -1
+				continue
+
+			instr := cntrs[cntrCount + 1]&->{u8^}
+
+			for i : instructionsCount
+			{
+				// printf("intr %i\n",instr[i])
+			}
+
+			numFlags := cntrVec[cntrVec.Size() - 1] + 1
+
+			flags := u8[]
+			flags.Reserve(numFlags)
+
+			flgIter := instr[instructionsCount]&->{u8^}
+
+			while flags.Size() < numFlags
+			{
+				flg := flgIter^
+
+				cnt := 1
+				if (flg and_b 0x08) != 0 
+				{
+					flgIter = flgIter[1]&
+					cnt = flgIter^ + 1
+				}
+
+
+				for cnt
+					flags.Push(flg)
+
+				flgIter = flgIter[1]&
+			}
+			printf("flagsCount %i %i\n",numFlags,flags.Size())
+			// printf("flag %x\n",flags[^])
+
+			pos := vec2f[]
+			pos.Reserve(numFlags*20 + 1) //TODO bug!
+			pos.Resize(numFlags)
+
+
+			itr := flgIter
+			OpenFontReadCoord(pos[0].x&,itr,flags,0x02,0x10,cntrVec)
+			OpenFontReadCoord(pos[0].y&,itr,flags,0x04,0x20,cntrVec)
+
+			// printf("points %f %f\n",pos[^i].x,pos[i].y)
+
+			prevIndex := 0
+			for it,i : cntrVec
+			{
+				img.DrawLine(pos[prevIndex]*0.15 + offset3,pos[it]*0.15 + offset3,Color("red"))
+
+				for j : prevIndex..(it - 1)
+				{
+					p1 := pos[j]
+					p2 := pos[j + 1]
+					img.DrawLine(p1*0.15 + offset3,p2*0.15 + offset3,Color("red"))
+					prevIndex = j
+				}
+				prevIndex = (it + 1)
+			}
+			offset3.x += 120
+
+			glyf = itr->{OpenTypeGlyf^}
+		}
+	}
+	GetCharId := !(int chr) -> int
+	{
+		cc := 0
+
+		segCount := FromBigEndian(fmt4.segCountX2) div 2
+
+		ends := fmt4[1]&->{u16^}
+		starts := ends[segCount + 1]&
+		deltas := starts[segCount]&->{s16^}
+		ranges := deltas[segCount]&->{u16^}
+		indx := ranges[segCount]&
+		
+		for i : segCount
+		{
+			start := FromBigEndian(starts[i])
+			range := FromBigEndian(ranges[i])
+			delta := FromBigEndian(deltas[i])
+			// printf("tbl %i %i %i %i\n",start,FromBigEndian(ends[i]),delta,range)
+			if start == 32
+			{
+				if range == 0
+				{
+					cc = delta + chr
+					if cc < 0
+						cc += 65536
+					// printf("wot %i\n",cc)
+				}else{
+					cc = FromBigEndian(ranges[i]&[(range div 2) + (chr - start)])
+					// printf("wut %i %i\n",cc,gId)
+				}
+			}
+		}
+
+		return cc
+	}
+	OpenFontReadCoord := !(float^ arr,u8^& iter, u8[] flags, int sizeBit, int skipBit,u16[] cntrs) -> void
+	{
+		cPos := int
+	
+		for flg,i : flags
+		{
+			is8 := (flg and_b sizeBit) != 0
+			isSkip := (flg and_b skipBit) != 0
+	
+			val := int
+			if is8 {
+				val = iter^->{u8}
+				if not isSkip
+					val = -val
+				cPos += val
+				iter = iter[1]&
+			}else{
+				if isSkip
+				{
+				}else{
+					val = FromBigEndian(iter->{s16^}^)
+					iter = iter[2]&
+					cPos += val
+				}
+			}
+
+			arr[i*2] = cPos
+		}
+	}
+
+}
