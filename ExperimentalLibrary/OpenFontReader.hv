@@ -8,6 +8,8 @@ OpenFontTest := !() -> void
 	// dat := FSGetFile("./JetBrainsMono-Bold.ttf").GetBlob()
 	NewOpenFont(dat,img)
 
+	img.FlipY()
+
 	ShowImagePopup(img)
 }
 

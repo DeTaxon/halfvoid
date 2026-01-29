@@ -103,6 +103,24 @@ Image := class
 			Data[indx*4]&->{Color^}^ = color
 		}
 	}
+	FlipY := !() -> void
+	{
+		halfH := Height div 2
+
+		stride := Width*4
+
+		for i : halfH
+		{
+			j := (Height - 1) - i
+
+			for x : stride
+			{
+				tmp := Data[x + stride*i]
+				Data[x + stride*i] = Data[x + stride*j]
+				Data[x + stride*j] = tmp
+			}
+		}
+	}
 
 	Destroy := virtual !() -> void
 	{

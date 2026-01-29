@@ -87,7 +87,7 @@ OpenFontLoader := class
 		offset3.x = 20
 		offset3.y = 40
 
-		for c : !['H','e','l','p']
+		for c : !['Q']
 		{
 			id := GetCharId(c)
 
@@ -125,18 +125,16 @@ OpenFontLoader := class
 		{
 			ofsts := loca->{u16^}
 			offset := FromBigEndian(ofsts[id])*2
-			printf("wut %i\n",offset)
 			g = glyf->{u8^}[offset]&->{OpenTypeGlyf^}
 		}else{
 			ofsts := loca->{u32^}
 			offset := FromBigEndian(ofsts[id])
-			printf("wut %i\n",offset)
 			g = glyf->{u8^}[offset]&->{OpenTypeGlyf^}
 		}
 
 		cntrCount := FromBigEndian(g.numOfContours)
-		printf("min %i max %i\n",FromBigEndian(g.xMin),FromBigEndian(g.xMax))
-		printf("min %i max %i\n",FromBigEndian(g.yMin),FromBigEndian(g.yMax))
+		// printf("min %i max %i\n",FromBigEndian(g.xMin),FromBigEndian(g.xMax))
+		// printf("min %i max %i\n",FromBigEndian(g.yMin),FromBigEndian(g.yMax))
 
 		cntrs := g[1]&->{u16^}
 		cntrVec := ref result.cntrs
@@ -186,11 +184,16 @@ OpenFontLoader := class
 
 			flgIter = flgIter[1]&
 		}
+
+		onCurve := ref result.onCurve
+		onCurve.Resize(numFlags)
+		for it,i : flags
+			onCurve[i] = (it and_b 0x1) != 0
+
 		printf("flagsCount %i %i\n",numFlags,flags.Size())
 		// printf("flag %x\n",flags[^])
 
 		pos := ref result.pos
-		pos.Reserve(numFlags*20 + 1) //TODO bug!
 		pos.Resize(numFlags)
 
 
