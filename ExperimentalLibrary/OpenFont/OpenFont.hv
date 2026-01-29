@@ -84,10 +84,10 @@ OpenFontLoader := class
 
 
 		offset3 := vec2f
-		offset3.x = 20
-		offset3.y = 40
+		offset3.x = 60
+		offset3.y = 60
 
-		for c : !['u']
+		for c : !['G']
 		{
 			id := GetCharId(c)
 
@@ -98,7 +98,7 @@ OpenFontLoader := class
 			onCurve := ref glp.onCurve
 
 			for it : pos //TEMP
-				it = it*0.55 + offset3
+				it = it*0.35 + offset3
 
 
 			startIndex := 0
@@ -122,8 +122,8 @@ OpenFontLoader := class
 				// 	img.DrawLine(ps[i],ps[i+1],Color("blue"))
 				// }
 
-				printf("cntr\n")
-				printf("curves %i\n",crv[^])
+				// printf("cntr\n")
+				// printf("curves %i\n",crv[^])
 				dist := 1
 				prevPos := ps[0]
 				i := 1
@@ -265,11 +265,12 @@ OpenFontLoader := class
 		
 		for i : segCount
 		{
+			end := FromBigEndian(ends[i])
 			start := FromBigEndian(starts[i])
 			range := FromBigEndian(ranges[i])
 			delta := FromBigEndian(deltas[i])
-			// printf("tbl %i %i %i %i\n",start,FromBigEndian(ends[i]),delta,range)
-			if start == 32
+			printf("tbl %i %i %i %i\n",start,FromBigEndian(ends[i]),delta,range)
+			if start <= chr and chr <= end
 			{
 				if range == 0
 				{
