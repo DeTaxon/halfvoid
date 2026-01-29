@@ -87,7 +87,7 @@ OpenFontLoader := class
 		offset3.x = 60
 		offset3.y = 60
 
-		for c : !['G']
+		for c : ![';']
 		{
 			id := GetCharId(c)
 
@@ -183,14 +183,65 @@ OpenFontLoader := class
 		// printf("min %i max %i\n",FromBigEndian(g.xMin),FromBigEndian(g.xMax))
 		// printf("min %i max %i\n",FromBigEndian(g.yMin),FromBigEndian(g.yMax))
 
+		printf("countorCount %i\n",cntrCount)
+
+		if cntrCount < 0
+		{
+			itr := g[1]&->{u8^}
+
+			while true
+			{
+				flag := FromBigEndian(itr->{u16^}^)
+				indx := FromBigEndian(itr[2]&->{u16^}^)
+
+				itr = itr[4]&
+				
+				arg1 := 0
+				arg2 := 0
+
+				if (flag and_b 1) != 0
+				{
+					arg1 = FromBigEndian(itr[0]&->{u16^}^)
+					arg2 = FromBigEndian(itr[2]&->{u16^}^)
+					itr = itr[4]&
+				}else{
+					arg1 = itr[0]
+					arg2 = itr[1]
+					itr = itr[2]&
+				}
+
+				if (flag and_b 0x08) != 0 // we have a scale
+				{
+					itr = itr[2]&
+				}else if (flag and_b 0x40) != 0 // scale x y
+				{
+					itr = itr[2]&
+					itr = itr[2]&
+				}else if (flag and_b 0x80) != 0
+				{
+					for 4
+						itr = itr[2]&
+				}
+
+				f := GetGlyphById(indx)
+
+				ofst := result.pos.Size()
+				result.pos.Push(f.pos[^])
+				result.cntrs.Push(f.cntrs[^] + ofst)
+				result.onCurve.Push(f.onCurve[^])
+
+				if (flag and_b 0x20) == 0
+					break
+			}
+
+
+			return void
+		}
+
 		cntrs := g[1]&->{u16^}
 		cntrVec := ref result.cntrs
 		cntrVec.Resize(cntrCount)
 
-		printf("countorCount %i\n",cntrCount)
-
-		if cntrCount == -1
-			return void
 
 		for i : FromBigEndian(glyf.numOfContours)
 		{
