@@ -18,6 +18,8 @@ RunFunc := !() -> void
 }
 
 
+
+//TODO make error for continue/break outside cycles
 //TODO closure api?
 //TODO LazyClass does not work if some class uses it as a field
 
