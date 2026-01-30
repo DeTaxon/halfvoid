@@ -22,10 +22,10 @@ OpenTypeHead := packed_class
 {
 	majorVersion := u16
 	minorVersion := u16
-	fontRevision := s32 // 16.16
+	fontRevision := u32 // 16.16
 	checksum := u32
-	magicNumver := u32
-	flags := u32
+	magicNumber := u32
+	flags := u16
 	unitsPerEm := u16
 	created := s64
 	modified := s64
@@ -35,7 +35,7 @@ OpenTypeHead := packed_class
 	yMax := u16
 	macStyle := u16
 	lowestRecPREM := u16
-	fonDirectionHint := s16
+	fontDirectionHint := s16
 	indexToLocFormat := u16
 	glyphDatFormat := u16
 }

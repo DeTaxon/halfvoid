@@ -4,8 +4,8 @@ OpenFontTest := !() -> void
 	img := NewImage_RGBA(512,512)
 	memset(img.Data,255,512*512*4)
 
-	dat := FSGetFile("./Goldman-Regular.ttf").GetBlob()
-	// dat := FSGetFile("./JetBrainsMono-Bold.ttf").GetBlob()
+	// dat := FSGetFile("./Goldman-Regular.ttf").GetBlob()
+	dat := FSGetFile("./JetBrainsMono-Bold.ttf").GetBlob()
 	NewOpenFont(dat,img)
 
 	img.FlipY()

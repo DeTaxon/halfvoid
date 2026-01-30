@@ -87,9 +87,14 @@ OpenFontLoader := class
 		offset3.x = 60
 		offset3.y = 60
 
-		for c : !['J']
+		testChar := '}'
+		printf("hey %i\n",testChar)
+
+		for c : ![testChar]
 		{
 			id := GetCharId(c)
+
+			printf("char id %i\n",id)
 
 			glp := GetGlyphById(id)
 
@@ -168,14 +173,18 @@ OpenFontLoader := class
 
 		g := OpenTypeGlyf^
 
+		// printf("HEY %i\n",head.indexToLocFormat&->{size_t} - head->{size_t})
+
 		if head.indexToLocFormat == 0
 		{
 			ofsts := loca->{u16^}
 			offset := FromBigEndian(ofsts[id])*2
+			printf("offset1 %i\n",offset)
 			g = glyf->{u8^}[offset]&->{OpenTypeGlyf^}
 		}else{
 			ofsts := loca->{u32^}
 			offset := FromBigEndian(ofsts[id])
+			printf("offset2 %i\n",offset)
 			g = glyf->{u8^}[offset]&->{OpenTypeGlyf^}
 		}
 
@@ -336,18 +345,19 @@ OpenFontLoader := class
 			start := FromBigEndian(starts[i])
 			range := FromBigEndian(ranges[i])
 			delta := FromBigEndian(deltas[i])
-			printf("tbl %i %i %i %i\n",start,FromBigEndian(ends[i]),delta,range)
+			printf("tbl %i %i %i %i\n",start,end,delta,range)
 			if start <= chr and chr <= end
 			{
 				if range == 0
 				{
 					cc = delta + chr
+					printf("wot %i\n",cc)
 					if cc < 0
 						cc += 65536
-					// printf("wot %i\n",cc)
+					printf("wot %i\n",cc)
 				}else{
 					cc = FromBigEndian(ranges[i]&[(range div 2) + (chr - start)])
-					// printf("wut %i %i\n",cc,gId)
+					printf("wut %i\n",cc)
 				}
 			}
 		}
