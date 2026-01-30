@@ -87,7 +87,7 @@ OpenFontLoader := class
 		offset3.x = 60
 		offset3.y = 60
 
-		testChar := '}'
+		testChar := 'Ж'
 		printf("hey %i\n",testChar)
 
 		for c : ![testChar]
@@ -345,19 +345,19 @@ OpenFontLoader := class
 			start := FromBigEndian(starts[i])
 			range := FromBigEndian(ranges[i])
 			delta := FromBigEndian(deltas[i])
-			printf("tbl %i %i %i %i\n",start,end,delta,range)
+			// printf("tbl %i %i %i %i\n",start,end,delta,range)
 			if start <= chr and chr <= end
 			{
 				if range == 0
 				{
 					cc = delta + chr
-					printf("wot %i\n",cc)
+					// printf("wot %i\n",cc)
 					if cc < 0
 						cc += 65536
-					printf("wot %i\n",cc)
+					// printf("wot %i\n",cc)
 				}else{
 					cc = FromBigEndian(ranges[i]&[(range div 2) + (chr - start)])
-					printf("wut %i\n",cc)
+					// printf("wut %i\n",cc)
 				}
 			}
 		}

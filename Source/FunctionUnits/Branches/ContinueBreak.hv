@@ -2,20 +2,7 @@ TryGetContinueBreak := !(Token^ itm) -> BoxExeObj^
 {
 	if itm.GetValue() == "continue"
 	{
-		return new BoxContinue(itm)
-	}
-	if itm.GetValue() == "break"
-	{
-		return new BoxBreak(itm)
-	}
-	return null
-}
-
-BoxContinue := class extend BoxExeObj
-{
-	goLabel := BoxLabel^
-	this := !(Token^ itm) -> void
-	{
+		goLabel := BoxLabel^
 		for it : UnitStack
 		{
 			if it is in BoxBlockContinue
@@ -28,8 +15,38 @@ BoxContinue := class extend BoxExeObj
 		if goLabel == null
 		{
 			CurrentWork?.SetErrorMessage(itm.MakeError("continue operator used without cycle"))
-			return void
+			return null
 		}
+		return new BoxContinue(goLabel)
+	}
+	if itm.GetValue() == "break"
+	{
+		goLabel := BoxLabel^
+		for it : UnitStack
+		{
+			if it is in BoxBlockBreak
+			{
+				block := it->{BoxBlock^}
+				goLabel = block.GetQuitLabel()
+				break
+			}
+		}
+		if goLabel == null
+		{
+			CurrentWork?.SetErrorMessage(itm.MakeError("break operator used without cycle"))
+			return null
+		}
+		return new BoxBreak(goLabel)
+	}
+	return null
+}
+
+BoxContinue := class extend BoxExeObj
+{
+	goLabel := BoxLabel^
+	this := !(BoxLabel^ itm) -> void
+	{
+		goLabel = itm
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
@@ -46,22 +63,9 @@ BoxContinue := class extend BoxExeObj
 BoxBreak := class extend BoxExeObj
 {
 	goLabel := BoxLabel^
-	this := !(Token^ itm) -> void
+	this := !(BoxLabel^ itm) -> void
 	{
-		for it : UnitStack
-		{
-			if it is in BoxBlockBreak
-			{
-				block := it->{BoxBlock^}
-				goLabel = block.GetQuitLabel()
-				break
-			}
-		}
-		if goLabel == null
-		{
-			CurrentWork?.SetErrorMessage(itm.MakeError("break operator used without cycle"))
-			return void
-		}
+		goLabel = itm
 	}
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
