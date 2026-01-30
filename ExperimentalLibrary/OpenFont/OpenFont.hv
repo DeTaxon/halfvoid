@@ -87,7 +87,7 @@ OpenFontLoader := class
 		offset3.x = 60
 		offset3.y = 60
 
-		for c : ![';']
+		for c : !['J']
 		{
 			id := GetCharId(c)
 
@@ -196,19 +196,29 @@ OpenFontLoader := class
 
 				itr = itr[4]&
 				
-				arg1 := 0
-				arg2 := 0
+				// arg1 := 0
+				// arg2 := 0
+				sArg1 := 0
+				sArg2 := 0
+
+				offst := vec2f
 
 				if (flag and_b 1) != 0
 				{
-					arg1 = FromBigEndian(itr[0]&->{u16^}^)
-					arg2 = FromBigEndian(itr[2]&->{u16^}^)
+					// arg1 = FromBigEndian(itr[0]&->{u16^}^)
+					// arg2 = FromBigEndian(itr[2]&->{u16^}^)
+					sArg1 = FromBigEndian(itr[0]&->{s16^}^)
+					sArg2 = FromBigEndian(itr[2]&->{s16^}^)
 					itr = itr[4]&
 				}else{
-					arg1 = itr[0]
-					arg2 = itr[1]
+					// arg1 = itr[0]
+					// arg2 = itr[1]
+					sArg1 = itr[0]->{s8}
+					sArg2 = itr[1]->{s8}
 					itr = itr[2]&
 				}
+
+				// TODO use scale
 
 				if (flag and_b 0x08) != 0 // we have a scale
 				{
@@ -223,10 +233,16 @@ OpenFontLoader := class
 						itr = itr[2]&
 				}
 
+				if (flag and_b 0x02) != 0
+				{
+					offst.x = sArg1
+					offst.y = sArg2
+				}
+
 				f := GetGlyphById(indx)
 
 				ofst := result.pos.Size()
-				result.pos.Push(f.pos[^])
+				result.pos.Push(f.pos[^] + offst)
 				result.cntrs.Push(f.cntrs[^] + ofst)
 				result.onCurve.Push(f.onCurve[^])
 
