@@ -35,6 +35,10 @@ Image := class
 			return 4
 		}
 	}
+	GetStride := !() -> int 
+	{
+		return GetPixelSize()*Width
+	}
 	ForEachPixelU8 := !(!(int,int,u8^)&->void cb) -> void
 	{
 		for i : Height

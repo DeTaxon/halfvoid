@@ -58,3 +58,7 @@ SetAllocator := !(IAllocator^ alc) -> void
 	CurrentAllocator = alc
 }
 
+hv_malloc := !(int size) -> void^
+{
+	return GetAllocator().AllocMem(size)
+}

@@ -8,13 +8,15 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	// OpenFontTest()
+	OpenFontTest()
 	// makeSpirv()
 	// tst()
 	//
 	// vec := int[]
 	// vec.Push(5[^])
 	// c := 2 in vec
+	//
+	// RandInt() should fail
 }
 
 
