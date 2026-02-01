@@ -9,10 +9,10 @@ AppendClass VulkanInstance
 		cb(tmpCmd&)
 		tmpCmd.Stop()
 		
-		Funcs.vkResetFences(LogicalDevice,1,itGlobFence&)
-		tmpCmd.Submit(TransferQueue,itGlobFence)
+		Funcs.vkResetFences(LogicalDevice,1, transferFence&)
+		tmpCmd.Submit(TransferQueue,transferFence)
 
-		Funcs.vkWaitForFences(LogicalDevice,1,itGlobFence&,0,not_b 0U)
+		Funcs.vkWaitForFences(LogicalDevice,1,transferFence&,0,not_b 0U)
 	}
 	PushDrawQueueAndWait := !( !(TVkCommandBuffer^)&->void cb) -> void
 	{
@@ -29,6 +29,7 @@ AppendClass VulkanInstance
 	}
 
 	itGlobFence := VkFence //TODO i need more then one in future
+	transferFence := VkFence
 	itDrawCmdPool2 := TVkCommandBufferPool^
 	initCmdBuffer := !() -> void
 	{
@@ -38,6 +39,7 @@ AppendClass VulkanInstance
 		
 		crtFence := VkFenceCreateInfo()
 		Funcs.vkCreateFence(LogicalDevice,crtFence&,null,itGlobFence&)
+		Funcs.vkCreateFence(LogicalDevice,crtFence&,null,transferFence&)
 	}
 
 	CreateCmdPool := !() -> TVkCommandBufferPool^
