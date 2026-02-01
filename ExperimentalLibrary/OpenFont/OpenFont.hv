@@ -90,7 +90,7 @@ OpenFontLoader := class
 		offset3.x = 60
 		offset3.y = 60
 
-		testChar := 'R'
+		testChar := '#'
 		printf("hey %i\n",testChar)
 
 		for c : ![testChar]
@@ -137,28 +137,19 @@ OpenFontLoader := class
 				dist := 1
 				prevPos := ps[0]
 				i := 1
-				color := Color("red")
 
 				scl := vec2f(pixelSize) / per
-
-				prevPixelX := -1
-				prevPixelY := -1
-				prevIsLine := bool
 
 				drawBezier := (vec2f x, vec2f y, vec2f z) ==>
 				{
 					fillVal := x.y < z.y ?: 1 : 2
+					leftGo := x.x > z.x
 
 					x *= scl
 					y *= scl
 					z *= scl
 
-					if prevIsLine
-					{
-						tmp[prevPixelX + prevPixelY*pixelSize] = fillVal
-					}
-
-					pres := 360
+					pres := 260
 					for i : 0..pres
 					{
 						proc := i / pres
@@ -174,11 +165,14 @@ OpenFontLoader := class
 						pointX := point.x->{int}
 						pointY := point.y->{int}
 
-						tmp[pId] = fillVal
+						if leftGo
+						{
+							if not (tmp[pId] == 1 and fillVal == 2)
+								tmp[pId] = fillVal
+						}else{
+							tmp[pId] = fillVal
+						}
 					}
-					prevIsLine = x.y->{int} == z.y->{int}
-					prevPixelX = z.x
-					prevPixelY = z.y
 				}
 				drawLine := (vec2f x, vec2f y) ==> 
 				{
@@ -187,25 +181,47 @@ OpenFontLoader := class
 					x *= scl
 					y *= scl
 
-					pres := 360
-					for i : 0..pres
+					vc := y - x
+
+					diffX := Abs(x.x - y.x)->{int}
+					diffY := Abs(x.y - y.y)->{int}
+
+					leftGo := x.x > y.x
+
+					pres := 4
+
+					if diffX > diffY
 					{
-						proc := i / pres
-						anti := 1.0 - proc
+						for i : (diffX*pres + 1)
+						{
+							mag := i /  (diffX*pres)
+							point := x + vc*mag
+							pId := point.x->{int} + point.y->{int}*pixelSize
 
-						point := x*anti + y*proc
+							if leftGo
+							{
+								if not (tmp[pId] == 1 and fillVal == 2)
+									tmp[pId] = fillVal
+							}else{
+								tmp[pId] = fillVal
+							}
+						}
+					}else{
+						for i : (diffY*pres + 1)
+						{
+							mag := i /  (diffY*pres)
+							point := x + vc*mag
+							pId := point.x->{int} + point.y->{int}*pixelSize
 
-						pId := point.x->{int} + point.y->{int}*pixelSize
-
-						pointX := point.x->{int}
-						pointY := point.y->{int}
-
-						tmp[pId] = fillVal
+							if leftGo
+							{
+								if not (tmp[pId] == 1 and fillVal == 2)
+									tmp[pId] = fillVal
+							}else{
+								tmp[pId] = fillVal
+							}
+						}
 					}
-					prevIsLine = true
-					prevPixelX = y.x
-					prevPixelY = y.y
-					
 				}
 
 				while i < ps.Size()
@@ -248,7 +264,7 @@ OpenFontLoader := class
 				{
 					id := ln*pixelSize + j
 
-					if tmp[id] == 1
+					if tmp[id] == 1 or tmp[id] == 4
 					{
 						j += 1
 						while j < pixelSize and tmp[ln*pixelSize + j] != 2
@@ -275,6 +291,7 @@ OpenFontLoader := class
 						case 1 col = Color("green")
 						case 2 col = Color("red")
 						case 3 col = Color("blue")
+						case 4 col = Color("yellow")
 						}
 						img.SetPixel(vec2f(i+20,j+20),col)
 					}
