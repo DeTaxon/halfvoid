@@ -57,10 +57,10 @@ OpenTypeTableHeader := packed_class
 OpenTypeGlyf := packed_class
 {
 	numOfContours := s16
-	xMin := u16
-	yMin := u16
-	xMax := u16
-	yMax := u16
+	xMin := s16
+	yMin := s16
+	xMax := s16
+	yMax := s16
 }
 
 OpenTypeFormat4 := packed_class 

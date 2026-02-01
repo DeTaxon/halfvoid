@@ -34,6 +34,20 @@ Color := class
 		b = setB
 		a = setA
 	}
+	this := !(float bw) -> void
+	{
+		r = bw
+		g = bw
+		b = bw
+		a = 1.0
+	}
+	this := !(float bw,float alpha) -> void
+	{
+		r = bw
+		g = bw
+		b = bw
+		a = alpha
+	}
 
 	"=" := default
 }

@@ -62,3 +62,7 @@ hv_malloc := !(int size) -> void^
 {
 	return GetAllocator().AllocMem(size)
 }
+hv_free := !(void^ ptr) -> void
+{
+	return GetAllocator().FreeMem(ptr)
+}
