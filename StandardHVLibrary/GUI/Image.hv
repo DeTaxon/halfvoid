@@ -84,6 +84,21 @@ Image := class
 		assert(false)
 	}
 
+	SetPixel := !(vec2f pos, Color color) -> void
+	{
+		if pos.x < 0 or pos.x->{int} >= Width
+			return void
+		if pos.y < 0 or pos.y->{int} >= Height
+			return void
+
+		pId := (pos.x->{int} + pos.y->{int}*Width)*4
+
+		Data[pId + 0] = color.r*255 
+		Data[pId + 1] = color.g*255 
+		Data[pId + 2] = color.b*255 
+		Data[pId + 3] = color.a*255 
+	}
+
 	DrawLine := !(vec2f point1,vec2f point2,Color color) -> void
 	{
 		if point1.x < 0 or point2.x < 0

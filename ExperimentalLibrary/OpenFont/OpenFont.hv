@@ -84,13 +84,13 @@ OpenFontLoader := class
 
 		per := FromBigEndian(head.unitsPerEm)
 
-		pixelSize := 256
+		pixelSize := 400
 
 		offset3 := vec2f
 		offset3.x = 60
 		offset3.y = 60
 
-		testChar := '2'
+		testChar := 'R'
 		printf("hey %i\n",testChar)
 
 		for c : ![testChar]
@@ -106,7 +106,7 @@ OpenFontLoader := class
 			onCurve := ref glp.onCurve
 
 			
-			tmp := hv_malloc(pixelSize*pixelSize)->{bool^}
+			tmp := hv_malloc(pixelSize*pixelSize)->{u8^}
 
 			// for i : pixelSize*pixelSize
 			// 	tmp[i] = (RandInt(0..255) and_b 1) != 0
@@ -141,13 +141,24 @@ OpenFontLoader := class
 
 				scl := vec2f(pixelSize) / per
 
+				prevPixelX := -1
+				prevPixelY := -1
+				prevIsLine := bool
+
 				drawBezier := (vec2f x, vec2f y, vec2f z) ==>
 				{
+					fillVal := x.y < z.y ?: 1 : 2
+
 					x *= scl
 					y *= scl
 					z *= scl
 
-					pres := 60
+					if prevIsLine
+					{
+						tmp[prevPixelX + prevPixelY*pixelSize] = fillVal
+					}
+
+					pres := 360
 					for i : 0..pres
 					{
 						proc := i / pres
@@ -163,15 +174,20 @@ OpenFontLoader := class
 						pointX := point.x->{int}
 						pointY := point.y->{int}
 
-						tmp[pId] = true
+						tmp[pId] = fillVal
 					}
+					prevIsLine = x.y->{int} == z.y->{int}
+					prevPixelX = z.x
+					prevPixelY = z.y
 				}
 				drawLine := (vec2f x, vec2f y) ==> 
 				{
+					fillVal := x.y < y.y ?: 1 : 2
+
 					x *= scl
 					y *= scl
 
-					pres := 160
+					pres := 360
 					for i : 0..pres
 					{
 						proc := i / pres
@@ -184,8 +200,11 @@ OpenFontLoader := class
 						pointX := point.x->{int}
 						pointY := point.y->{int}
 
-						tmp[pId] = true
+						tmp[pId] = fillVal
 					}
+					prevIsLine = true
+					prevPixelX = y.x
+					prevPixelY = y.y
 					
 				}
 
@@ -221,47 +240,43 @@ OpenFontLoader := class
 				}
 			}
 
-			// for ln : pixelSize
-			// {
-			// 	prevIsSet := false
-			// 	j := 0
-			// 	while j < (pixelSize - 1)
-			// 	{
-			// 		id := ln*pixelSize + j
-			//
-			// 		if tmp[id]
-			// 		{
-			// 			if tmp[id + 1]
-			// 			{
-			// 				while j < pixelSize and tmp[ln*pixelSize + j]
-			// 				{
-			// 					j += 1
-			// 				}
-			// 			}else{
-			// 				j += 1
-			// 				while j < pixelSize and not tmp[ln*pixelSize + j]
-			// 				{
-			// 					tmp[ln*pixelSize + j] = true
-			// 					j += 1
-			// 				}
-			//
-			// 			}
-			// 		}else{
-			// 			j += 1
-			// 		}
-			// 	}
-			// }
+			for ln : pixelSize
+			{
+				prevIsSet := false
+				j := 0
+				while j < (pixelSize - 1)
+				{
+					id := ln*pixelSize + j
+
+					if tmp[id] == 1
+					{
+						j += 1
+						while j < pixelSize and tmp[ln*pixelSize + j] != 2
+						{
+							tmp[ln*pixelSize + j] = 3
+							j += 1
+						}
+					}else{
+						j += 1
+					}
+				}
+			}
 
 			st := img.GetStride()
 			for i : pixelSize
 			{
 				for j : pixelSize
 				{
-					if tmp[j*pixelSize + i]
+					if tmp[j*pixelSize + i] != 0
 					{
-						img.Data[st*(j + 20) + 20 + i*4] = 0
-						img.Data[st*(j + 20) + 20 + i*4 + 1] = 0
-						img.Data[st*(j + 20) + 20 + i*4 + 2] = 0
+						col := Color
+						switch tmp[j*pixelSize + i]
+						{
+						case 1 col = Color("green")
+						case 2 col = Color("red")
+						case 3 col = Color("blue")
+						}
+						img.SetPixel(vec2f(i+20,j+20),col)
 					}
 				}
 			}
