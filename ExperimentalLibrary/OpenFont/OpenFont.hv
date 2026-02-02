@@ -93,16 +93,16 @@ OpenFontLoader := class
 
 		aliasScale := 8
 
-		targetSize := 26
+		targetSize := 22
 		pixelSize := targetSize*aliasScale
 
 		offset3.x = 0
 		offset3.y = 0
 
-		testChar := '<'
-		printf("hey %i\n",testChar)
-		drawChar(testChar,img,pixelSize,per,aliasScale,targetSize)
-		return void
+		// testChar := '<'
+		// printf("hey %i\n",testChar)
+		// drawChar(testChar,img,pixelSize,per,aliasScale,targetSize)
+		// return void
 
 		for c : 'a'..'z'
 		{
@@ -118,7 +118,7 @@ OpenFontLoader := class
 		}
 
 		extra := Str 
-		extra = ";:!@#$%^&*(){}[]\"<>,.~"
+		extra = ";:!@#$%^&*(){}[]\"<>,.~_-"
 		for c : extra.Size()
 		{
 			drawChar(extra[c],img,pixelSize,per,aliasScale,targetSize)
@@ -158,6 +158,10 @@ OpenFontLoader := class
 		// for i : pixelSize*pixelSize
 		// 	tmp[i] = (RandInt(0..255) and_b 1) != 0
 
+		scl := vec2f(pixelSize) / per
+		ofst := vec2f(-glp.rangeX.Start*pixelSize / per,-glp.rangeY.Start*pixelSize / per)
+		ofst += vec2f(aliasScale,aliasScale)
+
 		startIndex := 0
 		for cntr : cntrVec
 		{
@@ -185,9 +189,6 @@ OpenFontLoader := class
 			prevPos := ps[0]
 			i := 1
 
-			scl := vec2f(pixelSize) / per
-			ofst := vec2f(-glp.rangeX.Start*pixelSize / per,downHeight)
-			ofst += vec2f(aliasScale,aliasScale)
 
 			drawPixel := (vec2f point, bool leftGo,bool halfPassed, int fillVal) ==> 
 			{
@@ -336,7 +337,7 @@ OpenFontLoader := class
 		// st := img.GetStride()
 		// for i : pixelWidth
 		// {
-		// 	for j : pixelSize
+		// 	for j : pixelHeight
 		// 	{
 		// 		if tmp[j*pixelWidth + i] != 0
 		// 		{
