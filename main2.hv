@@ -17,6 +17,7 @@ RunFunc := !() -> void
 	// c := 2 in vec
 	//
 	// RandInt() should fail
+	// if true xor true {}
 }
 
 

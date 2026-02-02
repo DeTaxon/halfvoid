@@ -93,13 +93,13 @@ OpenFontLoader := class
 
 		aliasScale := 8
 
-		targetSize := 22
+		targetSize := 26
 		pixelSize := targetSize*aliasScale
 
 		offset3.x = 0
 		offset3.y = 0
 
-		// testChar := 'B'
+		// testChar := 'y'
 		// printf("hey %i\n",testChar)
 		// drawChar(testChar,img,pixelSize,per,aliasScale,targetSize)
 		// return void
@@ -115,6 +115,13 @@ OpenFontLoader := class
 		for c : '0'..'9'
 		{
 			drawChar(c,img,pixelSize,per,aliasScale,targetSize)
+		}
+
+		extra := Str 
+		extra = ";:!@#$%^&*(){}[]\"<>,.~"
+		for c : extra.Size()
+		{
+			drawChar(extra[c],img,pixelSize,per,aliasScale,targetSize)
 		}
 	}
 	offset3 := vec2f
@@ -135,11 +142,17 @@ OpenFontLoader := class
 		downHeight := 0
 		if glp.rangeY.Start < 0
 			downHeight = ((-glp.rangeY.Start)*pixelSize + per - 1) div per
+		leftWidth := 0
+		if glp.rangeX.Start < 0
+			leftWidth = ((-glp.rangeX.Start)*pixelSize + per - 1) div per
+		pixelHeight := ((glp.rangeY.End - glp.rangeY.Start)*pixelSize) div per
+		pixelHeight += 2
 		// printf("hey %f\n",glp.rangeY.Start / per)
-		pixelWidth := (glp.rangeX.End*pixelSize + per - 1) div per
+		pixelWidth := ((glp.rangeX.End - glp.rangeX.Start)*pixelSize) div per
+		pixelWidth += 2
 
 		
-		tmp := hv_malloc(pixelWidth*(pixelSize + downHeight))->{u8^}
+		tmp := hv_malloc(pixelWidth*pixelHeight)->{u8^}
 		// defer hv_free(tmp)
 
 		// for i : pixelSize*pixelSize
@@ -173,7 +186,19 @@ OpenFontLoader := class
 			i := 1
 
 			scl := vec2f(pixelSize) / per
-			ofst := vec2f(0.0,downHeight)
+			ofst := vec2f(0,downHeight)
+
+			drawPixel := (vec2f point, bool leftGo,bool halfPassed, int fillVal) ==> 
+			{
+				pId := point.x->{int} + point.y->{int}*pixelWidth
+				if leftGo
+				{
+					if not (tmp[pId] == 1 and fillVal == 2) or halfPassed
+						tmp[pId] = fillVal
+				}else{
+					tmp[pId] = fillVal
+				}
+			}
 
 			drawBezier := (vec2f x, vec2f y, vec2f z) ==>
 			{
@@ -195,18 +220,7 @@ OpenFontLoader := class
 
 					point := t1*anti + t2*proc
 
-					pId := point.x->{int} + point.y->{int}*pixelWidth
-
-					pointX := point.x->{int}
-					pointY := point.y->{int}
-
-					if leftGo
-					{
-						if not (tmp[pId] == 1 and fillVal == 2)
-							tmp[pId] = fillVal
-					}else{
-						tmp[pId] = fillVal
-					}
+					drawPixel(point,leftGo, proc > 0.5,fillVal)
 				}
 			}
 			drawLine := (vec2f x, vec2f y) ==> 
@@ -233,32 +247,17 @@ OpenFontLoader := class
 					{
 						mag := i /  (diffX*pres)
 						point := x + vc*mag
-						pId := point.x->{int} + point.y->{int}*pixelWidth
-
-						if leftGo
-						{
-							if not (tmp[pId] == 1 and fillVal == 2)
-								tmp[pId] = fillVal
-						}else{
-							tmp[pId] = fillVal
-						}
+						drawPixel(point,leftGo,mag > 0.5,fillVal)
 					}
 				}else{
 					for i : (diffY*pres + 1)
 					{
 						mag := i /  (diffY*pres)
 						point := x + vc*mag
-						pId := point.x->{int} + point.y->{int}*pixelWidth
-
-						if leftGo
-						{
-							if not (tmp[pId] == 1 and fillVal == 2)
-								tmp[pId] = fillVal
-						}else{
-							tmp[pId] = fillVal
-						}
+						drawPixel(point,leftGo,mag > 0.5,fillVal)
 					}
 				}
+				drawPixel(y,leftGo,true,fillVal)
 			}
 
 			while i < ps.Size()
@@ -293,7 +292,7 @@ OpenFontLoader := class
 			}
 		}
 
-		for ln : pixelSize
+		for ln : pixelHeight
 		{
 			prevIsSet := false
 			j := 0
@@ -337,9 +336,9 @@ OpenFontLoader := class
 
 		blockSize := aliasScale*aliasScale
 
-		for w : targetSize
+		for w : pixelWidth div aliasScale
 		{
-			for h : (targetSize + (downHeight div aliasScale))
+			for h : pixelHeight div aliasScale
 			{
 				cntr := 0
 
@@ -359,8 +358,8 @@ OpenFontLoader := class
 
 		// printf("hey %f\n",glp.advanceWidth / per)
 		// offset3.x += glp.advanceWidth*targetSize / per
-		glW := (targetSize*glp.rangeX.End + per - 1) div per
-		glH := (targetSize*(glp.rangeY.End - glp.rangeY.Start) + per - 1) div per
+		glW :=  pixelWidth div aliasScale
+		glH := pixelHeight div aliasScale
 		offset3.x += glW
 
 		maxH = max(maxH,glH)
@@ -443,18 +442,36 @@ OpenFontLoader := class
 				}
 
 				// TODO use scale
+				scaleX := 1.0
+				scaleY := 1.0
+
+				f2D14ToFloat := (s16 val) ==> float
+				{
+					result = FromBigEndian(val)
+					for 14
+						result = result*0.5 //TODO optimize
+				}
 
 				if (flag and_b 0x08) != 0 // we have a scale
 				{
+					scaleX = f2D14ToFloat(itr->{s16^}^)
+					scaleY = scaleX
 					itr = itr[2]&
+					printf("a\n")
+
 				}else if (flag and_b 0x40) != 0 // scale x y
 				{
+					scaleX = f2D14ToFloat(itr->{s16^}^)
 					itr = itr[2]&
+					scaleY = f2D14ToFloat(itr->{s16^}^)
 					itr = itr[2]&
+					printf("b %f %f\n",scaleX,scaleY)
 				}else if (flag and_b 0x80) != 0
 				{
 					for 4
 						itr = itr[2]&
+					//TODO rotation
+					printf("c\n")
 				}
 
 				if (flag and_b 0x02) != 0
@@ -466,9 +483,27 @@ OpenFontLoader := class
 				f := GetGlyphById(indx)
 
 				ofst := result.pos.Size()
-				result.pos.Push(f.pos[^] + offst)
+				scl := vec2f(scaleX,scaleY)
 				result.cntrs.Push(f.cntrs[^] + ofst)
 				result.onCurve.Push(f.onCurve[^])
+
+				if scaleX < 0.0 //xor scaleY < 0.0 //TODO use xor
+				{
+					prevId := 0
+					for it : f.cntrs
+					{
+						result.pos.Push(f.pos[prevId]*scl + offst)
+						j := it
+						while j > prevId
+						{
+							result.pos.Push(f.pos[j]*scl + offst)
+							j -= 1
+						}
+						prevId = it
+					}
+				}else{
+					result.pos.Push(f.pos[^]*scl + offst)
+				}
 
 				if (flag and_b 0x20) == 0
 					break
