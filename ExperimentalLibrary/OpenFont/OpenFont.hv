@@ -99,7 +99,7 @@ OpenFontLoader := class
 		offset3.x = 0
 		offset3.y = 0
 
-		testChar := ','
+		testChar := '<'
 		printf("hey %i\n",testChar)
 		drawChar(testChar,img,pixelSize,per,aliasScale,targetSize)
 		return void
@@ -207,8 +207,6 @@ OpenFontLoader := class
 
 			drawBezier := (vec2f x, vec2f y, vec2f z) ==>
 			{
-				fillVal := x.y < z.y ?: 1 : 2
-				leftGo := x.x > z.x
 
 				x = x*scl + ofst
 				y = y*scl + ofst
@@ -225,9 +223,24 @@ OpenFontLoader := class
 
 					point := t1*anti + t2*proc
 
+					eps := 0.001
+
+					proc2 := proc + 0.001
+					anti2 := 1.0 - proc2
+
+					t3 := x*anti2 + y*proc2
+					t4 := y*anti2 + z*proc2
+
+					p2 := t3*anti2 + t4*proc2
+
+					deltaX := p2.x - point.x
+					deltaY := p2.y - point.y
+
+					leftGo := deltaX < 0
+					fillVal := deltaY > 0 ?: 1 : 2
+
 					drawPixel(point,leftGo, proc > 0.5,fillVal)
 				}
-				drawPixel(z,leftGo,true,fillVal)
 			}
 			drawLine := (vec2f x, vec2f y) ==> 
 			{
@@ -298,69 +311,69 @@ OpenFontLoader := class
 			}
 		}
 
-		// for ln : pixelHeight
-		// {
-		// 	prevIsSet := false
-		// 	j := 0
-		// 	while j < (pixelWidth - 1)
-		// 	{
-		// 		id := ln*pixelWidth + j
-		//
-		// 		if tmp[id] == 1 or tmp[id] == 4
-		// 		{
-		// 			j += 1
-		// 			while j < pixelWidth and tmp[ln*pixelWidth + j] != 2
-		// 			{
-		// 				tmp[ln*pixelWidth + j] = 3
-		// 				j += 1
-		// 			}
-		// 		}else{
-		// 			j += 1
-		// 		}
-		// 	}
-		// }
-
-		st := img.GetStride()
-		for i : pixelWidth
+		for ln : pixelHeight
 		{
-			for j : pixelSize
+			prevIsSet := false
+			j := 0
+			while j < (pixelWidth - 1)
 			{
-				if tmp[j*pixelWidth + i] != 0
+				id := ln*pixelWidth + j
+
+				if tmp[id] == 1 or tmp[id] == 4
 				{
-					col := Color
-					switch tmp[j*pixelWidth + i]
+					j += 1
+					while j < pixelWidth and tmp[ln*pixelWidth + j] != 2
 					{
-					case 1 col = Color("green")
-					case 2 col = Color("red")
-					case 3 col = Color("blue")
-					case 4 col = Color("yellow")
+						tmp[ln*pixelWidth + j] = 3
+						j += 1
 					}
-					img.SetPixel(vec2f(i+20,j+20),col)
+				}else{
+					j += 1
 				}
 			}
 		}
 
-		blockSize := aliasScale*aliasScale
-
-		// for w : pixelWidth div aliasScale
+		// st := img.GetStride()
+		// for i : pixelWidth
 		// {
-		// 	for h : pixelHeight div aliasScale
+		// 	for j : pixelSize
 		// 	{
-		// 		cntr := 0
-		//
-		// 		for i2 : aliasScale
+		// 		if tmp[j*pixelWidth + i] != 0
 		// 		{
-		// 			for j2 : aliasScale
+		// 			col := Color
+		// 			switch tmp[j*pixelWidth + i]
 		// 			{
-		// 				if tmp[i2 + w*aliasScale + (j2 + h*aliasScale)*pixelWidth] != 0
-		// 					cntr += 1
+		// 			case 1 col = Color("green")
+		// 			case 2 col = Color("red")
+		// 			case 3 col = Color("blue")
+		// 			case 4 col = Color("yellow")
 		// 			}
+		// 			img.SetPixel(vec2f(i+20,j+20),col)
 		// 		}
-		//
-		// 		sat := 1.0 - cntr / blockSize
-		// 		img.SetPixel(vec2f(w,h) + offset3,Color(sat))
 		// 	}
 		// }
+
+		blockSize := aliasScale*aliasScale
+
+		for w : pixelWidth div aliasScale
+		{
+			for h : pixelHeight div aliasScale
+			{
+				cntr := 0
+
+				for i2 : aliasScale
+				{
+					for j2 : aliasScale
+					{
+						if tmp[i2 + w*aliasScale + (j2 + h*aliasScale)*pixelWidth] != 0
+							cntr += 1
+					}
+				}
+
+				sat := 1.0 - cntr / blockSize
+				img.SetPixel(vec2f(w,h) + offset3,Color(sat))
+			}
+		}
 
 		// printf("hey %f\n",glp.advanceWidth / per)
 		// offset3.x += glp.advanceWidth*targetSize / per
