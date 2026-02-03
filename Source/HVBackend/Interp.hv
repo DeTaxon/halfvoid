@@ -388,6 +388,18 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					spc = 1
 				if spcFloat < 0
 					spc = -1
+			}else if objTyp == GTypeBool {
+				v1 := thisFrame.GetObjectPtr(thisLine.var2)->{bool^}
+				v2 := thisFrame.GetObjectPtr(thisLine.var4)->{bool^}
+
+				if v1^ == v2^
+				{
+					spc = 0
+				}else if v1^ {
+					spc = 1
+				}else{
+					spc = -1
+				}
 			}else{
 				printf("failed to cmp, unknown type %s\n",objTyp.GetBADStr().Str())
 				assert(false)

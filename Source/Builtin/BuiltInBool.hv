@@ -11,7 +11,8 @@ CreateBuiltinsBool := !() -> void
 	bSpace.Functions["=="].Push(new BuiltInIntBase(cmpType,"icmp eq") )
 	bSpace.Functions["!="].Push(new BuiltInIntBase(cmpType,"icmp ne") )
 	bSpace.Functions[". not"].Push(new BuiltInBoolNot() )
-	bSpace.Functions["<=>"].Push(new BuildInSpaceShipBool() )
+	bSpace.Functions["<=>"].Push(new BuildInSpaceShipBool())
+	bSpace.Functions["xor"].Push(new BuildInBoolXor())
 }
 
 BuiltInBoolNot := class extend BoxFuncCommon
@@ -36,6 +37,40 @@ BuiltInBoolNot := class extend BoxFuncCommon
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
+	}
+}
+BuildInBoolXor := class extend BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeBool,GTypeBool],GTypeBool))
+	}
+	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	{
+		lst[^].PrintPre(ctx)
+		
+		f := ctx.writeStream
+		tFunc := GetType()->{TypeFunc^}
+		tp := tFunc.Params[0].ItType
+
+		f^ << "%T" << resId << " = xor " 
+		tp.PrintType(ctx)
+		f^ << " "
+		lst[0].PrintUse(ctx)
+		f^ << ", "
+		lst[1].PrintUse(ctx)
+		if DebugMode
+			f^ << " , !dbg !" << GDebugLineCallId
+		f^ << "\n"
+	}
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
+	{
+		var1 := indexes[0].WriteMC(ctx).CreatedId
+		var2 := indexes[1].WriteMC(ctx).CreatedId
+		newVar := ctx.CreateVar(GTypeBool)
+		HVB_ins_xor(ctx,newVar,var1,var2)
+		result.CreatedId = newVar
 	}
 }
 BuildInSpaceShipBool := class extend BoxFuncCommon
