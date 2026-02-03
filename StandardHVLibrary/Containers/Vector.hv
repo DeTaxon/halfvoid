@@ -114,6 +114,12 @@ Vector := class .{@T} //extend TArrayView.{T}
 		Resize(other.Size())
 		this[^i] = other[i]
 	}
+	"in" := !(T obj) -> bool
+	{
+		if this[^] == obj
+			return true
+		return false
+	}
 
 	MoveFrom := !(Vector.{T} other) -> void
 	{
