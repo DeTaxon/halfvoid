@@ -2,7 +2,7 @@
 
 CondClass := class
 {
-	if #Var("Test")
+	if #Var("Test") and #Var("UseExtra")
 	{
 		x := int
 		y := int

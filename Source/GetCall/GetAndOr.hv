@@ -32,12 +32,15 @@ TryGetAndOrCall := !(Token^ itm) -> BoxExeObj^
 
 	if oper == "or"
 	{
-		if cl2 == GBoolTrue //TODO memory leak, must delete cl1
+		if cl2 == GBoolTrue
 			return cl2
 		return new BoxOr(cl1,cl2,qc)
 	}
 	if cl2 == GBoolFalse
-		return cl2 //TODO memory leak, must delete cl1
+		return cl2
+	
+	if cl1 == GBoolTrue and cl2 == GBoolTrue
+		return cl1
 	return new BoxAnd(cl1,cl2)
 }
 
