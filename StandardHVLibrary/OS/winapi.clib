@@ -82,6 +82,7 @@
 
 		"VirtualAlloc" : "void^,void^,u64,u32,u32",
 		"VirtualProtect" : "void^,void^,u64,u32,u32^",
+		"VirtualFree" : "void,void^",
 
 		"InitializeCriticalSectionAndSpinCount" : "void,void^,int",
 		"EnterCriticalSection" : "void,void^",

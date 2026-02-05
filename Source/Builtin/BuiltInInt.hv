@@ -337,6 +337,10 @@ CreateBuiltinsInt := !() -> void
 		bSpace.Functions["or_b"].Push(new BuiltInIntBase(strt,"or") )
 		bSpace.Functions["xor_b"].Push(new BuiltInIntBase(strt,"xor") )
 
+		bSpace.Functions["and_b="].Push(new BuiltInIntEqAndOper(baseRefed,"and") )
+		bSpace.Functions["or_b="].Push(new BuiltInIntEqAndOper(baseRefed,"or") )
+		bSpace.Functions["xor_b="].Push(new BuiltInIntEqAndOper(baseRefed,"xor") )
+
 		bSpace.Functions[". not_b"].Push(new BuiltInIntMinus(unarMinusType,"xor","-1") )
 
 		if isSigned

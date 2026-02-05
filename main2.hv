@@ -8,6 +8,9 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
+	x := 5
+	x xor_b= 1
+	printf("wut %i\n",x)
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()

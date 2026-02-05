@@ -19,6 +19,12 @@ AppendClass BuiltInIntEqAndOper
 			ctx.lines.Push(MCLine("mul",var1.CreatedId,var1.CreatedId,var2.CreatedId))
 		case "mul"
 			ctx.lines.Push(MCLine("mul",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "and"
+			ctx.lines.Push(MCLine("and",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "or"
+			ctx.lines.Push(MCLine("or",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "xor"
+			ctx.lines.Push(MCLine("xor",var1.CreatedId,var1.CreatedId,var2.CreatedId))
 		case void
 			assert(false)
 		}
