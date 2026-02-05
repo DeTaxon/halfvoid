@@ -1,5 +1,17 @@
 
 
+CondClass := class
+{
+	if #Var("Test")
+	{
+		x := int
+		y := int
+	}else{
+		a := int
+		b := int
+	}
+}
+
 
 main := !(char^[] args) -> int
 {
@@ -8,9 +20,11 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	x := 5
-	x xor_b= 1
-	printf("wut %i\n",x)
+	tst := CondClass
+	for it,ind : tst->#AllFields
+	{
+		printf("Field %s %i\n",ind,it)
+	}
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()

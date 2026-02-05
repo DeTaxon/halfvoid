@@ -1,5 +1,3 @@
-
-
 PClassParser := class
 {
 	isFound := bool
@@ -478,6 +476,11 @@ BoxClassBody := class extend BoxClassPoison
 	}
 	checkBodyElement := !(Token^ bodyVal,Token^ iter,ClassReloadOldData^ oldData,@TT funcs) -> void
 	{
+		asBlock := TryParseBlockInFile(iter)
+		if asBlock is BoxBlock
+		{
+			checkClassBody(asBlock.down,oldData,funcs)
+		}
 		if iter.Down?.Right?.GetValue() == ":="
 		{
 			assert(iter.Down is TokenIndent or iter.Down is TokenString) // left of := can only be name by syntax creation
