@@ -128,7 +128,7 @@ centf := class
 	}
 	Apply := !(vec4f toSet) -> vec4f
 	{
-		preRes :=  (ang*toSet) + pos 
+		preRes :=  ApplyQuaternion(ang,toSet) + pos 
 		preRes.w = toSet.w * pos.w
 		return preRes
 	}
