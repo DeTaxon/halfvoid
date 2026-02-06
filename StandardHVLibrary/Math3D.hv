@@ -6,13 +6,13 @@
 	w := (a * b.xyzw) <+> quantf(-1.0f,-1.0f,-1.0f, 1.0f)
 	return quantf(x,y,z,w)
 }
-// "*" := !(quantf a, vec4f b) -> vec4f
-// {
-// 	c := quantf(b.x,b.y,b.z,0.0f)
-// 	revA := quantf(-(a.x),-(a.y),-(a.z),a.w)
-// 	preRes := (a <*> c) <*>revA
-// 	return vec4f(preRes.x,preRes.y,preRes.z,b.w)
-// }
+"ApplyQuaternion" := !(quantf a, vec4f b) -> vec4f
+{
+	c := quantf(b.x,b.y,b.z,0.0f)
+	revA := quantf(-(a.x),-(a.y),-(a.z),a.w)
+	preRes := (a <*> c) <*>revA
+	return vec4f(preRes.x,preRes.y,preRes.z,b.w)
+}
 "<*>" := !(vec4f a, vec4f b) -> vec4f
 {
 	preR := vec4f
@@ -117,7 +117,7 @@ centf := class
 	"<*>" := !(centf toAdd) -> centf
 	{
 		result.ang = ang <*> toAdd.ang
-		result.pos = ang * toAdd.pos 
+		result.pos = ApplyQuaternion(ang,toAdd.pos) 
 		result.pos = result.pos + pos
 		result.pos.w = pos.w*toAdd.pos.w
 	}
@@ -139,7 +139,7 @@ centf := class
 	Inverse := !() -> centf
 	{
 		result.ang = quantf(-ang.x,-ang.y,-ang.z,ang.w)
-		result.pos = result.ang*pos
+		result.pos = ApplyQuaternion(result.ang,pos)
 		result.pos.x *= -1.0f
 		result.pos.y *= -1.0f
 		result.pos.z *= -1.0f
