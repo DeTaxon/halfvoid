@@ -372,7 +372,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					case "add" res = v1 + v2
 					case "sub" res = v1 - v2
 					case "mul" res = v1 * v2
-					// case "div" res = v1 / v2
+					case "div" res = v1 / v2
 					}
 
 					thisFrame.StoreVec4i(thisLine.var1,res)
@@ -480,16 +480,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				if toType.Base == GTypeInt and fromType.Base == GTypeFloat
 				{
 					val := thisFrame.LoadVec4f(thisLine.var2)
-					val2 := vec4i
-					for i : 4
-						val2&->{int^}[i] = val&->{float^}[i]
-					thisFrame.StoreVec4i(thisLine.var1,val2) // TODO
+					thisFrame.StoreVec4i(thisLine.var1,val)
 				}else if toType.Base == GTypeFloat and fromType.Base == GTypeInt {
 					val := thisFrame.LoadVec4i(thisLine.var2)
-					val2 := vec4f
-					for i : 4
-						val2&->{float^}[i] = val&->{int^}[i]
-					thisFrame.StoreVec4f(thisLine.var1,val2) //TODO
+					thisFrame.StoreVec4f(thisLine.var1,val)
 				}else{
 					assert(false)
 				}
