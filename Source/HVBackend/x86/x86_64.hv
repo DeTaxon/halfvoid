@@ -550,7 +550,7 @@ MCBuildFuncContext_x86_64 := class
 				tp := objs[line.var1].GetType()
 
 				if tp is TypeVector {
-					if IsFloat(tp.Base)
+					if tp.Base == GTypeInt
 					{
 						assert(reg1 >= 16 and reg2 >= 16)
 
@@ -567,7 +567,7 @@ MCBuildFuncContext_x86_64 := class
 						}
 
 						WriteData(0xC0 + (ri1 shl 3) + ri2)
-					}else if tp.Base ==  GTypeInt {
+					}else if IsFloat(tp.Base) {
 						assert(reg1 >= 16 and reg2 >= 16)
 
 						ri1 := reg1 - 16

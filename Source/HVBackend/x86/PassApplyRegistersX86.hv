@@ -504,35 +504,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c++] = it
 			}
 		case in !["sin","cos"]
-			tp := oPtr[it.var2].GetType()
-			assert(IsFloat(tp))
-
-			newObj := MCConstPointerTyped
-			switch tp
-			{
-			case GTypeFloat
-				switch it.opcode
-				{
-				case "sin" newObj.GetValue() = x86_sinf
-				case "cos" newObj.GetValue() = x86_cosf
-				}
-			case GTypeDouble
-				switch it.opcode
-				{
-				case "sin" newObj.GetValue() = x86_sind
-				case "cos" newObj.GetValue() = x86_cosd
-				}
-			}
-			newObj.SetType(GetFuncType(![tp],tp).GetPoint())
-			fncId := o
-			oPtr[o] = newObj
-			o += 1
-
-			cPtr[c] = MCLine("call_start",it.var1,fncId)
-			cPtr[c+1] = MCLine("load_var",it.var2)
-			cPtr[c+2] = MCLine("call_end")
-			cPtr[c+3] = MCLine("mov",it.var1,bldr.PushReg("xmm0",tp))
-			c += 4
+			assert(false)
 		case "memset"
 			newObj := MCConstPointerTyped
 			newObj.GetValue() = memset
@@ -604,8 +576,3 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 	return bldr.GenerateFunc()
 }
-
-x86_sinf := !(float x) -> float { return sin(x) }
-x86_cosf := !(float x) -> float { return cos(x) }
-x86_sind := !(double x) -> double { return sin(x) }
-x86_cosd := !(double x) -> double { return cos(x) }
