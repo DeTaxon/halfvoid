@@ -1,17 +1,5 @@
 
 
-CondClass := class
-{
-	if #Var("Test") and #Var("UseExtra")
-	{
-		x := int
-		y := int
-	}else{
-		a := int
-		b := int
-	}
-}
-
 
 main := !(char^[] args) -> int
 {
@@ -20,11 +8,26 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	tst := CondClass
-	for it,ind : tst->#AllFields
-	{
-		printf("Field %s %i\n",ind,it)
-	}
+	c := vec4i
+	c.x = 3
+	d := vec4i
+	d.x = 4
+	e := c * d
+	printf("wut %i\n",e.x)
+	// c := vec4i(3)
+	// d := vec4i
+	// d = vec4f(13.0)
+	// c.x = 100
+	// c.y = -1
+	//
+	// r := vec4f
+	// r = d
+	//
+	// c = c * d
+	//
+	// printf("Test %i %i %i %i\n",c.x,c.y,c.z,c.w)
+	// printf("Test %i %i %i %i\n",d.x,d.y,d.z,d.w)
+	// printf("Test %f %f %f %f\n",r.x,r.y,r.z,r.w)
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()

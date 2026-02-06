@@ -346,19 +346,39 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 				thisFrame.StoreDouble(thisLine.var1,res)
 			}else if IsVecType(objTyp) {
-				v1 := thisFrame.LoadVec4f(thisLine.var2)
-				v2 := thisFrame.LoadVec4f(thisLine.var3)
-				res := vec4f
-
-				switch thisLine.opcode
+				if IsFloat(objTyp.Base)
 				{
-				case "add" res = v1 + v2
-				case "sub" res = v1 - v2
-				case "mul" res = v1 * v2
-				case "div" res = v1 / v2
-				}
+					v1 := thisFrame.LoadVec4f(thisLine.var2)
+					v2 := thisFrame.LoadVec4f(thisLine.var3)
+					res := vec4f
 
-				thisFrame.StoreVec4f(thisLine.var1,res)
+					switch thisLine.opcode
+					{
+					case "add" res = v1 + v2
+					case "sub" res = v1 - v2
+					case "mul" res = v1 * v2
+					case "div" res = v1 / v2
+					}
+
+					thisFrame.StoreVec4f(thisLine.var1,res)
+				}else if objTyp.Base == GTypeInt
+				{
+					v1 := thisFrame.LoadVec4i(thisLine.var2)
+					v2 := thisFrame.LoadVec4i(thisLine.var3)
+					res := vec4i
+
+					switch thisLine.opcode
+					{
+					case "add" res = v1 + v2
+					case "sub" res = v1 - v2
+					case "mul" res = v1 * v2
+					// case "div" res = v1 / v2
+					}
+
+					thisFrame.StoreVec4i(thisLine.var1,res)
+				}else{
+					assert(false) //TODO int
+				}
 			}else{
 				printf("some add %s\n",objTyp.GetBADStr().Str())
 				assert(false)
@@ -455,6 +475,24 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			{
 				val := thisFrame.LoadDouble(thisLine.var2)
 				thisFrame.StoreS64(thisLine.var1,val)
+			}else if toType is TypeVector and fromType is TypeVector
+			{
+				if toType.Base == GTypeInt and fromType.Base == GTypeFloat
+				{
+					val := thisFrame.LoadVec4f(thisLine.var2)
+					val2 := vec4i
+					for i : 4
+						val2&->{int^}[i] = val&->{float^}[i]
+					thisFrame.StoreVec4i(thisLine.var1,val2) // TODO
+				}else if toType.Base == GTypeFloat and fromType.Base == GTypeInt {
+					val := thisFrame.LoadVec4i(thisLine.var2)
+					val2 := vec4f
+					for i : 4
+						val2&->{float^}[i] = val&->{int^}[i]
+					thisFrame.StoreVec4f(thisLine.var1,val2) //TODO
+				}else{
+					assert(false)
+				}
 			} else
 			{
 				printf("can not cast type %s to %s\n",fromType.GetBADStr().Str(),toType.GetBADStr().Str())

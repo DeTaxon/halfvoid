@@ -80,7 +80,8 @@ BCFuncsType := class
 		result = InterpPassPrepare(result)
 		result.BaseFunction = itm
 
-		// result.Print()
+		// if itm.OutputName == "RunFunc"
+		// 	result.Print()
 		result = PassRemoveSpaceship(result)
 		result = PassSimplifyVectors(result)
 		result = PassRemoveVoidParams(result)
@@ -88,6 +89,7 @@ BCFuncsType := class
 		result = PassRemoveReferences(result)
 		// result = PassOptimizeJumpX86(result)
 		// result.Print()
+		result = PassSetFallbacksX86(result)
 		result = PassApplyRegistersX86(result)
 		// if itm.OutputName == "tst"
 		// 	assert(false)

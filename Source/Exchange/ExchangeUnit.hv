@@ -41,6 +41,8 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ClassInitToObjExchange)
 	ExchangeList.Push(new ClassFromExchangeSet)
 	ExchangeList.Push(new ClassFromExchangeType)
+	ExchangeList.Push(new ExchangeFloatVecToIntVec)
+	ExchangeList.Push(new ExchangeIntVecToFloatVec)
 
 	for it : #MarkedFunctions("ExchangeUnit")
 		it()

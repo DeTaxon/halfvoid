@@ -460,23 +460,42 @@ MCBuildFuncContext_x86_64 := class
 				
 				if tp is TypeVector
 				{
-					r1 := reg1 mod 8
-					r2 := reg2 mod 8
-
-					if tp.Base == GTypeDouble
+					if IsFloat(tp.Base)
 					{
-						WriteData(0x66)
-					}
-					WriteData(0x0F)
+						r1 := reg1 mod 8
+						r2 := reg2 mod 8
 
-					if line.opcode == "add"
-					{
-						WriteData(0x58)
+						if tp.Base == GTypeDouble
+						{
+							WriteData(0x66)
+						}
+						WriteData(0x0F)
+
+						if line.opcode == "add"
+						{
+							WriteData(0x58)
+						}else{
+							WriteData(0x5C)
+						}
+
+						WriteData(0xC0 + (r1 shl 3) + r2)
+					}else if tp.Base == GTypeInt {
+						r1 := reg1 mod 8
+						r2 := reg2 mod 8
+
+						WriteData(0x66,0x0F)
+
+						if line.opcode == "add"
+						{
+							WriteData(0xFE)
+						}else{
+							WriteData(0xFA)
+						}
+
+						WriteData(0xC0 + (r1 shl 3) + r2)
 					}else{
-						WriteData(0x5C)
+						assert(false) // TODO add int
 					}
-
-					WriteData(0xC0 + (r1 shl 3) + r2)
 
 				}else if reg1 >= 16
 				{
@@ -531,23 +550,41 @@ MCBuildFuncContext_x86_64 := class
 				tp := objs[line.var1].GetType()
 
 				if tp is TypeVector {
-					assert(reg1 >= 16 and reg2 >= 16)
+					if IsFloat(tp.Base)
+					{
+						assert(reg1 >= 16 and reg2 >= 16)
 
-					ri1 := reg1 - 16
-					ri2 := reg2 - 16
-					
-					if tp == GTypeDouble{
-						WriteData(0x66)
-					}
-					WriteData(0x0F)
+						ri1 := reg1 - 16
+						ri2 := reg2 - 16
+						
 
-					if line.opcode == "div" {
-						WriteData(0x5E)
+						if line.opcode == "div" {
+							// WriteData(0x5E)
+							assert(false) // does not exist on x86_64
+						}else{
+							//SSE4_1
+							WriteData(0x66,0x0F,0x38,0x40) // NOT WORKING
+						}
+
+						WriteData(0xC0 + (ri1 shl 3) + ri2)
+					}else if tp.Base ==  GTypeInt {
+						assert(reg1 >= 16 and reg2 >= 16)
+
+						ri1 := reg1 - 16
+						ri2 := reg2 - 16
+						
+						WriteData(0x0F)
+
+						if line.opcode == "div" {
+							WriteData(0x5E)
+						}else{
+							WriteData(0x59)
+						}
+
+						WriteData(0xC0 + (ri1 shl 3) + ri2)
 					}else{
-						WriteData(0x59)
+						assert(false) //TODO for int
 					}
-
-					WriteData(0xC0 + (ri1 shl 3) + ri2)
 
 				}else if IsFloat(tp) {
 					assert(reg1 >= 16 and reg2 >= 16)
@@ -641,6 +678,7 @@ MCBuildFuncContext_x86_64 := class
 				tp := objs[line.var2].GetType()->{TypeVector^}
 				assert(tp.Base == GTypeFloat)
 				vecSize := tp.vecElementCount
+				// sse4_1
 				WriteData(0x66,0x0F,0x3A,0x40,0xC1) //xmm0 = Dot(xmm0,xmm1)
 				switch vecSize
 				{
@@ -907,6 +945,21 @@ MCBuildFuncContext_x86_64 := class
 					}
 					WriteData(0x48,0x0F,0x2A,0xC0)
 					Mov(fnc,line.var1,"xmm0")
+				}else if tpFrom is TypeVector and tpTo is TypeVector
+				{
+					if tpFrom.Base == GTypeInt and tpTo.Base == GTypeFloat {
+						Mov(fnc,"xmm0",line.var2)
+						WriteData(0x0F,0x5B)
+						WriteData(0xC0)
+						Mov(fnc,line.var1,"xmm0")
+					}else if tpFrom.Base == GTypeFloat and tpTo.Base == GTypeInt {
+						Mov(fnc,"xmm0",line.var2)
+						WriteData(0x66,0x0F,0x5B)
+						WriteData(0xC0)
+						Mov(fnc,line.var1,"xmm0")
+					}else{
+						assert(false)
+					}
 				}else{
 					printf("x86_64, unsupported cast %s to %s\n",tpFrom.GetBADStr().Str(),tpTo.GetBADStr().Str())
 					assert(false)

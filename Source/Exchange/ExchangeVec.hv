@@ -1,0 +1,58 @@
+
+ExchangeFloatVecToIntVec := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if newType is not TypeVector
+			return CmpNoExchange
+		if newType.Base != GTypeInt
+			return CmpNoExchange
+		if expectResultRef
+			return CmpNoExchange
+
+		f1 := obj.GetType()
+
+		if f1 is not in TypeVector
+			return CmpNoExchange
+		if f1.Base != GTypeFloat
+			return CmpNoExchange
+		if f1.vecElementCount != newType.vecElementCount
+			return CmpNoExchange
+
+		return 2000
+
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new FloatToIntExchange(obj,newType)
+	}
+}
+
+ExchangeIntVecToFloatVec := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if newType is not TypeVector
+			return CmpNoExchange
+		if newType.Base != GTypeFloat
+			return CmpNoExchange
+		if expectResultRef
+			return CmpNoExchange
+
+		f1 := obj.GetType()
+
+		if f1 is not in TypeVector
+			return CmpNoExchange
+		if f1.Base != GTypeInt
+			return CmpNoExchange
+		if f1.vecElementCount != newType.vecElementCount
+			return CmpNoExchange
+
+		return 1000
+
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ newType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new IntToFloatExchange(obj,newType)
+	}
+}

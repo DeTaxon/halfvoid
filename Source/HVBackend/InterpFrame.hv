@@ -234,6 +234,34 @@ MCInterpFuncFrame := class
 		case 16 ptr->{vec4f^}^ = value.xyzw
 		}
 	}
+	LoadVec4i := !(u16 index) -> vec4i
+	{
+		tp := func.Objects[index].GetType()
+		tpSize := tp.GetSize()
+
+		ptr := GetObjectPtr(index)
+
+		switch tpSize
+		{
+		case 8 result = ptr->{vec2i^}^.xyxy
+		case 12 result = ptr->{vec3i^}^.xyzx
+		case 16 result = ptr->{vec4i^}^.xyzw
+		}
+	}
+	StoreVec4i := !(u16 index, vec4i value) -> void
+	{
+		tp := func.Objects[index].GetType()
+		tpSize := tp.GetSize()
+
+		ptr := GetObjectPtr(index)
+
+		switch tpSize
+		{
+		case 8 ptr->{vec2i^}^ = value.xy
+		case 12 ptr->{vec3i^}^ = value.xyz
+		case 16 ptr->{vec4i^}^ = value.xyzw
+		}
+	}
 
 
 	StackGetPtr := !() -> u8^

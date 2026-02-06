@@ -1,0 +1,71 @@
+
+PassSetFallbacksX86 := !(MCFunction^ fnc) ->MCFunction^
+{
+	ctx := MakeGreedyPass(fnc,4,6)
+	cPtr := ctx.cPtr
+	c := ref ctx.cmdsSize
+	oPtr := ctx.oPtr
+	o := ref ctx.objsSize
+
+	iPtr := fnc.Lines.GetPointer()
+	iSize := fnc.Lines.Size()
+
+	i := 0
+	while i < iSize
+	{
+		line := iPtr[i]
+
+		if (line.opcode == "mul" or line.opcode == "div")
+			and oPtr[line.var1].GetType() is TypeVector
+		{
+			// printf("yep %s\n",oPtr[line.var1].GetType().Base.GetBADStr().Str())
+		}
+
+		if (line.opcode == "mul" or line.opcode == "div")
+			and oPtr[line.var1].GetType() is TypeVector and oPtr[line.var1].GetType().Base == GTypeInt
+		{
+			newObj := MCConstPointerTyped
+			switch line.opcode
+			{
+			case "mul" newObj.GetValue() = fallbackMulVecI
+			case "div" newObj.GetValue() = fallbackDivVecI
+
+			}
+			t := oPtr[line.var1].GetType()
+
+			newObj.SetType(GetFuncType(![t,t],t).GetPoint())
+			fncId := o
+			oPtr[o++] = newObj
+
+			cPtr[c++] = MCLine("call_start",line.var1,fncId)
+			cPtr[c++] = MCLine("load_var",line.var2)
+			cPtr[c++] = MCLine("load_var",line.var3)
+			cPtr[c++] = MCLine("call_end")
+			i += 1
+		}else{
+			cPtr[c++] = line
+			i += 1
+		}
+	}
+
+	return ctx.GenerateFunc()
+}
+
+fallbackMulVecI := !(vec4i a, vec4i b) -> vec4i
+{
+	result.x = a.x * b.x
+	result.y = a.y * b.y
+	result.z = a.z * b.z
+	result.w = a.w * b.w
+}
+fallbackDivVecI := !(vec4i a, vec4i b) -> vec4i
+{
+	if b.x != 0
+		result.x = a.x div b.x
+	if b.y != 0
+		result.y = a.y div b.y
+	if b.z != 0
+		result.z = a.z div b.z
+	if b.w != 0
+		result.w = a.w div b.w
+}

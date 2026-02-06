@@ -6,13 +6,13 @@
 	w := (a * b.xyzw) <+> quantf(-1.0f,-1.0f,-1.0f, 1.0f)
 	return quantf(x,y,z,w)
 }
-"*" := !(quantf a, vec4f b) -> vec4f
-{
-	c := quantf(b.x,b.y,b.z,0.0f)
-	revA := quantf(-(a.x),-(a.y),-(a.z),a.w)
-	preRes := (a <*> c) <*>revA
-	return vec4f(preRes.x,preRes.y,preRes.z,b.w)
-}
+// "*" := !(quantf a, vec4f b) -> vec4f
+// {
+// 	c := quantf(b.x,b.y,b.z,0.0f)
+// 	revA := quantf(-(a.x),-(a.y),-(a.z),a.w)
+// 	preRes := (a <*> c) <*>revA
+// 	return vec4f(preRes.x,preRes.y,preRes.z,b.w)
+// }
 "<*>" := !(vec4f a, vec4f b) -> vec4f
 {
 	preR := vec4f
