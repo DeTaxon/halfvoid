@@ -361,7 +361,7 @@ CreateBuiltInVec:= !() -> void
 		bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"add") )
 		bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"sub") )
 		bSpace.Functions["*"].Push(new BuiltInIntBase(baseAdd,"mul") )
-		bSpace.Functions["/"].Push(new BuiltInIntBase(baseAdd,"sdiv") )
+		bSpace.Functions["div"].Push(new BuiltInIntBase(baseAdd,"sdiv") )
 
 		bSpace.Functions["+="].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
 		bSpace.Functions["-="].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )

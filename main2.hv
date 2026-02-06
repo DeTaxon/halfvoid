@@ -9,10 +9,10 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	c := vec4i
-	c.x = 3
+	c.x = 12
 	d := vec4i
 	d.x = 4
-	e := c * d
+	e := c div d
 	printf("wut %i\n",e.x)
 	// c := vec4i(3)
 	// d := vec4i
