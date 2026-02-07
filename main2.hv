@@ -8,12 +8,16 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	c := vec4i
-	c.x = 12
-	d := vec4i
-	d.x = 4
-	e := c div d
-	printf("wut %i\n",e.x)
+	MemBarrier()
+	// c := vec4i
+	// c.x = 12
+	// d := vec4i
+	// d.x = 4
+	// d.y = 1
+	// d.z = 1
+	// d.w = 1
+	// e := c div d
+	// printf("wut %i\n",e.x)
 	// c := vec4i(3)
 	// d := vec4i
 	// d = vec4f(13.0)

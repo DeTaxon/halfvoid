@@ -99,6 +99,11 @@ BuiltInMemBarrier := class extend BoxFuncCommon
 	{
 		ctx.writeStream^ << "call void asm sideeffect \"\", \"~{memory},~{dirflag},~{fpsr},~{flags}\"()"
 	}
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
+	{
+		HVB_ins_memory_barrier(ctx)
+	}
 }
 BuiltInMemsetInlineInt := class extend BoxFuncCommon
 {

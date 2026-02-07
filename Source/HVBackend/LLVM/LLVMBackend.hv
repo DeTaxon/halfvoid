@@ -970,6 +970,10 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printf("%s %s %s %s %s %s\n",ob1.UnitName,ob1.GetType().GetBADStr().Str(),ob2.UnitName,ob2.GetType().GetBADStr().Str(),ob3.UnitName,ob3.GetType().GetBADStr().Str())
 					assert(false)
 				}
+			case "memory_barrier"
+				out << "call void asm sideeffect \"\", \"~{memory},~{dirflag},~{fpsr},~{flags}\"()"
+				printDebugEnd()
+
 			case "va_start"
 				out << "	call void @llvm.va_start(i8* "
 				LLVMPrintObjValue(ctx,fnc.Objects[op.var1],op.var1)

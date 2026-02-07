@@ -551,6 +551,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		case "va_end"
 			//nothing
 
+		case "memory_barrier"
+			//nothing
 		case void
 			cPtr[c] = it
 			c += 1

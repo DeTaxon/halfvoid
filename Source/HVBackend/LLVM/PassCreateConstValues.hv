@@ -236,6 +236,7 @@ GenMCTable := !() -> void
 	tbl["max"] = MCLine("noop",0,1,1)
 	tbl["min"] = MCLine("noop",0,1,1)
 
+	tbl["memory_barrier"] = MCLine("noop")
 
 	tbl["debug_set_file"] = MCLine("noop")
 	tbl["debug_set_line"] = MCLine("noop")

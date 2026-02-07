@@ -65,6 +65,8 @@ MCBaseOpcodes := enum extend u16
 	"va_end",
 	"va_arg",
 
+	"memory_barrier",
+
 	//debug
 	"debug_set_file",
 	"debug_set_line",

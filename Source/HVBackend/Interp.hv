@@ -880,6 +880,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				cs += 1
 			}
 		case "switch_end"
+		case "memory_barrier" //nothing
 		case "assert"
 			//TODO
 
