@@ -207,8 +207,8 @@ HVB_ins_debug_set_var_name := !(MCBuildContext^ ctx,int varId, char^ varName) ->
 	ctx.lines.Push(MCLine("debug_set_var_name",varId,intVal))
 }
 
-HVB_ins_debug_var_lifetime_start := !(MCBuildContext^ ctx,int varId) -> void { ctx.lines.Push(MCLine("debug_var_lifetime_start",varId)) }
-HVB_ins_debug_var_lifetime_end := !(MCBuildContext^ ctx,int varId) -> void { ctx.lines.Push(MCLine("debug_var_lifetime_end",varId)) }
+// HVB_ins_debug_var_lifetime_start := !(MCBuildContext^ ctx,int varId) -> void { ctx.lines.Push(MCLine("debug_var_lifetime_start",varId)) }
+// HVB_ins_debug_var_lifetime_end := !(MCBuildContext^ ctx,int varId) -> void { ctx.lines.Push(MCLine("debug_var_lifetime_end",varId)) }
 
 HVB_ins_va_start := !(MCBuildContext^ ctx, s32 opr1) -> void
 {

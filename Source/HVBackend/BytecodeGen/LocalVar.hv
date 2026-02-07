@@ -70,7 +70,7 @@ AppendClass FuncLocalDebugInfoDeclare
 
 		obj := ctx.GetLocalVar(baseVar)
 
-		HVB_ins_debug_var_lifetime_start(ctx,obj)
+		// HVB_ins_debug_var_lifetime_start(ctx,obj)
 		if DebugMode and baseVar.itName->AsString != null and baseVar.itName.Size() > 0
 		{
 			HVB_ins_debug_set_var_name(ctx,obj,baseVar.itName.CStr())
@@ -78,7 +78,7 @@ AppendClass FuncLocalDebugInfoDeclare
 	}
 	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		HVB_ins_debug_var_lifetime_start(ctx,ctx.GetLocalVar(baseVar))
+		// HVB_ins_debug_var_lifetime_start(ctx,ctx.GetLocalVar(baseVar))
 	}
 }
 

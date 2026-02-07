@@ -368,14 +368,14 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					printDebugEnd()
 				}
 
-			case "debug_var_lifetime_start"
-				// alignVal := fnc.Objects[op.var1].GetType().GetAlign()
-				// out << "	call void @llvm.lifetime.start.p0(i64 "<< alignVal <<",ptr nonnull %Var" << op.var1 <<")"
-				// printDebugEnd()
-			case "debug_var_lifetime_end"
-				// alignVal := fnc.Objects[op.var1].GetType().GetAlign()
-				// out << "	call void @llvm.lifetime.end.p0(i64 " << alignVal << ",ptr nonnull %Var" << op.var1 <<")"
-				// printDebugEnd()
+			// case "debug_var_lifetime_start"
+			// 	alignVal := fnc.Objects[op.var1].GetType().GetAlign()
+			// 	out << "	call void @llvm.lifetime.start.p0(i64 "<< alignVal <<",ptr nonnull %Var" << op.var1 <<")"
+			// 	printDebugEnd()
+			// case "debug_var_lifetime_end"
+			// 	alignVal := fnc.Objects[op.var1].GetType().GetAlign()
+			// 	out << "	call void @llvm.lifetime.end.p0(i64 " << alignVal << ",ptr nonnull %Var" << op.var1 <<")"
+			// 	printDebugEnd()
 			// case "debug_block_start"
 			// case "debug_block_start"
 
