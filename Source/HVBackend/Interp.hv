@@ -850,8 +850,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "debug_set_line"
 			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
 			thisFrame.DebugFileLine = ptr1->{int^}^
-		case "debug_set_var_name"
-			//nothing
+		case "debug_set_var_name" //nothing
+		case "debug_var_lifetime_start" //nothing
+		case "debug_var_lifetime_end" //nothing
+
 		case "switch_start"
 
 			valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()

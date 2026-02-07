@@ -241,6 +241,8 @@ GenMCTable := !() -> void
 	tbl["debug_set_file"] = MCLine("noop")
 	tbl["debug_set_line"] = MCLine("noop")
 	tbl["debug_set_var_name"] = MCLine("noop")
+	tbl["debug_var_lifetime_start"] = MCLine("noop",0)
+	tbl["debug_var_lifetime_end"] = MCLine("noop",0)
 	tbl["assert"] = MCLine("noop",1)
 
 	tbl["va_start"] = MCLine("noop",1)

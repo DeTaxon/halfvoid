@@ -94,7 +94,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		out << "\n"
 	}
 
-	varDebIds := AVLMap.{int,Tuple.{int,char^}}
+	varDebIds := AVLMap.{int,Tuple.{int,char^,int}}
 	if DebugMode
 	{
 		for it : fnc.Lines
@@ -106,7 +106,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				continue
 
 			name := val.CStr()
-			varDebIds[it.var1] = !{GetNewId(),name}
+			varDebIds[it.var1] = !{GetNewId(),name,0}
 		}
 	}
 
@@ -162,23 +162,6 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		tp.PrintType(ctx)
 		out << "* %Var" << inx
 		printDebugEnd()
-	}
-
-	if DebugMode
-	{
-		for it,ind : varDebIds
-		{
-			varType := fnc.Objects[ind].GetType()
-			varType = NormalizeType(varType) //TODO some pass should remove this
-
-			out << "	call void @llvm.dbg.declare(metadata "
-			varType.PrintType(ctx)
-			//if baseVar.isReference
-			//	f^ << "*"
-			out << "* %Var" << ind
-			out << " , metadata !" << it.0 << " , metadata !DIExpression())"
-			printDebugEnd()
-		}
 	}
 
 	tmpLabelIter := 0
@@ -369,6 +352,33 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << "* %Var" << op.var1
 				printDebugEnd()
 			case "debug_set_var_name"
+				if DebugMode
+				{
+					metaId := varDebIds[op.var1].0
+
+					varType := fnc.Objects[op.var1].GetType()
+					varType = NormalizeType(varType) //TODO some pass should remove this
+
+					out << "	call void @llvm.dbg.declare(metadata "
+					varType.PrintType(ctx)
+					//if baseVar.isReference
+					//	f^ << "*"
+					out << "* %Var" << op.var1
+					out << " , metadata !" << metaId << " , metadata !DIExpression())"
+					printDebugEnd()
+				}
+
+			case "debug_var_lifetime_start"
+				alignVal := fnc.Objects[op.var1].GetType().GetAlign()
+				out << "	call void @llvm.lifetime.start.p0(i64 "<< alignVal <<",ptr nonnull %Var" << op.var1 <<")"
+				printDebugEnd()
+			case "debug_var_lifetime_end"
+				alignVal := fnc.Objects[op.var1].GetType().GetAlign()
+				out << "	call void @llvm.lifetime.end.p0(i64 " << alignVal << ",ptr nonnull %Var" << op.var1 <<")"
+				printDebugEnd()
+			// case "debug_block_start"
+			// case "debug_block_start"
+
 			case "debug_set_file"
 				currentDbgFileName := fnc.Objects[op.var1]&->{MCConstString^}.GetValue().Str()
 
@@ -506,6 +516,35 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					out << " to "
 					ob1.GetType().PrintType(ctx)
 					printDebugEnd()
+				} else if resType is TypeVector and inpType is TypeVector {
+					if inpType.Base == GTypeFloat and resType.Base == GTypeInt {
+						out << "	%Var" << op.var1 << " = "
+						if IsUInt(resType)
+						{
+							out << "fptoui"
+						}else{
+							out << "fptosi"
+						}
+						out << " "
+						ob2.GetType().PrintType(ctx)
+						out << " "
+						LLVMPrintObjValue(ctx,ob2,op.var2)
+						out << " to "
+						ob1.GetType().PrintType(ctx)
+						printDebugEnd()
+					}else if inpType.Base == GTypeInt and resType.Base == GTypeFloat {
+						out << "	%Var" << op.var1 << " = "
+						out << "sitofp"
+						out << " "
+						ob2.GetType().PrintType(ctx)
+						out << " "
+						LLVMPrintObjValue(ctx,ob2,op.var2)
+						out << " to "
+						ob1.GetType().PrintType(ctx)
+						printDebugEnd()
+					}else{
+						assert(false)
+					}
 				}else {
 					//printf("LLVM: unknown cast at %s\n",makeLoc())
 					//printf("types are %s and %s\n",ob1.GetType().GetBADStr().Str(),ob2.GetType().GetBADStr().Str())

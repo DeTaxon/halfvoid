@@ -30,10 +30,7 @@ HVB_ins_jump := !(MCBuildContext^ ctx,s32 labelId) -> void
 	ctx.lines.Push(MCLine("jmp",labelId))
 }
 
-HVB_ins_memory_barrier := !(MCBuildContext^ ctx) -> void
-{
-	ctx.lines.Push(MCLine("memory_barrier"))
-}
+HVB_ins_memory_barrier := !(MCBuildContext^ ctx) -> void { ctx.lines.Push(MCLine("memory_barrier")) }
 
 HVB_ins_switch_start := !(MCBuildContext^ ctx,s32 opr1) -> void { ctx.lines.Push(MCLine("switch_start",opr1)) }
 HVB_ins_switch_case := !(MCBuildContext^ ctx,s32 opr1,s32 labelId) -> void { ctx.lines.Push(MCLine("switch_case",opr1,labelId)) }
@@ -209,6 +206,9 @@ HVB_ins_debug_set_var_name := !(MCBuildContext^ ctx,int varId, char^ varName) ->
 	intVal := HVB_ins_const_str(ctx,varName)
 	ctx.lines.Push(MCLine("debug_set_var_name",varId,intVal))
 }
+
+HVB_ins_debug_var_lifetime_start := !(MCBuildContext^ ctx,int varId) -> void { ctx.lines.Push(MCLine("debug_var_lifetime_start",varId)) }
+HVB_ins_debug_var_lifetime_end := !(MCBuildContext^ ctx,int varId) -> void { ctx.lines.Push(MCLine("debug_var_lifetime_end",varId)) }
 
 HVB_ins_va_start := !(MCBuildContext^ ctx, s32 opr1) -> void
 {

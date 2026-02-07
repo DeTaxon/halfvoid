@@ -677,6 +677,9 @@ PrintDeclares := !(LLVMWriteContext^ ctx) -> void
 
 	f^ << "declare void @llvm.x86.wrgsbase.64(i64)\n"
 	f^ << "declare i64 @llvm.x86.rdgsbase.64()\n"
+
+	// f^ << "declare void @llvm.lifetime.start.p0(ptr)\n"
+	// f^ << "declare void @llvm.lifetime.end.p0(ptr)\n"
 	
 }
 

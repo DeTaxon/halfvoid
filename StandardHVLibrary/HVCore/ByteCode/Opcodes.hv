@@ -71,6 +71,10 @@ MCBaseOpcodes := enum extend u16
 	"debug_set_file",
 	"debug_set_line",
 	"debug_set_var_name",
+	"debug_block_start",
+	"debug_block_end",
+	"debug_var_lifetime_start",
+	"debug_var_lifetime_end",
 
 
 

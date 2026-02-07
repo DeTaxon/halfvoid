@@ -3,12 +3,23 @@
 
 main := !(char^[] args) -> int
 {
-	RunFunc()
+	// RunFunc()
+	c := int 
+	b := int
+
+	if c > 20 {
+
+	}else{
+		r := 12
+		for i : 10
+		{
+			k := 2+2
+		}
+	}
 }
 
 RunFunc := !() -> void
 {
-	MemBarrier()
 	// c := vec4i
 	// c.x = 12
 	// d := vec4i

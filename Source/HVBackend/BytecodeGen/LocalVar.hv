@@ -18,10 +18,6 @@ AppendClass FuncLocalVarCleanup
 		if baseType is in TypeStandard or baseType is in TypePoint
 		{
 			obj := ctx.AddLocalVar(baseVar)
-			if DebugMode and baseVar.itName->AsString != null and baseVar.itName.Size() > 0
-			{
-				HVB_ins_debug_set_var_name(ctx,obj,baseVar.itName.CStr())
-			}
 			HVB_ins_clean(ctx,obj)
 		}else{
 			obj := getVal.WriteMC(ctx).CreatedId
@@ -70,6 +66,19 @@ AppendClass FuncLocalDebugInfoDeclare
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
+		ctx.DeferObjects.PushFront(this&)
+
+		obj := ctx.GetLocalVar(baseVar)
+
+		HVB_ins_debug_var_lifetime_start(ctx,obj)
+		if DebugMode and baseVar.itName->AsString != null and baseVar.itName.Size() > 0
+		{
+			HVB_ins_debug_set_var_name(ctx,obj,baseVar.itName.CStr())
+		}
+	}
+	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		HVB_ins_debug_var_lifetime_start(ctx,ctx.GetLocalVar(baseVar))
 	}
 }
 
