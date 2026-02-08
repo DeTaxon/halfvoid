@@ -1,54 +1,60 @@
 
-fiber_context_x64 := class
+fiber_context := class
 {
-	rip := void^
-	rsp := void^
-	rbx := void^
-	rbp := void^
-	r12 := void^
-	r13 := void^
-	r14 := void^
-	r15 := void^
+	if #CPUArch() == "x86_64"
+	{
+		rip := void^
+		rsp := void^
+		rbx := void^
+		rbp := void^
+		r12 := void^
+		r13 := void^
+		r14 := void^
+		r15 := void^
 
-	//xmm6 := vec4f
-	//xmm7 := vec4f
-	//xmm8 := vec4f
-	//xmm9 := vec4f
-	//xmm10 := vec4f
-	//xmm11 := vec4f
-	//xmm12 := vec4f
-	//xmm13 := vec4f
-	//xmm14 := vec4f
-	//xmm15 := vec4f
+		//xmm6 := vec4f
+		//xmm7 := vec4f
+		//xmm8 := vec4f
+		//xmm9 := vec4f
+		//xmm10 := vec4f
+		//xmm11 := vec4f
+		//xmm12 := vec4f
+		//xmm13 := vec4f
+		//xmm14 := vec4f
+		//xmm15 := vec4f
 
-	"=" := default
+		"=" := default
+	}else{
+		buf := char[8192]
+		"=" := default
+	}
 }
-fiber_context_arm64 := class
-{
-	x19 := void^
-	x20 := void^
-	x21 := void^
-	x22 := void^
-	x23 := void^
-	x24 := void^
-	x25 := void^
-	x26 := void^
-	x27 := void^
-	x28 := void^
+// fiber_context_arm64 := class
+// {
+// 	x19 := void^
+// 	x20 := void^
+// 	x21 := void^
+// 	x22 := void^
+// 	x23 := void^
+// 	x24 := void^
+// 	x25 := void^
+// 	x26 := void^
+// 	x27 := void^
+// 	x28 := void^
+//
+// 	v8 := double
+// 	v9 := double
+// 	v10 := double
+// 	v11 := double
+// 	v12 := double
+// 	v13 := double
+// 	v14 := double
+// 	v15 := double
+//
+// 	"=" := default
+// }
 
-	v8 := double
-	v9 := double
-	v10 := double
-	v11 := double
-	v12 := double
-	v13 := double
-	v14 := double
-	v15 := double
-
-	"=" := default
-}
-
-get_context_x64 := !(fiber_context_x64^ ctx) -> void
+get_context_x86_64 := !(fiber_context^ ctx) -> void
 	#Attr("noinline")
 {
 	asm(
@@ -79,7 +85,7 @@ get_context_x64 := !(fiber_context_x64^ ctx) -> void
 		: "%rdi"
 	)
 }
-set_context_x64 := !(fiber_context_x64^ ctx) -> void
+set_context_x86_64 := !(fiber_context^ ctx) -> void
 	#Attr("noinline")
 {
 	asm(
@@ -101,7 +107,9 @@ set_context_x64 := !(fiber_context_x64^ ctx) -> void
 		: "%rdi","%r8"
 	)
 }
-swap_context_x64 := !(fiber_context_x64^ thisContext,fiber_context_x64^ newContext) -> void
+
+
+swap_context_x86_64 := !(fiber_context^ thisContext,fiber_context^ newContext) -> void
 	#Attr("noinline")
 {
 	asm(
@@ -144,8 +152,47 @@ swap_context_x64 := !(fiber_context_x64^ thisContext,fiber_context_x64^ newConte
 	)
 }
 
-make_context_x64 := !(fiber_context_x64^ ctx,void^ fncPointer, void^ newStack, int stackSize) -> void
+FiberGetContext := !(fiber_context^ ctx) -> void
 {
-	ctx.rip = fncPointer
-	ctx.rsp = newStack->{u8^}[stackSize - 128 - 8]& //128 - red zone
+	if #CPUArch() == "x86_64"
+	{
+		get_context_x86_64(ctx)
+	}else{
+		getcontext(ctx)
+	}
+
+}
+FiberSetContext := !(fiber_context^ ctx) -> void
+{
+	if #CPUArch() == "x86_64"
+	{
+		set_context_x86_64(ctx)
+	}else{
+		setcontext(ctx)
+	}
+
+}
+FiberSwapContext := !(fiber_context^ thisContext,fiber_context^ newContext) -> void
+{
+	if #CPUArch() == "x86_64"
+	{
+		swap_context_x86_64(thisContext,newContext)
+	}else{
+		swapcontext(thisContext,newContext)
+	}
+}
+
+
+FiberCreate := !(fiber_context^ ctx,void^ fncPointer, void^ newStack, int stackSize) -> void
+{
+	FiberGetContext(ctx)
+	if #CPUArch() == "x86_64"
+	{
+		ctx.rip = fncPointer
+		ctx.rsp = newStack->{u8^}[stackSize - 128 - 8]& //128 - red zone
+	}else{
+		ctx->{u8^}[16]&->{void^^}^ = newStack
+		ctx->{u8^}[32]&->{u64^}^ = stackSize
+		makecontext(ctx,fncPointer,0)
+	}
 }

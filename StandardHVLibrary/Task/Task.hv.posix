@@ -6,7 +6,7 @@ AppendClass Task
 	stackPtr := void^
 	thisTaskStackSize := size_t
 
-	fiberContext := fiber_context_x64
+	fiberContext := fiber_context
 
 	OSFirstInit := !() -> void
 	{
@@ -33,8 +33,7 @@ AppendClass Task
 
 		itTaskWorker = CurrentThread
 		thisTaskStackSize = stackSize
-		get_context_x64(fiberContext&)
-		make_context_x64(fiberContext&,ucontextStartTask,stackPtr,stackSize)
+		FiberCreate(fiberContext&,ucontextStartTask,stackPtr,stackSize)
 
 
 		//getcontext(uContext[0]&)
@@ -87,7 +86,7 @@ AppendClass Task
 		CurrentTask = this&
 		//if llvmSetJump(oldTask->{Task^}.longJumpBuf) == 0
 		//	llvmLongJump(this.longJumpBuf[0]&)
-		swap_context_x64(oldTask->{Task^}.fiberContext&,this.fiberContext&)
+		FiberSwapContext(oldTask->{Task^}.fiberContext&,this.fiberContext&)
 	}
 	OSDestroy := !() -> void
 	{

@@ -65,8 +65,12 @@ ifeq ($(emulatetls),yes)
 	emtls := -emulate-tls
 endif
 
+ifeq ($(arm64),yes)
+	cpuflag := -target-cpu arm64
+endif
 
-flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test) $(GCFlag) $(emtls)
+
+flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test) $(GCFlag) $(emtls) $(cpuflag)
 
 MainTarget: test
 
