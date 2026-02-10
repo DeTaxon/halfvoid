@@ -90,8 +90,10 @@ main := !(char^[] args) -> int
 	lst := ctx.CreateVar(lstType)
 	lstPtr := ctx.CreateVar(lstType.GetPoint())
 
-	fncVar := ctx.AddPointerTyped(0x1234567887654321->{void^},GetFuncType(![GTypeVoidP],GTypeVoid).GetPoint())
+	fncVar := ctx.AddPointerTyped(0x1234567887654321->{void^},GetFuncType(![GTypeVoidP,GTypeVoidP,GTypeVoidP],GTypeVoid).GetPoint())
 	// fncVar := ctx.AddPointerTyped(testFunc,GetFuncType(![GTypeVoidP],GTypeVoid).GetPoint())
+	
+	userDataVar := ctx.AddPointerTyped(0x8765432112345678->{void^},GTypeVoidP)
 
 	retObj := ctx.CreateVar(GTypeVec4f)
 	retObjPtr := ctx.CreateVar(GTypeVoidP.GetPoint())
@@ -106,6 +108,7 @@ main := !(char^[] args) -> int
 	HVB_ins_call_start(ctx&,0,fncVar)
 	HVB_ins_load_var(ctx&,lstPtr)
 	HVB_ins_load_var(ctx&,retObjPtr)
+	HVB_ins_load_var(ctx&,userDataVar)
 	HVB_ins_call_end(ctx&)
 
 	itFunc := ctx.CreateMCFunction()
@@ -143,7 +146,7 @@ main := !(char^[] args) -> int
 	// ptr := tstMem.GetPointer()->{!(int,float)^->int}
 	// memcpy(ptr,blb.GetPointer(),blb.Size())
 	//
-	// assert(false)
+	// // assert(false)
 	// r := ptr(1,3.7)
 	// printf("return %f %i\n",r,r)
 	//
@@ -151,12 +154,12 @@ main := !(char^[] args) -> int
 }
 
 
-testFunc := !(va_list^ lst,void^ returnObj) -> void
+testFunc := !(va_list^ lst,void^ returnObj,void^ userData) -> void
 {
 	v1 := va_arg.{int}(lst)
 	v2 := va_arg.{float}(lst)
 	printf("yes %i %f\n",v1,v2)
-	printf("wtf it works on first try\n")
+	printf("wtf it works on first try %p\n",userData)
 
 	returnObj->{float^}^ = 7.5
 	returnObj->{int^}^ = 42
