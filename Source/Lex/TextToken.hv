@@ -340,9 +340,9 @@ TokenDouble := class extend Token
 TokenInt := class extend Token
 {
 	Value := StringSpan
-	Parsed := int
+	Parsed := s64
 	IsData := virtual true
-	this := !(StringSpan val, int val2) -> void
+	this := !(StringSpan val,s64 val2) -> void
 	{
 		Value = val
 		Parsed = val2

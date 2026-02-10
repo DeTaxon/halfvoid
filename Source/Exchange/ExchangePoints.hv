@@ -40,3 +40,24 @@ ExchangePointsToPointClass := class extend ExchangeUnit
 		return new PtrExchange(obj,expType)
 	}
 }
+
+ExchangeIntTokenToPtr := class extends ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ newType,bool expectResultRef) -> int
+	{
+		if newType is not in TypePoint
+			return CmpNoExchange
+		if obj is not BoxExeInt
+			return CmpNoExchange
+
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		asInt := obj->{BoxExeInt^}
+		as64 := GetExeS64(asInt.Value)
+		res1 := GetExchange(as64,GTypeSizeT)
+		res2 := GetExchange2(res1,GTypeVoidP,false)
+		return res2
+	}
+}

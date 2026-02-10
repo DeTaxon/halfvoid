@@ -67,6 +67,25 @@ GetExchange2 := !(BoxExeObj^ obj, Type^ expType,bool expctRef) -> BoxExeObj^
 	return null
 }
 
+GetExplicitCast := !(BoxExeObj^ obj, Type^ toType,bool expctRef) -> BoxExeObj^
+{
+	bestCast := CmpNoExchange
+	bestI := 0
+	for cst,i : ExplicitCasts
+	{
+		price := cst.GetExchangeScore(obj,toType,expctRef)
+		if price < bestCast
+		{
+			bestCast = price
+			bestI = i
+		}
+	}
+	if bestCast != CmpNoExchange
+	{
+		return ExplicitCasts[bestI].CreateExchange(obj,toType,expctRef)
+	}
+}
+
 PtrToSizeT := class extend BoxExeObj
 {
 	resId := int

@@ -152,7 +152,13 @@ cycle.exe:
 cycle_release.exe:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -win32 -C0 StandardHVLibrary/ -C1 Source/ $(CacheFlags)
 	clang++ -O2 -femulated-tls -static out.exe.ll -o halfvoid.exe
+
+MakeClosure:
+	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid $(flags)  -g -C0 StandardHVLibrary/ -C0 Source/ Tools/CreateClosure.hv -o $(TempFile) $(CacheFlags)
+	clang -g -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o closure
+
+	
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe test.exe Mach.m unit
+.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe test.exe Mach.m unit MakeClosure

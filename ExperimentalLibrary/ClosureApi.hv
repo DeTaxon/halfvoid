@@ -1,0 +1,53 @@
+//TODO we know closure size at compile time, we can optimize for it
+//#Run
+//{
+//	closureObj := #File("closure.bin").GetBlob()
+//	HV.CreateGlobal("ClosureData",closureObject)
+//	HV.CreateGlobalConstInt("ClosureSize",closureObject.Size())
+//}
+
+ClosureContext := class
+	#LazyClass()
+{
+	closureBlob := Blob^
+	offsetToPointer := int
+
+	allocator := AllocateOnly
+
+	CreateClosure := !(void^ callFunc,char^ inputs) -> void^
+	{
+		ptr := allocator.AllocMem(closureBlob.Size())
+
+		memcpy(ptr,closureBlob.GetPointer(),closureBlob.Size())
+		ptr->{u8^}[offsetToPointer]&->{void^^}^ = callFunc
+
+		return ptr
+	}
+}
+
+CreateClosureContext := !() -> ClosureContext^
+{
+	result = new ClosureContext
+
+	result.allocator.createFlags = "rwe"
+
+	result.closureBlob = #File("closure.bin").GetBlob()
+
+	magicWord := 0x1234567887654321->{void^}
+
+	ptr := result.closureBlob.GetPointer()->{u8^}
+	i := result.closureBlob.Size() - 8
+	while i >= 0
+	{
+		val := ptr[i]&->{void^^}^
+
+		if val == magicWord
+		{
+			result.offsetToPointer = i
+			break
+		}
+		
+		i -= 1
+	}
+
+}

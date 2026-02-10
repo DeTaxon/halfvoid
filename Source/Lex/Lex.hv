@@ -170,7 +170,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 				addNewLines(tok.NonNullStr(),tok.Size())
 			}
 			if a == 4 {
-				newVal := int
+				newVal := s64
 				if tok[1] == '\\'
 				{
 					switch tok[2]
@@ -218,7 +218,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 				ns = new TokenInt(tok,newVal)
 			}
 			if a == 5{
-				Value := int
+				Value := s64
 				Value = 0
 				
 				k := 0
@@ -268,7 +268,7 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 				ns = new TokenDouble(tok,Value)
 			}
 			if a == 7 {
-				Value := int
+				Value := s64
 				Value = 0
 				
 				k := 2

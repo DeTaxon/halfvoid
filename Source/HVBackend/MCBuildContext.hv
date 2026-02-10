@@ -165,6 +165,14 @@ MCBuildContext := class
 		result = objects.Size()
 		objects.Push(setVal)
 	}
+	AddPointerTyped := !(void^ value,Type^ tp) -> int
+	{
+		setVal := MCConstPointerTyped
+		setVal.GetValue() = value
+		setVal.SetType(tp)
+		result = objects.Size()
+		objects.Push(setVal)
+	}
 	AddBlob := !(void^ value,u64 bSize) -> int
 	{
 		setVal := MCConstBlob

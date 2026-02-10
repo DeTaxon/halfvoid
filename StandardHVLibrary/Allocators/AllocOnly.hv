@@ -6,6 +6,7 @@ AllocateOnly := class extends IAllocator
 
 	iterPtr := u8^
 	leftSize := int
+	createFlags := char^
 
 	AllocMem := virtual !(int size, bool dirty = false) -> void^
 	{
@@ -22,7 +23,9 @@ AllocateOnly := class extends IAllocator
 			infoSize := (PageMemory->TypeSize + 0x0F) and_b 0xFFFFFFF0
 			if currentPage.Size() == 0
 			{
-				currentPage.Create(16*1024*1024,"rw")
+				flgs := "rw"
+				flgs = createFlags?
+				currentPage.Create(16*1024*1024,flgs)
 				memset(currentPage.GetPointer(),0,infoSize)
 				internalHVInitClass(currentPage.GetPointer()->{PageMemory^}^)
 			}

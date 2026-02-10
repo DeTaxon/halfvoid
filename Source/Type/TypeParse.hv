@@ -46,6 +46,13 @@ GetTypeFromIndent := !(Token^ obj,AVLMap.{Str,BoxUnit^}^ resCnsts) -> Type^
 	return null
 }
 
+GetTypeByStr := !(Str varName) -> Type^
+{
+	res3 := GetTypeObjByName(varName)
+	if res3 != null
+		return TypeObjToType(res3)?
+}
+
 ParseType := !(Token^ obj) -> Type^
 {
 	if obj == null

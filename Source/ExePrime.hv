@@ -16,8 +16,8 @@ TryExePrime := !(Token^ itm) -> BoxExeObj^
 	}
 }
 
-GlobalInts := AVLMap.{int,BoxExeInt^}
-GetExeInt := !(int val) -> BoxExeInt^
+GlobalInts := AVLMap.{s64,BoxExeInt^}
+GetExeInt := !(s64 val) -> BoxExeInt^
 {
 	if GlobalInts.Contain(val)
 		return GlobalInts[val]
@@ -29,7 +29,8 @@ GetExeInt := !(int val) -> BoxExeInt^
 	GlobalInts[val] = newObj
 	return newObj
 }
-GlobalInts64 := AVLMap.{int,BoxExeS64^}
+
+GlobalInts64 := AVLMap.{s64,BoxExeS64^}
 GetExeS64 := !(s64 val) -> BoxExeS64^
 {
 	if GlobalInts64.Contain(val)
@@ -105,8 +106,8 @@ BoxExeBool := class extend BoxExeConstObj
 
 BoxExeInt := class extend BoxExeConstObj
 {
-	Value := int
-	this := !(int nVal) -> void
+	Value := s64
+	this := !(s64 nVal) -> void
 	{
 		Value = nVal
 		ObjType = GTypeInt

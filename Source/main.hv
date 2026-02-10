@@ -321,7 +321,6 @@ main := !(Vector.{char^} args) -> int
 	CodeFiles[^].AddWork()
 	WorkBag.DoWork()
 
-
 	InitTaskLocal()
 	InitLambda()
 	GParsedAllFiles.Emit()

@@ -1,0 +1,163 @@
+main := !(char^[] args) -> int
+{
+	funcTypes = calloc(Vector.{TypeFunc^}[9973]->TypeSize,1)->{Vector.{TypeFunc^}[9973]^}
+	for i : 9973
+	{
+		internalHVInitClass(funcTypes^[i])
+	}
+
+	num := 0
+
+	osHVFile := ".hv.posix"
+	osCLIBFile := ".clib.posix"
+	targetLinux = true
+
+	// osHVFile := ".hv.win32"
+	// osCLIBFile := ".clib.win32"
+	// targetWindows = true
+
+	FSReadFolder(StringSpan("StandardHVLibrary/"),true,zObj ==> {
+		if zObj is not in File
+			return void
+
+		zFil := zObj->{File^}
+		nm := zFil.GetName()
+		if nm.End == ".hv" or nm.End == osHVFile
+		{
+			fObj := new BoxFile(zFil)
+			fObj.ThisCodeSpace = CodeSpaces[num]&
+			CodeFiles.Push(fObj)
+			CodeSpaces[num].Files.Push(fObj)
+		}else if nm.End == ".clib" or nm.End == osCLIBFile
+		{
+			spc := CodeSpaces[num]&
+			spc.Modules.Push(new CLib(zFil,spc))
+		}
+	})
+
+
+	loadLex2(#File("Priority2.pr"),PriorityData&)
+	loadLex2(#File("LexHVFileRoot2.pr"),LexHVFileRoot&)
+	loadLex2(#File("LexHVInputVars2.pr"),LexHVInputVars&)
+	
+	HVOperators.Insert(PriorityData.Opers[^])
+	
+	mac := #File("Mach.m")
+	macMap := mac.GetMap()
+	LoadLexMachine(macMap.Get()->{char^},mac.Size()) 
+
+	CreateStandardTypes()
+	TypeDatabaseInitDefaults()
+
+	GBoolTrue = new BoxExeBool(true)
+	GBoolFalse = new BoxExeBool(false)
+	GObjNone = new BoxExeNone()
+	GObjNull = new BoxExeNull()
+	GObjVoid = new BoxExeVoid()
+	GVoidObj = new GetLocalVarVoid()
+	CreateBuiltins()
+	ExchangeInit()
+	TupleInit()
+	PreInitTaskLocal()
+	cuId = GetNewId()
+
+	CodeFiles[^].LoadFiles()
+	CodeFiles[^].ParseClasses()
+	CodeFiles[^].ParseTypedefs()
+	CodeFiles[^].ParseAppendClasses()
+	CodeFiles[^].ParseFunctions()
+
+	CreateStrType()
+	ReflectionTypeInit()
+	InitInternalsTypes()
+	InitInternals()
+
+	CodeFiles[^].Parse()
+	CodeFiles[^].AddWork()
+	WorkBag.DoWork()
+
+	InitTaskLocal()
+	InitLambda()
+	GParsedAllFiles.Emit()
+
+	ctx := MCBuildContext
+	ctx.IsVArgs = true
+
+	ctx.CreateVar(GTypeVoid)
+
+	lstType := GetTypeByStr("va_list")
+	// lstType := GTypeVoidP
+	lst := ctx.CreateVar(lstType)
+	lstPtr := ctx.CreateVar(lstType.GetPoint())
+
+	fncVar := ctx.AddPointerTyped(0x1234567887654321->{void^},GetFuncType(![GTypeVoidP],GTypeVoid).GetPoint())
+	// fncVar := ctx.AddPointerTyped(testFunc,GetFuncType(![GTypeVoidP],GTypeVoid).GetPoint())
+
+	retObj := ctx.CreateVar(GTypeVec4f)
+	retObjPtr := ctx.CreateVar(GTypeVoidP.GetPoint())
+	retAsInt := ctx.CreateVar(GTypeSizeT)
+
+	HVB_ins_get_pointer(ctx&,lstPtr,lst)
+	HVB_ins_va_start(ctx&,lstPtr)
+
+	HVB_ins_get_pointer(ctx&,retObjPtr,retObj)
+	HVB_ins_cast(ctx&,retAsInt,retObjPtr)
+
+	HVB_ins_call_start(ctx&,0,fncVar)
+	HVB_ins_load_var(ctx&,lstPtr)
+	HVB_ins_load_var(ctx&,retObjPtr)
+	HVB_ins_call_end(ctx&)
+
+	itFunc := ctx.CreateMCFunction()
+
+	itFunc = PassApplyRegistersX86(itFunc)
+	itFunc = PassRemoveRegCopies(itFunc)
+
+	grd := MakeGreedyPass(itFunc,2,2)
+
+	cPtr := grd.cmds.GetPointer()
+	c := ref grd.cmdsSize
+
+	for it : itFunc.Lines
+		cPtr[c++] = it
+
+	tmpReg := grd.PushReg("rcx",GTypeSizeT.GetPoint())
+	cPtr[c++] = MCLine("mov",tmpReg,retAsInt)
+	cPtr[c++] = MCLine("load",grd.PushReg("rax",GTypeSizeT),tmpReg)
+	cPtr[c++] = MCLine("mov",grd.PushReg("xmm0",GTypeVoidP),retObj)
+
+	itFunc = grd.GenerateFunc()
+
+	bld := MCBuildFuncContext_x86_64
+
+	bld.Compile(itFunc)
+
+	dump := TFile("closure.bin","wb")
+	defer dump.Close()
+	blb := bld.ResultData.GetBlob()
+	dump.Write(blb.GetPointer(),blb.Size())
+
+	// tstMem := PageMemory
+	// tstMem.Create(64*1024,"wre")
+	//
+	// ptr := tstMem.GetPointer()->{!(int,float)^->int}
+	// memcpy(ptr,blb.GetPointer(),blb.Size())
+	//
+	// assert(false)
+	// r := ptr(1,3.7)
+	// printf("return %f %i\n",r,r)
+	//
+	// itFunc.Print()
+}
+
+
+testFunc := !(va_list^ lst,void^ returnObj) -> void
+{
+	v1 := va_arg.{int}(lst)
+	v2 := va_arg.{float}(lst)
+	printf("yes %i %f\n",v1,v2)
+	printf("wtf it works on first try\n")
+
+	returnObj->{float^}^ = 7.5
+	returnObj->{int^}^ = 42
+}
