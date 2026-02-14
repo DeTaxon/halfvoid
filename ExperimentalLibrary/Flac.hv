@@ -1,0 +1,25 @@
+FlacTest := !() -> void
+{
+	tst := FSGetFile("tetris.flac").GetBlob()
+
+	ptr := tst.GetPointer()->{u8^}[4]&
+
+
+	iter := ptr
+
+	while true
+	{
+		streamStart := iter->{u32^}^
+
+		isTerm := (streamStart and_b 1) != 0
+		blockId := (streamStart shr 1) and_b 0x7F
+		blockSize := FromBigEndian(streamStart) and_b 0xFFFFFF
+		printf("wut %i %p\n",blockId,blockSize)
+
+		iter = iter->{u8^}[blockSize + 4]&
+
+		if isTerm
+			break
+	}
+
+}

@@ -13,6 +13,7 @@ BCFuncsType := class
 	{
 		baseFuncs.Remove(fnc)
 		interpFuncs.Remove(fnc)
+		x8664Funcs.Remove(fnc)
 	}
 
 	GetBaseFunc := !(BoxFuncBody^ itm) -> MCFunction^

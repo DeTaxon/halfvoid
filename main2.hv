@@ -4,24 +4,25 @@
 main := !(char^[] args) -> int
 {
 	// printf("hey %p\n",0xF234567887654321->{void^})
-	tst := CreateClosureContext()
-	printf("hey %i\n",tst.offsetToPointer)
-	fnc := tst.CreateClosure(testClosure,"")->{!(int,float)^->int}
-	res := fnc(1,3.3)
-	printf("result %i\n",res)
+	// tst := CreateClosureContext()
+	// printf("hey %i\n",tst.offsetToPointer)
+	// fnc := tst.CreateClosure(testClosure,"")->{!(int,float)^->int}
+	// res := fnc(1,3.3)
+	// printf("result %i\n",res)
 }
 
 testClosure := !(va_list^ inputs,void^ resultData) -> void
 {
-	inp1 := va_arg.{int}(inputs)
-	inp2 := va_arg.{float}(inputs)
-	printf("yep %i %f\n",inp1,inp2)
-	resultData->{int^}^ = 16
+	// inp1 := va_arg.{int}(inputs)
+	// inp2 := va_arg.{float}(inputs)
+	// printf("yep %i %f\n",inp1,inp2)
+	// resultData->{int^}^ = 16
 	
 }
 
 RunFunc := !() -> void
 {
+	FlacTest()
 	// c := vec4i
 	// c.x = 12
 	// d := vec4i

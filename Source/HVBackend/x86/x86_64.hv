@@ -54,6 +54,7 @@ MCBuildContext_x86_64 := class
 		return functions[fnc].funcPtr
 	}
 
+
 	GetFuncPromise := !(BoxFuncBody^ fnc) -> void^^
 	{
 		if not functions.Contain(fnc)
@@ -94,7 +95,9 @@ MCBuildContext_x86_64 := class
 		for newFunc : ctx.ChangedFunctions
 		{
 			if functions.Contain(newFunc)
+			{
 				funcsToCompile.Push(newFunc)
+			}
 		}
 		CompileFuncs()
 	}

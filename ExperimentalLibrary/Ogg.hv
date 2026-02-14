@@ -1,0 +1,21 @@
+
+
+OggTest := !() -> void
+{
+	fl := FSGetFile("tetris_flac.ogg").GetBlob()
+
+	c := fl.GetPointer()->{OggPage^}
+	printf("gm %p\n",c.segments)
+}
+
+OggPage := packed_class
+{
+	magic := u32
+	version := u8
+	header := u8
+	granule := u64
+	serial := u32
+	page := u32
+	checksum := u32
+	segments := u8
+}
