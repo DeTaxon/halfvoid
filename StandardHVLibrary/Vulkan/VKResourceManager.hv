@@ -1,0 +1,37 @@
+VKResourceManager := class
+{
+	inst := VulkanInstance^
+	memBuffers := AVLSet.{TVkMemoryObject^}
+	textures := AVLSet.{TVkTexture^}
+	renderPasses := AVLSet.{TRenderPass^}
+
+	CreateMemBuffer := !(int size, int memUsage) -> TVkMemBuffer^
+	{
+		result = inst.CreateMemBufferObject(size,memUsage)
+		memBuffers.Insert(result)
+	}
+
+	CreateTexture := !() -> TVkTexture^
+	{
+		result = inst.CreateTexture()
+		textures.Insert(result)
+	}
+	CreateRenderPass := !(TRenderPassFrame[] lst, bool useDepth) -> TRenderPass^
+	{
+		result = inst.CreateRenderPass(lst,useDepth)
+		renderPasses.Insert(result)
+	}
+
+
+	Destroy := !() -> void
+	{
+		memBuffers[^].Destroy()
+		memBuffers.Destroy()
+
+		textures[^].Destroy()
+		textures.Destroy()
+
+		renderPasses[^].Destroy()
+		renderPasses.Destroy()
+	}
+}

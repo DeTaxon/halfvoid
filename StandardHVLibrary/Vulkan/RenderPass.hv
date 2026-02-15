@@ -97,6 +97,10 @@ TRenderPass := class
 		result.itPass = this&
 		result.CreateInput(input,sets,pushConstants,resultImageCount,topology)
 	}
+	Destroy := !() -> void
+	{
+		itInstance.Funcs.vkDestroyRenderPass(itInstance.LogicalDevice,itPass,null)
+	}
 }
 
 TRenderPassFrame := class 
