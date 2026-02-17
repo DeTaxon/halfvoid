@@ -104,6 +104,20 @@ GlobsMemType := class
 				globalVariables[vr] = result
 				return void
 			}
+			if classVar.Name == "MCVariable"
+			{
+				free(result)
+				result = MCVariable->VTable
+				globalVariables[vr] = result
+				return void
+			}
+			if classVar.Name == "MCConstValue"
+			{
+				free(result)
+				result = MCConstValue->VTable
+				globalVariables[vr] = result
+				return void
+			}
 			//if classVar.Name == "THatch"
 			//{
 			//	free(result)

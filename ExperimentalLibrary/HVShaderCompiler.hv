@@ -397,8 +397,31 @@ SpirvCompiler := class
 		cPtr := fnc.Lines.GetPointer()
 		oPtr := fnc.Objects.GetPointer()
 
-		idIter++
-		resObj := idIter
+		ids := int[int]
+
+		toLocalId := (int x) ==> int
+		{
+			return ids[x]?
+
+			idIter++
+			result = idIter
+			ids[x] = result
+		}
+
+		for obj,ind : fnc.Objects
+		{
+			if obj& is MCVariable
+			{
+				tpId := GetTypeId(obj.GetObjType())
+
+				resId := toLocalId(ind)
+
+				c.Write32(0x00040000 + 59)
+				c.Write32(tpId)
+				c.Write32(resId)
+				c.Write32(7) //function
+			}
+		}
 
 		i := 0
 		linesCount := fnc.Lines.Size()
@@ -418,6 +441,10 @@ SpirvCompiler := class
 				{
 					ln := cPtr[k]
 					if ln.opcode == "cast" and cPtr[k+1].opcode == "get_array_elem_ptr" {
+
+						//TODO specific casts
+						// obj[0] to obj^
+						// vec4f to float^
 						chainIndexes.Push(this.getIntConstId(0))
 						resIndex = cPtr[k+1].var1
 						k += 2
@@ -456,12 +483,10 @@ SpirvCompiler := class
 
 				if k != i
 				{
+					resObj := toLocalId(resIndex)
 
-					resTypeId := GetTypeId(oPtr[resIndex].GetObjType(),"Uniform")
+					resTypeId := GetTypeId(oPtr[resIndex].GetObjType(),"Uniform") //TODO determine group
 
-					printf("type %i %i %i\n",resTypeId,resObj,startIndex)
-					printf("chain %i\n",chainIndexes[^])
-					printf("ret %i\n",resIndex)
 					indCount := (chainIndexes.Size() + 4) shl 16
 					c.Write32(indCount + 65)
 					c.Write32(resTypeId)
@@ -473,9 +498,25 @@ SpirvCompiler := class
 						c.Write32(it)
 					}
 
-					i += k - 1
+					i = k - 1
 					continue
 				}
+
+			}
+
+			if line.opcode == "mov"
+			{
+				printf("wut %i %i\n",oPtr[line.var1] is MCVariable , oPtr[line.var2] is MCConstValue)
+			}
+			if line.opcode == "mov" and oPtr[line.var1] is MCVariable and oPtr[line.var2] is MCConstValue
+			{
+				printf("here\n")
+				c.Write32(0x0030000 + 62) //OpStore
+				c.Write32(toLocalId(line.var1))
+				c.Write32(toLocalId(line.var2))
+
+				i += 1
+				continue
 			}
 			
 			i += 1

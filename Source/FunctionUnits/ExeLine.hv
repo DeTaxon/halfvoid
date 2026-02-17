@@ -236,6 +236,8 @@ TryGetExeCall := !(Token^ itm) -> BoxExeObj^
 
 	return TryGetCommand(itm)?
 
+	return ParseType(itm)?
+
 	return null
 
 }

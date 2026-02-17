@@ -268,6 +268,8 @@ main := !(Vector.{char^} args) -> int
 	#ForceVirtualFunctions("XML")
 	#ForceVirtualFunctions("MCObject")
 	#ForceVirtualFunctions("MCConstInteger")
+	#ForceVirtualFunctions("MCVariable")
+	#ForceVirtualFunctions("MCConstValue")
 
 	GetFuncMangle(StringSpan("main"))
 
