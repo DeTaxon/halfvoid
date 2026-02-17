@@ -3,7 +3,7 @@
 	"link" : "dynamic",
 	"initname" : "initncurses",
 	"libs" : [
-		"libncursesw.so.6.5"
+		"libncursesw.so.6.6"
 	],
 	"consts" : {
 		"COLOR_BLACK" : "0",
