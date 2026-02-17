@@ -135,7 +135,7 @@ HVContextImplementation := class extend HV_Context
 		if fnc is not in BoxFuncBody
 			return null
 
-		return SSAConainer.GetFunc(fnc)
+		return BCFuncs.GetFunc_SSA(fnc)
 	}
 	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void
 	{

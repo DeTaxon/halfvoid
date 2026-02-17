@@ -22,7 +22,7 @@ testClosure := !(va_list^ inputs,void^ resultData) -> void
 
 RunFunc := !() -> void
 {
-	FlacTest()
+	// FlacTest()
 	// c := vec4i
 	// c.x = 12
 	// d := vec4i
@@ -47,10 +47,11 @@ RunFunc := !() -> void
 	// printf("Test %i %i %i %i\n",d.x,d.y,d.z,d.w)
 	// printf("Test %f %f %f %f\n",r.x,r.y,r.z,r.w)
 	// OpenFontTest()
-	// makeSpirv()
+	makeSpirv()
 	// tst()
 }
 
+//TODO can not pass float^ to TypeId func
 //TODO if one input variable named result, rename return result to anon
 //TODO closure api?
 //TODO LazyClass does not work if some class uses it as a field

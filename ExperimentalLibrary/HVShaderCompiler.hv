@@ -49,13 +49,14 @@
 			ctx.GetFunctionIdOffset(HV.GetSSAFunc(fnc))
 		}
 
+		bodyData := new TEchoStream()
+
+		ctx.c.SetStream(bodyData)
+		for it : ctx.passedFuncs
+			ctx.WriteFunction(it)
+
 		ts := new TEchoStream()
-
 		ctx.c.SetStream(ts)
-
-		c := EndianStreamWrapper(ts)
-		// c.SetBigEndian()
-		c.SetLittleEndian()
 
 		ctx.WriteHeader()
 
@@ -65,11 +66,11 @@
 		ctx.WriteConsts()
 		ctx.WriteGlobals()
 
-		for it : ctx.passedFuncs
-			ctx.WriteFunction(it)
 
-		ret := MakeBlob(ts.Size())
+		headerSize := ts.Size()
+		ret := MakeBlob(ts.Size() + bodyData.Size())
 		ts.Read(ret.GetPointer(),ts.Size())
+		bodyData.Read(ret.GetPointer()->{u8^}[headerSize]&,bodyData.Size())
 		return ret
 	}
 )
@@ -99,6 +100,7 @@ SpirvCompiler := class
 	globIds := int[HV_Object^]
 
 	intConsts := int[int]
+	floatConsts := int[float]
 
 	passedFuncs := AVLMap.{HVB_Function^,HVB_Function^}
 
@@ -117,6 +119,13 @@ SpirvCompiler := class
 
 		result = getNewId()
 		intConsts[value] = result
+	}
+	getFloatConstId := !(float value) -> int
+	{
+		return floatConsts[value]?
+
+		result = getNewId()
+		floatConsts[value] = result
 	}
 
 	GetFunctionId := !(HVB_Function^ fnc) -> int
@@ -295,6 +304,18 @@ SpirvCompiler := class
 			c.Write32(ind)
 			c.Write32(val)
 		}
+
+		floatId := this.GetTypeId(float)
+		for ind,val : floatConsts
+		{
+			c.Write32(0x40000 + 43) //OpConstant
+			c.Write32(floatId)
+			c.Write32(ind)
+
+			k := int
+			k&->{float^}^ = val
+			c.Write32(k)
+		}
 	}
 
 	WriteGlobals := !() -> void
@@ -321,6 +342,20 @@ SpirvCompiler := class
 		c.Write32(0x00020000 + 17) // OpCapabilities
 		c.Write32(1) // shader
 
+		// optional extensions
+		
+		idIter++
+		someIter := idIter
+		aa := "GLSL"
+		bb := ".std"
+		cc := ".450"
+		c.Write32(0x00060000 + 11)
+		c.Write32(someIter)
+		c.Write32(aa[0]&->{u32^}^)
+		c.Write32(bb[0]&->{u32^}^)
+		c.Write32(cc[0]&->{u32^}^)
+		c.Write32(0)
+
 		c.Write32(0x00030000 + 14) // OpMemoryModel
 		c.Write32(0) // logical memory
 		c.Write32(1) // GLSL450 memory model
@@ -343,11 +378,16 @@ SpirvCompiler := class
 	}
 	WriteFunction := !(HVB_Function^ fnc) -> void
 	{
+		// this.GetTypeId(HV.GetTypeObj(float),"Uniform")
+		floatPtr := HV.GetTypePointer(HV.GetTypeObj(float))
+		GetTypeId(floatPtr,"Uniform")
+
 		idFIter := GetFunctionIdOffset(fnc) + 1
 
 		c.Write32(0x00050000 + 54) //OpFunction
 		c.Write32(GetTypeId(void)) // result type
-		c.Write32(GetFunctionId(fnc)) // result object
+		// c.Write32(GetFunctionId(fnc)) // result object
+		c.Write32(MainFuncId)
 		c.Write32(0) // ???
 		c.Write32(GetFunctionTypeId(fnc)) // function type
 	
@@ -356,6 +396,9 @@ SpirvCompiler := class
 
 		cPtr := fnc.Lines.GetPointer()
 		oPtr := fnc.Objects.GetPointer()
+
+		idIter++
+		resObj := idIter
 
 		i := 0
 		linesCount := fnc.Lines.Size()
@@ -374,7 +417,11 @@ SpirvCompiler := class
 				while k < linesCount
 				{
 					ln := cPtr[k]
-					if ln.opcode == "get_array_elem_ptr" {
+					if ln.opcode == "cast" and cPtr[k+1].opcode == "get_array_elem_ptr" {
+						chainIndexes.Push(this.getIntConstId(0))
+						resIndex = cPtr[k+1].var1
+						k += 2
+					}else if ln.opcode == "get_array_elem_ptr" {
 						if oPtr[ln.var3] is MCConstInteger
 						{
 							chainIndexes.Push(this.getIntConstId(oPtr[ln.var3]&->{MCConstInteger^}.GetValue()))
@@ -409,22 +456,35 @@ SpirvCompiler := class
 
 				if k != i
 				{
-					printf("type %i %i %i\n",GetTypeId(oPtr[resIndex].GetObjType()),resIndex,startIndex)
-					printf("chain %i\n",chainIndexes[^])
-					indCount := (chainIndexes.Size() + 4) shl 16
-					c.Write32(indCount + 67)
-					c.Write32(GetTypeId(oPtr[resIndex].GetObjType()))
-					c.Write32(resIndex)
-					c.Write32(startIndex)
-					c.Write32(chainIndexes[^])
 
-					i += k - i
+					resTypeId := GetTypeId(oPtr[resIndex].GetObjType(),"Uniform")
+
+					printf("type %i %i %i\n",resTypeId,resObj,startIndex)
+					printf("chain %i\n",chainIndexes[^])
+					printf("ret %i\n",resIndex)
+					indCount := (chainIndexes.Size() + 4) shl 16
+					c.Write32(indCount + 65)
+					c.Write32(resTypeId)
+					c.Write32(resObj)
+					c.Write32(startIndex)
+
+					for it,i : chainIndexes
+					{
+						c.Write32(it)
+					}
+
+					i += k - 1
 					continue
 				}
 			}
 			
 			i += 1
 		}
+
+		//Test
+		// c.Write32(0x0030000 + 62) //OpStore
+		// c.Write32(resObj)
+		// c.Write32(getFloatConstId(0.0))
 
 		c.Write32(0x0010000 + 253) // OpReturn
 		c.Write32(0x0010000 + 56) //OpFunctionEnd

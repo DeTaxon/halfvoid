@@ -8,12 +8,14 @@ BCFuncsType := class
 	interpFuncs := AVLMap.{BoxFuncBody^,MCFunction^}
 	x8664Funcs := AVLMap.{BoxFuncBody^,MCFunction^}
 
+	ssaFuncs := AVLMap.{BoxFuncBody^,HVB_Function^}
 
 	ForgetFunction := !(BoxFuncBody^ fnc) -> void
 	{
 		baseFuncs.Remove(fnc)
 		interpFuncs.Remove(fnc)
 		x8664Funcs.Remove(fnc)
+		ssaFuncs.Remove(fnc)
 	}
 
 	GetBaseFunc := !(BoxFuncBody^ itm) -> MCFunction^
@@ -104,6 +106,27 @@ BCFuncsType := class
 		// 	result.Print()
 
 		x8664Funcs[itm] = result
+	}
+
+	GetFunc_SSA := !(BoxFuncBody^ fnc) -> HVB_Function^
+	{
+		return ssaFuncs[fnc]?
+
+		ret := GetBaseFunc(fnc)
+
+		ret = PassRemoveSpaceship(ret)
+		ret = PassSimplifyVectors(ret)
+		ret = PassRemoveVoidParams(ret)
+		ret = PassRemoveReferences(ret)
+		ret = PassForceReturnConstValues(ret)
+		ret = PassCreateConstValues(ret)
+		ret = PassAddingCastForPtrMove(ret)
+		ret = PassCleanupFloats(ret)
+		ret = PassRemoveTooManyVars(ret)
+		ret = PassRemoveUnusedObjects(ret)
+
+		result = ret
+		ssaFuncs[fnc] = result
 	}
 }
 
