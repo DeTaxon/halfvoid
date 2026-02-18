@@ -113,6 +113,8 @@ main := !(char^[] args) -> int
 
 	itFunc := ctx.CreateMCFunction()
 
+	itFunc.Print()
+
 	itFunc = PassApplyRegistersX86(itFunc)
 	itFunc = PassRemoveRegCopies(itFunc)
 
@@ -134,6 +136,8 @@ main := !(char^[] args) -> int
 	bld := MCBuildFuncContext_x86_64
 
 	bld.Compile(itFunc)
+
+	itFunc.Print()
 
 	dump := TFile("closure.bin","wb")
 	defer dump.Close()
