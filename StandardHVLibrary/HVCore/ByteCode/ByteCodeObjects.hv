@@ -60,6 +60,7 @@ MCConstS64 := class extend MCObject
 }
 MCConstFloat := class extend MCObject
 {
+	GetValue := !() -> ref float { return Value&->{float^}^}
 }
 MCConstDouble := class extend MCObject
 {

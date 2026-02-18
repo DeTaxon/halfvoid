@@ -270,6 +270,7 @@ main := !(Vector.{char^} args) -> int
 	#ForceVirtualFunctions("MCConstInteger")
 	#ForceVirtualFunctions("MCVariable")
 	#ForceVirtualFunctions("MCConstValue")
+	#ForceVirtualFunctions("MCConstFloat")
 
 	GetFuncMangle(StringSpan("main"))
 

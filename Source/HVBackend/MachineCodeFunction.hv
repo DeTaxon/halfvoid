@@ -74,7 +74,6 @@ AppendClass MCConstFloat
 {
 
 	IsConstant := virtual true
-	GetValue := !() -> ref float { return Value&->{float^}^}
 
 	PrintObject := virtual !() -> void { printf("float %f",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeFloat }

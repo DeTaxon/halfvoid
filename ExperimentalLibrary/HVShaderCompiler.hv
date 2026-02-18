@@ -401,6 +401,12 @@ SpirvCompiler := class
 
 		toLocalId := (int x) ==> int
 		{
+			ob := ref fnc.Objects[x]
+
+			if ob is MCConstFloat
+			{
+				return getFloatConstId(ob.GetValue())
+			}
 			return ids[x]?
 
 			idIter++
@@ -504,20 +510,25 @@ SpirvCompiler := class
 
 			}
 
-			if line.opcode == "mov"
+			switch line.opcode
 			{
-				printf("wut %i %i\n",oPtr[line.var1] is MCVariable , oPtr[line.var2] is MCConstValue)
-			}
-			if line.opcode == "mov" and oPtr[line.var1] is MCVariable and oPtr[line.var2] is MCConstValue
-			{
-				printf("here\n")
-				c.Write32(0x0030000 + 62) //OpStore
+			case "load"
+				c.Write32(0x0040000 + 61) // OpLoad
+				c.Write32(GetTypeId(oPtr[line.var1].GetObjType()))
 				c.Write32(toLocalId(line.var1))
 				c.Write32(toLocalId(line.var2))
-
-				i += 1
-				continue
+			case "store"
+				c.Write32(0x0030000 + 62) // OpStore
+				c.Write32(toLocalId(line.var1))
+				c.Write32(toLocalId(line.var2))
+			case "add"
+				c.Write32(0x0050000 + 129) // OpFAdd
+				c.Write32(GetTypeId(oPtr[line.var1].GetObjType()))
+				c.Write32(toLocalId(line.var1))
+				c.Write32(toLocalId(line.var2))
+				c.Write32(toLocalId(line.var3))
 			}
+
 			
 			i += 1
 		}
