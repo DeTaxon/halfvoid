@@ -294,17 +294,80 @@ BoxClassBody := class extend BoxClassPoison
 		}
 		return echo.GetStr()
 	}
+
+	buildCtx := ClassBuildContext^
+
 	WorkBody := virtual !(ClassReloadOldData^ oldData) -> bool
 	{
 		GParsedAllFiles.Await()
 
-		CurrentWork = AddClassWork()
+		AwaitHeaderParse()
 
-		if #Var("Tracy") TracyPrintf("Started class parse %p %s",this&,GetGoodName())
+		CurrentWork = AddClassWork()
+		CurrentScope = this&
+
+		defer thisWork = null
 
 		ScopePutConstants()
 
-		buildCtx := ClassBuildContext
+		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
+
+		checkClassBody(Body,oldData,funcs)
+		if thisWork.IsCanceled
+			return false
+		for it : Appends
+		{
+			checkClassBody(it.1,oldData,funcs)
+			if thisWork.IsCanceled
+				return false
+		}
+		
+		if buildCtx.MemParents.Size() != 0
+		{
+			buildCtx.MemParents[0].AwaitVTableStep()
+			for it,i : buildCtx.MemParents[0].VTable
+			{
+				VTable.Push(it)
+			}
+		}
+
+		populatePoisons(Parents[^])
+
+		PrepareVTable(buildCtx,oldData)
+		CreateVTable(buildCtx,oldData)
+
+		VTableState.Emit()
+
+		CheckVTableFuncUsage()
+
+		InheritStep(buildCtx,oldData)
+
+		if #Var("Tracy") TracyPrintf("Ended class parse %p %s",this&,GetGoodName())
+		FieldsState.Emit()
+
+		return true
+	}
+
+	startedHeaderParse := bool
+	headerParseHatch := THatch
+	StartParseHeader := !() -> void
+	{
+		if startedHeaderParse
+			return void
+		startedHeaderParse = true
+		TSpawnTask(() ==> {
+			ParseHeaderBody()
+		})
+	}
+	ParseHeaderBody := !() -> void
+	{
+		GParsedAllFiles.Await()
+		CurrentScope = this&
+		CurrentWork = AddClassWork()
+
+		ScopePutConstants()
+
+		buildCtx = new ClassBuildContext
 
 		defer thisWork = null
 
@@ -314,12 +377,12 @@ BoxClassBody := class extend BoxClassPoison
 			if inhType == null
 			{
 				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("can not inherit unknown class"))
-				return false
+				return void
 			}
 			if not (inhType is TypeClass)
 			{
 				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("parent type must be class"))
-				return false
+				return void
 			}
 			asClsParent := inhType->{TypeClass^}
 			asClsParent.ToClass.StartParseBody()
@@ -396,45 +459,12 @@ BoxClassBody := class extend BoxClassPoison
 				isClassLazy = true
 		}
 		VParentState.Emit()
-
-		CurrentScope = this&
-
-		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
-
-		checkClassBody(Body,oldData,funcs)
-		if thisWork.IsCanceled
-			return false
-		for it : Appends
-		{
-			checkClassBody(it.1,oldData,funcs)
-			if thisWork.IsCanceled
-				return false
-		}
-		
-		if buildCtx.MemParents.Size() != 0
-		{
-			buildCtx.MemParents[0].AwaitVTableStep()
-			for it,i : buildCtx.MemParents[0].VTable
-			{
-				VTable.Push(it)
-			}
-		}
-
-		populatePoisons(Parents[^])
-
-		PrepareVTable(buildCtx,oldData)
-		CreateVTable(buildCtx,oldData)
-
-		VTableState.Emit()
-
-		CheckVTableFuncUsage()
-
-		InheritStep(buildCtx,oldData)
-
-		if #Var("Tracy") TracyPrintf("Ended class parse %p %s",this&,GetGoodName())
-		FieldsState.Emit()
-
-		return true
+		headerParseHatch.Emit()
+	}
+	AwaitHeaderParse := !() -> void
+	{
+		StartParseHeader()
+		headerParseHatch.Await()
 	}
 
 	CheckVTableFuncUsage := !() -> void
