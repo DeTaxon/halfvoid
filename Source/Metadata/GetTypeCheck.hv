@@ -40,7 +40,7 @@ TryGetTypeCheck := !(Token^ obj) -> BoxExeObj^
 		return null
 	}
 
-	return CreateTypeIsCheck(checkObj,expType,makeInCheck,makeNegative)
+	result = CreateTypeIsCheck(checkObj,expType,makeInCheck,makeNegative)
 }
 
 CreateTypeIsCheck := !(BoxExeObj^ checkObj, Type^ expType,bool isIn, bool makeNegative) -> BoxExeObj^
@@ -48,6 +48,8 @@ CreateTypeIsCheck := !(BoxExeObj^ checkObj, Type^ expType,bool isIn, bool makeNe
 	rCall := BoxExeObj^
 	if isIn
 	{
+		if checkObj.GetType() is in TypeClass
+			checkObj = new UnrefFuncCall(checkObj)
 		fnc := TemplateInternalIsInSameType.GetFunc(![checkObj],![expType])
 		rCall = fnc.CreateCall(![checkObj])
 	}else{
