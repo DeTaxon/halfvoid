@@ -1,6 +1,7 @@
 
 
 
+
 main := !(char^[] args) -> int
 {
 	// printf("hey %p\n",0xF234567887654321->{void^})
@@ -9,6 +10,15 @@ main := !(char^[] args) -> int
 	// fnc := tst.CreateClosure(testClosure,"")->{!(int,float)^->int}
 	// res := fnc(1,3.3)
 	// printf("result %i\n",res)
+}
+
+Cls1 := class
+{
+	
+}
+MoreClass := class extends Cls1
+{
+	
 }
 
 testClosure := !(va_list^ inputs,void^ resultData) -> void
@@ -21,14 +31,13 @@ testClosure := !(va_list^ inputs,void^ resultData) -> void
 }
 
 
-tstTypeId := !(TypeId x) -> void
-{
-
-}
 RunFunc := !() -> void
 {
-	tstTypeId(float^)
-	// FlacTest()
+	k := MoreClass
+	for it : Cls1->#ClassFamily
+	{
+		printf("name %s\n",it->TypeName)
+	}
 	// c := vec4i
 	// c.x = 12
 	// d := vec4i
@@ -56,8 +65,17 @@ RunFunc := !() -> void
 	// makeSpirv()
 	// tst()
 }
+<<<<<<< HEAD
 
 //TODO if one input variable named result, rename return result to anon
+=======
+//#ExposeClass("Type",
+//	"GetPoint",
+//	"GetArray",
+//)
+	
+//TODO for it : Cls1->#ClassFamily , what if extends change for a class None->SomeClass, SomeClass1->SomeClass2
+>>>>>>> 4c1931ff (add ability to look at all classes in family)
 //TODO closure api?
 //TODO LazyClass does not work if some class uses it as a field
 

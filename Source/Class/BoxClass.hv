@@ -44,6 +44,10 @@ BoxClass := class extend BoxUnit
 		if Parents.Size() != 0
 		{
 			Family = Parents[0].GetFamily()
+      
+      DB_ClassFamilyMetaUsage.Value.Get(Family, x ==> {
+        GHotloadCntx.AddFunction(x)
+      }) 
 			Family.Classes.Insert(this&)
 			return Family 
 		}

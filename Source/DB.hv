@@ -10,6 +10,7 @@ DB_ClassComposition := HVTable2.{BoxClass^, BoxClass^} // Left uses right
 DB_FieldUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_LocalVarUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_EnumUsage := HVTable2.{BoxFunc^,BoxEnum^}
+DB_ClassFamilyMetaUsage := HVTable2.{BoxFunc^,ClassFamily^}
 
 
 DB_ForgetFunction := !(BoxFunc^ fnc) -> void

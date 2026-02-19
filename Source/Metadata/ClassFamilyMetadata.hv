@@ -1,0 +1,19 @@
+
+ClassFamilyMeta := class extends BoxMetaObj
+{
+  family := BoxClass^[]
+
+	IsMetaIteratable := virtual !() -> bool { return true }
+	MetaIteretableSize := virtual !() -> int { return family.Size() }
+
+	GetMetaIterValueVar := virtual !(int ind) -> LocalVar^  { return null }
+	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ { return family[ind].ItType }
+
+	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return null }
+
+
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+  {
+
+  }
+}

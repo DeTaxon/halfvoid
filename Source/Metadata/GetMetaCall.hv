@@ -207,6 +207,21 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	{
 		return TryGetMetaFields(obj,true)
 	}
+  if right.Value == "#ClassFamily"
+  {
+		typ := getMetaDownType(obj.Down)
+    if typ is TypeClass
+    {
+      fam := typ.ToClass.GetFamily()
+      res := new ClassFamilyMeta
+      res.family.Resize(fam.Classes.Size())
+      for it,i : fam.Classes
+        res.family[i] = it
+      DB_ClassFamilyMetaUsage.Add(CurrentFunc,typ.ToClass.GetFamily())
+      return res
+    }
+    return null //TODO error
+  }
 	if right.Value == "ArraySize"
 	{
 		typ := getMetaDownType(obj.Down)
