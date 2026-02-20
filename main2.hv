@@ -12,32 +12,22 @@ main := !(char^[] args) -> int
 	// printf("result %i\n",res)
 }
 
-Cls1 := class
+SomeClass := class
 {
-	
+	Func1 := virtual !() -> void {}
+	// subData := virtual double // TODO this will crash
+	wut := virtual 3.3
+	Func2 := virtual !() -> void {}
 }
-MoreClass := class extends Cls1
+SomeCrash := !() -> void
 {
-	
+	printf("test %i\n",SomeClass->OffsetInVirtualTable("Func1"))
+	printf("test %i\n",SomeClass->OffsetInVirtualTable("Func2"))
 }
-
-testClosure := !(va_list^ inputs,void^ resultData) -> void
-{
-	// inp1 := va_arg.{int}(inputs)
-	// inp2 := va_arg.{float}(inputs)
-	// printf("yep %i %f\n",inp1,inp2)
-	// resultData->{int^}^ = 16
-	
-}
-
 
 RunFunc := !() -> void
 {
-	// k := MoreClass
-	for it : Cls1->#ClassFamily
-	{
-		printf("name %s\n",it->TypeName)
-	}
+	SomeCrash()
 	// FlacTest()
 	// c := vec4i
 	// c.x = 12
@@ -63,7 +53,7 @@ RunFunc := !() -> void
 	// printf("Test %i %i %i %i\n",d.x,d.y,d.z,d.w)
 	// printf("Test %f %f %f %f\n",r.x,r.y,r.z,r.w)
 	// OpenFontTest()
-	// makeSpirv()
+	makeSpirv()
 	// tst()
 }
 

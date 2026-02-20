@@ -325,6 +325,22 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 
 		return strAsString(dwnRes)
 	}
+	if right.Value == "OffsetInVirtualTable"
+	{
+		//TODO emit errors
+		typ := getMetaDownType(obj.Down)
+
+		if (typ == null) or (typ is not in TypeClass)
+			return null
+
+		if obj.Down?.Right?.Right?.Right?.Down?.Right == null
+		{
+			nameObj := TryGetExeCall(obj.Down.Right.Right.Right.Down)
+			if nameObj is BoxExeString
+				return getOffsetMeta(typ->{TypeClass^},nameObj.Value)
+		}
+
+	}
 
 	CurrentWork?.SetErrorMessage(right.MakeError("Unknown metafield"))
 	return null

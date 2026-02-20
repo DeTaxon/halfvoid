@@ -7,8 +7,6 @@ AppendClass BoxClass
 	{
 		assert(FieldsPath.Size() == 0)
 
-    GetFamily()
-
 		Parents[^].AwaitTypeState()
 
 		DB_ClassExtends.Add(this&,Parents[^])

@@ -1,0 +1,15 @@
+
+VirtualFunctioMetaCalls := !(BoxUnit^ obj,Str callName) -> BoxUnit^
+{
+	if obj is not VirtualFunctionMeta
+		return null
+	
+	return null
+}
+
+
+VirtualFunctionMeta := class extends BoxExeConstObj
+{
+	baseClass := BoxClass^
+
+}
