@@ -35,25 +35,9 @@ BoxClass := class extend BoxUnit
 	TemplateParent := BoxClassTemplate^
 	Family := ClassFamily^
 
-	GetFamily := !() -> ClassFamily^
+	GetFamily := !(bool recur = false) -> ClassFamily^
 	{
-		if Family != null
-			return Family
-
-		AwaitVTableStep()
-		if Parents.Size() != 0
-		{
-			Family = Parents[0].GetFamily()
-      
-      DB_ClassFamilyMetaUsage.Value.Get(Family, x ==> {
-        GHotloadCntx.AddFunction(x)
-      }) 
-			Family.Classes.Insert(this&)
-			return Family 
-		}
-		
-		Family = new ClassFamily
-		Family.Classes.Insert(this&)
+		AwaitParentStep()
 		return Family
 	}
 

@@ -101,6 +101,7 @@ PClassParser := class
 		}
 		res := new BoxClassBody(isPacked,parents,bodyToken)
 		res.isClassLazy = isClassLazy
+		res.StartParseHeader()
 		return res
 	}
 	ComputeHash := !(Blob^ fileData) -> u32
@@ -356,14 +357,14 @@ BoxClassBody := class extend BoxClassPoison
 			return void
 		startedHeaderParse = true
 		TSpawnTask(() ==> {
-			ParseHeaderBody()
+			ParseHeader()
 		})
 	}
-	ParseHeaderBody := !() -> void
+	ParseHeader := !() -> void
 	{
 		GParsedAllFiles.Await()
 		CurrentScope = this&
-		CurrentWork = AddClassWork()
+		// CurrentWork = AddClassWork()
 
 		ScopePutConstants()
 
@@ -385,7 +386,6 @@ BoxClassBody := class extend BoxClassPoison
 				return void
 			}
 			asClsParent := inhType->{TypeClass^}
-			asClsParent.ToClass.StartParseBody()
 			asClsParent.ToClass.AwaitParentStep()
 
 			buildCtx.All.Emplace(asClsParent.ToClass,ParentTokens[i].1)
@@ -458,6 +458,21 @@ BoxClassBody := class extend BoxClassPoison
 			if it.isClassLazy
 				isClassLazy = true
 		}
+
+		if Parents.Size() != 0
+		{
+			Family = Parents[0].GetFamily()
+      
+			DB_ClassFamilyMetaUsage.Value.Get(Family, x ==> {
+				GHotloadCntx.AddFunction(x)
+			}) 
+			Family.Classes.Insert(this&)
+		}else{
+			Family = new ClassFamily
+			Family.Classes.Insert(this&)
+		}
+		
+
 		VParentState.Emit()
 		headerParseHatch.Emit()
 	}
@@ -833,7 +848,7 @@ BoxClassBody := class extend BoxClassPoison
 			itr = itr.Right
 		}
 	}
-	AwaitParentStep := virtual !() -> void { StartParseBody() VParentState.Await() }
+	AwaitParentStep := virtual !() -> void { StartParseHeader() VParentState.Await() }
 	AwaitVTableStep := virtual !() -> void { StartParseBody() VTableState.Await() }
 
 	IsComplete := virtual !() -> bool

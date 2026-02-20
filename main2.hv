@@ -33,7 +33,7 @@ testClosure := !(va_list^ inputs,void^ resultData) -> void
 
 RunFunc := !() -> void
 {
-	k := MoreClass
+	// k := MoreClass
 	for it : Cls1->#ClassFamily
 	{
 		printf("name %s\n",it->TypeName)
