@@ -27,6 +27,9 @@ SomeCrash := !() -> void
 
 RunFunc := !() -> void
 {
+	c := Type
+	c == int
+	printf("wt %s\n",Type->TypeName)
 	SomeCrash()
 	// FlacTest()
 	// c := vec4i

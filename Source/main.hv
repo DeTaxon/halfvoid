@@ -311,7 +311,6 @@ main := !(Vector.{char^} args) -> int
 	CodeFiles[^].ParseFunctions()
 
 	CreateStrType()
-	ReflectionTypeInit()
 	InitInternalsTypes()
 	InitInternals()
 

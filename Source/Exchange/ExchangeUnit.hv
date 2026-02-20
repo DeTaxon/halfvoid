@@ -34,7 +34,6 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ExchangeLambdaFromHolderToFunctionPointer)
 	ExchangeList.Push(new ExchangeEnumFromConstString)
 	ExchangeList.Push(new ExchangeEnumToInt)
-	ExchangeList.Push(new ExchangeTypeTypeFromType)
 
 	ExchangeList.Push(new BoxFuncTemplateToBoxFunc)
 	ExchangeList.Push(new BoxFuncToPointer)
