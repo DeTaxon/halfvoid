@@ -27,10 +27,12 @@ SomeCrash := !() -> void
 
 RunFunc := !() -> void
 {
-	c := Type
-	c == int
-	printf("wt %s\n",Type->TypeName)
-	SomeCrash()
+	bs := HV.GetType("int")->{Type^}
+	ptr := bs.GetPointer()
+	ptr2 := HV.GetTypePointer(bs->{HV_Object^})
+	printf("wt %p\n",ptr)
+	printf("wt %p\n",ptr2)
+	// SomeCrash()
 	// FlacTest()
 	// c := vec4i
 	// c.x = 12
@@ -56,7 +58,7 @@ RunFunc := !() -> void
 	// printf("Test %i %i %i %i\n",d.x,d.y,d.z,d.w)
 	// printf("Test %f %f %f %f\n",r.x,r.y,r.z,r.w)
 	// OpenFontTest()
-	makeSpirv()
+	// makeSpirv()
 	// tst()
 }
 

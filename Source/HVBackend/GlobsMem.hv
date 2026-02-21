@@ -24,6 +24,11 @@ GlobsMemType := class
 		classVar := BoxClass^
 		VirtualTables.Value.Get(vr, (x) ==> { classVar = x})
 
+		if classVar? is ExposedClass
+		{
+			return classVar->{ExposedClass^}.tablePtr
+		}
+
 		if classVar != null
 		{
 			if classVar.Name == "BlobOnVector"

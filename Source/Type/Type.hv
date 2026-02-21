@@ -15,6 +15,10 @@ Type := class extend BoxExeConstObj
 	{
 		return GTypeNone
 	}
+	GetPointer := virtual !() -> Type^
+	{
+		return GetPoint()
+	}
 	GetPoint := virtual !() -> Type^
 	{
 		if AsPoint == null

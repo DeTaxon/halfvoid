@@ -19,8 +19,9 @@ BuildInVirtualCall := class extend BoxFuncCommon
 	{
 		if notedUse
 			return void
+
 		if wrappedFunc is in BoxFuncBody
-		{
+		{	
 			notedUse = true
 
 			fnc := wrappedFunc->{BoxFuncBody^}

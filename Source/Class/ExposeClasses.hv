@@ -1,42 +1,68 @@
 
-
-getOffsetMeta := !(TypeClass^ clsType, Str funcName) -> BoxExeObj^
-{
-	cls := clsType.ToClass
-
-	cls.AwaitReadyState()
-
-	for it,i : cls.VTable
-	{
-		if it is not VTableFunc
-			continue
-		fnc := it.Value
-
-		if fnc is not BoxFuncBody
-			continue
-
-		if fnc.Name == funcName
-		{
-			tbl := cls.VTableType
-			tbl.AwaitReadyState()
-
-			fld := tbl.GetFieldByIndex(i)
-			return GetExeInt(fld.MemOffset)
-		}
-	}
-	//TODO emit errors
-	return null
-}
-
 ExposeClasses := !() -> void
 {
+	printf("exp class\n")
+	TSpawnTask(() ==> {
+		ExposeClasses2()
+	})
+}
+ExposeClasses2 := !() -> void
+{
+	baseType := new ExposedClass()
+	baseType.tablePtr = Type->VTable
+	baseType.ItSize = Type->TypeSize
+	baseType.ItAlign = 16
+	baseType.Name = "Type"
+
+	tp := baseType.ItType
+	tpPointer := tp.GetPointer()
+
+	if #Var("Expr")
+	{
+		passFuncs := TypeFunc^[int]
+		passFuncs[Type->OffsetInVirtualTable("GetPointer")] = GetFuncType(![tp],![true],tpPointer)
+
+		curntOffset := 8
+
+		emptyDeclare := new BoxFuncDeclare(GetFuncType(![],GTypeVoid),"")
+
+
+		{
+			baseType.VTable.Push(new VTableFunc("",emptyDeclare))
+		}
+		for it, ind : passFuncs
+		{
+			while curntOffset < ind
+			{
+				baseType.VTable.Push(new VTableFunc("",emptyDeclare))
+				curntOffset += 8
+			}
+
+			fnc := new BoxFuncDeclare(it,"")
+
+			vFunc := new BuildInVirtualCall(fnc,ind div 8)
+			baseType.DefaultSpace.VirtualMethods["GetPointer"].Push(vFunc)
+
+			baseType.VTable.Push(new VTableFunc("",fnc))
+		}
+		buildCtx := ClassBuildContext
+		baseType.CreateVTable(buildCtx,null)
+
+		vtPtr := baseType.VTableType.ItType.GetPointer()
+		baseType.Fields.Push(new FieldParam("VTable",vtPtr))
+		baseType.FieldsPath.Push(new FieldPath(baseType.ItType,vtPtr))
+	}
 	
-	// ExpClass.{Type}
-	// 	.Add().{Type->VirtualFunctionMeta(GetPointer)}
-	// 	.AddVirtualFunction().{"GetPointer"}
-	// 	.Finish()
-	//
-	// Type->OffsetInVTable("GetPointer")
-	//ExpClass.{TypeClass}
-	//	.Add().{TypeClass}
+	// DefsTable[28] = new TypeDef("Type",baseType.ItType)
+	CodeSpaces[-1].Types["Type"] = baseType.ItType
+}
+
+ExposedClass := class extends BoxClass
+{
+	tablePtr := void^
+
+	this := !() -> void
+	{
+		ItType = new TypeClass(this&)
+	}
 }

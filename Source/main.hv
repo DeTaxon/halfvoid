@@ -52,6 +52,8 @@ GTestCode := false
 
 FastestRunner := false
 
+SelfBuild := false
+
 OutputFile := Str
 main := !(Vector.{char^} args) -> int
 {
@@ -209,6 +211,8 @@ main := !(Vector.{char^} args) -> int
 				osCLIBFile = ".clib.win32"
 			case "-fastest-runner"
 				FastestRunner = true
+			case "-self-build"
+				SelfBuild = true
 			case "-g"
 				DebugMode = true
 			case "-o"
@@ -286,6 +290,9 @@ main := !(Vector.{char^} args) -> int
 
 	CreateStandardTypes()
 	TypeDatabaseInitDefaults()
+
+	if not SelfBuild
+		ExposeClasses()
 
 	GBoolTrue = new BoxExeBool(true)
 	GBoolFalse = new BoxExeBool(false)

@@ -50,7 +50,7 @@ ifeq ($(tui),yes)
 endif
 
 ifeq ($(exp),yes)
-	Exper := -C0 ExperimentalLibrary
+	Exper := -C0 ExperimentalLibrary -var Expr
 endif
 
 ifeq ($(test),yes)
@@ -138,10 +138,10 @@ halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./ver3_2_stable -emulate-tls -win32 -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll
 	clang -g  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
-	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid $(flags)  -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
+	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid $(flags) -self-build -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang -g -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 cycle_release:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -self-build -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang -mfsgsbase -O3 -Os -s $(TempFile) -lm -ldl -o halfvoid
 cycle_debug_release:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
