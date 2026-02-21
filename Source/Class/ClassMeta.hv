@@ -1,0 +1,28 @@
+
+getOffsetMeta := !(TypeClass^ clsType, Str funcName) -> BoxExeObj^
+{
+	cls := clsType.ToClass
+
+	cls.AwaitReadyState()
+
+	for it,i : cls.VTable
+	{
+		if it is not VTableFunc
+			continue
+		fnc := it.Value
+
+		if fnc is not BoxFuncBody
+			continue
+
+		if fnc.Name == funcName
+		{
+			tbl := cls.VTableType
+			tbl.AwaitReadyState()
+
+			fld := tbl.GetFieldByIndex(i)
+			return GetExeInt(fld.MemOffset)
+		}
+	}
+	//TODO emit errors
+	return null
+}
