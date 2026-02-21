@@ -89,6 +89,7 @@ UserModule := class
 			impClass = fPtr()
 
 
+
 			bodyClass.enterScope(() ==> [this&] {
 	
 				//TODO check types

@@ -17,6 +17,8 @@ ExposeClasses2 := !() -> void
 	tp := baseType.ItType
 	tpPointer := tp.GetPointer()
 
+	ignoreClasses.Insert(baseType)
+
 	if #Var("Expr")
 	{
 		passFuncs := TypeFunc^[int]
@@ -51,11 +53,15 @@ ExposeClasses2 := !() -> void
 		vtPtr := baseType.VTableType.ItType.GetPointer()
 		baseType.Fields.Push(new FieldParam("VTable",vtPtr))
 		baseType.FieldsPath.Push(new FieldPath(baseType.ItType,vtPtr))
+
+		ignoreClasses.Insert(baseType.VTableType)
 	}
 	
 	// DefsTable[28] = new TypeDef("Type",baseType.ItType)
 	CodeSpaces[-1].Types["Type"] = baseType.ItType
 }
+
+ignoreClasses := AVLSet.{BoxClass^}
 
 ExposedClass := class extends BoxClass
 {

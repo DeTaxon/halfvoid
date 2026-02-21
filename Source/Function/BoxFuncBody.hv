@@ -113,7 +113,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	StartedParseForced := bool
 	ParseBody := virtual !() -> void
 	{
-		assert(OutputName != "DrawGL")
 		if StartedParse
 		{
 			ComputeDesire(parseTask?.Desired,CurrentTask.Desired)
@@ -131,7 +130,6 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 	ParseBodyForced := virtual !() -> void
 	{
-		assert(OutputName != "DrawGL")
 		if StartedParseForced
 			return void
 		StartedParseForced = true

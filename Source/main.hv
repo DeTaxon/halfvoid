@@ -586,7 +586,12 @@ WriteCodeToStream := !(LLVMWriteContext^ ctx) -> void
 	if DebugMode
 		PrintDebugMeta(ctx)
 
-	AllClasses[^].PrintAsType(ctx)
+	for cls : AllClasses
+	{
+		if cls in ignoreClasses
+			continue
+		cls.PrintAsType(ctx)
+	}
 	UserModules[^].bodyClass?.PrintAsType(ctx)
 	for spc : CodeSpaces
 	{
