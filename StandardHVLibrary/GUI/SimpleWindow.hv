@@ -1,4 +1,5 @@
 Window := class extend GLFWWindow
+	#LazyClass()
 {
 	mainGUIObject := GUIObject^
 	oldW := int

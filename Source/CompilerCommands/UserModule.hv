@@ -128,6 +128,7 @@ UserModule := class
 
 			})
 
+			if not FastestRunner
 			{
 				c := CollectFunctionsCtx
 				c.checkClass(bodyClass)

@@ -231,8 +231,6 @@ CollectFunctionsCtx := class
 	{
 		while checkFunctions.Size() != 0 or checkClasses.Size() != 0 or checkGlobals.Size() != 0
 		{
-
-
 			if checkFunctions.Size() != 0
 			{
 				fnc := checkFunctions.Pop()
@@ -270,12 +268,16 @@ CollectFunctionsCtx := class
 
 				assert(cls != null)
 
-				if not cls.IsComplete()
-				{
-					//TODO not all virtual functions are used
-					cls.StartParseBody()
-					WaitForParsingObjects()
-				}
+				//TODO not all virtual functions are used
+				cls.StartParseBody()
+				cls.AwaitReadyState()
+
+				curName := cls.Name
+
+				// if curName == "WindowGLContext"
+				// {
+				// 	printf("wut %i\n",cls.Fields.Size())
+				// }
 
 				checkType(cls.VTableType?.ItType)
 				checkType(cls.Fields[^].Value)

@@ -192,10 +192,6 @@ AppendClass BoxClass
 			if it.Field.Name == val
 				return it
 		}
-		for it : Parents
-		{
-			return it.GetField(val)
-		}
 
 		if LazyFields.Contain(val)
 		{
@@ -208,6 +204,10 @@ AppendClass BoxClass
 			if newType != null
 				return AddExtraField(val,newType)
 			//TODO if newType == null , emit that field of class is ill
+		}
+		for it : Parents
+		{
+			return it.GetField(val)?
 		}
 
 		newType := GetFieldFailedCB(val)
