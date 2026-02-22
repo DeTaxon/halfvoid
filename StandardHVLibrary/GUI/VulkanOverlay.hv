@@ -7,6 +7,7 @@ VkOverlayPointType := class
 }
 
 VkOverlayContext := class
+	#LazyClass()
 {
 	inst := VulkanDefaultInstance^
 	w := float
