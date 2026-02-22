@@ -68,6 +68,7 @@ AppendClass Window
 }
 
 WindowGLContext := class
+	#LazyClass()
 {
 	//TODO i dont need it to be pointer, it's crashes, maybe due to variable type size
 	gl := glFuncsClass^
