@@ -7,7 +7,7 @@ AppendClass BoxClassBody
 			return void
 
 		oldSize := 0
-		if FieldsState.Emited() 
+		if FieldsState.IsEmitted() 
 			oldSize = ItType.GetSize()
 
 		thisWork = null

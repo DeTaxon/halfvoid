@@ -359,7 +359,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 	IsComplete := virtual !() -> bool
 	{
-		return readyState.Emited()
+		return readyState.IsEmitted()
 	}
 	PutItConstants := virtual !() -> void
 	{

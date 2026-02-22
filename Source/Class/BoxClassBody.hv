@@ -254,9 +254,18 @@ BoxClassBody := class extend BoxClassPoison
 	{
 		return thisWork?
 
-		thisWork = new CWorkClassCompile(this&)
+		thisWork = new CWorkClassCompile(this&,false)
 		WorkBag.AddWork(thisWork)
 		return thisWork
+	}
+	thisHeaderWork := CWorkClassCompile^
+	AddClassHeaderWork := !() -> CWorkClassCompile^
+	{
+		return thisHeaderWork?
+
+		thisHeaderWork = new CWorkClassCompile(this&,true)
+		WorkBag.AddWork(thisHeaderWork)
+		return thisHeaderWork
 	}
 	AwaitTypeState := virtual !() -> void
 	{
@@ -364,7 +373,7 @@ BoxClassBody := class extend BoxClassPoison
 	{
 		GParsedAllFiles.Await()
 		CurrentScope = this&
-		// CurrentWork = AddClassWork()
+		CurrentWork = AddClassHeaderWork()
 
 		ScopePutConstants()
 
@@ -475,6 +484,8 @@ BoxClassBody := class extend BoxClassPoison
 
 		VParentState.Emit()
 		headerParseHatch.Emit()
+
+		thisHeaderWork = null
 	}
 	AwaitHeaderParse := !() -> void
 	{
@@ -853,7 +864,7 @@ BoxClassBody := class extend BoxClassPoison
 
 	IsComplete := virtual !() -> bool
 	{
-		return FieldsState.Emited()
+		return FieldsState.IsEmitted()
 	}
 }
 
@@ -863,18 +874,28 @@ CWorkClassCompile := class extend CWorkUnit
 	oldData := ClassReloadOldData^
 	IsCanceled := bool
 	errMessage := Str
+	isHeader := bool
 
-	this := !(BoxClassBody^ b) -> void
+	this := !(BoxClassBody^ b,bool workingOnHeader) -> void
 	{
 		itClass = b
+		isHeader = workingOnHeader
 	}
 
 	DoWork := virtual !() -> CWorkState 
 	{
-		if itClass.thisWork != this&
-			return "Complete"
-		if IsDone()
-			return "Complete"
+		if isHeader
+		{
+			if itClass.thisHeaderWork != this&
+				return "Complete"
+			if itClass.headerParseHatch.IsEmitted()
+				return "Complete"
+		}else{
+			if itClass.thisWork != this&
+				return "Complete"
+			if IsDone()
+				return "Complete"
+		}
 		return "Failed"
 	}
 	IsDone := virtual !() -> bool 

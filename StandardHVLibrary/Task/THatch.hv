@@ -25,7 +25,7 @@ THatch := class
 	flag := bool
 	next_wakeup := TITaskPausePoint^
 
-	Emited := !() -> bool
+	IsEmitted := !() -> bool
 	{
 		return flag
 	}

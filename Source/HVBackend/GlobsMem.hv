@@ -191,11 +191,6 @@ GlobsMemType := class
 
 					if fnc->{BoxFuncBody^}.IsParsed() //TODOTODO maybe someone used function and now it's parsed
 					{
-						if fnc->{BoxFuncBody^}.OutputName == "DrawGL"
-						{
-							printf("WYH %i\n",fnc->{BoxFuncBody^}.IsParsed())
-							assert(false)
-						}
 						fncPointer := RGetFuncPtr(fnc)
 						memPtr->{void^^}^ = fncPointer
 
