@@ -28,11 +28,14 @@ SomeCrash := !() -> void
 
 RunFunc := !() -> void
 {
+	stSize := int
+	x := 2
+	printf("wut %i\n",20 - stSize)
+	return void
 	// bs := HV.GetType("int")->{Type^}
 	// ptr := bs.GetPointer()
 	// printf("wt %p\n",ptr)
 	// printf("wt %i\n",ptr)
-	printf("wt %p\n",0xBEDA)
 	// SomeCrash()
 	// FlacTest()
 	// c := vec4i

@@ -289,7 +289,14 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				r2 = "rdx"
 			}
 
-			if (v1 is MCConstInteger or v2 is MCConstInteger) and r1 == "rax"
+			isInt := false
+			if it.opcode == "add" {
+				isInt = (v1 is MCConstInteger or v2 is MCConstInteger)
+			}else{
+				isInt = v2 is MCConstInteger
+			}
+
+			if isInt and r1 == "rax"
 			{
 				reg1 := bldr.PushReg(r1,tp)
 				valIdx := 0
