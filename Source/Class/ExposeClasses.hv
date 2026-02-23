@@ -2,9 +2,9 @@
 ExposeClasses := !() -> void
 {
 	printf("exp class\n")
-	TSpawnTask(() ==> {
+	// TSpawnTask(() ==> {
 		ExposeClasses2()
-	})
+	// })
 }
 ExposeClasses2 := !() -> void
 {

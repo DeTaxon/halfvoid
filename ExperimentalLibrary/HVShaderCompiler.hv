@@ -12,7 +12,7 @@
 		for glb : objs.Globals
 		{
 			tp := glb.GetObjType()
-			ctx.GetTypeId(tp?,"Uniform",true)
+			ctx.GetTypeId(tp?->{Type^},"Uniform",true)
 			ctx.GetGlobObjId(glb)
 		}
 
@@ -89,8 +89,8 @@ SpirvCompiler := class
 	}
 
 
-	typeIds := int[HV_Object^]
-	typeUniformIds := int[HV_Object^]
+	typeIds := int[Type^]
+	typeUniformIds := int[Type^]
 
 	fncTypeIds := HVB_Function^[int]
 	fncIds := int[HVB_Function^]
@@ -148,6 +148,8 @@ SpirvCompiler := class
 
 		key := r.GetHVType()
 
+		printf("wut %p\n",key)
+
 		result = GetTypeId(key)
 		fncTypeIds[result] = fnc
 	}
@@ -168,7 +170,7 @@ SpirvCompiler := class
 	{
 		return this.GetTypeId(HV.GetTypeObj(x),group)
 	}
-	GetTypeId := !(HV_Object^ x,SpirvStorageGroup group = "Function", bool touchAll = false) -> int
+	GetTypeId := !(Type^ x,SpirvStorageGroup group = "Function", bool touchAll = false) -> int
 	{
 		switch group
 		{
@@ -209,7 +211,7 @@ SpirvCompiler := class
 
 	WriteTypes := !() -> void
 	{
-		rev := HV_Object^[int]
+		rev := Type^[int]
 		for it,ind : typeIds
 			rev[it] = ind
 		for tp,indx : rev
@@ -379,7 +381,7 @@ SpirvCompiler := class
 	WriteFunction := !(HVB_Function^ fnc) -> void
 	{
 		// this.GetTypeId(HV.GetTypeObj(float),"Uniform")
-		floatPtr := HV.GetTypePointer(HV.GetTypeObj(float))
+		floatPtr := HV.GetTypeObj(float).GetPointer()
 		GetTypeId(floatPtr,"Uniform")
 
 		idFIter := GetFunctionIdOffset(fnc) + 1

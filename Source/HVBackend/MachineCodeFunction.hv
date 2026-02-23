@@ -11,7 +11,7 @@ AppendClass MCVariable
 {
 	PrintObject := virtual !() -> void { printf("Variable with type %s", GetType().GetBADStr().Str()) }
 	GetValueType := !() -> ref Type^ { return Value&->{Type^^}^}
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 	GetType := virtual !() -> Type^ { return GetValueType()}
 }
 AppendClass MCConstValue
@@ -20,21 +20,21 @@ AppendClass MCConstValue
 
 	PrintObject := virtual !() -> void { printf("Const value with type %s", GetType().GetBADStr().Str()) }
 
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCGlobalVariable
 {
 	PrintObject := virtual !() -> void { printf("Global variable with type %s", GetType().GetBADStr().Str()) }
 	GetValueObject := !() -> ref GlobalVar2^ { return Value&->{GlobalVar2^^}^ }
 	GetType := virtual !() -> Type^ { return GetValueObject().GetType() }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCReference
 {
 	PrintObject := virtual !() -> void { printf("Variable reference with type %s", GetType().GetBADStr().Str()) }
 	GetValueType := !() -> ref Type^ { return Value&->{Type^^}^}
 	GetType := virtual !() -> Type^ { return GetValueType()}
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstVoid
 {
@@ -42,13 +42,13 @@ AppendClass MCConstVoid
 	
 	PrintObject := virtual !() -> void { printf("void object") }
 	GetType := virtual !() -> Type^ { return GTypeVoid}
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstInteger
 {
 	PrintObject := virtual !() -> void { printf("Integer32 %i",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeInt }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstBool
 {
@@ -58,7 +58,7 @@ AppendClass MCConstBool
 
 	PrintObject := virtual !() -> void { printf("Bool %i",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeBool }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstS64
 {
@@ -68,7 +68,7 @@ AppendClass MCConstS64
 
 	PrintObject := virtual !() -> void { printf("Integer64 %li",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeS64 }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstFloat
 {
@@ -77,7 +77,7 @@ AppendClass MCConstFloat
 
 	PrintObject := virtual !() -> void { printf("float %f",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeFloat }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstDouble
 {
@@ -87,7 +87,7 @@ AppendClass MCConstDouble
 
 	PrintObject := virtual !() -> void { printf("Double %f",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeDouble }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstFunction
 {
@@ -97,7 +97,7 @@ AppendClass MCConstFunction
 
 	PrintObject := virtual !() -> void { printf("Function %s",GetValue().GetName()) }
 	GetType := virtual !() -> Type^ { return GetValue().GetType() }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstString
 {
@@ -107,7 +107,7 @@ AppendClass MCConstString
 
 	PrintObject := virtual !() -> void { printf("String \"%s\"",GetValue().Str()) }
 	GetType := virtual !() -> Type^ { return GTypeChar.GetPoint() }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstPointer
 {
@@ -117,7 +117,7 @@ AppendClass MCConstPointer
 
 	PrintObject := virtual !() -> void { printf("Pointer \"%p\"",GetValue()) }
 	GetType := virtual !() -> Type^ { return GTypeVoidP }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstBlob
 {
@@ -128,7 +128,7 @@ AppendClass MCConstBlob
 
 	PrintObject := virtual !() -> void { printf("Blob \"%p\" %i",GetValue(),GetSize()) }
 	GetType := virtual !() -> Type^ { return GTypeVoidP }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 AppendClass MCConstPointerTyped
 {
@@ -140,7 +140,7 @@ AppendClass MCConstPointerTyped
 	GetType := virtual !() -> Type^ { return Value2&->{Type^^}^ }
 
 	SetType := virtual !(Type^ newType) -> Type^ { Value2&->{Type^^}^ = newType }
-	GetObjType := virtual !() -> HV_Object^ { return GetType() }
+	GetObjType := virtual !() -> Type^ { return GetType() }
 }
 
 AppendClass MCLabel

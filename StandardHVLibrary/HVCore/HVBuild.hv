@@ -3,17 +3,16 @@
 HV := HV_Context^
 HV_Context := class
 {
-	GetType := virtual !(Str typeName) -> HV_Object^ {}
-	GetTypeObj := virtual !(TypeId tp) -> HV_Object^ {}
-	GetTypeSize := virtual !(HV_Object^ tp) -> int {}
-	GetTypeArraySize := virtual !(HV_Object^ tp) -> int {}
-	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^ {}
-	GetTypeBase := virtual !(HV_Object^ childType) -> HV_Object^ {} // pointer of type to it's type
-	GetFuncType := virtual !(Vector.{HV_Object^} types,Vector.{bool} isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ {}
-	GetTypeId := virtual !(HV_Object^ obj) -> TypeId {}
-	GetTypeClass := virtual !(HV_Object^ obj) -> HV_Class^ {}
+	GetType := virtual !(Str typeName) -> Type^ {}
+	GetTypeObj := virtual !(TypeId tp) -> Type^ {}
+	GetTypeSize := virtual !(Type^ tp) -> int {}
+	GetTypeArraySize := virtual !(Type^ tp) -> int {}
+	GetTypeBase := virtual !(Type^ childType) -> Type^ {} // pointer of type to it's type
+	GetFuncType := virtual !(Type^[] types,bool[] isReference, Type^ resultType,bool resultReference,bool isVariadicArguments) -> Type^ {}
+	GetTypeId := virtual !(Type^ obj) -> TypeId {}
+	GetTypeClass := virtual !(Type^ obj) -> HV_Class^ {}
 
-	GetTypeGroup := virtual !(HV_Object^ obj) -> TypeGroups {}
+	GetTypeGroup := virtual !(Type^ obj) -> TypeGroups {}
 
 	CreateClass := virtual !() -> HV_Class^ {}
 
@@ -77,7 +76,7 @@ HV_Context_Empty := HV_Context
 HV_Class := class
 {
 	GetFieldsCount := virtual !() -> int {}
-	GetFieldType := virtual !(int index) -> HV_Object^ {}
+	GetFieldType := virtual !(int index) -> Type^ {}
 
 	AddField := virtual !(Str fieldName,HV_Object^ fieldType) -> void {}
 	AddMethod := virtual !(Str funcName,HV_Object^ fncObj) -> void {}
@@ -95,7 +94,7 @@ HV_Object := class
 	//TODO
 	//GetType
 	
-	GetObjType := virtual !() -> HV_Object^ {}
+	GetObjType := virtual !() -> Type^ {}
 	
 	IsEditSupported := virtual false
 	ElementName := virtual "Unknown"

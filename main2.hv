@@ -29,9 +29,7 @@ RunFunc := !() -> void
 {
 	bs := HV.GetType("int")->{Type^}
 	ptr := bs.GetPointer()
-	ptr2 := HV.GetTypePointer(bs->{HV_Object^})
 	printf("wt %p\n",ptr)
-	printf("wt %p\n",ptr2)
 	// SomeCrash()
 	// FlacTest()
 	// c := vec4i

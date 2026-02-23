@@ -28,7 +28,7 @@ HVClassImpl := class extend HV_Class
 	{
 		return baseClass.GetFieldsCount()
 	}
-	GetFieldType := virtual !(int index) -> HV_Object^
+	GetFieldType := virtual !(int index) -> Type^
 	{
 		return baseClass.GetFieldByIndex(index)?.Field.Value
 	}

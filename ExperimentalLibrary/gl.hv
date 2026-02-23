@@ -59,13 +59,13 @@
 		}
 
 	}
-	GetCommandType := !(Str str) -> HV_Object^
+	GetCommandType := !(Str str) -> Type^
 	{
 		if not glCommands.Contain(str)
 			return null
 
 		cmd := glCommands[str]
-		types := MakeVectorOnStack.{HV_Object^,16}()
+		types := MakeVectorOnStack.{Type^,16}()
 
 		for pars : cmd.Values 
 		{
@@ -78,7 +78,7 @@
 			types.Push(parType)
 		}
 
-		resType := HV.GetType("void")
+		resType := HV.GetTypeObj(void)
 
 		resNode := cmd.GetNode("proto/ptype")
 
@@ -87,11 +87,10 @@
 			resType = GetStringType(resNode.Values[0].ValueSpan)
 		}
 
-		mpty := Vector.{bool}
-		fType := HV.GetFuncType(types,mpty,resType,false,false)
-		return HV.GetTypePointer(fType)
+		fType := HV.GetFuncType(types,![],resType,false,false)
+		return fType.GetPointer()
 	}
-	GetParamType := !(XMLNode^ node) -> HV_Object^
+	GetParamType := !(XMLNode^ node) -> Type^
 	{
 		nodeOpts := char[256]
 		sSize := 0
@@ -144,7 +143,7 @@
 				}
 		 		res := GetStringType(pType.Values[0].ValueSpan)
 				for it : pointers
-					res = HV.GetTypePointer(res)
+					res = res.GetPointer()
 				return res
 		 	}
 		case "11"
@@ -158,7 +157,7 @@
 			switch node.Values[0].ValueSpan
 			{
 			case "const void *"
-				return HV.GetTypePointer(HV.GetType("void"))
+				return HV.GetType("void").GetPointer()
 			case void
 				printf("opengl, unknown modifier %s\n",node.Values[0].ValueSpan)
 				return null
@@ -169,7 +168,7 @@
 		}
 		
 	}
-	GetStringType := !(StringSpan typeName) -> HV_Object^
+	GetStringType := !(StringSpan typeName) -> Type^
 	{
 		switch typeName
 		{
@@ -211,7 +210,7 @@
 		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
 			if glCommands.Contain(x.AsStringSpan())
 			{
-				return GetCommandType(x)
+				return GetCommandType(x)->{HV_Object^}
 			}
 			return null
 		})

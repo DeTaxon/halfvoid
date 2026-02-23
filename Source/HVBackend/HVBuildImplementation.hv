@@ -14,16 +14,16 @@ HVContextImplementation := class extend HV_Context
 			return null
 		return asType
 	}
-	GetTypeObj := virtual !(TypeId tp) -> HV_Object^
+	GetTypeObj := virtual !(TypeId tp) -> Type^
 	{
 		return TypeFromTypeId(tp)
 	}
-	GetTypeSize := virtual !(HV_Object^ tp) -> int
+	GetTypeSize := virtual !(Type^ tp) -> int
 	{
 		if tp is in Type
 			return tp.GetSize()
 	}
-	GetTypeArraySize := virtual !(HV_Object^ tp) -> int
+	GetTypeArraySize := virtual !(Type^ tp) -> int
 	{
 		if tp is TypeVector
 			return tp.vecElementCount
@@ -31,27 +31,24 @@ HVContextImplementation := class extend HV_Context
 			return 0
 		return tp.len
 	}
-	GetTypePointer := virtual !(HV_Object^ baseType) -> HV_Object^
-	{
-		typ := baseType->{Type^}
-		return typ.GetPoint()
-	}
-	GetTypeBase := virtual !(HV_Object^ baseType) -> HV_Object^
+	GetTypeBase := virtual !(Type^ baseType) -> Type^
 	{
 		typ := baseType->{Type^}
 		if typ.Base == null
 			return null
 		return typ.Base
 	}
-	GetFuncType := virtual !(Vector.{HV_Object^} types,Vector.{bool} isReference, HV_Object^ resultType,bool resultReference,bool isVariadicArguments) -> HV_Object^ 
+	GetFuncType := virtual !(Type^[] types,bool[] isReference, Type^ resultType,bool resultReference,bool isVariadicArguments) -> Type^ 
 	{
 		rTypeIn := resultType->{Type^}
 		args := Vector.{Type^}
 		args.Push(types[^]->{Type^})
 		fType := GetFuncType(args,isReference,![rTypeIn],![resultReference],isVariadicArguments)
+
+		printf("hey %p\n",fType)
 		return fType
 	}
-	GetTypeGroup := virtual !(HV_Object^ obj) -> TypeGroups
+	GetTypeGroup := virtual !(Type^ obj) -> TypeGroups
 	{
 		if obj is in TypeFunc
 			return "Function"
@@ -66,13 +63,13 @@ HVContextImplementation := class extend HV_Context
 		if obj is in TypeStandard
 			return "Prime"
 	}
-	GetTypeId := virtual !(HV_Object^ obj) -> TypeId 
+	GetTypeId := virtual !(Type^ obj) -> TypeId 
 	{
 		if obj is not in Type
 			return void
 		return TypeIdFromType(obj)
 	}
-	GetTypeClass := virtual !(HV_Object^ obj) -> HV_Class^
+	GetTypeClass := virtual !(Type^ obj) -> HV_Class^
 	{
 		if obj is not in TypeClass
 			return null

@@ -27,7 +27,7 @@ MCObject := class
 			return false
 		return true
 	}
-	GetObjType := virtual !() -> HV_Object^ {}
+	GetObjType := virtual !() -> Type^ {}
 }
 
 

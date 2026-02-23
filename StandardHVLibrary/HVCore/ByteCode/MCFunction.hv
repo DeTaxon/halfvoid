@@ -19,7 +19,7 @@ HVB_Function := class
 		result.InputIsRefs.Resize(InputsIndxCount)
 		result.InputIsRefs[^i] = Objects[InputsIndxStart + i] is MCReference
 
-		result.ReturnType =  Objects[ResultIndex].GetObjType()
+		result.ReturnType =  Objects[ResultIndex].GetObjType()->{Type^}
 		result.ReturnIsRef = Objects[ResultIndex] is MCReference
 
 		result.IsVArgs = IsVArgs
@@ -28,15 +28,15 @@ HVB_Function := class
 
 HVBFunctionType := class
 {
-	InputTypes := Vector.{HV_Object^}
+	InputTypes := Vector.{Type^}
 	InputIsRefs := Vector.{bool}
 
-	ReturnType := HV_Object^
+	ReturnType := Type^
 	ReturnIsRef := bool
 
 	IsVArgs := bool // printf(char^ , ...) ... <-
 
-	GetHVType := !() -> HV_Object^
+	GetHVType := !() -> Type^
 	{
 		return HV.GetFuncType(InputTypes,InputIsRefs,ReturnType,ReturnIsRef,IsVArgs)
 	}
