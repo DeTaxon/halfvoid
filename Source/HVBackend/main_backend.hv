@@ -37,10 +37,15 @@ MCInterpFunction2Resulted := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, Ve
 RGetFuncPtr := !(BoxFunc^ fnc) -> void^
 {
 	if FastestRunner
-	{
-	return GX86Cntx.GetFunctionPtr(fnc->{BoxFuncBody^})
-	}
+		return GX86Cntx.GetFunctionPtr(fnc->{BoxFuncBody^})
 
 	mc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
 	return GInterpCntx.GetFunctionPointer(mc)
+}
+RGetVTableFuncPtr := !(BoxFuncBody^ fnc) -> void^
+{
+	if FastestRunner
+		return GX86Cntx.GetFunctionPtr(fnc->{BoxFuncBody^})
+
+	return GInterpCntx.GetVTableFunctionPointer(fnc)
 }

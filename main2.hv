@@ -26,12 +26,19 @@ SomeCrash := !() -> void
 	printf("test %i\n",SomeClass->OffsetInVirtualTable("Func2"))
 }
 
+Why := class
+{
+	xxx := int
+	Test := virtual !() -> int
+	{
+		return xxx
+	}
+}
+
 RunFunc := !() -> void
 {
-	stSize := int
-	x := 2
-	printf("wut %i\n",20 - stSize)
-	return void
+	c := Why
+	c.Test()
 	// bs := HV.GetType("int")->{Type^}
 	// ptr := bs.GetPointer()
 	// printf("wt %p\n",ptr)

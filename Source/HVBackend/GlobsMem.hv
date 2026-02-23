@@ -174,7 +174,7 @@ GlobsMemType := class
 					}
 					assert(fnc is in BoxFuncBody)
 
-					fncPointer := RGetFuncPtr(fnc)
+					fncPointer := RGetVTableFuncPtr(fnc)
 					memPtr->{void^^}^ = fncPointer
 					GInterpCntx.vtableFunctions.Add(asFnc.Value->{BoxFuncBody^},fncPointer)
 				}

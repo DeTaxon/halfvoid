@@ -67,7 +67,7 @@ CollectFunctionsCtx := class
 	WriteGlobals := Vector.{GlobalVar2^}
 	WriteFunctions := List.{BoxFuncBody^}
 	DeclareFunctions := List.{BoxFuncDeclare^}
-	UsedClasses := List.{BoxClass^}
+	UsedClasses := Vector.{BoxClass^}
 	UsedVirtualTables := AVLSet.{BoxClass^}
 	UsedStrings := AVLSet.{BoxExeString^}
 
@@ -81,6 +81,8 @@ CollectFunctionsCtx := class
 
 	checkedGlobals := AVLSet.{GlobalVar2^}
 	checkGlobals := HybridStack.{GlobalVar2^,20}
+
+	preUsedClasses := AVLSet.{BoxClass^}
 
 	this := !(BoxFuncBody^ mainFunc) -> void
 	{
@@ -228,6 +230,35 @@ CollectFunctionsCtx := class
 
 	}
 
+	checkVTable := !(BoxClass^ cls) -> void
+	{
+		UsedVirtualTables.Insert(cls.VTableType)
+
+		for it,i : cls.VTable
+		{
+			if it is VTableVar
+			{
+				if it.ItConst is CheckInfoConst
+				{
+					checkGlobal(it.ItConst->{CheckInfoConst^}.ItGlobVar)
+				}
+			}
+			if it is VTableFunc
+			{
+				fnc := it.Value
+				if fnc? is BoxFuncBody and fnc->{BoxFuncBody^}.IsParsed()
+				{
+					checkType(it.GetType())
+				}
+			}else{
+				checkType(it.GetType())
+			}
+		}
+		preUsedClasses.Insert(cls.VTableType)
+
+		checkVTable(cls.Parents[^])
+	}
+
 	Collect := !() -> void
 	{
 		while checkFunctions.Size() != 0 or checkClasses.Size() != 0 or checkGlobals.Size() != 0
@@ -282,22 +313,9 @@ CollectFunctionsCtx := class
 
 				if cls.VTableType != null
 				{
-					// UsedVirtualTables.Insert(cls.VTableType)
-					//
-					// for it,i : cls.VTable
-					// {
-					// 	if it is VTableFunc
-					// 	{
-					// 		fnc := it.Value
-					// 		if fnc? is BoxFuncBody and fnc->{BoxFuncBody^}.IsParsed()
-					// 			checkType(it.GetType())
-					// 	}else{
-					// 		checkType(it.GetType())
-					// 	}
-					// }
-					// UsedClasses.PushUniq(cls.VTableType)
+					checkVTable(cls)
 
-					checkType(cls.VTableType?.ItType)
+					// checkType(cls.VTableType?.ItType)
 				}
 				checkType(cls.Fields[^].Value)
 				checkType(cls.Parents[^].ItType)
@@ -322,7 +340,7 @@ CollectFunctionsCtx := class
 					}
 				}
 
-				UsedClasses.Push(cls)
+				preUsedClasses.Insert(cls)
 			}
 			if checkGlobals.Size() != 0
 			{
@@ -339,12 +357,13 @@ CollectFunctionsCtx := class
 	{
 		classesList := AVLMap.{int,List.{BoxClass^}}
 
-		for it : UsedClasses
+		for it : preUsedClasses
 		{
 			d := getDepth(it)
 			classesList[d].Push(it)
 		}
 		UsedClasses.Destroy()
+		UsedClasses.Reserve(preUsedClasses.Size())
 		UsedClasses.Push(classesList[^][^])
 	}
 	getDepth := !(BoxClass^ cls) -> int

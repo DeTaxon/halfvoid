@@ -380,3 +380,21 @@ NormalizeFuncType := !(TypeFunc^ inp) -> TypeFunc^
 	spRefs := MakeVectorSpanOnPtr(bls[0]&,k)
 	return GetFuncType(k,spTyps,spRefs,GTypeVoid,false,inp.IsVargs)
 }
+NormalizeFuncTypeRemoveRefs := !(TypeFunc^ inp) -> TypeFunc^
+{
+	k := 0
+	typs := Type^[100]
+	bls := bool[100]
+
+	for it,i : inp.Params
+	{
+		typs[i] = it.ItType
+		if it.IsRef
+			typs[i] = typs[i].GetPointer()
+		k += 1
+	}
+	r := inp.ResultType
+	if inp.ResultRef
+		r = r.GetPointer()
+	return GetFuncType(k,typs,bls,r,false,inp.IsVargs)
+}

@@ -23,6 +23,29 @@ MCInterpContext := class
 		}
 	}
 
+	GetVTableFunctionPointer := !(BoxFuncBody^ fnc)-> void^
+	{
+		//TODO cache
+
+		tp := NormalizeFuncType(fnc.GetType()->{TypeFunc^})
+		tp = NormalizeFuncTypeRemoveRefs(tp)
+
+		argsCount := tp.Params.Size()
+		newClosure := calloc((HV_closure_func_data_lazy->TypeSize + void^->TypeSize*argsCount),1)->{HV_closure_func_data_lazy^}
+		// TODO newClosure is dangling
+
+		closure := ffi_closure_alloc(128,newClosure.func_pointer&) //TODO unconst
+		PopulateCIFByType(tp,newClosure.ffi_cif[0]&,newClosure.closure_types[0]&)
+
+		res := ffi_prep_closure_loc(closure,newClosure.ffi_cif[0]&,HV_closure_func_lazy,newClosure,newClosure.func_pointer)
+
+		newClosure.interpCntx = this&
+		newClosure.interpFunc = fnc
+		newClosure.normalizedType = tp
+
+		return newClosure.func_pointer
+	}
+
 	GetFunctionPointer := !(MCFunction^ fnc) -> void^
 	{
 		funcPointer := void^
@@ -62,6 +85,20 @@ MCInterpContext := class
 		closure.interpFunc = iFunc
 	}
 
+	PopulateCIFByType := !(TypeFunc^ tp, void^ resCIF,void^^ types) -> void
+	{
+		resultType := ThisToCif(tp.ResultType)
+
+		typesSize := 0
+
+		for it,i : tp.Params
+		{
+			wut := it.IsRef
+			types[typesSize] = ThisToCif(it.ItType)
+			typesSize += 1
+		}
+		ffi_prep_cif(resCIF,2, typesSize,resultType,types[0]&)
+	}
 	PopulateCIF := !(MCFunction^ fnc, void^ resCIF,void^^ types) -> void
 	{
 		resultType := void^
@@ -83,7 +120,6 @@ MCInterpContext := class
 			typesSize += 1
 		}
 		ffi_prep_cif(resCIF,2, typesSize,resultType,types[0]&)
-		
 	}
 	ThisToCif := !(Type^ itType) -> void^
 	{
@@ -112,6 +148,8 @@ MCInterpContext := class
 			return ffi_type_pointer
 		}else if itType is TypeEnum {
 			return ffi_type_sint32
+		}else if itType == GTypeVoid {
+			return ffi_type_void
 		}else{
 			printf("unknown type %s\n",itType.GetBADStr().Str())
 			assert(false)
@@ -258,4 +296,33 @@ HV_closure_func_data := class
 	interpFunc := MCFunction^
 
 	closure_types := void^[1] // must be last!
+}
+
+HV_closure_func_data_lazy := class
+{
+	func_pointer := void^
+	ffi_cif := u8[128]
+	interpCntx := MCInterpContext^
+	interpFunc := BoxFuncBody^
+	normalizedType := TypeFunc^
+
+	closure_types := void^[1] // must be last!
+}
+HV_closure_func_lazy := !(void^ cif,void^ ret,void^^ args,HV_closure_func_data_lazy^ data) -> void
+{
+	hv := data.interpFunc
+	fType := hv.GetType()->{TypeFunc^}
+
+	step2 := void^[120]
+	thisArgs := MakeVectorOnStack.{void^,20}()
+	//printf("closure %i\n",data.interpFunc.InputsIndxCount)
+	for i : data.normalizedType.Params.Size()
+	{
+		step2[i] = args[i]
+		//thisArgs.Push(step2[i]&)
+		thisArgs.Push(args[i])
+		//printf("clsr %p\n",args[i])
+	}
+	mc := BCFuncs.GetInterpFunc(hv)
+	MCInterpFunction(data.interpCntx,mc,thisArgs,ret)
 }
