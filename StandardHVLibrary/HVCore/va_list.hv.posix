@@ -18,7 +18,7 @@ vaListLoadInt := !(va_list^ va) -> u64
 {
 	if va.intOffset < 48
 	{
-		result = va.regArea[va.intOffset]
+		result = va.regArea[va.intOffset]&->{u64^}^
 		va.intOffset += 8
 	}else{
 		result = va.stackArea->{u64^}^
