@@ -68,6 +68,7 @@ CollectFunctionsCtx := class
 	WriteFunctions := List.{BoxFuncBody^}
 	DeclareFunctions := List.{BoxFuncDeclare^}
 	UsedClasses := List.{BoxClass^}
+	UsedVirtualTables := AVLSet.{BoxClass^}
 	UsedStrings := AVLSet.{BoxExeString^}
 
 	UsedTypes := AVLSet.{Type^}
@@ -279,7 +280,25 @@ CollectFunctionsCtx := class
 				// 	printf("wut %i\n",cls.Fields.Size())
 				// }
 
-				checkType(cls.VTableType?.ItType)
+				if cls.VTableType != null
+				{
+					// UsedVirtualTables.Insert(cls.VTableType)
+					//
+					// for it,i : cls.VTable
+					// {
+					// 	if it is VTableFunc
+					// 	{
+					// 		fnc := it.Value
+					// 		if fnc? is BoxFuncBody and fnc->{BoxFuncBody^}.IsParsed()
+					// 			checkType(it.GetType())
+					// 	}else{
+					// 		checkType(it.GetType())
+					// 	}
+					// }
+					// UsedClasses.PushUniq(cls.VTableType)
+
+					checkType(cls.VTableType?.ItType)
+				}
 				checkType(cls.Fields[^].Value)
 				checkType(cls.Parents[^].ItType)
 				checkGlobal(cls.VTableValue?)
