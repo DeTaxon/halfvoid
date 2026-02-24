@@ -61,6 +61,10 @@ ifeq ($(gc),yes)
 	GCFlag := -var GC
 endif
 
+ifeq ($(fast),yes)
+	FastFlag := -fastest-runner
+endif
+
 ifeq ($(emulatetls),yes)
 	emtls := -emulate-tls
 endif
@@ -70,7 +74,7 @@ ifeq ($(arm64),yes)
 endif
 
 
-flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test) $(GCFlag) $(emtls) $(cpuflag)
+flags := $(NoScary) $(trc) $(Exper) $(opt_mode) $(Test) $(GCFlag) $(emtls) $(cpuflag) $(FastFlag)
 
 MainTarget: test
 

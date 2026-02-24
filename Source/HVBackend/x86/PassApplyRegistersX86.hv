@@ -558,6 +558,12 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 		case "va_end"
 			//nothing
 
+		case "asm_start"
+			while fnc.Lines[i].opcode != "asm_end"
+				i += 1
+		case "va_arg"
+			// TODOTODO nothing 
+
 		case "memory_barrier"
 			//nothing
 		case void
