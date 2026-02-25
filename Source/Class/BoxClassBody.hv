@@ -764,9 +764,9 @@ BoxClassBody := class extend BoxClassPoison
 							exeObj := TryGetExeCall(itm)
 							if exeObj == null
 							{
-								if isClassLazy
+								if isClassLazy and not isVirtual
 								{
-									LazyFields[name] = !{null->{Type^},itm}
+									LazyFields[name] = !{asType->{Type^},itm}
 									return void
 								}
 								MakeErrorMsg(itm,"Unknown object")
@@ -774,6 +774,8 @@ BoxClassBody := class extend BoxClassPoison
 							}
 							if exeObj is in BoxExeConstObj and isVirtual
 							{
+								if exeObj is in Type
+									exeObj = new ZeroClassConst(exeObj->{Type^})
 								newVal := new VTableVar(name,exeObj->{BoxExeConstObj^})
 								PreVTableVars[name] = newVal
 								if isPoison

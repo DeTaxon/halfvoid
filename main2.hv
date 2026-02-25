@@ -16,29 +16,12 @@ main := !(char^[] args) -> int
 SomeClass := class
 {
 	Func1 := virtual !() -> void {}
-	// subData := virtual double // TODO this will crash
-	wut := virtual 3.3
 	Func2 := virtual !() -> void {}
-}
-SomeCrash := !() -> void
-{
-	printf("test %i\n",SomeClass->OffsetInVirtualTable("Func1"))
-	printf("test %i\n",SomeClass->OffsetInVirtualTable("Func2"))
-}
-
-Why := class
-{
-	xxx := int
-	Test := virtual !() -> int
-	{
-		return xxx
-	}
 }
 
 RunFunc := !() -> void
 {
-	c := Why
-	c.Test()
+	SomeCrash()
 	// bs := HV.GetType("int")->{Type^}
 	// ptr := bs.GetPointer()
 	// printf("wt %p\n",ptr)
