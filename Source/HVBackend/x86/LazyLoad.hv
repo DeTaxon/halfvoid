@@ -1,0 +1,43 @@
+
+
+
+GetLazyVirtualFuncX86 := !(BoxFuncBody^ fnc,void^^ target) -> void^
+{
+	assert(fnc is BoxFuncBody)
+	tp := NormalizeFuncType(fnc.GetType()->{TypeFunc^})
+	tp = NormalizeFuncTypeRemoveRefs(tp)
+
+	argsCount := tp.Params.Size()
+	newClosure := calloc((HV_closure_func_x86->TypeSize + void^->TypeSize*argsCount),1)->{HV_closure_func_x86^}
+	// TODO newClosure is dangling
+
+	closure := ffi_closure_alloc(128,newClosure.func_pointer&) //TODO unconst
+	GInterpCntx.PopulateCIFByType(tp,newClosure.ffi_cif[0]&,newClosure.closure_types[0]&)
+
+	res := ffi_prep_closure_loc(closure,newClosure.ffi_cif[0]&,HV_closure_func_x86,newClosure,newClosure.func_pointer)
+
+	newClosure.interpFunc = fnc
+	newClosure.normalizedType = tp
+	newClosure.targetPtr = target
+
+	return newClosure.func_pointer
+}
+
+
+HV_closure_func_x86 := class
+{
+	func_pointer := void^
+	ffi_cif := u8[128]
+	interpFunc := BoxFuncBody^
+	normalizedType := TypeFunc^
+	targetPtr := void^^
+
+	closure_types := void^[1] // must be last!
+}
+HV_closure_func_x86 := !(void^ cif,void^ ret,void^^ args,HV_closure_func_x86^ data) -> void
+{
+	assert(data.interpFunc is BoxFuncBody)
+	fncPtr := GX86Cntx.GetFunctionPtr(data.interpFunc)
+	data.targetPtr^ = fncPtr
+	ffi_call(cif,fncPtr,ret,args)
+}

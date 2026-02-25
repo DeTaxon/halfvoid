@@ -42,10 +42,11 @@ RGetFuncPtr := !(BoxFunc^ fnc) -> void^
 	mc := GInterpCntx.GetMCFunc(fnc->{BoxFuncBody^})
 	return GInterpCntx.GetFunctionPointer(mc)
 }
-RGetVTableFuncPtr := !(BoxFuncBody^ fnc) -> void^
+RGetVTableFuncPtr := !(BoxFuncBody^ fnc,void^^ target) -> void^
 {
 	if FastestRunner
-		return GX86Cntx.GetFunctionPtr(fnc->{BoxFuncBody^})
+		return GetLazyVirtualFuncX86(fnc,target)
+		// return GX86Cntx.GetFunctionPtr(fnc->{BoxFuncBody^})
 
 	return GInterpCntx.GetVTableFunctionPointer(fnc)
 }
