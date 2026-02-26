@@ -195,6 +195,64 @@ MCBuildFuncContext_x86_64 := class
 			case "get_field_ptr"
 				assert(false)
 
+			case "store64"
+
+				assert(objs[line.var1] is MCConstRegisterX86)
+
+				targ := ref objs[line.var2]
+
+				if targ is MCVariable
+				{
+					regValue := objs[line.var1]&->{MCConstRegisterX86^}.GetValue() 
+					ofst := getObjsStackOffset(fnc,line.var2)
+
+					regRbp := 0x05
+
+					size := 8
+
+					regData := (regRbp mod 8) + ((regValue mod 8) shl 3)
+
+					if line.var3 != 0
+					{
+						extraOffst := ref objs[line.var3]
+						assert(extraOffst is MCConstInteger)
+						ofst += extraOffst&->{MCConstInteger^}.GetValue()
+					}
+
+					regData = regData or_b GetOffsetRegCode(ofst)
+
+					if regValue >= 16 {
+
+						switch size
+						{
+						case 4 WriteData(0x66,0x0F,0x7E,regData)
+						case 8 WriteData(0x66,0x48,0x0F,0x7E,regData)
+						case 16 WriteData(0x0F,0x29,regData) // mov xmm0, (rcx)
+						case void
+							assert(false)
+						}
+
+					}else{
+						upReg := 0
+						if regValue >= 8
+						{
+							upReg = 0x04
+
+							if size == 2 or size == 4
+								WriteData(0x40 + upReg)
+						}
+						switch size
+						{
+						case 1 WriteData(0x40 + upReg,0x88,regData)
+						case 2 WriteData(0x66,0x89, regData)
+						case 4 WriteData(0x89, regData)
+						case 8 WriteData(0x48 + upReg,0x89, regData)
+						}
+
+					}
+
+					WriteOffsetRegCode(ofst)
+				}
 			case "store"
 
 				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue() 
@@ -984,6 +1042,12 @@ MCBuildFuncContext_x86_64 := class
 					c := "\x85"[0] + (reg shl 3)
 					ResultData.Write(c&,1)
 					x := getObjsStackOffset(fnc,line.var2)
+					if line.var3 != 0
+					{
+						assert(objs[line.var3] is MCConstInteger)
+						extraOffset := objs[line.var3]&->{MCConstInteger^}.GetValue()
+						x += extraOffset
+					}
 					strm.Write(x&,4)
 				}else if obj is MCConstFunction {
 					assert(objs[line.var1] is MCConstRegisterX86)
@@ -1319,6 +1383,21 @@ MCBuildFuncContext_x86_64 := class
 		WriteData(0x48,0x81,0xC4) // %rsp += val
 		ResultData.Write(val&,4)
 	}
+	GetOffsetRegCode := !(int x) -> int
+	{
+		if x <= 127 and x >= -127
+			return 0x40
+		return 0x80
+	}
+	WriteOffsetRegCode := !(int x) -> int
+	{
+		if x <= 127 and x >= -127
+		{
+			WriteData(x)
+		}else{
+			ResultData.Write(x&,4)
+		}
+	}
 }
 
 IsPtrLikeType := !(Type^ tp) -> bool
@@ -1329,6 +1408,7 @@ IsPtrLikeType := !(Type^ tp) -> bool
 		return true
 	return false
 }
+
 IsRAXCastType := !(Type^ tp) -> bool
 {
 	if IsPtrLikeType(tp)

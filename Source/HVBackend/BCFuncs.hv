@@ -94,6 +94,8 @@ BCFuncsType := class
 		// result.Print()
 		result = PassSetFallbacksX86(result)
 		result = PassApplyRegistersX86(result)
+
+		result = PassSomeOptimizationsX86(result)
 		// if itm.OutputName == "tst"
 		// 	assert(false)
 		result = PassRemoveRegCopies(result)

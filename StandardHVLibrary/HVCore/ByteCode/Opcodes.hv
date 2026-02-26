@@ -99,6 +99,8 @@ MCBaseOpcodes := enum extend u16
 	"get_field_ptr", // get pointer to field in class
 	"get_array_elem_ptr", // var1 = var2[var3]&
 
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 	//BACKEND interpreter
 	// "stack_push",
 	// "stack_pop",
@@ -127,6 +129,7 @@ MCBaseOpcodes := enum extend u16
 	//BACKEND llvm ir
 	
 	//BACKEND x86
+	"store64", // var2 is variable,  var2 = var1, var2&->{u8^}[var3]&->{u64^}^ = var1
 	"jmp_if_op", // label var1 operator var2,   jump if var1 >= var2 , TODO interpreter/LLVM support
 	"assert" // if var1 == true interrupt  TODO LLVM support, somehow interpreter?
 }

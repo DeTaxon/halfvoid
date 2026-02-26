@@ -1,0 +1,36 @@
+
+PassSomeOptimizationsX86 := !(MCFunction^ fnc) ->MCFunction^
+{
+	// mov rax,0 -> xor 0,0
+	
+	bldr := MakeGreedyPass(fnc,1,1)
+
+	cPtr := bldr.cPtr
+	c := ref bldr.cmdsSize
+	oPtr := bldr.oPtr
+	o := ref bldr.objsSize
+
+	iCmds := fnc.Lines.GetPointer()
+	cmdsSize := fnc.Lines.Size()
+
+	i := 0
+
+	while i < cmdsSize
+	{
+		line := ref iCmds[i]
+
+		if line.opcode == "mov" 
+			and oPtr[line.var1] is MCConstRegisterX86
+			and oPtr[line.var2] is MCConstInteger
+			and oPtr[line.var2]&->{MCConstInteger^}.GetValue() == 0
+			and false
+		{
+			cPtr[c++] = MCLine("xor",line.var1,line.var1)
+		}else{
+			cPtr[c++] = line
+		}
+		i += 1
+	}
+
+	return bldr.GenerateFunc()
+}

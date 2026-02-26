@@ -93,9 +93,9 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			{
 				rId := pushVar2(regArea)
 
-				r1 := bldr.PushReg("rax",GTypeVoidP)
-
-				cPtr[c++] = MCLine("get_pointer",r1,rId)
+				// r1 := bldr.PushReg("rax",GTypeVoidP)
+				//
+				// cPtr[c++] = MCLine("get_pointer",r1,rId)
 
 				offset := 0
 
@@ -112,7 +112,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 					case 5 reg = "r9"
 					}
 
-					cPtr[c++] = MCLine("store",rId,bldr.PushReg(reg,GTypeSizeT),bldr.PushInt(offset))
+					// cPtr[c++] = MCLine("store",rId,bldr.PushReg(reg,GTypeSizeT),bldr.PushInt(offset))
+					cPtr[c++] = MCLine("store64",bldr.PushReg(reg,GTypeSizeT),rId,bldr.PushInt(offset))
 					offset += GTypeSizeT.GetSize()
 				}
 
@@ -121,7 +122,8 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 					reg := X86Register
 					reg = "xmm0"
 					reg&->{int^}^ += i
-					cPtr[c++] = MCLine("store",rId,bldr.PushReg(reg,GTypeVec4f),bldr.PushInt(offset))
+					// cPtr[c++] = MCLine("store",rId,bldr.PushReg(reg,GTypeVec4f),bldr.PushInt(offset))
+					cPtr[c++] = MCLine("store64",bldr.PushReg(reg,GTypeVec4f),rId,bldr.PushInt(offset))
 					offset += 16
 
 				}

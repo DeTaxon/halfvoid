@@ -68,7 +68,6 @@ main := !(char^[] args) -> int
 	CodeFiles[^].ParseFunctions()
 
 	CreateStrType()
-	ReflectionTypeInit()
 	InitInternalsTypes()
 	InitInternals()
 
@@ -90,8 +89,8 @@ main := !(char^[] args) -> int
 	lst := ctx.CreateVar(lstType)
 	lstPtr := ctx.CreateVar(lstType.GetPoint())
 
-	fncVar := ctx.AddPointerTyped(0x1234567887654321->{void^},GetFuncType(![GTypeVoidP,GTypeVoidP,GTypeVoidP],GTypeVoid).GetPoint())
-	// fncVar := ctx.AddPointerTyped(testFunc,GetFuncType(![GTypeVoidP],GTypeVoid).GetPoint())
+	// fncVar := ctx.AddPointerTyped(0x1234567887654321->{void^},GetFuncType(![GTypeVoidP,GTypeVoidP,GTypeVoidP],GTypeVoid).GetPoint())
+	fncVar := ctx.AddPointerTyped(testFunc,GetFuncType(![GTypeVoidP],GTypeVoid).GetPoint())
 	
 	userDataVar := ctx.AddPointerTyped(0x8765432112345678->{void^},GTypeVoidP)
 
@@ -144,15 +143,15 @@ main := !(char^[] args) -> int
 	blb := bld.ResultData.GetBlob()
 	dump.Write(blb.GetPointer(),blb.Size())
 
-	// tstMem := PageMemory
-	// tstMem.Create(64*1024,"wre")
-	//
-	// ptr := tstMem.GetPointer()->{!(int,float)^->int}
-	// memcpy(ptr,blb.GetPointer(),blb.Size())
-	//
-	// // assert(false)
-	// r := ptr(1,3.7)
-	// printf("return %f %i\n",r,r)
+	tstMem := PageMemory
+	tstMem.Create(64*1024,"wre")
+
+	ptr := tstMem.GetPointer()->{!(int,float,float)^->int}
+	memcpy(ptr,blb.GetPointer(),blb.Size())
+
+	assert(false)
+	r := ptr(1,3.7,39.9)
+	printf("return %f %i\n",r,r)
 	//
 	// itFunc.Print()
 }
@@ -162,7 +161,8 @@ testFunc := !(va_list^ lst,void^ returnObj,void^ userData) -> void
 {
 	v1 := va_arg.{int}(lst)
 	v2 := va_arg.{float}(lst)
-	printf("yes %i %f\n",v1,v2)
+	v3 := va_arg.{double}(lst)
+	printf("yes %i %f %f\n",v1,v2,v3)
 	printf("wtf it works on first try %p\n",userData)
 
 	returnObj->{float^}^ = 7.5
