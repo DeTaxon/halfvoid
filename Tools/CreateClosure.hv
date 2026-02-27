@@ -143,6 +143,8 @@ main := !(char^[] args) -> int
 	blb := bld.ResultData.GetBlob()
 	dump.Write(blb.GetPointer(),blb.Size())
 
+	return void
+
 	tstMem := PageMemory
 	tstMem.Create(64*1024,"wre")
 

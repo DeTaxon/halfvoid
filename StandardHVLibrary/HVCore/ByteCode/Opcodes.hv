@@ -131,7 +131,8 @@ MCBaseOpcodes := enum extend u16
 	//BACKEND x86
 	"store64", // var2 is variable,  var2 = var1, var2&->{u8^}[var3]&->{u64^}^ = var1
 	"jmp_if_op", // label var1 operator var2,   jump if var1 >= var2 , TODO interpreter/LLVM support
-	"assert" // if var1 == true interrupt  TODO LLVM support, somehow interpreter?
+	"assert", // if var1 == true interrupt  TODO LLVM support, somehow interpreter?
+	"push"
 }
 
 MCJumpIfConditions := enum extend u16

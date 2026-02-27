@@ -418,19 +418,18 @@ MCBuildFuncContext_x86_64 := class
 				}
 				Mov(fnc,line.var1,"rax")
 			case in !["xor","and","or"]
-				Mov(fnc,"rax",line.var2)
-				Mov(fnc,"rcx",line.var3)
+				reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue()
+				reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
+
+				regData := (reg2 mod 8) + ((reg1 mod 8) shl 3)
+
 				switch line.opcode
 				{
-				case "xor" WriteData(0x48,0x33,0xC1) // xor rax,rcx
-				case "and" WriteData(0x48,0x23,0xC1) // and rax,rcx
-				case "or" WriteData(0x48,0x0B,0xC1) // and rax,rcx
+				case "xor" WriteData(0x48,0x33,0xC0 + regData)
+				case "and" WriteData(0x48,0x23,0xC0 + regData)
+				case "or" WriteData(0x48,0x0B,0xC0 + regData)
 				}
-				if objs[line.var2].GetType() == GTypeBool
-				{
-					WriteData(0x80,0xE0,0x1) // and 0x1, rax
-				}
-				Mov(fnc,line.var1,"rax")
+				
 				
 			case "not"
 				Mov(fnc,"rax",line.var2)
@@ -593,11 +592,10 @@ MCBuildFuncContext_x86_64 := class
 						ResultData.Write(x&,4)
 
 					}else{
-						WriteData(0x48)
 						switch line.opcode
 						{
-						case "add" WriteData(0x01)
-						case "sub" WriteData(0x29)
+						case "add" WriteData(0x48,0x01)
+						case "sub" WriteData(0x48,0x29)
 						}
 						WriteData(0xC0 + (reg2 shl 3) + reg1)
 					}
@@ -813,90 +811,94 @@ MCBuildFuncContext_x86_64 := class
 					}
 				}
 
-
 				while lines[i].opcode != "call_end"
 				{
-					vr := lines[i]
-					assert(vr.opcode == "load_var")
-
-					tp := objs[vr.var1].GetType()
-					
-					isFloat := IsFloat(tp) or tp is TypeVector
-					
-					if targetWindows and isVargs and paramIndex >= paramsCount
-						isFloat = false
-
-					if not isFloat {
-						if targetLinux {
-							if (usedInts < 6) {
-								switch usedInts
-								{
-								case 0 Mov(fnc,"rdi",vr.var1)
-								case 1 Mov(fnc,"rsi",vr.var1)
-								case 2 Mov(fnc,"rdx",vr.var1)
-								case 3 Mov(fnc,"rcx",vr.var1)
-								case 4 Mov(fnc,"r8",vr.var1)
-								case 5 Mov(fnc,"r9",vr.var1)
-								}
-
-								usedInts += 1
-							}else {
-								stackPassed.PushFront(vr.var1)
-							}
-						}else if targetWindows {
-							if (paramIndex < 4) {
-								switch paramIndex
-								{
-								case 0 Mov(fnc,"rcx",vr.var1)
-								case 1 Mov(fnc,"rdx",vr.var1)
-								case 2 Mov(fnc,"r8",vr.var1)
-								case 3 Mov(fnc,"r9",vr.var1)
-								}
-							}else {
-								stackPassed.PushFront(vr.var1)
-							}
-						}else {
-							assert(false)
-						}
-					}else {
-
-						if targetLinux {
-							if usedFloats < 8 {
-								reg := X86Register
-								reg = "xmm0"
-								reg&->{int^}^ += usedFloats
-								Mov(fnc,reg,vr.var1)
-								usedFloats += 1
-							}else{
-								stackPassed.PushFront(vr.var1)
-							}
-						}else if targetWindows {
-							if paramIndex < 4 {
-								reg := X86Register
-								reg = "xmm0"
-								reg&->{int^}^ += paramIndex
-								Mov(fnc,reg,vr.var1)
-							}else{
-								stackPassed.PushFront(vr.var1)
-							}
-						}else {
-							assert(false)
-						}
-					}
-
-					paramIndex += 1
-					i += 1
+					 i += 1
 				}
-				if stackPassed.Size() mod 2 != 0
-					Push("rax")
-				for it : stackPassed
-				{
-					Mov(fnc,"rax",it)
-					Push("rax")
-				}
-				if targetWindows
-					SubRsp(32)
-				MovU64ToReg(fnc,"rax",usedFloats)
+
+				// while lines[i].opcode != "call_end"
+				// {
+				// 	vr := lines[i]
+				// 	assert(vr.opcode == "load_var")
+				//
+				// 	tp := objs[vr.var1].GetType()
+				//
+				// 	isFloat := IsFloat(tp) or tp is TypeVector
+				//
+				// 	if targetWindows and isVargs and paramIndex >= paramsCount
+				// 		isFloat = false
+				//
+				// 	if not isFloat {
+				// 		if targetLinux {
+				// 			if (usedInts < 6) {
+				// 				switch usedInts
+				// 				{
+				// 				case 0 Mov(fnc,"rdi",vr.var1)
+				// 				case 1 Mov(fnc,"rsi",vr.var1)
+				// 				case 2 Mov(fnc,"rdx",vr.var1)
+				// 				case 3 Mov(fnc,"rcx",vr.var1)
+				// 				case 4 Mov(fnc,"r8",vr.var1)
+				// 				case 5 Mov(fnc,"r9",vr.var1)
+				// 				}
+				//
+				// 				usedInts += 1
+				// 			}else {
+				// 				stackPassed.PushFront(vr.var1)
+				// 			}
+				// 		}else if targetWindows {
+				// 			if (paramIndex < 4) {
+				// 				switch paramIndex
+				// 				{
+				// 				case 0 Mov(fnc,"rcx",vr.var1)
+				// 				case 1 Mov(fnc,"rdx",vr.var1)
+				// 				case 2 Mov(fnc,"r8",vr.var1)
+				// 				case 3 Mov(fnc,"r9",vr.var1)
+				// 				}
+				// 			}else {
+				// 				stackPassed.PushFront(vr.var1)
+				// 			}
+				// 		}else {
+				// 			assert(false)
+				// 		}
+				// 	}else {
+				//
+				// 		if targetLinux {
+				// 			if usedFloats < 8 {
+				// 				reg := X86Register
+				// 				reg = "xmm0"
+				// 				reg&->{int^}^ += usedFloats
+				// 				Mov(fnc,reg,vr.var1)
+				// 				usedFloats += 1
+				// 			}else{
+				// 				stackPassed.PushFront(vr.var1)
+				// 			}
+				// 		}else if targetWindows {
+				// 			if paramIndex < 4 {
+				// 				reg := X86Register
+				// 				reg = "xmm0"
+				// 				reg&->{int^}^ += paramIndex
+				// 				Mov(fnc,reg,vr.var1)
+				// 			}else{
+				// 				stackPassed.PushFront(vr.var1)
+				// 			}
+				// 		}else {
+				// 			assert(false)
+				// 		}
+				// 	}
+				//
+				// 	paramIndex += 1
+				// 	i += 1
+				// }
+				// if stackPassed.Size() mod 2 != 0
+				// 	Push("rax")
+				// for it : stackPassed
+				// {
+				// 	Mov(fnc,"rax",it)
+				// 	Push("rax")
+				// }
+				// if targetWindows
+				// 	SubRsp(32)
+				// MovU64ToReg(fnc,"rax",usedFloats)
 
 				fncObj := objs[fncId]
 
@@ -937,13 +939,13 @@ MCBuildFuncContext_x86_64 := class
 					assert(false)
 				}
 
-				callSize := stackPassed.Size() * 8
-				if stackPassed.Size() mod 2 != 0
-					callSize += 8
-				if targetWindows
-					callSize += 32
-				if callSize != 0
-					AddRsp(callSize)
+				// callSize := stackPassed.Size() * 8
+				// if stackPassed.Size() mod 2 != 0
+				// 	callSize += 8
+				// if targetWindows
+				// 	callSize += 32
+				// if callSize != 0
+				// 	AddRsp(callSize)
 
 			case "mov"
 
@@ -1093,6 +1095,8 @@ MCBuildFuncContext_x86_64 := class
 				//TODO call only if bool worked
 				//WriteData(0xCC) //int3
 				WriteData(0x90) //NOP
+			case "push"
+				Push(objs[line.var1]&->{MCConstRegisterX86^}.GetValue())
 
 			case void
 				printf("x86_64, unsupported opcode %s at %s %i\n",line.opcode.ToCStr(),fileName,fileLine)

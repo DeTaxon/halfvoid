@@ -67,6 +67,19 @@ PassSetFallbacksX86 := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c++] = MCLine("load_var",line.var3)
 			cPtr[c++] = MCLine("call_end")
 			i += 1
+		}else if line.opcode ==  "memset" {
+			newObj := MCConstPointerTyped
+			newObj.GetValue() = memset
+			newObj.SetType(GetFuncType(![GTypeVoidP,GTypeU8,GTypeSizeT],GTypeVoid).GetPoint())
+			fncId := o
+			oPtr[o++] = newObj
+
+			cPtr[c++] = MCLine("call_start",0,fncId)
+			cPtr[c++] = MCLine("load_var",line.var1)
+			cPtr[c++] = MCLine("load_var",line.var2)
+			cPtr[c++] = MCLine("load_var",line.var3)
+			cPtr[c++] = MCLine("call_end")
+			i += 1
 		}else{
 			cPtr[c++] = line
 			i += 1

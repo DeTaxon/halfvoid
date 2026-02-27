@@ -23,7 +23,7 @@ PassSomeOptimizationsX86 := !(MCFunction^ fnc) ->MCFunction^
 			and oPtr[line.var1] is MCConstRegisterX86
 			and oPtr[line.var2] is MCConstInteger
 			and oPtr[line.var2]&->{MCConstInteger^}.GetValue() == 0
-			and false
+			// and false
 		{
 			cPtr[c++] = MCLine("xor",line.var1,line.var1)
 		}else{
