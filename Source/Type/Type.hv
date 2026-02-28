@@ -11,6 +11,7 @@ Type := class extend BoxExeConstObj
 	ItHash := int
 	arrays := AVLMap.{int,Type^}
 
+	IsInt := virtual !() -> bool { return false }
 	GetType := virtual !() -> Type^
 	{
 		return GTypeNone
@@ -186,6 +187,7 @@ TypeInteger := class extend TypeStandard
 	{
 		super(Name,goodName,mName,siz,Aln)
 	}
+	IsInt := virtual !() -> bool { return true }
 }
 TypeVector := class extend TypeStandard
 {

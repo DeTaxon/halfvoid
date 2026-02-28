@@ -227,7 +227,7 @@ SpirvCompiler := class
 				c.Write32(0x30000 + 22)
 				c.Write32(indx)
 				c.Write32(id == float ?: 32 : 64) // OpTypeFloat OpTypeDouble
-			} else if id == int {
+			} else if tp.IsInt() {
 				c.Write32(0x40000 + 21) // OpTypeInt
 				c.Write32(indx)
 				c.Write32(HV.GetTypeSize(tp)*8)
@@ -246,6 +246,13 @@ SpirvCompiler := class
 					c.Write32(GetTypeId(it))
 
 			}else if typeGroup == "Pointer" {
+				base := HV.GetTypeBase(tp)
+				if indx == 12
+					printf("yep %s\n",HV.GetTypeDebugName(base).Str())
+				c.Write32(0x00040000 + 32) // OpTypePointer
+				c.Write32(indx)
+				c.Write32(7) // function
+				c.Write32(GetTypeId(base))
 			}else if typeGroup == "Vector" {
 				c.Write32(0x40000 + 23)
 				c.Write32(indx)
@@ -420,7 +427,7 @@ SpirvCompiler := class
 		{
 			if obj& is MCVariable
 			{
-				tpId := GetTypeId(obj.GetObjType())
+				tpId := GetTypeId(obj.GetObjType().GetPointer())
 
 				resId := toLocalId(ind)
 
@@ -567,5 +574,6 @@ uni := Unifrm^
 
 TestShader := !() -> void
 {
+	i := 3
 	uni.particles[0].pos.x += 0.1
 }

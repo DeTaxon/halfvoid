@@ -21,8 +21,9 @@ ExposeClasses2 := !() -> void
 
 	if #Var("Expr")
 	{
-		passFuncs := TypeFunc^[int]
-		passFuncs[Type->OffsetInVirtualTable("GetPointer")] = GetFuncType(![tp],![true],tpPointer)
+		passFuncs := Tuple.{TypeFunc^,char^}[int]
+		passFuncs[Type->OffsetInVirtualTable("GetPointer")] = !{GetFuncType(![tp],![true],tpPointer),"GetPointer"}
+		passFuncs[Type->OffsetInVirtualTable("IsInt")] = !{GetFuncType(![tp],![true],GTypeBool),"IsInt"}
 
 		curntOffset := 8
 
@@ -40,10 +41,10 @@ ExposeClasses2 := !() -> void
 				curntOffset += 8
 			}
 
-			fnc := new BoxFuncDeclare(it,"")
+			fnc := new BoxFuncDeclare(it.0,"")
 
 			vFunc := new BuildInVirtualCall(fnc,ind div 8)
-			baseType.DefaultSpace.VirtualMethods["GetPointer"].Push(vFunc)
+			baseType.DefaultSpace.VirtualMethods[it.1].Push(vFunc)
 
 			baseType.VTable.Push(new VTableFunc("",fnc))
 		}

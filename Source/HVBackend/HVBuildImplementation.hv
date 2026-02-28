@@ -69,6 +69,10 @@ HVContextImplementation := class extend HV_Context
 			return void
 		return TypeIdFromType(obj)
 	}
+	GetTypeDebugName := virtual !(Type^ obj) -> Str
+	{
+		result->AsString = obj.GetBADStr()
+	}
 	GetTypeClass := virtual !(Type^ obj) -> HV_Class^
 	{
 		if obj is not in TypeClass

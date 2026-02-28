@@ -12,6 +12,8 @@ HV_Context := class
 	GetTypeId := virtual !(Type^ obj) -> TypeId {}
 	GetTypeClass := virtual !(Type^ obj) -> HV_Class^ {}
 
+	GetTypeDebugName := virtual !(Type^ obj) -> Str {}
+
 	GetTypeGroup := virtual !(Type^ obj) -> TypeGroups {}
 
 	CreateClass := virtual !() -> HV_Class^ {}
