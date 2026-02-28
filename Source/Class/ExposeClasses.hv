@@ -25,6 +25,8 @@ ExposeClasses2 := !() -> void
 		passFuncs[Type->OffsetInVirtualTable("GetPointer")] = !{GetFuncType(![tp],![true],tpPointer),"GetPointer"}
 		passFuncs[Type->OffsetInVirtualTable("IsInt")] = !{GetFuncType(![tp],![true],GTypeBool),"IsInt"}
 
+		passFuncs[Type->OffsetInVirtualTable("GetBase")] = !{GetFuncType(![tp],![true],tpPointer),"GetBase"}
+
 		curntOffset := 8
 
 		emptyDeclare := new BoxFuncDeclare(GetFuncType(![],GTypeVoid),"")

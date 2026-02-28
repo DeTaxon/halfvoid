@@ -13,6 +13,9 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 		return null
 	}
 
+	if SelfBuild
+		return GObjNone
+
 	newModule := new UserModule
 
 	bdy := new TokenSymbol(StringSpan("{}"),0)

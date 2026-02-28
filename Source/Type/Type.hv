@@ -43,6 +43,7 @@ Type := class extend BoxExeConstObj
 		arrays[len] = newEl
 		return newEl
 	}
+	GetBase := virtual !() -> Type^ { return Base }
 
 	GetAlign := virtual !() -> int
 	{

@@ -27,7 +27,21 @@
 			for i : ssa.Objects.Size()
 			{
 				obj := ref varPtr[i]
-				ctx.GetTypeId(obj.GetObjType()?)
+
+				if obj is MCVariable
+				{
+					tps := HybridStack.{Type^,40}
+					defer tps.Destroy()
+
+					tpIter := obj.GetObjType()
+					while tpIter != null
+					{
+						tps.PushFront(tpIter)
+						tpIter = tpIter.GetBase()
+					}
+					ctx.GetTypeId(tps[^])
+				}
+
 				if obj is MCConstInteger
 				{
 					ctx.GetTypeId(int)
