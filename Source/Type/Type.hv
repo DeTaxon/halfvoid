@@ -44,6 +44,10 @@ Type := class extend BoxExeConstObj
 		return newEl
 	}
 	GetBase := virtual !() -> Type^ { return Base }
+	GetArrayLength := virtual !() -> int
+	{
+		return 1
+	}
 
 	GetAlign := virtual !() -> int
 	{
@@ -215,6 +219,10 @@ TypeVector := class extend TypeStandard
 		ctx.writeStream^ << "!" << MetaId << " = !DICompositeType(tag: DW_TAG_array_type, baseType: !" << base->{TypeStandard^}.MetaId 
 			<<", size: " << (ItSize*8) << " , flags: DIFlagVector , elements: !" << extrId << ")\n"
 	}
+	GetArrayLength := virtual !() -> int
+	{
+		return vecElementCount
+	}
 }
 
 TypeArray := type TypeArr
@@ -241,6 +249,10 @@ TypeArr := class extend Type
 	GetSize := virtual !() -> int
 	{
 		return Base.GetSize()*len
+	}
+	GetArrayLength := virtual !() -> int
+	{
+		return len
 	}
 	IsComplexType := virtual !() -> bool
 	{

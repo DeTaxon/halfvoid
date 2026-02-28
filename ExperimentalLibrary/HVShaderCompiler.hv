@@ -198,7 +198,7 @@ SpirvCompiler := class
 
 		if touchAll
 		{
-			base := HV.GetTypeBase(x)
+			base := x.GetBase()
 			if base != null
 				GetTypeId(base,"Function",touchAll)
 			if typeGroup == "Class"
@@ -244,7 +244,7 @@ SpirvCompiler := class
 			} else if tp.IsInt() {
 				c.Write32(0x40000 + 21) // OpTypeInt
 				c.Write32(indx)
-				c.Write32(HV.GetTypeSize(tp)*8)
+				c.Write32(tp.GetSize()*8)
 				c.Write32(1) // signed
 			} else if typeGroup == "Function" {
 				fnc := fncTypeIds[indx]
@@ -260,9 +260,7 @@ SpirvCompiler := class
 					c.Write32(GetTypeId(it))
 
 			}else if typeGroup == "Pointer" {
-				base := HV.GetTypeBase(tp)
-				if indx == 12
-					printf("yep %s\n",HV.GetTypeDebugName(base).Str())
+				base := tp.GetBase()
 				c.Write32(0x00040000 + 32) // OpTypePointer
 				c.Write32(indx)
 				c.Write32(7) // function
@@ -270,11 +268,11 @@ SpirvCompiler := class
 			}else if typeGroup == "Vector" {
 				c.Write32(0x40000 + 23)
 				c.Write32(indx)
-				c.Write32(GetTypeId(HV.GetTypeBase(tp)))
-				c.Write32(HV.GetTypeArraySize(tp))
+				c.Write32(GetTypeId(tp.GetBase()))
+				c.Write32(tp.GetArrayLength())
 			}else if typeGroup == "Array" {
-				base := HV.GetTypeBase(tp)
-				arSize := HV.GetTypeArraySize(tp)
+				base := tp.GetBase()
+				arSize := tp.GetArrayLength()
 
 				if arSize == 0
 				{
@@ -309,7 +307,7 @@ SpirvCompiler := class
 
 			if typeGroup == "Pointer"
 			{
-				base := HV.GetTypeBase(tp)
+				base := tp.GetBase()
 				c.Write32(0x00040000 + 32) // OpTypePointer
 				c.Write32(indx)
 				c.Write32(2) // uniform

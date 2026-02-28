@@ -24,8 +24,9 @@ ExposeClasses2 := !() -> void
 		passFuncs := Tuple.{TypeFunc^,char^}[int]
 		passFuncs[Type->OffsetInVirtualTable("GetPointer")] = !{GetFuncType(![tp],![true],tpPointer),"GetPointer"}
 		passFuncs[Type->OffsetInVirtualTable("IsInt")] = !{GetFuncType(![tp],![true],GTypeBool),"IsInt"}
-
 		passFuncs[Type->OffsetInVirtualTable("GetBase")] = !{GetFuncType(![tp],![true],tpPointer),"GetBase"}
+		passFuncs[Type->OffsetInVirtualTable("GetSize")] = !{GetFuncType(![tp],![true],GTypeInt),"GetSize"}
+		passFuncs[Type->OffsetInVirtualTable("GetArrayLength")] = !{GetFuncType(![tp],![true],GTypeInt),"GetArrayLength"}
 
 		curntOffset := 8
 

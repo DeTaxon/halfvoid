@@ -18,26 +18,6 @@ HVContextImplementation := class extend HV_Context
 	{
 		return TypeFromTypeId(tp)
 	}
-	GetTypeSize := virtual !(Type^ tp) -> int
-	{
-		if tp is in Type
-			return tp.GetSize()
-	}
-	GetTypeArraySize := virtual !(Type^ tp) -> int
-	{
-		if tp is TypeVector
-			return tp.vecElementCount
-		if tp is not in TypeArr
-			return 0
-		return tp.len
-	}
-	GetTypeBase := virtual !(Type^ baseType) -> Type^
-	{
-		typ := baseType->{Type^}
-		if typ.Base == null
-			return null
-		return typ.Base
-	}
 	GetFuncType := virtual !(Type^[] types,bool[] isReference, Type^ resultType,bool resultReference,bool isVariadicArguments) -> Type^ 
 	{
 		rTypeIn := resultType->{Type^}
