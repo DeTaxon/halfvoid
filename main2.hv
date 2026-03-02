@@ -13,8 +13,11 @@ RunFunc := !() -> void
 	// OpenFontTest()
 	makeSpirv()
 	// tst()
+	// FlacTest()
 }
 
+//TODO fails if line.opcode in !["get_array_elem_ptr","get_field_ptr"]
+//
 //TODO if one input variable named result, rename return result to anon
 //#ExposeClass("Type",
 //	"GetPoint",

@@ -1,0 +1,14 @@
+OpcodeReturnsVal := !(MCBaseOpcodes opcode) -> bool
+{
+	switch opcode
+	{
+	case in !["mov","cast"]
+		return true
+	case in !["and","or","xor","not"]
+		return true
+	case in !["get_field_ptr","get_array_elem_ptr"]
+		return true
+	}
+	return false
+}
+

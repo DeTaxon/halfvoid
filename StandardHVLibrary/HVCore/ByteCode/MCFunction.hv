@@ -24,6 +24,20 @@ HVB_Function := class
 
 		result.IsVArgs = IsVArgs
 	}
+
+	CountVarUsage := !() -> int[]
+	{
+		result.Resize(Objects.Size())
+		
+		for line : Lines
+		{
+			for i : 5
+			{
+				vr := line.var1&[i]
+				result[vr] += 1
+			}
+		}
+	}
 }
 
 HVBFunctionType := class

@@ -83,7 +83,6 @@ VulkanShaderLoader := class
 	{
 		TSpawnTask(() ==> [folderPath] {
 			AsyncMonitorFolderNonStop(folderPath,true, (x,t) ==> {
-				printf("test %s\n",x.GetPath())
 				changedFiles.Push(x.GetPath().CStr())
 			})
 		})

@@ -161,9 +161,6 @@ SpirvCompiler := class
 		}
 
 		key := r.GetHVType()
-
-		printf("wut %p\n",key)
-
 		result = GetTypeId(key)
 		fncTypeIds[result] = fnc
 	}
@@ -399,9 +396,71 @@ SpirvCompiler := class
 	}
 	WriteFunction := !(HVB_Function^ fnc) -> void
 	{
+		hvInt := HV.GetTypeObj(int)
+
+		used := fnc.CountVarUsage()
+
+		ignoreLine := bool[]
+		ignoreLine.Resize(fnc.Lines.Size())
+
+		objCodeSource := int[]
+		objCodeSource.Resize(fnc.Objects.Size())
+		objCodeSource[^] = -1
+
+		chainSource := int[]
+		chainSource.Resize(fnc.Lines.Size())
+
+		for line,ind : fnc.Lines
+		{
+			if OpcodeReturnsVal(line.opcode) and fnc.Objects[line.var1] is MCConstValue
+				objCodeSource[line.var1] = ind
+
+			if line.opcode == "get_array_elem_ptr" or line.opcode == "get_field_ptr"
+			{
+				prevLine := objCodeSource[line.var2]
+				if prevLine == -1
+					continue
+
+				if used[line.var2] != 2
+					continue
+
+				baseLine := fnc.Lines[prevLine]
+
+				if baseLine.opcode == "cast"
+				{
+					if fnc.Objects[baseLine.var2] is not MCConstValue
+						continue
+
+					if used[baseLine.var2] != 2
+						continue
+
+					prevLine2 := objCodeSource[baseLine.var2]
+
+					if prevLine2 == -1
+						continue
+
+					baseLine2 := fnc.Lines[prevLine2]
+
+					if baseLine2.opcode == "get_array_elem_ptr" or baseLine2.opcode == "get_field_ptr"
+					{
+						ignoreLine[prevLine] = true
+						ignoreLine[prevLine2] = true
+						chainSource[ind] = prevLine2
+					}
+
+				}else if baseLine.opcode == "get_array_elem_ptr" or line.opcode == "get_field_ptr"
+				{
+					ignoreLine[prevLine] = true
+					chainSource[ind] = prevLine
+
+				}
+			}
+
+		}
+
+		// printf("ignores %i %i\n",i,ignoreLine[^i])
+
 		// this.GetTypeId(HV.GetTypeObj(float),"Uniform")
-		floatPtr := HV.GetTypeObj(float).GetPointer()
-		GetTypeId(floatPtr,"Uniform")
 
 		idFIter := GetFunctionIdOffset(fnc) + 1
 
@@ -454,78 +513,112 @@ SpirvCompiler := class
 		linesCount := fnc.Lines.Size()
 		while i < linesCount
 		{
+			if ignoreLine[i]
+			{
+				i += 1
+				continue
+			}
+
 			line := cPtr[i]
 
 			{// AccessChain
 				
-				chainIndexes := HybridQueue.{int,20}
+				chainLines := HybridStack.{int,20}
 
-				k := i
 				startIndex := 0
 				resIndex := 0
 
-				while k < linesCount
+				if line.opcode == "get_array_elem_ptr" or line.opcode == "get_field_ptr"
 				{
-					ln := cPtr[k]
-					if ln.opcode == "cast" and cPtr[k+1].opcode == "get_array_elem_ptr" {
+					resIndex = line.var1
 
-						//TODO specific casts
-						// obj[0] to obj^
-						// vec4f to float^
-						chainIndexes.Push(this.getIntConstId(0))
-						resIndex = cPtr[k+1].var1
-						k += 2
-					}else if ln.opcode == "get_array_elem_ptr" {
-						if oPtr[ln.var3] is MCConstInteger
-						{
-							chainIndexes.Push(this.getIntConstId(oPtr[ln.var3]&->{MCConstInteger^}.GetValue()))
-						}else{
-							chainIndexes.Push(ln.var3 + idFIter)
-						}
-						if k == i
-						{
-							if oPtr[ln.var2] is MCGlobalVariable
-							{
-								startIndex = this.GetGlobObjId(oPtr[ln.var2]&->{MCGlobalVariable^}.GetGlobalVariable())
-							}else{
-								startIndex = ln.var2
-							}
-						}
-						resIndex = ln.var1
-					}else if ln.opcode == "get_field_ptr" {
-						if oPtr[ln.var3] is MCConstInteger
-						{
-							chainIndexes.Push(this.getIntConstId(oPtr[ln.var3]&->{MCConstInteger^}.GetValue()))
-						}else{
-							chainIndexes.Push(ln.var3 + idFIter)
-						}
-						if k == i
-							startIndex = ln.var2
-						resIndex = ln.var1
-					}else{
-						break
+					j := i
+
+					while j != 0
+					{
+						chainLines.PushFront(j)
+						startIndex = fnc.Lines[j].var2
+						j = chainSource[j]
 					}
-					k += 1
 				}
 
-				if k != i
+
+
+
+				// while k < linesCount
+				// {
+				// 	ln := cPtr[k]
+				// 	if ln.opcode == "cast" and cPtr[k+1].opcode == "get_array_elem_ptr" {
+				//
+				// 		//TODO specific casts
+				// 		// obj[0] to obj^
+				// 		// vec4f to float^
+				// 		chainIndexes.Push(this.getIntConstId(0))
+				// 		resIndex = cPtr[k+1].var1
+				// 		k += 2
+				// 	}else if ln.opcode == "get_array_elem_ptr" {
+				// 		if oPtr[ln.var3] is MCConstInteger
+				// 		{
+				// 			chainIndexes.Push(this.getIntConstId(oPtr[ln.var3]&->{MCConstInteger^}.GetValue()))
+				// 		}else{
+				// 			chainIndexes.Push(ln.var3 + idFIter)
+				// 		}
+				// 		if k == i
+				// 		{
+				// 			if oPtr[ln.var2] is MCGlobalVariable
+				// 			{
+				// 				startIndex = this.GetGlobObjId(oPtr[ln.var2]&->{MCGlobalVariable^}.GetGlobalVariable())
+				// 			}else{
+				// 				startIndex = ln.var2
+				// 			}
+				// 		}
+				// 		resIndex = ln.var1
+				// 	}else if ln.opcode == "get_field_ptr" {
+				// 		if oPtr[ln.var3] is MCConstInteger
+				// 		{
+				// 			chainIndexes.Push(this.getIntConstId(oPtr[ln.var3]&->{MCConstInteger^}.GetValue()))
+				// 		}else{
+				// 			chainIndexes.Push(ln.var3 + idFIter)
+				// 		}
+				// 		if k == i
+				// 			startIndex = ln.var2
+				// 		resIndex = ln.var1
+				// 	}else{
+				// 		break
+				// 	}
+				// 	k += 1
+				// }
+
+				if chainLines.Size() != 0
 				{
+					startIndex = this.GetGlobObjId(oPtr[startIndex]&->{MCGlobalVariable^}.GetGlobalVariable())
 					resObj := toLocalId(resIndex)
+
+					chainLines.Pop()
 
 					resTypeId := GetTypeId(oPtr[resIndex].GetObjType(),"Uniform") //TODO determine group
 
-					indCount := (chainIndexes.Size() + 4) shl 16
+					indCount := (chainLines.Size() + 4) shl 16
 					c.Write32(indCount + 65)
 					c.Write32(resTypeId)
 					c.Write32(resObj)
 					c.Write32(startIndex)
 
-					for it,i : chainIndexes
+					for it : chainLines
 					{
-						c.Write32(it)
+						ln2 := fnc.Lines[it]
+						ob := ref fnc.Objects[ln2.var3]
+						if ob is MCConstInteger
+						{
+							c.Write32(getIntConstId(0))
+						}else if ob is MCConstValue {
+							c.Write32(toLocalId(ln2.var3))
+						}else{
+							printf("nope\n")
+						}
 					}
 
-					i = k - 1
+					i += 1
 					continue
 				}
 
@@ -533,6 +626,19 @@ SpirvCompiler := class
 
 			switch line.opcode
 			{
+			case "mov"
+				if oPtr[line.var1] is MCConstValue and oPtr[line.var2] is MCVariable
+				{
+					c.Write32(0x0040000 + 61) // OpLoad
+					c.Write32(GetTypeId(oPtr[line.var1].GetObjType()))
+					c.Write32(toLocalId(line.var1))
+					c.Write32(toLocalId(line.var2))
+				}else if oPtr[line.var1] is MCVariable and oPtr[line.var2] is MCConstInteger
+				{
+					c.Write32(0x0030000 + 62) // OpStore
+					c.Write32(toLocalId(line.var1))
+					c.Write32(this.getIntConstId(oPtr[line.var2]&->{MCConstInteger^}.GetValue()))
+				}
 			case "load"
 				c.Write32(0x0040000 + 61) // OpLoad
 				c.Write32(GetTypeId(oPtr[line.var1].GetObjType()))
@@ -548,6 +654,17 @@ SpirvCompiler := class
 				c.Write32(toLocalId(line.var1))
 				c.Write32(toLocalId(line.var2))
 				c.Write32(toLocalId(line.var3))
+			case "clean"
+				if oPtr[line.var1] is MCVariable
+				{
+					tp := oPtr[line.var1].GetObjType() 
+					if tp == hvInt
+					{
+						c.Write32(0x0030000 + 62) // OpStore
+						c.Write32(toLocalId(line.var1))
+						c.Write32(this.getIntConstId(0))
+					}
+				}
 			}
 
 			
@@ -586,6 +703,10 @@ uni := Unifrm^
 
 TestShader := !() -> void
 {
-	i := 3
-	uni.particles[0].pos.x += 0.1
+	for i : 10
+	{
+
+	}
+	// i := 3
+	// uni.particles[i].pos.x += 0.1
 }

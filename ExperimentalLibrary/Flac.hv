@@ -4,7 +4,6 @@ FlacTest := !() -> void
 
 	ptr := tst.GetPointer()->{u8^}[4]&
 
-
 	iter := ptr
 
 	while true
