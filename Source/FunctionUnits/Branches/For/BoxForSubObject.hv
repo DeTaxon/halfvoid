@@ -5,6 +5,7 @@ ForSubObjects := class
 	DownToken := Token^
 
 	DownResult := BoxExeObj^
+	IterVar := LocalVar^
 	ValueVar := LocalVar^
 	IndVar := LocalVar^
 	GetCall := BoxExeObj^
@@ -33,7 +34,8 @@ ForSubObjects := class
 			endVar := ToLocalVar(dwnRes)
 			ev := endVar.CreateVarCall()
 
-			ValueVar = ToLocalVar(iv,ValueName)
+			// ValueVar = ToLocalVar(iv,ValueName)
+			IterVar = iterVar
 
 			iStep := new PackedExeObj
 			InitStep = iStep

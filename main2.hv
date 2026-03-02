@@ -4,7 +4,11 @@
 
 main := !(char^[] args) -> int
 {
-	RunFunc()
+	for i : 5
+	{
+
+	}
+	// RunFunc()
 }
 
 

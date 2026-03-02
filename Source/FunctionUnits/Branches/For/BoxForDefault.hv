@@ -47,6 +47,7 @@ BoxFor := class extend BoxExeObj
 
 		for it : values
 		{
+			UnitStack.PushFront(it.IterVar?)
 			UnitStack.PushFront(it.ValueVar?)
 			UnitStack.PushFront(it.IndVar?)
 		}

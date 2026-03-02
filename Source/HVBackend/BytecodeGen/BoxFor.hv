@@ -16,7 +16,7 @@ AppendClass BoxFor
 				it.NextCheck.WriteMC(ctx)
 			}
 
-			it.ValueVar.WriteMC(ctx)
+			it.ValueVar?.WriteMC(ctx)
 			it.IndVar?.WriteMC(ctx)
 			it.CallGetValue?.WriteMC(ctx)
 
