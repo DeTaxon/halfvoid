@@ -884,6 +884,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "switch_end"
 		case "memory_barrier" //nothing
 		case "assert"
+		case "spirv_hint_loop_merge"
 			//TODO
 
 		// case "stack_push"

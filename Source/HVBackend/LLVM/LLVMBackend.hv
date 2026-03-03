@@ -1047,6 +1047,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				out << "	br label %End" << tmpId
 				printDebugEnd()
 				out << "End" << tmpId << ":\n"
+			case "spirv_hint_loop_merge"
 			case void
 				printf("LLVM: unknown opcode %s at %s %i\n",op.opcode.ToCStr(),base.GetName(),indx)
 				assert(false)

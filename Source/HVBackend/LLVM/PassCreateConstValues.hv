@@ -257,6 +257,8 @@ GenMCTable := !() -> void
 	tbl["asm_start"] = MCLine("noop")
 	tbl["asm_end"] = MCLine("noop")
 
+	tbl["spirv_hint_loop_merge"] = MCLine("noop")
+
 	for it : tbl
 	{
 		if it.var1 != 0 or it.var2 != 0 or it.var3 != 0 or it.var4 != 0 or it.var5 != 0

@@ -2,9 +2,19 @@ AppendClass BoxFor
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
+		headerLabel := ctx.CreateLabel()
+		incLabel := ctx.CreateLabel()
+
 		CreatedIndex?.WriteMC(ctx)
 		values[^].InitStep.WriteMC(ctx)
+
+
 		CheckStep.WriteMC(ctx)
+
+		HVB_ins_spirv_hint_loop_merge(ctx,ctx.GetLabel(EndLabel&),incLabel)
+
+		HVB_ins_jump(ctx,headerLabel)
+		HVB_ins_label(ctx,headerLabel)
 
 		for it : values
 		{
@@ -30,6 +40,9 @@ AppendClass BoxFor
 		}
 
 		body.WriteMC(ctx)
+
+		HVB_ins_jump(ctx,incLabel)
+		HVB_ins_label(ctx,incLabel)
 
 		for it : values
 		{

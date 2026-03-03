@@ -1095,6 +1095,7 @@ MCBuildFuncContext_x86_64 := class
 				//TODO call only if bool worked
 				//WriteData(0xCC) //int3
 				WriteData(0x90) //NOP
+			case "spirv_hint_loop_merge"
 			case "push"
 				Push(objs[line.var1]&->{MCConstRegisterX86^}.GetValue())
 

@@ -279,7 +279,9 @@ SpirvCompiler := class
 				}else{
 					
 				}
-
+			}else if id == bool {
+				c.Write32(0x0020000 + 20)
+				c.Write32(indx)
 			}else if typeGroup == "Class" {
 				cls := HV.GetTypeClass(tp)
 
@@ -487,6 +489,10 @@ SpirvCompiler := class
 			{
 				return getFloatConstId(ob.GetValue())
 			}
+			if ob is MCConstInteger
+			{
+				return getIntConstId(ob.GetValue())
+			}
 			return ids[x]?
 
 			idIter++
@@ -649,8 +655,14 @@ SpirvCompiler := class
 				c.Write32(toLocalId(line.var1))
 				c.Write32(toLocalId(line.var2))
 			case "add"
-				c.Write32(0x0050000 + 129) // OpFAdd
-				c.Write32(GetTypeId(oPtr[line.var1].GetObjType()))
+				tp := oPtr[line.var1].GetObjType()
+				if tp.IsInt() {
+
+					c.Write32(0x0050000 + 128) // OpIAdd
+				}else{
+					c.Write32(0x0050000 + 129) // OpFAdd
+				}
+				c.Write32(GetTypeId(tp))
 				c.Write32(toLocalId(line.var1))
 				c.Write32(toLocalId(line.var2))
 				c.Write32(toLocalId(line.var3))
@@ -664,6 +676,48 @@ SpirvCompiler := class
 						c.Write32(toLocalId(line.var1))
 						c.Write32(this.getIntConstId(0))
 					}
+				}
+			case "label"
+				if i >= 1 and cPtr[i-1].opcode != "jmp"
+				{
+					c.Write32(0x0020000 + 249) // OpBranch
+					c.Write32(toLocalId(line.var1))
+				}
+				c.Write32(0x0020000 + 248) // OpLabel
+				c.Write32(toLocalId(line.var1))
+			case "spirv_hint_loop_merge"
+				c.Write32(0x0040000 + 246) //OpLoopMerge
+				c.Write32(toLocalId(line.var1))
+				c.Write32(toLocalId(line.var2))
+				c.Write32(0)
+
+			case "cmp"
+				c.Write32(0x0050000 + 177)
+				c.Write32(GetTypeId(bool))
+				c.Write32(toLocalId(line.var1))
+				c.Write32(toLocalId(line.var2))
+				c.Write32(toLocalId(line.var4))
+			case "jmp"
+				c.Write32(0x0020000 + 249) // OpBranch
+				c.Write32(toLocalId(line.var1))
+			case "jmp_if_bool"
+
+				if i+1 < fnc.Lines.Size() and cPtr[i+1].opcode == "jmp"
+				{
+					c.Write32(0x0040000 + 250)
+					c.Write32(toLocalId(line.var2))
+					c.Write32(toLocalId(line.var1))
+					c.Write32(toLocalId(cPtr[i+1].var1))
+					i += 1
+				}else{
+					nxtId := idFIter++
+
+					c.Write32(0x0040000 + 250)
+					c.Write32(toLocalId(line.var2))
+					c.Write32(toLocalId(line.var1))
+					c.Write32(nxtId)
+					c.Write32(0x0020000 + 248) // OpLabel
+					c.Write32(nxtId)
 				}
 			}
 

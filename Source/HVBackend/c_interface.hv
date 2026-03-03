@@ -258,3 +258,7 @@ HVB_ins_assert := !(MCBuildContext^ ctx, s32 opr1) -> void
 	ctx.lines.Push(MCLine("assert",opr1))
 }
 
+HVB_ins_spirv_hint_loop_merge := !(MCBuildContext^ ctx, s32 opr1,s32 opr2) -> void
+{
+	ctx.lines.Push(MCLine("spirv_hint_loop_merge",opr1,opr2))
+}

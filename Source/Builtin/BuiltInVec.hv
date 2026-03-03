@@ -5,28 +5,6 @@ GetVecXTypeSize := !(Type^ itY) -> int
 	return itY->{TypeVector^}.vecElementCount
 }
 
-GetVecTypeX := !(Type^ base, int Siz) -> Type^
-{
-	if base == GTypeFloat
-	{
-		switch Siz
-		{
-			case 4 return GTypeVec4f
-			case 3 return GTypeVec3f
-			case 2 return GTypeVec2f
-		}
-	}
-	if base == GTypeInt
-	{
-		switch Siz
-		{
-			case 4 return TypeTable[23]
-			case 3 return TypeTable[24]
-			case 2 return TypeTable[25]
-		}
-	}
-}
-
 BuiltInGetVecTemplate := class extend BoxFuncTemplate
 {
 	this := !() -> void
@@ -352,21 +330,25 @@ CreateBuiltInVec:= !() -> void
 
 		bSpace.Functions["<+>"].Push(new BuiltInVecScalarMult(GetFuncType(![x,x],GTypeFloat)) )
 	}
-	for xIndex : ![23,24,25] // int base
+
+	for i : 3
 	{
-		x := TypeTable[xIndex]
-		baseRefed := GetFuncType(![x,x],![true,false],x)
-		baseAdd := GetFuncType(![x,x],![false,false],x)
+		for subType : ![GTypeInt,GTypeU32]
+		{
+			x := VectorTypes[i][subType]
+			baseRefed := GetFuncType(![x,x],![true,false],x)
+			baseAdd := GetFuncType(![x,x],![false,false],x)
 
-		bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"add") )
-		bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"sub") )
-		bSpace.Functions["*"].Push(new BuiltInIntBase(baseAdd,"mul") )
-		bSpace.Functions["div"].Push(new BuiltInIntBase(baseAdd,"sdiv") )
+			bSpace.Functions["+"].Push(new BuiltInIntBase(baseAdd,"add") )
+			bSpace.Functions["-"].Push(new BuiltInIntBase(baseAdd,"sub") )
+			bSpace.Functions["*"].Push(new BuiltInIntBase(baseAdd,"mul") )
+			bSpace.Functions["div"].Push(new BuiltInIntBase(baseAdd,"sdiv") )
 
-		bSpace.Functions["+="].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
-		bSpace.Functions["-="].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
-		bSpace.Functions["*="].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
-		bSpace.Functions["/="].Push(new BuiltInIntEqAndOper(baseRefed,"sdiv") )
+			bSpace.Functions["+="].Push(new BuiltInIntEqAndOper(baseRefed,"add") )
+			bSpace.Functions["-="].Push(new BuiltInIntEqAndOper(baseRefed,"sub") )
+			bSpace.Functions["*="].Push(new BuiltInIntEqAndOper(baseRefed,"mul") )
+			bSpace.Functions["/="].Push(new BuiltInIntEqAndOper(baseRefed,"sdiv") )
+		}
 	}
 	ForEachVecType(x ==> {
 

@@ -85,7 +85,7 @@ TypeDatabaseInitDefaults := !() -> void
 	for defs : DefsTable
 	{
 		if defs == null
-			break
+			continue
 		CodeSpaces[-1].Types[defs.ItName] = defs.ItType
 	}
 }

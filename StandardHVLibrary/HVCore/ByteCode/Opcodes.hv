@@ -116,6 +116,9 @@ MCBaseOpcodes := enum extend u16
 	//
 	// "stack_add_float",
 	// "stack_sub_float",
+	
+	//BACKEND spirv
+	"spirv_hint_loop_merge",
 
 	//Optimizations
 	"load_element_opt_class_const"
