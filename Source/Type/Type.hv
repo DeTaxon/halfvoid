@@ -12,6 +12,8 @@ Type := class extend BoxExeConstObj
 	arrays := AVLMap.{int,Type^}
 
 	IsInt := virtual !() -> bool { return false }
+	IsUnsigned := virtual !() -> bool { return false }
+	IsVector := virtual !() -> bool { return false }
 	GetType := virtual !() -> Type^
 	{
 		return GTypeNone
@@ -184,6 +186,15 @@ TypeStandard := class extend Type
 	{
 		assert(DebugMode)
 		ctx.writeStream^ << "!" << MetaId << " = " << MetaInfo << "\n"
+	}
+	IsUnsigned := virtual !() -> bool
+	{
+		for i : 4
+			if TypeTable[i] == this&
+					return true
+		if this& == GTypeChar
+			return true
+		return false
 	}
 }
 TypeInteger := class extend TypeStandard

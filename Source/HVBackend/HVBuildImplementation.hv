@@ -25,7 +25,6 @@ HVContextImplementation := class extend HV_Context
 		args.Push(types[^]->{Type^})
 		fType := GetFuncType(args,isReference,![rTypeIn],![resultReference],isVariadicArguments)
 
-		printf("hey %p\n",fType)
 		return fType
 	}
 	GetTypeGroup := virtual !(Type^ obj) -> TypeGroups
@@ -121,6 +120,10 @@ HVContextImplementation := class extend HV_Context
 	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void
 	{
 		fnc.Print()
+	}
+	GetGlobalVarName := virtual !(HV_Object^ obj) -> Str
+	{
+		return obj->{GlobalVar2^}.ItName
 	}
 }
 HV_FunctionTemplateImp := class extend HV_FunctionTemplate

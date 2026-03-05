@@ -37,6 +37,8 @@ HV_Context := class
 
 	GetSSAFunc := virtual !(HV_Object^ fnc) -> HVB_Function^ {}
 
+	GetGlobalVarName := virtual !(HV_Object^ obj) -> Str {}
+
 	//Temp
 	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void {}
 }
