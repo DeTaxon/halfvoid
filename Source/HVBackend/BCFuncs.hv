@@ -32,6 +32,7 @@ BCFuncsType := class
 		result = buildCtx.CreateMCFunction()
 		result.BaseFunction = itm
 
+		// result.Print()
 		baseFuncs[itm] = result
 	}
 	GetInterpFunc := !(BoxFuncBody^ itm) -> MCFunction^

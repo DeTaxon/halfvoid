@@ -672,10 +672,10 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				r3 := bldr.PushReg("rcx",GTypeVoidP.GetPoint())
 
 				cPtr[c++] = MCLine("mov",r1,it.var1)
-				cPtr[c++] = MCLine("mov",r2,bldr.PushInt(min(redInts,6)*8))
-				cPtr[c++] = MCLine("store",r1,r2)
-				cPtr[c++] = MCLine("mov",r2,bldr.PushInt(min(redFloats,8)*16 + 6*8))
-				cPtr[c++] = MCLine("store",r1,r2,bldr.PushInt(4))
+				// cPtr[c++] = MCLine("mov",r2,bldr.PushInt(min(redInts,6)*8))
+				cPtr[c++] = MCLine("store",r1,bldr.PushInt(min(redInts,6)*8))
+				// cPtr[c++] = MCLine("mov",r2,bldr.PushInt(min(redFloats,8)*16 + 6*8))
+				cPtr[c++] = MCLine("store",r1,bldr.PushInt(min(redFloats,8)*16 + 6*8),bldr.PushInt(4))
 
 				cPtr[c++] = MCLine("get_pointer",r3,pushVar(16,GTypeSizeT))
 				cPtr[c++] = MCLine("store",r1,r3,bldr.PushInt(8))
