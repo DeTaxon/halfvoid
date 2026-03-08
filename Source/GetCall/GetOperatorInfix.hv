@@ -49,39 +49,6 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 			return res
 	}
 
-	//if oper == "=" and IsGCPtr(tmpList[0].GetType()) and IsGCPtr(tmpList[1].GetType()) and tmpList[0].IsMem()
-	//{
-	//	t1 := tmpList[0].GetType()
-	//	t2 := tmpList[1].GetType()
-	//	fightResult := TypeFight(t1,t2)
-
-	//	fncType := GetFuncType(2,![GCType.GetPoint(),GCType.GetPoint()],![true,false],GTypeVoid)
-	//	pri := GOperatorSetGC.GetPriority(tmpList,![],null)
-	//	if fightResult == t1
-	//		//and pri != CmpNoExchange
-	//	{
-	//		setFunc := GOperatorSetGC.GetFuncByType(fncType,![])
-	//		return setFunc.CreateCall(tmpList)
-	//	}else{
-	//		return TryRemoveAutoCast(null,tmpList,(newVr,newObjs) ==> {
-	//			tt1 := newObjs[0].GetType()
-	//			tt2 := newObjs[1].GetType()
-	//			fightResult := TypeFight(tt1,tt2)
-	//			if fightResult == tt1
-	//			{
-	//				return GOperatorSetGC.GetFuncByType(fncType,![]).CreateCall(newObjs)
-	//			}
-	//			return null->{BoxExeObj^}
-	//		})?
-
-	//		//if tmpList[0] is in LocalVarProxy and tmpList[0]->{LocalVarProxy^}.baseVar.isSetCreated
-	//		//{
-	//		//	printf("here %s\n",tmpList[0]->{LocalVarProxy^}.baseVar.itName)
-	//		//}
-	//		return null
-	//	}
-	//}
-
 	res1 := innerTryGetInfixCall(oper,tmpList,itm)
 	if res1 != null
 		return res1
@@ -345,6 +312,21 @@ innerTryGetInfixCall := !(StringSpan oper,Vector.{BoxExeObj^} lst,Token^ errToke
 		objs8 := CheckExeDownList
 		objs8.Push(tmpList[1])
 		return innerTryGetMethodCall(oper,tmpList[0],objs8,cnsts)?
+	}
+
+	if oper == "in" and tmpList[1].GetType() is TypeEnum and tmpList[0] is BoxArrayHolder
+	{
+		en := tmpList[1].GetType()->{TypeEnum^}.ToEnum
+
+		hldr := tmpList[0]->{BoxArrayHolder^}
+
+		enumArray := hldr.createUse(tmpList[1].GetType())
+
+		if enumArray != null
+		{
+			fnc := TemplateInternalObjInArray.GetFunc(![enumArray,tmpList[1]],![])
+			return fnc.CreateCall(![enumArray,tmpList[1]])
+		}
 	}
 
 	return TryComputeOperators(oper,tmpList)?

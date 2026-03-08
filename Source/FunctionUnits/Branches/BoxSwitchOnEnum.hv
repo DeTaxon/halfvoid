@@ -120,7 +120,7 @@ CreateSwitchOnEnum := !(Token^ obj,BoxExeObj^ mainCall) -> BoxExeObj^
 		{
 			checkRes = innertTryGetCompareOverSpaceship(caseCheckFuncName,objs,caseVal)
 		}
-		if checkRes == null
+		if checkRes == null and extraConsts.Size() == 0
 		{
 			checkRes = innerTryGetInfixCall(caseCheckFuncName,objs,caseVal)
 		}

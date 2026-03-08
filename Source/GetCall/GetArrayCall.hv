@@ -125,7 +125,33 @@ BoxArrayHolder := class extend BoxExeObj
 			return globalVar.proxy&
 		}
 
-		resCall := CreateFuncCall("![]",vals,![bs.GetArray(vals.Size())])
+		resCall := BoxExeObj^
+
+		if bs is TypeEnum and isAllConsts
+		{
+			en := bs->{TypeEnum^}.ToEnum
+
+			objs := BoxExeObj^[]
+
+			for v : vals
+			{
+				assert(v is BoxExeString)
+				nm := v->{BoxExeString^}.Value
+				ob := en.GetEnum(nm)
+
+				if ob == null
+				{
+					CurrentWork?.SetErrorMessage(debugToken.MakeError("could not create array, one of the string literal is not enum"))
+					return null
+				}
+
+				objs.Push(ob)
+			}
+			resCall = CreateFuncCall("![]",objs,![bs.GetArray(vals.Size())])
+		}else{
+			resCall = CreateFuncCall("![]",vals,![bs.GetArray(vals.Size())])
+		}
+
 
 		if resCall == null
 		{

@@ -10,6 +10,8 @@ TemplateInternalGetVTableVariable := BoxFuncTemplate^
 
 TemplateInternalIsInSameType := BoxFuncTemplate^
 
+TemplateInternalObjInArray := BoxFuncTemplate^
+
 GInternalSetType := BoxFuncTemplate^
 
 GZeroMemTemplate := BoxFuncTemplate^
@@ -55,6 +57,8 @@ InitInternals := !() -> void
 	TemplateInternalGetVTableVariable = intGetTemplate("internalGetVTableVariable")
 
 	TemplateInternalIsInSameType = intGetTemplate("internalCheckIsInSameType")
+	
+	TemplateInternalObjInArray = intGetTemplate("internalInArrayCheck")
 
 	GInternalSetType = intGetTemplate("internalHVSetType")
 
