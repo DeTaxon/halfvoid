@@ -9,14 +9,6 @@
 	return false
 }
 
-// TODO it should be @T[] lst, without @C
-internalInArrayCheck := !(@T[@C] lst, T obj) -> bool
-{
-	if lst[^] == obj
-		return true
-	return false
-}
-
 StrCopy := !(char^ a) -> char^
 {
 	Si := strlen(a)

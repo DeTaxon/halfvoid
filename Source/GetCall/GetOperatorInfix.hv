@@ -324,8 +324,9 @@ innerTryGetInfixCall := !(StringSpan oper,Vector.{BoxExeObj^} lst,Token^ errToke
 
 		if enumArray != null
 		{
-			fnc := TemplateInternalObjInArray.GetFunc(![enumArray,tmpList[1]],![])
-			return fnc.CreateCall(![enumArray,tmpList[1]])
+			vecType := GVectorTemplate.GetClass(![en.ItType])
+			enumAsVector := GetExchange(enumArray,vecType.ItType)
+			return innerTryGetMethodCall(oper,enumAsVector,![tmpList[1]],![])
 		}
 	}
 
