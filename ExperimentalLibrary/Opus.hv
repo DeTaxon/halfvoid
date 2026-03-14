@@ -1,6 +1,95 @@
 OpusTest := !() -> void
 {
-	dat := FSGetFile("j.opus").GetBlob()
+	dat := FSGetFile("jmono.opus").GetBlob()
+
+
+	dec := op_open_memory(dat.GetPointer(),dat.Size(),null)
+
+	defer op_free(dec)
+
+	rStart := HVOpusDecoder
+	rStart.LoadHeader(dat)
+
+	samples := op_pcm_total(dec,-1)
+
+	res := MakeBlob(samples*rStart.ChannelsCount*u16->TypeSize)
+
+	ptr := res.GetPointer()
+	leftSize := res.Size()
+	totalRed := 0
+
+	while true
+	{
+		red := int
+		if rStart.ChannelsCount == 1
+		{
+			red = op_read(dec,ptr[totalRed]&,leftSize,null)
+		}else{
+			red = op_read_stereo(dec,ptr[totalRed]&,leftSize)
+		}
+
+		p2 := ptr[totalRed]&->{u16^}
+
+		if red == 0
+			break
+
+		red *= 2
+		leftSize -= red
+		totalRed += red
+	}
+
+	eng := SoundEngine()
+	snd := Sound
+	snd.format = AL_FORMAT_MONO16
+	snd.freq = 48000
+	alGenBuffers(1,snd.buf&)
+	alBufferData(snd.buf,snd.format,res.GetPointer(),totalRed,snd.freq)
+	// snd.buf = resIdx
+	eng.PlaySound(snd&)
+	TSleep(2.0)
+
+}
+
+HVOpusDecoder := class
+{
+	Rate := int
+	ChannelsCount := int
+
+	LoadHeader := !(Blob^ blb) -> void
+	{
+		iter := blb.GetPointer()->{u8^}[28]& // skip ogg header
+		
+		header := iter->{OpusHeader^}
+
+		ChannelsCount = header.Channels
+
+		// iter = header[1]&->{u8^}
+		// iter = iter[28]& // OggS
+		// iter = iter[8]& // OpusCommentStart
+
+		// readStr := () ==> {
+		// 	ln := iter->{u32^}^
+		// 	iter = iter[4]&
+		//
+		// 	// spn := StringSpan(iter->{char^},ln)
+		//
+		// 	iter = iter[ln]&
+		// }
+		//
+		// readStr()
+		//
+		// commentCount := iter->{u32^}^
+		// iter = iter[4]&
+		// for commentCount
+		// 	readStr()
+
+		// hdr2 := iter->{OggHeader^}
+	}
+}
+
+OpusTestOld := !() -> void
+{
+	dat := FSGetFile("jmono.opus").GetBlob()
 
 	iter := dat.GetPointer()->{u8^}[28]& // skip ogg header
 
@@ -37,7 +126,7 @@ OpusTest := !() -> void
 
 	hdr2 := iter->{OggHeader^}
 
-	printf("hmm %i\n",hdr2.PageSegments)
+	printf("hmm %x %x\n",hdr2.PageSegments,iter[26])
 	iter = iter[27 + hdr2.PageSegments]&
 
 	first := iter[0]
@@ -50,6 +139,7 @@ OpusTest := !() -> void
 
 	decoderCreate := lib.Get("opus_decoder_create")->{!(int,int,int^)^->void^}
 	opusDecode := lib.Get("opus_decode")->{!(void^,void^,int,s16^,int,int)^->int}
+	opusError := lib.Get("opus_strerror")->{!(int)^->char^}
 
 	err := int
 	// 8000 12000 16000 24000 48000
@@ -63,9 +153,12 @@ OpusTest := !() -> void
 
 	r := iter->{size_t} - dat.GetPointer()->{size_t}
 
-	red := opusDecode(decoder,iter,dat.Size() - r,mus.GetPointer(),mus.Size() div 16,1)
+	red := opusDecode(decoder,iter,dat.Size() - r,mus.GetPointer(),6*960,1)
 
 	printf("red %p\n",red)
+	if red < 0
+		printf("Error %s\n",opusError(red))
+
 }
 
 OggHeader := packed_class
@@ -79,7 +172,7 @@ OggHeader := packed_class
 	pad1 := u16
 	SerialNumber := u16
 	pad2 := u16
-	SeqNUmber := u16
+	SeqNumber := u16
 	pad3 := u16
 	CRCSum := u16
 	pad4 := u16

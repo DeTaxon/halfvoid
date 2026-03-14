@@ -1,0 +1,20 @@
+{
+	"link" : "dynamic",
+	"initname" : "libOpusFileInit",
+	"libs" : [
+		"libopusfile.so",
+	],
+	"consts" : {
+	}
+	"funcs" : {
+		"op_open_memory" : "void^,void^,size_t,int^",
+
+		"op_pcm_total" : "int,void^,int",
+
+		"op_read" : "int,void^,void^,int,int^"
+		"op_read_stereo" : "int,void^,void^,int"
+		"op_read_float_stereo" : "int,void^,float^,int",
+
+		"op_free" : "void,void^"
+	}
+}
