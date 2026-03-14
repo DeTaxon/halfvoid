@@ -4,26 +4,25 @@
 
 main := !(char^[] args) -> int
 {
-	for i : 5
-	{
-
-	}
-	// RunFunc()
+	RunFunc()
 }
 
 
 RunFunc := !() -> void
 {
-	c := MCBaseOpcodes
-	c = "mov"
-	// c = "add"
-
-	if c in !["mov","cast"]
-		printf("yep\n")
+	a := int
+	b := size_t
+	
+	b = 100
+	printf("wut %i\n",a)
+	a += b
+	printf("wut %i\n",a)
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()
-	// FlacTest()
+	FlacTest()
+	// FlacTestOld()
+	// OpusTest()
 }
 
 //TODO if one input variable named result, rename return result to anon
@@ -31,7 +30,8 @@ RunFunc := !() -> void
 //	"GetPoint",
 //	"GetArray",
 //)
-	
+
+//TODO size_t comparation does not work in x86_64 toRead + redData > tstData.Size(), redData is int
 //TODO for it : Cls1->#ClassFamily , what if extends change for a class None->SomeClass, SomeClass1->SomeClass2
 //TODO closure api?
 //TODO LazyClass does not work if some class uses it as a field

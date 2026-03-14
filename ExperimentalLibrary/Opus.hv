@@ -1,0 +1,98 @@
+OpusTest := !() -> void
+{
+	dat := FSGetFile("j.opus").GetBlob()
+
+	iter := dat.GetPointer()->{u8^}[28]& // skip ogg header
+
+	header := iter->{OpusHeader^}
+	printf("yes %i %i %i\n",header.Channels,header.SampleRate,header.Family)
+	printf("gain %i\n",header.Gain)
+
+	assert(header.Family == 0) // TODO
+
+	iter = header[1]&->{u8^}
+	iter = iter[28]& // another ogg header
+
+	printf("hey %s\n",StringSpan(iter->{char^},8))
+
+	iter = iter[8]&
+
+	readStr := () ==> {
+		ln := iter->{u32^}^
+		iter = iter[4]&
+
+		printf("len %i\n",ln)
+		spn := StringSpan(iter->{char^},ln)
+		printf("test %s\n",spn)
+
+		iter = iter[ln]&
+	}
+
+	readStr()
+
+	commentCount := iter->{u32^}^
+	iter = iter[4]&
+	for commentCount
+		readStr()
+
+	hdr2 := iter->{OggHeader^}
+
+	printf("hmm %i\n",hdr2.PageSegments)
+	iter = iter[27 + hdr2.PageSegments]&
+
+	first := iter[0]
+
+	printf("First byte %p\n",first)
+
+
+
+	lib := GetLibrary("libopus.so")
+
+	decoderCreate := lib.Get("opus_decoder_create")->{!(int,int,int^)^->void^}
+	opusDecode := lib.Get("opus_decode")->{!(void^,void^,int,s16^,int,int)^->int}
+
+	err := int
+	// 8000 12000 16000 24000 48000
+	decoder := decoderCreate(48000,1,err&)
+	printf("wut %p\n",decoder)
+
+	mus := s16[]
+	mus.Resize(20*1024*1024)
+
+	printf("wut %p\n",opusDecode)
+
+	r := iter->{size_t} - dat.GetPointer()->{size_t}
+
+	red := opusDecode(decoder,iter,dat.Size() - r,mus.GetPointer(),mus.Size() div 16,1)
+
+	printf("red %p\n",red)
+}
+
+OggHeader := packed_class
+{
+	Magic := u8[4]
+	Version := u8
+	HeaderType := u8
+	Granule := u16
+	Reserved := u32
+
+	pad1 := u16
+	SerialNumber := u16
+	pad2 := u16
+	SeqNUmber := u16
+	pad3 := u16
+	CRCSum := u16
+	pad4 := u16
+	PageSegments := u8
+}
+OpusHeader := packed_class
+{
+	Magic := u8[8]
+	Version := u8
+	Channels := u8
+	PreSkip := u16
+	SampleRate := u32
+	Gain := u16
+	Family := u8
+}
+

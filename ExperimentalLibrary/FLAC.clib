@@ -1,0 +1,17 @@
+{
+	"link" : "dynamic",
+	"initname" : "libFLACInit",
+	"libs" : [
+		"libFLAC.so",
+	],
+	"consts" : {
+	}
+	"funcs" : {
+		"FLAC__stream_decoder_new" : "void^",
+		"FLAC__stream_decoder_process_single" : "void,void^",
+		"FLAC__stream_decoder_process_until_end_of_stream" : "void,void^",
+		"FLAC__stream_decoder_init_stream" : "void,void^,void^,void^,void^,void^,void^,void^,void^,void^,void^",
+		"FLAC__stream_decoder_get_state" : "int,void^",
+		"FLAC__stream_decoder_finish" : "void,void^"
+	}
+}
