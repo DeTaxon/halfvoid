@@ -1314,6 +1314,8 @@ MCBuildFuncContext_x86_64 := class
 			glb := obj.GetValueObject()
 			memPtr := GlobsMem.GetGlobalVarMem(glb)
 			if reg >= 16 {
+				assert(toReg)
+
 				regIndx := reg mod 8
 				MovPtrToReg(fnc,"r10",memPtr)
 				if obj.GetType() == GTypeDouble {
@@ -1325,8 +1327,12 @@ MCBuildFuncContext_x86_64 := class
 				}
 			}else{
 				assert(reg < 8)
-				MovPtrToReg(fnc,reg,memPtr)
-				WriteData(0x48,0x8B,reg + (reg shl 3)) // mov reg, (reg)
+				MovPtrToReg(fnc,"r10",memPtr) // mov r10 to ApplyReg
+				if toReg {
+					WriteData(0x49,0x8B,2 + (reg shl 3)) // mov reg, (reg)
+				}else{
+					WriteData(0x49,0x89,2 + (reg shl 3)) // mov reg, (reg)
+				}
 			}
 			
 		}else if obj is MCConstString {

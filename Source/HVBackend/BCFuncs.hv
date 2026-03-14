@@ -94,11 +94,15 @@ BCFuncsType := class
 		// result = PassOptimizeJumpX86(result)
 		// result.Print()
 		result = PassSetFallbacksX86(result)
+		// if itm.OutputName == "RunFunc"
+		// 	result.Print()
 		result = PassApplyRegistersX86(result)
+		// if itm.OutputName == "RunFunc"
+		// 	result.Print()
 
 		result = PassSomeOptimizationsX86(result)
-		// if itm.OutputName == "tst"
-		// 	assert(false)
+		// if itm.OutputName == "RunFunc"
+		// 	result.Print()
 		result = PassRemoveRegCopies(result)
 
 		SetAllocator(oldAlloc)

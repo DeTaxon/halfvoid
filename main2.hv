@@ -10,13 +10,6 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	a := int
-	b := size_t
-	
-	b = 100
-	printf("wut %i\n",a)
-	a += b
-	printf("wut %i\n",a)
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()
