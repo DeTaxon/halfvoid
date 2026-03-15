@@ -29,6 +29,26 @@ AppendClass SoundEngine
 		alBufferData(result.buf,result.format,ctx.ResPtr,ctx.ResSize,result.freq)
 	}
 }
+FLACDecodeCtx := class
+{
+	ReadPtr := u8^
+	ReadSize := size_t
+	RedData := int
+
+	ResPtr := u8^
+	ResSize := int
+}
+
+FLAC__FrameHeader := class
+{
+	BlockSize := u32
+	SampleRate := u32
+	Channels := u32
+	ChannelAssigment := s32
+	BitsPerSample := u32
+	Number := s32
+	CRC := u8
+}
 
 FlacReadCallback := !(void^ dec,u8^ buf,size_t^ bytes,FLACDecodeCtx^ ctx) -> int
 {
