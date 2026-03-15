@@ -1,64 +1,64 @@
 Sound := class
 {
-	data := Blob^
+	// data := Blob^
 	format := int
 	freq := u64
 
 	buf := u32
-	this := !(File^ fil) -> void
-	{
-		mp := fil.GetMap()
-		ptr := mp.Get()->{u8^}
-		siz := mp.Size()
-
-		isStereo := false
-		bitsPerSample := int
-
-		i := 12
-		while i < siz
-		{
-			base := ptr[i]&->{WAVE_File_Header^}
-			spn := StringSpan(base.ckId&->{char^},4)
-			switch spn
-			{
-				case "fmt "
-					fileInfo := ptr[i]&->{WAVE_fmt_chunk^}
-					freq = fileInfo.nSamplesPerSec
-					assert(fileInfo.nChannels <= 2) //TODO somehow 5.1 channels?
-					isStereo = fileInfo.nChannels == 2
-					bitsPerSample = fileInfo.wBitsPerSample
-				case "data"
-					data = MakeBlob(base.ckSize)
-					memcpy(data.GetPointer(),ptr[i + 8]&,data.Size())
-					
-			}
-			asHeader := ptr[i]&->{WAVE_fmt_chunk^}
-
-			//TODO LIST chunk
-
-			i += asHeader.ckSize + 8
-		}
-		if isStereo{
-			if bitsPerSample == 16
-			{
-				format = AL_FORMAT_STEREO16
-			}else{
-				format = AL_FORMAT_STEREO8
-				assert(bitsPerSample == 8)
-			}
-		}else{
-			if bitsPerSample == 16
-			{
-				format = AL_FORMAT_MONO16
-			}else{
-				format = AL_FORMAT_MONO8
-				assert(bitsPerSample == 8)
-			}
-		}
-
-		alGenBuffers(1,buf&)
-		alBufferData(buf,format,data.GetPointer(),data.Size(),freq)
-	}
+	// this := !(File^ fil) -> void
+	// {
+	// 	mp := fil.GetMap()
+	// 	ptr := mp.Get()->{u8^}
+	// 	siz := mp.Size()
+	//
+	// 	isStereo := false
+	// 	bitsPerSample := int
+	//
+	// 	i := 12
+	// 	while i < siz
+	// 	{
+	// 		base := ptr[i]&->{WAVE_File_Header^}
+	// 		spn := StringSpan(base.ckId&->{char^},4)
+	// 		switch spn
+	// 		{
+	// 			case "fmt "
+	// 				fileInfo := ptr[i]&->{WAVE_fmt_chunk^}
+	// 				freq = fileInfo.nSamplesPerSec
+	// 				assert(fileInfo.nChannels <= 2) //TODO somehow 5.1 channels?
+	// 				isStereo = fileInfo.nChannels == 2
+	// 				bitsPerSample = fileInfo.wBitsPerSample
+	// 			case "data"
+	// 				data = MakeBlob(base.ckSize)
+	// 				memcpy(data.GetPointer(),ptr[i + 8]&,data.Size())
+	//
+	// 		}
+	// 		asHeader := ptr[i]&->{WAVE_fmt_chunk^}
+	//
+	// 		//TODO LIST chunk
+	//
+	// 		i += asHeader.ckSize + 8
+	// 	}
+	// 	if isStereo{
+	// 		if bitsPerSample == 16
+	// 		{
+	// 			format = AL_FORMAT_STEREO16
+	// 		}else{
+	// 			format = AL_FORMAT_STEREO8
+	// 			assert(bitsPerSample == 8)
+	// 		}
+	// 	}else{
+	// 		if bitsPerSample == 16
+	// 		{
+	// 			format = AL_FORMAT_MONO16
+	// 		}else{
+	// 			format = AL_FORMAT_MONO8
+	// 			assert(bitsPerSample == 8)
+	// 		}
+	// 	}
+	//
+	// 	alGenBuffers(1,buf&)
+	// 	alBufferData(buf,format,data.GetPointer(),data.Size(),freq)
+	// }
 	Destroy := virtual !() -> void
 	{
 		

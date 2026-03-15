@@ -2,52 +2,12 @@ OpusTest := !() -> void
 {
 	dat := FSGetFile("jmono.opus").GetBlob()
 
-
-	dec := op_open_memory(dat.GetPointer(),dat.Size(),null)
-
-	defer op_free(dec)
-
-	rStart := HVOpusDecoder
-	rStart.LoadHeader(dat)
-
-	samples := op_pcm_total(dec,-1)
-
-	res := MakeBlob(samples*rStart.ChannelsCount*u16->TypeSize)
-
-	ptr := res.GetPointer()
-	leftSize := res.Size()
-	totalRed := 0
-
-	while true
-	{
-		red := int
-		if rStart.ChannelsCount == 1
-		{
-			red = op_read(dec,ptr[totalRed]&,leftSize,null)
-		}else{
-			red = op_read_stereo(dec,ptr[totalRed]&,leftSize)
-		}
-
-		p2 := ptr[totalRed]&->{u16^}
-
-		if red == 0
-			break
-
-		red *= 2
-		leftSize -= red
-		totalRed += red
-	}
-
 	eng := SoundEngine()
 	eng.CreateTask()
+	snd := eng.LoadFromOpus(dat)
 
-	snd := Sound
-	snd.format = rStart.ChannelsCount == 1 ?: AL_FORMAT_MONO16 : AL_FORMAT_STEREO16
-	snd.freq = 48000
-	alGenBuffers(1,snd.buf&)
-	alBufferData(snd.buf,snd.format,res.GetPointer(),totalRed,snd.freq)
 	// snd.buf = resIdx
-	eng.PlaySound(snd&).AwaitCompletion()
+	eng.PlaySound(snd).AwaitCompletion()
 	eng.Stop()
 	// TSleep(2.0)
 

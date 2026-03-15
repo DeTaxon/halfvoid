@@ -1,0 +1,297 @@
+AppendClass SoundEngine
+{
+	LoadFromFLAC := !(Blob^ data) -> Sound^
+	{
+		ctx := FLACDecodeCtx
+		ctx.ReadPtr = data.GetPointer()
+		ctx.ReadSize = data.Size()
+
+
+		peek := HVFLACDecoder
+		peek.LoadHeader(data)
+
+		res := MakeBlob(peek.ChannelsCount*peek.SamplesCount*2) // TODO 2 to bit depth
+		defer delete res
+
+		ctx.ResPtr = res.GetPointer()
+
+		dec := FLAC__stream_decoder_new()
+
+		FLAC__stream_decoder_init_stream(dec,FlacReadCallback,null,null,null,null,FlacWriteCallback,null,FlacErrorCallback,ctx&)
+		FLAC__stream_decoder_process_until_end_of_stream(dec)
+
+		FLAC__stream_decoder_finish(dec)
+
+		result = new Sound
+		result.format = AL_FORMAT_MONO16
+		result.freq = peek.Rate
+		alGenBuffers(1,result.buf&)
+		alBufferData(result.buf,result.format,ctx.ResPtr,ctx.ResSize,result.freq)
+	}
+}
+
+FlacReadCallback := !(void^ dec,u8^ buf,size_t^ bytes,FLACDecodeCtx^ ctx) -> int
+{
+	isEnd := false
+	toRead := bytes^
+
+	if toRead + ctx.RedData > ctx.ReadSize
+	{
+		toRead = ctx.ReadSize - ctx.RedData
+		isEnd = true
+	}
+	memcpy(buf,ctx.ReadPtr[ctx.RedData]&,toRead)
+
+	bytes^ = toRead
+	ctx.RedData += toRead
+
+	if isEnd or toRead == 0
+		return 1 // end of stream
+	return 0 // can continue
+}
+
+FlacWriteCallback := !(void^ dec,FLAC__FrameHeader^ frame,s32^^ buffer,FLACDecodeCtx^ ctx) -> int
+{
+	
+	for i : frame.BlockSize
+	{
+		id := ctx.ResSize
+		ctx.ResSize += 2
+		ctx.ResPtr[id]&->{u16^}^ = buffer[0][i]
+	}
+	return 0
+}
+
+FlacErrorCallback := !(void^ a,int b,void^ c) -> void
+{
+}
+
+
+
+HVFLACDecoder := class
+{
+	Rate := int
+	ChannelsCount := int
+	SamplesCount := int
+
+
+	iter := u8^
+
+	outIter := int
+	resBlob := u32[]
+
+	LoadHeader := !(Blob^ tst) -> void
+	{
+		ptr := tst.GetPointer()->{u8^}[4]&
+
+		iter = ptr
+
+		while true
+		{
+			streamStart := iter->{u32^}^
+
+			isTerm := (streamStart and_b 1) != 0
+			blockId := (streamStart shr 1) and_b 0x7F
+			blockSize := FromBigEndian(streamStart) and_b 0xFFFFFF
+
+			iter = iter[4]&
+
+			if blockId == 0
+			{
+				StartWalk()
+
+				minBlockSize := GetU(16)
+				maxBlockSize := GetU(16)
+				minFrameSize := GetU(24)
+				maxFrameSize := GetU(24)
+
+				sampleRate := GetU(20)
+				numChannels := GetU(3)
+				bitsPerSample := GetU(5)
+				totalSamples := GetU(36)
+
+				ChannelsCount = numChannels + 1
+				Rate = sampleRate
+				SamplesCount = totalSamples
+			
+				// printf("min block size %x\n",minBlockSize)
+				// printf("max block size %x\n",maxBlockSize)
+				// printf("min frame size %x\n",minFrameSize)
+				// printf("max frame size %x\n",maxFrameSize)
+				// printf("sample rate %i %x\n",sampleRate,sampleRate)
+				// printf("num of channels %i\n",numChannels + 1)
+				// printf("bits per sample %i\n",bitsPerSample + 1)
+			}
+
+			iter = iter->{u8^}[blockSize]&
+
+			if isTerm
+				break
+		}
+		return void
+
+		// resBlob.Resize(20*1024*1024)
+		// resPtr := resBlob.GetPointer()
+		//
+		// for i : 2
+		// {
+		// 	iter = iter[2]&
+		// 	// printf("size + rate %p\n",iter^)
+		//
+		// 	blockSize := iter^ shr 4
+		// 	sampleRate := iter^ and_b 0xF
+		//
+		// 	if blockSize == 5 {
+		// 		blockSize = 4608
+		// 	}else{
+		// 		printf("unknown block size %x\n",blockSize)
+		// 		return void
+		// 	}
+		//
+		// 	iter = iter[1]&
+		//
+		// 	// printf("channel + depth %p %X\n",iter->{size_t} - tst.GetPointer()->{size_t},iter^,iter^)
+		//
+		// 	channels := iter^ shr 4 //TODO
+		// 	depth := (iter^ and_b 0xF) shr 1
+		//
+		// 	if depth == 4 {
+		// 		depth = 16
+		// 	}else if depth == 6 {
+		// 		depth = 24
+		// 	}else{
+		// 		printf("unknown depth %i\n",depth)
+		// 		return void
+		// 	}
+		//
+		// 	iter = iter[1]&
+		//
+		// 	printf("info %i %i\n",blockSize,depth)
+		//
+		// 	if iter^ <= 127 {
+		// 		iter = iter[1]&
+		// 	}else{
+		// 		while iter^ and_b 0xC0 != 0xC0
+		// 			iter = iter[1]&
+		// 		iter = iter[1]&
+		// 	}
+		//
+		// 	printf("crc %x\n",iter^)
+		// 	iter = iter[1]&
+		//
+		// 	frameType := iter^
+		//
+		// 	printf("frame type %x\n",iter^)
+		// 	if frameType == 0 {
+		// 		iter = iter[1]&
+		// 		val := iter->{u16^}^
+		//
+		// 		iter = iter[2]&
+		//
+		// 		for i : blockSize
+		// 			resPtr[outIter++] = val
+		//
+		// 		iter = iter[2]&
+		//
+		// 		printf("test %x %x\n",iter->{u16^}^,val)
+		//
+		// 	}else if frameType >= 0x40 {
+		// 		predictorsCount := ((frameType xor_b 0x40) shr 1) + 1
+		// 		printf("test2 %i\n",predictorsCount)
+		//
+		// 		iter = iter[1]&
+		//
+		// 		for i : predictorsCount {
+		// 			val := iter->{u16^}^
+		// 			iter = iter[2]&
+		// 			resPtr[outIter++] = val
+		// 		}
+		// 		printf("next %i\n",iter^)
+		//
+		// 		StartWalk()
+		//
+		// 		prec := GetU(4) + 1
+		//
+		// 		shift := GetU(5)
+		//
+		// 		coefs := s32[32]
+		//
+		// 		for i : predictorsCount
+		// 		{
+		// 			coefs[i] = GetS(prec)
+		// 			printf("HEY %i\n",coefs[i])
+		// 		}
+		//
+		// 		resType := GetU(2)
+		//
+		// 		printf("resid %i\n",resType)
+		//
+		//
+		// 		printf("res %i %i\n",prec,shift)
+		// 	}
+		// }
+	}
+
+	bitOffset := int
+	StartWalk := !() -> void
+	{
+		bitOffset = 0
+	}
+
+	GetU := !(int size) -> u64
+	{
+		startOffst := bitOffset
+
+		endOffset := bitOffset + size
+
+		firstWholeByte := startOffst div 8
+
+		if startOffst mod 8 != 0
+		{
+			firstWholeByte += 1
+
+			bitsCount := 8 - (startOffst mod 8)
+
+			mask := not_b (0xFF shl bitsCount)
+
+			result = iter[startOffst div 8] and_b mask
+
+			
+			if (endOffset div 8) == (startOffst div 8)
+			{
+				//TODO if only getting one bit in the middle?
+				assert(bitsCount > size)
+				result = result shr (bitsCount - size)
+				bitOffset += size
+
+				return void
+			}
+		}
+
+		lastWholeByte := (endOffset div 8) - 1
+
+		for i : firstWholeByte..lastWholeByte
+		{
+			result = result shl 8
+			result = result or_b iter[i]
+		}
+		if endOffset mod 8 != 0
+		{
+			bitsCount := endOffset mod 8
+			bitsSkip := 8 - bitsCount
+			
+			result = result shl bitsCount
+			result = result or_b (iter[lastWholeByte + 1] shr bitsSkip)
+		}
+
+		bitOffset = endOffset
+	}
+	GetS := !(int size) -> s64
+	{
+		result&->{u64^}^ = GetU(size)
+		result = result shl (64 - size)
+		result = result shr (64 - size)
+	}
+
+}
+

@@ -13,9 +13,8 @@ RunFunc := !() -> void
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()
-	// FlacTest()
-	// FlacTestOld()
-	OpusTest()
+	FlacTest()
+	// OpusTest()
 }
 
 //TODO if one input variable named result, rename return result to anon
