@@ -144,6 +144,13 @@ GlobsMemType := class
 				globalVariables[vr] = result
 				return void
 			}
+			if classVar.Name == "THatch"
+			{
+				free(result)
+				result = THatch->VTable
+				globalVariables[vr] = result
+				return void
+			}
 
 			vTable := classVar.VTableType
 			fldsCount := vTable.GetFieldsCount()

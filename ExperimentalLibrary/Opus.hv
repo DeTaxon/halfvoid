@@ -39,14 +39,17 @@ OpusTest := !() -> void
 	}
 
 	eng := SoundEngine()
+	eng.CreateTask()
+
 	snd := Sound
-	snd.format = AL_FORMAT_MONO16
+	snd.format = rStart.ChannelsCount == 1 ?: AL_FORMAT_MONO16 : AL_FORMAT_STEREO16
 	snd.freq = 48000
 	alGenBuffers(1,snd.buf&)
 	alBufferData(snd.buf,snd.format,res.GetPointer(),totalRed,snd.freq)
 	// snd.buf = resIdx
-	eng.PlaySound(snd&)
-	TSleep(2.0)
+	eng.PlaySound(snd&).AwaitCompletion()
+	eng.Stop()
+	// TSleep(2.0)
 
 }
 

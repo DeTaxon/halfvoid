@@ -97,7 +97,7 @@ SoundEngine := class
 				}
 				if metFinished
 				{
-					busySources.DeleteIf(x => x.PlayState.Emited())
+					busySources.DeleteIf(x => x.PlayState.IsEmitted())
 				}
 				TSleep(0.1) //TODO somehow async
 			}

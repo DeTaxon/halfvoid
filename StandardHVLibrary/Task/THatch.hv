@@ -29,7 +29,7 @@ THatch := class
 	{
 		return flag
 	}
-	Emit := !() -> void
+	Emit := virtual !() -> void
 	{
 
 		if flag
@@ -40,7 +40,7 @@ THatch := class
 		
 		EmitInner()
 	}
-	EmitInner := !() -> void
+	EmitInner := virtual !() -> void
 	{
 		if flag
 			return void
@@ -54,7 +54,7 @@ THatch := class
 		}
 		next_wakeup = null
 	}
-	GetWaitingCount := !() -> int
+	GetWaitingCount := virtual !() -> int
 	{
 		counter := 0
 		itr := next_wakeup
@@ -65,7 +65,7 @@ THatch := class
 		}
 		return counter
 	}
-	Reset := !() -> void
+	Reset := virtual !() -> void
 	{
 		if not flag
 			return void
@@ -80,7 +80,7 @@ THatch := class
 		next_wakeup = null
 	}
 
-	Await := !() -> void
+	Await := virtual !() -> void
 	{
 		if flag
 			return void
@@ -98,7 +98,6 @@ THatch := class
 		assert(pt.itTask != null)
 
 		CurrentThread.switchToMain()
-
 	}
 }
 
