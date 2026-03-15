@@ -1,6 +1,6 @@
 OpusTest := !() -> void
 {
-	dat := FSGetFile("jmono.opus").GetBlob()
+	dat := FSGetFile("tetris.opus").GetBlob()
 
 	eng := SoundEngine()
 	eng.CreateTask()

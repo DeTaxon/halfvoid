@@ -3,6 +3,8 @@
 	"initname" : "libOpusFileInit",
 	"libs" : [
 		"libopusfile.so",
+		"libOpusFileBundle.so",
+		"libopusfile.dll"
 	],
 	"consts" : {
 	}

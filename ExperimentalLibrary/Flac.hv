@@ -1,6 +1,6 @@
 FlacTest := !() -> void
 {
-	tstData := FSGetFile("j.flac").GetBlob()
+	tstData := FSGetFile("tetris.flac").GetBlob()
 
 	eng := SoundEngine()
 	eng.CreateTask()

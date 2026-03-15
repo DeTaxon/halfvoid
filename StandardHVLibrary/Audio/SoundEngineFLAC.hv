@@ -12,8 +12,7 @@ AppendClass SoundEngine
 
 		rate := peek.Rate
 
-		res := MakeBlob(peek.ChannelsCount*peek.SamplesCount*2) // TODO 2 to bit depth
-		printf("channels %i %i\n",peek.ChannelsCount,peek.Rate)
+		res := MakeBlob(peek.ChannelsCount*peek.SamplesCount*2)
 		defer delete res
 
 		ctx.ResPtr = res.GetPointer()

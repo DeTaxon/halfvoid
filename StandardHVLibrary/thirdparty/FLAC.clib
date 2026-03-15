@@ -2,7 +2,7 @@
 	"link" : "dynamic",
 	"initname" : "libFLACInit",
 	"libs" : [
-		"libFLAC.so",
+		"libFLAC.so"
 	],
 	"consts" : {
 	}
