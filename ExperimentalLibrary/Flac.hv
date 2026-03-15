@@ -1,6 +1,6 @@
 FlacTest := !() -> void
 {
-	tstData := FSGetFile("jmono.flac").GetBlob()
+	tstData := FSGetFile("j.flac").GetBlob()
 
 	eng := SoundEngine()
 	eng.CreateTask()

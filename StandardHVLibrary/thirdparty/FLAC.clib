@@ -8,6 +8,7 @@
 	}
 	"funcs" : {
 		"FLAC__stream_decoder_new" : "void^",
+		"FLAC__stream_decoder_delete" : "void,void^",
 		"FLAC__stream_decoder_process_single" : "void,void^",
 		"FLAC__stream_decoder_process_until_end_of_stream" : "void,void^",
 		"FLAC__stream_decoder_init_stream" : "void,void^,void^,void^,void^,void^,void^,void^,void^,void^,void^",

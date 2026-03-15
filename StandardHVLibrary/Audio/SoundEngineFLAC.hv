@@ -10,12 +10,21 @@ AppendClass SoundEngine
 		peek := HVFLACDecoder
 		peek.LoadHeader(data)
 
+		rate := peek.Rate
+
 		res := MakeBlob(peek.ChannelsCount*peek.SamplesCount*2) // TODO 2 to bit depth
+		printf("channels %i %i\n",peek.ChannelsCount,peek.Rate)
 		defer delete res
 
 		ctx.ResPtr = res.GetPointer()
 
+		if peek.Depth > 16
+			ctx.DownSize = peek.Depth - 16
+		ctx.ChannelsCount = peek.ChannelsCount
+		ctx.ByteDepth = peek.Depth >= 16 ?: 2 : 1
+
 		dec := FLAC__stream_decoder_new()
+		defer FLAC__stream_decoder_delete(dec)
 
 		FLAC__stream_decoder_init_stream(dec,FlacReadCallback,null,null,null,null,FlacWriteCallback,null,FlacErrorCallback,ctx&)
 		FLAC__stream_decoder_process_until_end_of_stream(dec)
@@ -23,7 +32,7 @@ AppendClass SoundEngine
 		FLAC__stream_decoder_finish(dec)
 
 		result = new Sound
-		result.format = AL_FORMAT_MONO16
+		result.format = AL_FORMAT_STEREO16
 		result.freq = peek.Rate
 		alGenBuffers(1,result.buf&)
 		alBufferData(result.buf,result.format,ctx.ResPtr,ctx.ResSize,result.freq)
@@ -37,6 +46,10 @@ FLACDecodeCtx := class
 
 	ResPtr := u8^
 	ResSize := int
+
+	DownSize := int
+	ChannelsCount := int
+	ByteDepth := int
 }
 
 FLAC__FrameHeader := class
@@ -72,12 +85,25 @@ FlacReadCallback := !(void^ dec,u8^ buf,size_t^ bytes,FLACDecodeCtx^ ctx) -> int
 
 FlacWriteCallback := !(void^ dec,FLAC__FrameHeader^ frame,s32^^ buffer,FLACDecodeCtx^ ctx) -> int
 {
-	
-	for i : frame.BlockSize
+
+	if ctx.ByteDepth == 2
 	{
-		id := ctx.ResSize
-		ctx.ResSize += 2
-		ctx.ResPtr[id]&->{u16^}^ = buffer[0][i]
+		for i : frame.BlockSize
+		{
+			id := ctx.ResSize
+			ctx.ResSize += 2*ctx.ChannelsCount
+			for c : ctx.ChannelsCount
+				ctx.ResPtr[id + c*2]&->{u16^}^ = buffer[c][i] shr ctx.DownSize
+		}
+	}else{
+		for i : frame.BlockSize
+		{
+			id := ctx.ResSize
+			ctx.ResSize += ctx.ChannelsCount
+			for c : ctx.ChannelsCount
+				ctx.ResPtr[id + c]&->{u16^}^ = buffer[c][i] shr ctx.DownSize
+		}
+
 	}
 	return 0
 }
@@ -93,6 +119,7 @@ HVFLACDecoder := class
 	Rate := int
 	ChannelsCount := int
 	SamplesCount := int
+	Depth := int
 
 
 	iter := u8^
@@ -133,6 +160,7 @@ HVFLACDecoder := class
 				ChannelsCount = numChannels + 1
 				Rate = sampleRate
 				SamplesCount = totalSamples
+				Depth = bitsPerSample + 1
 			
 				// printf("min block size %x\n",minBlockSize)
 				// printf("max block size %x\n",maxBlockSize)
