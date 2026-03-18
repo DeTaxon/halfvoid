@@ -84,7 +84,6 @@ FlacReadCallback := !(void^ dec,u8^ buf,size_t^ bytes,FLACDecodeCtx^ ctx) -> int
 
 FlacWriteCallback := !(void^ dec,FLAC__FrameHeader^ frame,s32^^ buffer,FLACDecodeCtx^ ctx) -> int
 {
-
 	if ctx.ByteDepth == 2
 	{
 		for i : frame.BlockSize
@@ -92,15 +91,14 @@ FlacWriteCallback := !(void^ dec,FLAC__FrameHeader^ frame,s32^^ buffer,FLACDecod
 			id := ctx.ResSize
 			ctx.ResSize += 2*ctx.ChannelsCount
 			for c : ctx.ChannelsCount
-				ctx.ResPtr[id + c*2]&->{u16^}^ = buffer[c][i] shr ctx.DownSize
+				ctx.ResPtr[id]&->{u16^}[c] = buffer[c][i]// shr ctx.DownSize
 		}
 	}else{
 		for i : frame.BlockSize
 		{
 			id := ctx.ResSize
 			ctx.ResSize += ctx.ChannelsCount
-			for c : ctx.ChannelsCount
-				ctx.ResPtr[id + c]&->{u16^}^ = buffer[c][i] shr ctx.DownSize
+			ctx.ResPtr[id]&->{u16^}^ = buffer[0][i] shr ctx.DownSize
 		}
 
 	}

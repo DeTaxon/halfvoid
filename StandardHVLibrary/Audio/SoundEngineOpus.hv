@@ -19,6 +19,7 @@ AppendClass SoundEngine
 		leftSize := res.Size()
 		totalRed := 0
 
+
 		while true
 		{
 			red := int
@@ -29,12 +30,12 @@ AppendClass SoundEngine
 				red = op_read_stereo(dec,ptr[totalRed]&,leftSize)
 			}
 
-			p2 := ptr[totalRed]&->{u16^}
+
 
 			if red == 0
 				break
 
-			red *= 2
+			red *= 2*rStart.ChannelsCount
 			leftSize -= red
 			totalRed += red
 		}
@@ -46,5 +47,4 @@ AppendClass SoundEngine
 		alGenBuffers(1,result.buf&)
 		alBufferData(result.buf,result.format,res.GetPointer(),totalRed,result.freq)
 	}
-
 }
