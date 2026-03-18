@@ -408,12 +408,7 @@ main := !(Vector.{char^} args) -> int
 	ctx := LLVMWriteContext
 	ctx.writeStream = outFile
 
-	if OptimizeMode or GTestCode
-	{
-		OptCodeGenLLVM(ctx&)
-	}else{
-		WriteCodeToStream(ctx&)
-	}
+	OptCodeGenLLVM(ctx&)
 	printf("done\n")
 	//datas := Vector.{int}
 	//datas.Resize(1024)
