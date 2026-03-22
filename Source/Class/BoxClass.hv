@@ -5,8 +5,8 @@ InheritanceType := enum
 	"copy"
 }
 
-
-BoxClass := class extend BoxUnit
+TypeClass := type BoxClass
+BoxClass := class extends Type
 {
 	ItId := int
 	ItType := Type^
@@ -301,102 +301,4 @@ BoxClass := class extend BoxUnit
 		return itDynamicSize
 	}
 }
-
-TypeClass := class extend Type
-{
-	ToClass := BoxClass^
-
-	this := !(BoxClass^ ths) -> void
-	{
-		ToClass = ths
-		MetaId = ths.ItId
-
-		ItHash = typeHashIterator
-		typeHashIterator += 1
-	}
-	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.UsedTypes.Insert(this&)
-		ctx.writeStream^ << "%Class" << MetaId
-	}
-	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		f := ctx.writeStream
-		f^ << ToClass.Name
-		if ToClass.Constants?.Constants.Size() != 0
-		{
-			f^ << "{"
-			for it,i : ToClass.Constants.Constants
-			{
-				if i != 0
-					f^ << ","
-				if it is in Type
-				{
-					it->{Type^}.PrintDebugName(ctx)
-				}
-			}
-			f^ << "}"
-		}
-	}
-	GetSize := virtual !() -> int
-	{
-		ToClass.AwaitTypeState()
-		minSize := ToClass.ItSize
-		unalign := minSize mod ToClass.ItAlign
-		if unalign != 0
-		{
-			minSize += ToClass.ItAlign - unalign
-		}
-		return minSize
-	}
-	GetAlign := virtual !() -> int
-	{
-		ToClass.AwaitTypeState()
-		return ToClass.ItAlign
-	}
-	IsComplexType := virtual !() -> bool
-	{
-		return false
-	}
-	IsComplexReturn := virtual !() -> bool
-	{
-		return true
-	}
-	GetPoint := virtual !() -> Type^
-	{
-		if AsPoint == null
-		{
-			oldAlc := SwapAllocator(TypesAllocator&)
-			defer SetAllocator(oldAlc)
-
-			AsPoint = new TypePointComplex(this&)
-		}
-		return AsPoint
-	}
-	NotifyUse := virtual !() -> void
-	{
-		ToClass.StartParseBody()
-	}
-	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-}
-TypePointComplex := class extend TypePoint
-{
-	this := !(Type^ bs) -> void
-	{
-		this."TypePoint.this"(bs)
-	}
-	IsComplexReturn := virtual !() -> bool
-	{
-		return false
-		//assert(GCType != null)
-		//cls := Base->{TypeClass^}.ToClass
-		//if cls is BoxClassTuple
-		//	Base->{TypeClass^}.ToClass.AwaitTypeState()
-		//isGC := TypeFight(Base,GCType) == GCType
-		//return isGC
-	}
-}
-
 

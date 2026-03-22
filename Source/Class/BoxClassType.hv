@@ -1,0 +1,68 @@
+AppendClass BoxClass
+{
+	ToClass := BoxClass^
+	InitType := !() -> void
+	{
+		ItType = this&
+		MetaId = ItId
+		ToClass = this&
+
+		ItHash = typeHashIterator
+		typeHashIterator += 1
+	}
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		ctx.UsedTypes.Insert(this&)
+		ctx.writeStream^ << "%Class" << MetaId
+	}
+	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		f := ctx.writeStream
+		f^ << Name
+		if Constants?.Constants.Size() != 0
+		{
+			f^ << "{"
+			for it,i : Constants.Constants
+			{
+				if i != 0
+					f^ << ","
+				if it is in Type
+				{
+					it->{Type^}.PrintDebugName(ctx)
+				}
+			}
+			f^ << "}"
+		}
+	}
+	GetSize := virtual !() -> int
+	{
+		AwaitTypeState()
+		minSize := ItSize
+		unalign := minSize mod ItAlign
+		if unalign != 0
+		{
+			minSize += ItAlign - unalign
+		}
+		return minSize
+	}
+	GetAlign := virtual !() -> int
+	{
+		AwaitTypeState()
+		return ItAlign
+	}
+	IsComplexType := virtual !() -> bool
+	{
+		return false
+	}
+	IsComplexReturn := virtual !() -> bool
+	{
+		return true
+	}
+	NotifyUse := virtual !() -> void
+	{
+		StartParseBody()
+	}
+	PrintMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+}

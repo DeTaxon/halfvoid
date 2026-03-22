@@ -404,7 +404,7 @@ ForEachFloatType := !(!(Type^)&-> void cb) -> void
 
 IsComplexType := !(Type^ obj) -> bool
 {
-	if obj is TypeClass
+	if obj is in TypeClass
 		return true
 	if obj is TypeArr
 		return true

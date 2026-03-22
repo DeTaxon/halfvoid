@@ -58,7 +58,7 @@ ExchangeArrayHolderToVector := class extend ExchangeUnit
 			return CmpNoExchange
 		if not expectResultRef
 			return CmpNoExchange
-		if to is not TypeClass
+		if to is not in TypeClass
 			return CmpNoExchange
 
 		holder := obj->{BoxArrayHolder^}

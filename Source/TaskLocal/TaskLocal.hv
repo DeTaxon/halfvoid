@@ -111,7 +111,7 @@ BoxClassTupleDelayed := class extend BoxClass
 	{
 		Name = "anon" //todo
 		ItId = GetNewId()
-		ItType = new TypeClass(this&)
+		InitType()
 	}
 	InitTuple := !(List.{Type^} types) -> void
 	{

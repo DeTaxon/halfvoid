@@ -177,7 +177,7 @@ GlobalVar2 := class extend BoxUnit
 			if value != null
 				tp = value.GetType()
 		}else{
-			if tp is TypeClass
+			if tp is in TypeClass
 			{
 				value = createConstType(tp)
 			}
@@ -186,7 +186,7 @@ GlobalVar2 := class extend BoxUnit
 				iter := tp->{Type^}
 				while iter is TypeArr
 					iter = iter.Base
-				if iter is TypeClass
+				if iter is in TypeClass
 					value = createConstType(tp)
 			}
 		}
@@ -222,7 +222,7 @@ GlobalVar2 := class extend BoxUnit
 		if value != null
 			return void
 		tp := proxy.ObjType
-		if tp is TypeClass
+		if tp is in TypeClass
 		{
 			value = createConstType(tp)
 		}
@@ -231,7 +231,7 @@ GlobalVar2 := class extend BoxUnit
 			iter := tp->{Type^}
 			while iter is TypeArr
 				iter = iter.Base
-			if iter is TypeClass
+			if iter is in TypeClass
 				value = createConstType(tp)
 		}
 	}
@@ -293,7 +293,7 @@ GlobalVar2 := class extend BoxUnit
 	
 		for it,i : cls.Fields
 		{
-			if it.Value is TypeClass or (it.Value is TypeArr and it.Value.Base is TypeClass)
+			if it.Value is in TypeClass or (it.Value is TypeArr and it.Value.Base is in TypeClass)
 			{
 				dwn.Value.Push(createConstType(it.Value))
 			}else{

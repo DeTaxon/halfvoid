@@ -48,7 +48,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	if right.Value == "TypeGroup"
 	{
 		typ := getMetaDownType(obj.Down)
-		if typ is TypeClass
+		if typ is in TypeClass
 			return GetExeString(StringSpan("Class").GetString())
 		if typ is TypeStandard
 			return GetExeString(StringSpan("Prime").GetString())
@@ -210,7 +210,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
   if right.Value == "#ClassFamily"
   {
 		typ := getMetaDownType(obj.Down)
-    if typ is TypeClass
+    if typ is in TypeClass
     {
       fam := typ.ToClass.GetFamily()
       res := new ClassFamilyMeta
@@ -245,7 +245,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		typ := ParseType(obj.Down)
 		if typ != null
 		{
-			if not (typ is TypeClass)
+			if not (typ is in TypeClass)
 			{
 				CurrentWork?.SetErrorMessage(obj.Down.MakeError("Item is not a class"))
 				return null
@@ -263,12 +263,12 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		if dObj != null
 		{
 			cls := dObj.GetType()
-			if cls is in TypePoint and cls.Base is TypeClass
+			if cls is in TypePoint and cls.Base is in TypeClass
 			{
 				dObj = GetExchange(dObj,cls.Base)
 				cls = cls.Base
 			}
-			if cls is TypeClass 
+			if cls is in TypeClass 
 			{
 				cls2 := cls->{TypeClass^}.ToClass
 				cls2.AwaitVTableStep()
@@ -472,7 +472,7 @@ innerTrySetType := !(BoxExeObj^ obj,Type^ toType) -> BoxExeObj^
 		return null
 	itObj := obj
 	
-	if obj.GetType() is TypeClass
+	if obj.GetType() is in TypeClass
 		itObj = new UnrefFuncCall(itObj)
 
 	cnsts := MakeVectorOnStack.{BoxExeConstObj^,10}()

@@ -144,7 +144,7 @@ CLib := class extend ModuleInterface
 		newStruct := new BoxClassVulkan
 		newStruct.Name = name
 		newStruct.ItId = GetNewId()
-		newStruct.ItType = new TypeClass(newStruct)
+		newStruct.InitType()
 
 		for itm : nd^
 		{

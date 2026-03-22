@@ -9,7 +9,7 @@ ExchangePointerClassToBase := class extend ExchangeUnit
 		frm := obj.GetType()
 		if not (frm is in TypePoint)
 			return CmpNoExchange
-		if not (frm.Base is TypeClass)
+		if not (frm.Base is in TypeClass)
 			return CmpNoExchange
 
 		if TypeFight(frm.Base,newType) == newType
@@ -41,7 +41,7 @@ ExchangeRefClassToBase := class extend ExchangeUnit
 			return CmpNoExchange
 
 		frm := obj.GetType()
-		if not (frm is TypeClass)
+		if not (frm is in TypeClass)
 			return CmpNoExchange
 		
 		if TypeFight(frm,newType) == newType

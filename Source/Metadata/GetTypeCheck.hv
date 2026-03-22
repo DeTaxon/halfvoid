@@ -200,7 +200,7 @@ IsVirtualClass := !(Type^ tp) -> bool
 {
 	if tp == null
 		return false
-	if not (tp is TypeClass)
+	if not (tp is in TypeClass)
 		return false
 	asClass := tp->{TypeClass^}.ToClass
 

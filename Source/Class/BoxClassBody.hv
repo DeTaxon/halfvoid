@@ -212,7 +212,7 @@ BoxClassBody := class extend BoxClassPoison
 	{
 		Name = "anon" //todo
 		ItId = GetNewId()
-		ItType = new TypeClass(this&)
+		InitType()
 		
 		ParentTokens.Push(parents[^])
 
@@ -389,7 +389,7 @@ BoxClassBody := class extend BoxClassPoison
 				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("can not inherit unknown class"))
 				return void
 			}
-			if not (inhType is TypeClass)
+			if not (inhType is in TypeClass)
 			{
 				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("parent type must be class"))
 				return void

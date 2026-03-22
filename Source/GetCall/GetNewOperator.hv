@@ -77,7 +77,8 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 			if not CheckFuncCallBrackets(objPos.Right.Right,iObjs&)
 				return null
 
-			if tp is TypeClass
+
+			if tp is in TypeClass
 			{
 				cls := tp->{TypeClass^}.ToClass
 				callFunc := BoxUnit^

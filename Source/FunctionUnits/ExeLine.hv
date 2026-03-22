@@ -718,15 +718,15 @@ TypeFight := !(Type^ a, Type^ b) -> Type^
 	if a == b
 		return a
 
-	if a is in TypePoint and a.Base is TypeClass
-		and b is in TypePoint and b.Base is TypeClass
+	if a is in TypePoint and a.Base is in TypeClass
+		and b is in TypePoint and b.Base is in TypeClass
 	{
 		subTyp := TypeFight(a.Base,b.Base)	
 		if subTyp != null
 			return subTyp.GetPoint()
 	}
 
-	if a is TypeClass and b is TypeClass
+	if a is in TypeClass and b is in TypeClass
 	{
 		ac := a->{TypeClass^}.ToClass
 		bc := b->{TypeClass^}.ToClass

@@ -74,7 +74,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 			k += 1
 
 			if tp != null and tp is in TypePoint 
-				and tp.Base is TypeClass 
+				and tp.Base is in TypeClass 
 				and tp.Base->{TypeClass^}.ToClass.TemplateParent == GCLambda
 			{
 				lCls := tp.Base->{TypeClass^}.ToClass
@@ -194,7 +194,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		cls := BoxClass^
 		if tp != null
 		{
-			if not (tp is TypeClass)
+			if tp is not in TypeClass
 				return null
 			cls = tp->{TypeClass^}.ToClass
 		}
@@ -305,7 +305,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		{
 			dwnType := Type^
 
-			if tp? is TypeClass and tp->{TypeClass^}.ToClass.TemplateParent == GVectorTemplate
+			if tp? is in TypeClass and tp->{TypeClass^}.ToClass.TemplateParent == GVectorTemplate
 			{
 				dwnType = tp->{TypeClass^}.ToClass.Constants.Constants[0]->{Type^}
 			}

@@ -505,7 +505,7 @@ ModuleVulkan := class extend ModuleInterface
 			newStruct := new BoxClassVulkan
 			newStruct.Name = StringSpan(name)
 			newStruct.ItId = GetNewId()
-			newStruct.ItType = new TypeClass(newStruct)
+			newStruct.InitType()
 			Typedefs[name] = newStruct.ItType
 
 			buildCtx := ClassBuildContext

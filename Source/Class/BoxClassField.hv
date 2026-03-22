@@ -91,7 +91,7 @@ AppendClass BoxClass
 				posMemOffset += fil.Value.GetAlign() - unalign
 			}
 			fieldSize := fil.Value.GetSize()
-			if fieldSize == 0 and fil.Value is TypeClass
+			if fieldSize == 0 and fil.Value is in TypeClass
 				fieldSize = 1 //TODO Zero size class optimization
 			fPath.MemOffset = posMemOffset
 			posMemOffset += fieldSize
@@ -145,7 +145,7 @@ AppendClass BoxClass
 			posMemOffset += newFieldType.GetAlign() - unalign
 		}
 		fieldSize := newFieldType.GetSize()
-		if fieldSize == 0 and newFieldType is TypeClass
+		if fieldSize == 0 and newFieldType is in TypeClass
 			fieldSize = 1 //TODO Zero size class optimization
 		newPath.MemOffset = posMemOffset
 		posMemOffset += fieldSize
@@ -314,7 +314,7 @@ AppendClass BoxClass
 				posMemOffset += fil.Value.GetAlign() - unalign
 			}
 			fieldSize := fil.Value.GetSize()
-			if fieldSize == 0 and fil.Value is TypeClass
+			if fieldSize == 0 and fil.Value is in TypeClass
 				fieldSize = 1 //TODO Zero size class optimization
 			FieldsPath[i].MemOffset = posMemOffset
 			posMemOffset += fieldSize
@@ -383,7 +383,7 @@ FieldPath := class extend BoxFuncCommon
 		f := ctx.writeStream
 		tp := lst[0].GetType()
 
-		assert(tp is TypeClass)
+		assert(tp is in TypeClass)
 		cls := tp->{TypeClass^}.ToClass
 		lst[0].PrintPointPre(ctx)
 		f^ << "%T" << resId << " = getelementptr "

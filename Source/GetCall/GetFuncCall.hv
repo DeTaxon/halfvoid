@@ -243,7 +243,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				if fnc.Attrs.IsMethod
 				{
 					baseType := fnc.Params[0].GetType()
-					assert(baseType is TypeClass)
+					assert(baseType is in TypeClass)
 					cls := baseType->{TypeClass^}.ToClass
 
 
@@ -328,11 +328,11 @@ innerTryGetSkobCall := !(BoxExeObj^ dwnItem, Vector.{BoxExeObj^} Objs,Vector.{Bo
 {
 	dType := dwnItem.GetType()
 	cls := BoxClass^
-	if dType is TypeClass
+	if dType is in TypeClass
 	{
 		cls = dType->{TypeClass^}.ToClass
 	}else{
-		if dType is in TypePoint and dType.Base is TypeClass
+		if dType is in TypePoint and dType.Base is in TypeClass
 		{
 			cls = dType.Base->{TypeClass^}.ToClass
 		}

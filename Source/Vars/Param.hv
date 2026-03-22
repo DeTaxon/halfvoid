@@ -54,7 +54,7 @@ ParamFunc := class extend BoxFuncCommon
 			if DebugMode
 				f^ << ", !dbg !" << GDebugLineCallId
 			f^ << "\n"
-		}else //if pType is TypeClass
+		}else //if pType is in TypeClass
 		{
 			miniId := GetNewId()
 			f^ << "%Void" << miniId << " = bitcast "

@@ -38,11 +38,11 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 		cls := BoxClass^
 		typ := val.GetType()
 
-		if typ is TypeClass
+		if typ is in TypeClass
 		{
 			cls = typ->{TypeClass^}.ToClass
 		}else{
-			if typ is in TypePoint and typ.Base is TypeClass
+			if typ is in TypePoint and typ.Base is in TypeClass
 			{
 				cls = typ.Base->{TypeClass^}.ToClass
 			}
@@ -95,10 +95,10 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 		fieldInd := rObjVal->{BoxExeInt^}.Value
 
 		typ := val.GetType()
-		if typ is TypeClass or typ.Base? is TypeClass
+		if typ is in TypeClass or typ.Base? is in TypeClass
 		{
 			cls :=  BoxClass^
-			if typ is TypeClass
+			if typ is in TypeClass
 			{
 				cls = typ->{TypeClass^}.ToClass
 			}else{

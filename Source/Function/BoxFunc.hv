@@ -232,7 +232,7 @@ PrintFuncCallCommon := !(LLVMWriteContext^ ctx,BoxExeObj^ fncObj,int resId,ExeDo
 
 	for itm,i : lst
 	{
-		if i < itType.Params.Size() and (itType.Params[i].IsRef or itType.Params[i].ItType is TypeClass)
+		if i < itType.Params.Size() and (itType.Params[i].IsRef or itType.Params[i].ItType is in TypeClass)
 		{
 			itm.PrintPointPre(ctx)
 		}else{

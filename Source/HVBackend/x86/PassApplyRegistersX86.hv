@@ -597,7 +597,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			assert(tpPtr is in TypePoint)
 			tp := tpPtr.Base
 
-			assert(tp is TypeClass)
+			assert(tp is in TypeClass)
 
 			assert(oPtr[it.var3] is MCConstInteger)
 			indx := oPtr[it.var3]&->{MCConstInteger^}.GetValue()

@@ -75,6 +75,6 @@ ExposedClass := class extends BoxClass
 
 	this := !() -> void
 	{
-		ItType = new TypeClass(this&)
+		InitType()
 	}
 }

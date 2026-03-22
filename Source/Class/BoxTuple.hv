@@ -30,7 +30,7 @@ BoxClassTuple := class extend BoxClassPoison
 	{
 		Name = "Tuple"
 		ItId = GetNewId()
-		ItType = new TypeClass(this&)
+		InitType()
 
 		hvClass.baseClass = this&
 

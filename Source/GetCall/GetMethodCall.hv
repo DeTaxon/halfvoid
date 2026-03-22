@@ -114,7 +114,7 @@ innerTryGetMethodCall := !(Str name,BoxExeObj^ vr, Vector.{BoxExeObj^} sObjs,Vec
 		clsType = clsType.Base
 	}
 	
-	if clsType is TypeClass
+	if clsType is in TypeClass
 	{
 		cls := clsType->{TypeClass^}.ToClass //todo GetClass
 		callItem := BoxUnit^

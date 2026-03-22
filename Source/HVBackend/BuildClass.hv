@@ -7,7 +7,7 @@ hvr_Class := class extend BoxClassPoison
 	{
 		Name = "ModuleClass"
 		ItId = GetNewId()
-		ItType = new TypeClass(this&)
+		InitType()
 
 		ItAlign = 1
 		ItSize = 0

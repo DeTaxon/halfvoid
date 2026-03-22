@@ -50,7 +50,7 @@ ExchangeStrToStringPointerClass := class extend ExchangeUnit
 		frm := obj.GetType()
 		if frm is TypeStr and newType is in TypePoint
 		{
-			if frm.Base is TypeClass and newType.Base is TypeClass
+			if frm.Base is in TypeClass and newType.Base is in TypeClass
 			{
 				fgh := TypeFight(frm.Base,newType.Base)
 				if fgh == newType.Base

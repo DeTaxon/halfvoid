@@ -77,12 +77,12 @@ AppendClass BoxFuncCall
 				dwnType := downs[getIndx].GetType()
 
 				clsType := dwnType->{TypeClass^}
-				if dwnType is not TypeClass
+				if dwnType is not in TypeClass
 					clsType = clsType.Base->{TypeClass^}
-				assert(clsType != null and clsType is TypeClass)
+				assert(clsType != null and clsType is in TypeClass)
 				vTableType := clsType.ToClass->{BoxClassBody^}.VTableType.ItType
 
-				assert(clsType is TypeClass)
+				assert(clsType is in TypeClass)
 				//if (vTableType->{TypeClass^}.ToClass.GetFieldByIndexRaw(vCall.funcIndex) == null) {
 				//	printf("why %s\n",clsType.GetBADStr().Str())
 				//	printf("WHY %i %i\n",vTableType->{TypeClass^}.ToClass.GetFieldsCount(),clsType->{TypeClass^}.ToClass.VTable.Size())
@@ -108,7 +108,7 @@ AppendClass BoxFuncCall
 
 				baseRef := 0
 
-				if dwnType is TypeClass {
+				if dwnType is in TypeClass {
 					baseRef = ctx.CreateReference(downs[getIndx].GetType())
 					HVB_ins_load_element(ctx,baseRef,thisIndexes[getIndx],zero)
 				}else{

@@ -208,7 +208,7 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		cleanType = step1.GetType()
 
-		assert(cleanType is TypeClass)
+		assert(cleanType is in TypeClass)
 
 		lambdaType := GCLambda.GetClass(![newFunc.GetType().GetPoint()]).ItType
 

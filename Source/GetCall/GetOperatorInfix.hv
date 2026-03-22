@@ -282,11 +282,11 @@ innerTryGetInfixCall := !(StringSpan oper,Vector.{BoxExeObj^} lst,Token^ errToke
 		
 		holderType := holder.GetObject().GetType()
 		cls := BoxClass^
-		if holderType is TypeClass
+		if holderType is in TypeClass
 		{
 			cls = holderType->{TypeClass^}.ToClass
 		}else{
-			assert(holderType is in TypePoint and holderType.Base is TypeClass)
+			assert(holderType is in TypePoint and holderType.Base is in TypeClass)
 			cls = holderType.Base->{TypeClass^}.ToClass
 		}
 		resFunc := BoxUnit^

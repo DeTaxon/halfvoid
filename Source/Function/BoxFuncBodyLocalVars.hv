@@ -60,7 +60,7 @@ AppendClass BoxFuncBody
 			createCall.baseVar = it
 			it.createVar.Push(createCall)
 
-			if tp is TypeClass
+			if tp is in TypeClass
 			{
 				objs := CheckExeDownList
 				objs.Push(access)
@@ -96,7 +96,7 @@ AppendClass BoxFuncBody
 			it.createVar.Push(new FuncLocalDebugInfoDeclare(it.CreateVarBaseCall(),it))
 		}
 
-		if tp is TypeClass
+		if tp is in TypeClass
 		{
 			objs := CheckExeDownList
 			objs.Push(access)

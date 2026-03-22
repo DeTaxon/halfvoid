@@ -22,7 +22,7 @@ VKGrowableClass := class extend BoxClass
 
 		Name = "VulkanFunctionsClass"
 		ItId = GetNewId()
-		ItType = new TypeClass(this&)
+		InitType()
 
 		hvClass.baseClass = this& 
 

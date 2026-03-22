@@ -134,7 +134,7 @@ CollectFunctionsCtx := class
 			UsedTypes.Insert(tp)
 		}
 
-		if tp is TypeClass
+		if tp is in TypeClass
 		{
 			cls := tp->{TypeClass^}.ToClass
 			checkClass(cls)
