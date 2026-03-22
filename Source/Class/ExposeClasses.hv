@@ -8,14 +8,15 @@ ExposeClasses := !() -> void
 }
 ExposeClasses2 := !() -> void
 {
-
+	baseClass := ExposedClass^
 	{
 		ctx1 := ExposeMaker
 		ctx1.Start("Type").{Type}
 
+		baseClass = ctx1.target
+
 		tp := ctx1.target
 		tpPointer := tp.GetPointer()
-
 
 		if #Var("Expr")
 		{
@@ -33,8 +34,23 @@ ExposeClasses2 := !() -> void
 		ctx1.Finish()
 		ctx1.Destroy()
 	}
-	
-	// DefsTable[28] = new TypeDef("Type",baseType.ItType)
+
+	{
+		ctx := ExposeMaker
+		ctx.Start("TypeClass").{TypeClass}
+
+		tp := ctx.target
+		tpPointer := tp.GetPoint()
+
+		if #Var("Expr")
+		{
+			ctx.passFuncs[TypeClass->OffsetInVirtualTable("GetFieldsCount")] = !{GetFuncType(![tp],![true],GTypeInt),"GetFieldsCount"}
+
+			ctx.Populate()
+		}
+		ctx.Finish()
+		ctx.Destroy()
+	}
 }
 
 ignoreClasses := AVLSet.{BoxClass^}
