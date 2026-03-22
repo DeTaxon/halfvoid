@@ -4,7 +4,20 @@
 
 main := !(char^[] args) -> int
 {
-	RunFunc()
+	// RunFunc()
+	x := 0
+	y := 12
+
+	for i : 2
+	{
+		z := x + y
+		b := 404
+	}
+
+	{
+		R := 3
+	}
+	iu := float
 }
 
 

@@ -60,6 +60,8 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	dbgBlocks := AVLMap.{int,int}
 
 
+	blocksStack := HybridStack.{int,20}
+
 	fncId := GetNewId()
 
 	haveDebugInfo := DebugMode
@@ -77,7 +79,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 		blockId := GetNewId()
 
-		dbgBlocks[blockId] = currentDbgFileId
+		blocksStack.PushFront(blockId)
+
+		dbgBlocks[blockId] = fncId
 		currentDbgBlockId = blockId
 
 		dbgIsSet = true
@@ -357,17 +361,24 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				if DebugMode
 				{
 					metaId := varDebIds[op.var1].0
+					varDebIds[op.var1].2 = currentDbgBlockId
 
 					varType := fnc.Objects[op.var1].GetType()
 					varType = NormalizeType(varType) //TODO some pass should remove this
 
-					out << "	call void @llvm.dbg.declare(metadata "
-					varType.PrintType(ctx)
-					//if baseVar.isReference
-					//	f^ << "*"
-					out << "* %Var" << op.var1
-					out << " , metadata !" << metaId << " , metadata !DIExpression())"
-					printDebugEnd()
+					out << "	#dbg_declare("
+					out << "ptr %Var" << op.var1 << ","
+					out << "!" << metaId << ","
+					out << "!DIExpression(),"
+					out << "!" << currentDbgId << ")\n"
+
+					// out << "	call void @llvm.dbg.declare(metadata "
+					// varType.PrintType(ctx)
+					// //if baseVar.isReference
+					// //	f^ << "*"
+					// out << "* %Var" << op.var1
+					// out << " , metadata !" << metaId << " , metadata !DIExpression())"
+					// printDebugEnd()
 				}
 
 			// case "debug_var_lifetime_start"
@@ -382,19 +393,20 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			// case "debug_block_start"
 
 			case "debug_set_file"
-				currentDbgFileName := fnc.Objects[op.var1]&->{MCConstString^}.GetValue().Str()
-
-				currentFile = currentDbgFileName
-
-				if not dbgFiles.Contain(currentDbgFileName) {
-					dbgFiles[currentDbgFileName] = GetNewId()
-				}
-				currentDbgFileId = dbgFiles[currentDbgFileName]
-
-				blockId := GetNewId()
-
-				dbgBlocks[blockId] = currentDbgFileId
-				currentDbgBlockId = blockId
+				// currentDbgFileName := fnc.Objects[op.var1]&->{MCConstString^}.GetValue().Str()
+				//
+				// currentFile = currentDbgFileName
+				//
+				// if not dbgFiles.Contain(currentDbgFileName) {
+				// 	dbgFiles[currentDbgFileName] = GetNewId()
+				// }
+				// currentDbgFileId = dbgFiles[currentDbgFileName]
+				//
+				// blockId := GetNewId()
+				//
+				// dbgBlocks[blockId] = fncId
+				// blocksStack.PushFront(blockId)
+				// currentDbgBlockId = blockId
 			case "debug_set_line"
 				dbgIsSet = true
 
@@ -406,7 +418,17 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				dbgList[itId] = !{currentDbgBlockId,ln}
 
 				currentDbgId = itId
-				
+			case "debug_block_start"
+				blockId := GetNewId()
+
+				dbgBlocks[blockId] = currentDbgBlockId
+				blocksStack.PushFront(blockId)
+
+				currentDbgBlockId = blockId
+			case "debug_block_end"
+				blocksStack.Pop()
+				currentDbgBlockId = blocksStack[0]
+
 			case "jmp"
 				out << "	br label %Label" << op.var1 << "\n"
 			case "jmp_if_bool"
@@ -1111,7 +1133,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 		for it, ind : dbgBlocks
 		{
 			out << "!" << ind << " = !DILexicalBlock(scope: !" 
-			out << fncId << ", file: !" << flId
+			out << it << ", file: !" << flId
 			out << ")\n"
 		}
 		for it, ind : dbgList
@@ -1128,7 +1150,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 			
 			ctx.UsedTypes.Insert(varType)
 
-			out << "!" << it.0 << " = !DILocalVariable(name: \"" << it.1 << "\" , scope:!" << fncId << " , file:!" << flId
+			out << "!" << it.0 << " = !DILocalVariable(name: \"" << it.1 << "\" , scope:!" << it.2 << " , file:!" << flId
 			out << ", line: " << 0 << ", type:!"
 			// if baseVar.isReference
 			// {

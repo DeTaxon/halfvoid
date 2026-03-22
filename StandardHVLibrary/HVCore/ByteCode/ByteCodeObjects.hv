@@ -84,6 +84,3 @@ MCConstPointerTyped := class extend MCObject
 MCLabel := class extend MCObject
 {
 }
-MCDebugInfoBlock := class extend MCObject
-{
-}

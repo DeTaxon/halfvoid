@@ -7,6 +7,13 @@ AppendClass BoxBlock
 		if quitLabel != null
 			ctx.DeferObjects.PushFront(quitLabel)
 
+		blockDebId := int
+		if DebugMode
+		{
+			blockDebId = ctx.CreateObject()
+			HVB_ins_debug_block_start(ctx,blockDebId)
+		}
+
 		for it : exeLines
 		{
 			it.WriteMC(ctx)
@@ -18,5 +25,8 @@ AppendClass BoxBlock
 			dObj.WriteDeferMC(ctx)
 		}
 		quitLabel?.WriteMC(ctx)
+
+		if DebugMode
+			HVB_ins_debug_block_end(ctx,blockDebId)
 	}
 }

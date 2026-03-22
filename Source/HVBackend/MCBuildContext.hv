@@ -96,6 +96,12 @@ MCBuildContext := class
 		setVal.GetValueType() = varType
 		objects.Push(setVal)
 	}
+	CreateObject := !() -> int
+	{
+		result = objects.Size()
+		setVal := MCObject
+		objects.Push(setVal)
+	}
 
 	AddFuncConst := !(BoxFunc^ obj) -> int
 	{
