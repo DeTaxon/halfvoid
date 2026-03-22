@@ -8,63 +8,33 @@ ExposeClasses := !() -> void
 }
 ExposeClasses2 := !() -> void
 {
-	baseType := new ExposedClass()
-	baseType.tablePtr = Type->VTable
-	baseType.ItSize = Type->TypeSize
-	baseType.ItAlign = 16
-	baseType.Name = "Type"
 
-	tp := baseType.ItType
-	tpPointer := tp.GetPointer()
-
-	ignoreClasses.Insert(baseType)
-
-	if #Var("Expr")
 	{
-		passFuncs := Tuple.{TypeFunc^,char^}[int]
-		passFuncs[Type->OffsetInVirtualTable("GetPointer")] = !{GetFuncType(![tp],![true],tpPointer),"GetPointer"}
-		passFuncs[Type->OffsetInVirtualTable("IsInt")] = !{GetFuncType(![tp],![true],GTypeBool),"IsInt"}
-		passFuncs[Type->OffsetInVirtualTable("IsUnsigned")] = !{GetFuncType(![tp],![true],GTypeBool),"IsUnsigned"}
-		passFuncs[Type->OffsetInVirtualTable("IsVector")] = !{GetFuncType(![tp],![true],GTypeBool),"IsVector"}
-		passFuncs[Type->OffsetInVirtualTable("GetBase")] = !{GetFuncType(![tp],![true],tpPointer),"GetBase"}
-		passFuncs[Type->OffsetInVirtualTable("GetSize")] = !{GetFuncType(![tp],![true],GTypeInt),"GetSize"}
-		passFuncs[Type->OffsetInVirtualTable("GetArrayLength")] = !{GetFuncType(![tp],![true],GTypeInt),"GetArrayLength"}
+		ctx1 := ExposeMaker
+		ctx1.Start("Type").{Type}
 
-		curntOffset := 8
-
-		emptyDeclare := new BoxFuncDeclare(GetFuncType(![],GTypeVoid),"")
+		tp := ctx1.target
+		tpPointer := tp.GetPointer()
 
 
+		if #Var("Expr")
 		{
-			baseType.VTable.Push(new VTableFunc("",emptyDeclare))
+			ctx1.passFuncs[Type->OffsetInVirtualTable("GetPointer")] = !{GetFuncType(![tp],![true],tpPointer),"GetPointer"}
+			ctx1.passFuncs[Type->OffsetInVirtualTable("IsInt")] = !{GetFuncType(![tp],![true],GTypeBool),"IsInt"}
+			ctx1.passFuncs[Type->OffsetInVirtualTable("IsUnsigned")] = !{GetFuncType(![tp],![true],GTypeBool),"IsUnsigned"}
+			ctx1.passFuncs[Type->OffsetInVirtualTable("IsVector")] = !{GetFuncType(![tp],![true],GTypeBool),"IsVector"}
+			ctx1.passFuncs[Type->OffsetInVirtualTable("GetBase")] = !{GetFuncType(![tp],![true],tpPointer),"GetBase"}
+			ctx1.passFuncs[Type->OffsetInVirtualTable("GetSize")] = !{GetFuncType(![tp],![true],GTypeInt),"GetSize"}
+			ctx1.passFuncs[Type->OffsetInVirtualTable("GetArrayLength")] = !{GetFuncType(![tp],![true],GTypeInt),"GetArrayLength"}
+
+			ctx1.Populate()
+
 		}
-		for it, ind : passFuncs
-		{
-			while curntOffset < ind
-			{
-				baseType.VTable.Push(new VTableFunc("",emptyDeclare))
-				curntOffset += 8
-			}
-
-			fnc := new BoxFuncDeclare(it.0,"")
-
-			vFunc := new BuildInVirtualCall(fnc,ind div 8)
-			baseType.DefaultSpace.VirtualMethods[it.1].Push(vFunc)
-
-			baseType.VTable.Push(new VTableFunc("",fnc))
-		}
-		buildCtx := ClassBuildContext
-		baseType.CreateVTable(buildCtx,null)
-
-		vtPtr := baseType.VTableType.ItType.GetPointer()
-		baseType.Fields.Push(new FieldParam("VTable",vtPtr))
-		baseType.FieldsPath.Push(new FieldPath(baseType.ItType,vtPtr))
-
-		ignoreClasses.Insert(baseType.VTableType)
+		ctx1.Finish()
+		ctx1.Destroy()
 	}
 	
 	// DefsTable[28] = new TypeDef("Type",baseType.ItType)
-	CodeSpaces[-1].Types["Type"] = baseType.ItType
 }
 
 ignoreClasses := AVLSet.{BoxClass^}
@@ -76,5 +46,66 @@ ExposedClass := class extends BoxClass
 	this := !() -> void
 	{
 		InitType()
+	}
+}
+
+ExposeMaker := class
+{
+	target := ExposedClass^
+	targetName := Str
+	passFuncs := Tuple.{TypeFunc^,char^}[int]
+	
+	Start := !(Str name).{@T} -> void
+	{
+		target = new ExposedClass()
+		target.ItSize = T->TypeSize
+		target.tablePtr = T->VTable
+		target.ItAlign = 16
+		target.Name = name
+		targetName = name
+	}
+
+	Populate := !() -> void
+	{
+		curntOffset := 8
+
+		emptyDeclare := new BoxFuncDeclare(GetFuncType(![],GTypeVoid),"")
+
+
+		{
+			target.VTable.Push(new VTableFunc("",emptyDeclare))
+		}
+		for it, ind : passFuncs
+		{
+			while curntOffset < ind
+			{
+				target.VTable.Push(new VTableFunc("",emptyDeclare))
+				curntOffset += 8
+			}
+
+			fnc := new BoxFuncDeclare(it.0,"")
+
+			vFunc := new BuildInVirtualCall(fnc,ind div 8)
+			target.DefaultSpace.VirtualMethods[it.1].Push(vFunc)
+
+			target.VTable.Push(new VTableFunc("",fnc))
+		}
+		buildCtx := ClassBuildContext
+		target.CreateVTable(buildCtx,null)
+
+		vtPtr := target.VTableType.ItType.GetPointer()
+		target.Fields.Push(new FieldParam("VTable",vtPtr))
+		target.FieldsPath.Push(new FieldPath(target,vtPtr))
+
+		ignoreClasses.Insert(target.VTableType)
+	}
+	Finish := !() -> void
+	{
+		ignoreClasses.Insert(target)
+		CodeSpaces[-1].Types[targetName] = target
+	}
+	Destroy := !() -> void
+	{
+		passFuncs.Destroy()
 	}
 }

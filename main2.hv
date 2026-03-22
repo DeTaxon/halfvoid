@@ -24,10 +24,10 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	// makeSpirv()
+	makeSpirv()
 	// tst()
 	// FlacTest()
-	OpusTest()
+	// OpusTest()
 }
 
 //TODO if one input variable named result, rename return result to anon

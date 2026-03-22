@@ -114,7 +114,7 @@ AppendClass BoxClass
 	{
 		return Fields.Size()
 	}
-	GetFieldsCount := !() -> int
+	GetFieldsCount := virtual !() -> int
 	{
 		sum := 0
 		for it : Parents
