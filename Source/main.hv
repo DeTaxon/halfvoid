@@ -292,8 +292,6 @@ main := !(Vector.{char^} args) -> int
 	CreateStandardTypes()
 	TypeDatabaseInitDefaults()
 
-	if not SelfBuild
-		ExposeClasses()
 
 	GBoolTrue = new BoxExeBool(true)
 	GBoolFalse = new BoxExeBool(false)
@@ -321,6 +319,9 @@ main := !(Vector.{char^} args) -> int
 	CreateStrType()
 	InitInternalsTypes()
 	InitInternals()
+
+	if not SelfBuild
+		ExposeClasses()
 
 	for spc : CodeSpaces
 	{

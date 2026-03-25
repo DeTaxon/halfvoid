@@ -24,11 +24,46 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	makeSpirv()
+	// makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()
+	ReflectionTest()
 }
+
+ReflectionTest := !() -> void
+{
+	c := HV.GetTypeObj(int)
+	r := c.GetPointer().GetPointer()
+	printf("test %s\n",r.GetDebugStr())
+
+	z := CreatedTestClass
+	z.first = 13
+}
+
+#Module(
+	cls := TypeClass^
+
+	GetItem := virtual !(Str name) -> HV_Object^
+	{
+		if name == "CreatedTestClass"
+		{
+			return cls->{HV_Object^}?
+
+			cls = HV.CreateClass2()
+
+			cls.GetFieldsCount()
+
+			cls.AddField("first",HV.GetType("int"))
+
+			printf("after created %i <%s>\n",cls.GetFieldsCount(),cls.GetDebugStr())
+
+			return cls->{HV_Object^}
+		}
+
+	}
+)
+
 
 //TODO if one input variable named result, rename return result to anon
 //#ExposeClass("Type",

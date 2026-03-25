@@ -68,6 +68,15 @@ HVContextImplementation := class extend HV_Context
 		newClass.hvClass.baseClass =  newClass
 		return newClass.hvClass&
 	}
+	CreateClass2 := virtual !() -> TypeClass^ 
+	{
+		newClass := new BoxClass
+		newClass.InitType()
+
+		AllClasses.Push(newClass)
+
+		return newClass
+	}
 	CreateFunction := virtual !(Str funcText) -> HV_Object^
 	{
 		return StrToFunctionTemplate(funcText)

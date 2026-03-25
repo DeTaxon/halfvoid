@@ -841,7 +841,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			case 4 v1->{u32^}^ = v2->{u32^^}^^
 			case 8 v1->{u64^}^ = v2->{u64^^}^^
 			case 16 v1->{vec4f^}^ = v2->{vec4f^^}^^
-			case void assert(false)
+			case void 
+				printf("Unknown type %s with size %i\n",resType.GetBADStr(),resType.GetSize())
+				assert(false)
 			}
 
 		case "debug_set_file"

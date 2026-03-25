@@ -1,4 +1,6 @@
-BoxClassPoison := class extend BoxClass
+BoxClassPoison := type BoxClass
+
+AppendClass BoxClass
 {
 	PoisonFunctions := AVLMap.{StringSpan,Tuple.{Token^,bool}} //bool isVirtual
 	PoisonFields := AVLMap.{StringSpan,Tuple.{Token^,bool}}

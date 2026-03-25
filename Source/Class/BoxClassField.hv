@@ -123,7 +123,7 @@ AppendClass BoxClass
 		return sum
 	}
 
-	AddExtraField := !(Str newName, Type^ newFieldType) -> FieldPath^
+	AddExtraField := virtual !(Str newName, Type^ newFieldType) -> FieldPath^
 	{
 		//TODO check for existing name
 
@@ -189,7 +189,7 @@ AppendClass BoxClass
 
 		for it : FieldsPath
 		{
-			if it.Field.Name == val
+			if it.Field?.Name == val
 				return it
 		}
 

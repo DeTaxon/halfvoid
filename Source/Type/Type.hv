@@ -95,7 +95,7 @@ Type := class extend BoxExeConstObj
 		GRefTypes[this&] = nRef
 		return nRef
 	}
-	GetBADStr := !() -> String^
+	GetBADStr := virtual !() -> Str
 	{
 		ec := TEchoStream
 		ctx := LLVMWriteContext
@@ -105,7 +105,7 @@ Type := class extend BoxExeConstObj
 		PrintDebugName(ctx&)
 		//ec << ","
 		//PrintType(ec&)
-		return ec.GetStr()->AsString
+		return ec.GetStr()
 	}
 	IsMetaReady := virtual !() -> bool
 	{

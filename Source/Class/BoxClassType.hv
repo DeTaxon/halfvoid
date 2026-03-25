@@ -37,11 +37,12 @@ AppendClass BoxClass
 	GetSize := virtual !() -> int
 	{
 		AwaitTypeState()
+		algn := max(ItAlign,1)
 		minSize := ItSize
-		unalign := minSize mod ItAlign
+		unalign := minSize mod algn
 		if unalign != 0
 		{
-			minSize += ItAlign - unalign
+			minSize += max(ItAlign - unalign,0)
 		}
 		return minSize
 	}

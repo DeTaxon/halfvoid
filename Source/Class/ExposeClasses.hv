@@ -8,6 +8,8 @@ ExposeClasses := !() -> void
 }
 ExposeClasses2 := !() -> void
 {
+	baseType := TypeClass^
+
 	baseClass := ExposedClass^
 	{
 		ctx1 := ExposeMaker
@@ -15,7 +17,10 @@ ExposeClasses2 := !() -> void
 
 		baseClass = ctx1.target
 
+		baseClass.PrimeParentStep()
+
 		tp := ctx1.target
+		baseType = tp
 		tpPointer := tp.GetPointer()
 
 		if #Var("Expr")
@@ -27,6 +32,7 @@ ExposeClasses2 := !() -> void
 			ctx1.passFuncs[Type->OffsetInVirtualTable("GetBase")] = !{GetFuncType(![tp],![true],tpPointer),"GetBase"}
 			ctx1.passFuncs[Type->OffsetInVirtualTable("GetSize")] = !{GetFuncType(![tp],![true],GTypeInt),"GetSize"}
 			ctx1.passFuncs[Type->OffsetInVirtualTable("GetArrayLength")] = !{GetFuncType(![tp],![true],GTypeInt),"GetArrayLength"}
+			ctx1.passFuncs[Type->OffsetInVirtualTable("GetBADStr")] = !{GetFuncType(![tp],![true],GTypeStr),"GetDebugStr"}
 
 			ctx1.Populate()
 
@@ -38,6 +44,7 @@ ExposeClasses2 := !() -> void
 	{
 		ctx := ExposeMaker
 		ctx.Start("TypeClass").{TypeClass}
+		ctx.AddExtends(baseType)
 
 		tp := ctx.target
 		tpPointer := tp.GetPoint()
@@ -45,6 +52,7 @@ ExposeClasses2 := !() -> void
 		if #Var("Expr")
 		{
 			ctx.passFuncs[TypeClass->OffsetInVirtualTable("GetFieldsCount")] = !{GetFuncType(![tp],![true],GTypeInt),"GetFieldsCount"}
+			ctx.passFuncs[TypeClass->OffsetInVirtualTable("AddExtraField")] = !{GetFuncType(![tp,GTypeStr,baseType.GetPointer()],![true,false,false],GTypeVoid),"AddField"}
 
 			ctx.Populate()
 		}
@@ -79,6 +87,12 @@ ExposeMaker := class
 		target.ItAlign = 16
 		target.Name = name
 		targetName = name
+	}
+
+	AddExtends := !(TypeClass^ obj) -> void
+	{
+		target.Parents.Push(obj)
+		target.PrimeParentStep()
 	}
 
 	Populate := !() -> void

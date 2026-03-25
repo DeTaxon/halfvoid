@@ -14,6 +14,7 @@ HV_Context := class
 	GetTypeGroup := virtual !(Type^ obj) -> TypeGroups {}
 
 	CreateClass := virtual !() -> HV_Class^ {}
+	CreateClass2 := virtual !() -> TypeClass^ {}
 
 	CreateInt32 := virtual !(int value) -> HV_Object^ {}
 	CreateString := virtual !(Str value) -> HV_Object^ {}
