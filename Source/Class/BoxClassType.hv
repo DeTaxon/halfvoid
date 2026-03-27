@@ -9,6 +9,8 @@ AppendClass BoxClass
 
 		ItHash = typeHashIterator
 		typeHashIterator += 1
+
+		ItAlign = 1
 	}
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{

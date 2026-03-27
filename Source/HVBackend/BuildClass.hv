@@ -1,7 +1,6 @@
 
 hvr_Class := class extend BoxClassPoison
 {
-	newFieldCB := !(Str)&->HV_Object^
 
 	this := !() -> void
 	{
@@ -9,14 +8,7 @@ hvr_Class := class extend BoxClassPoison
 		ItId = GetNewId()
 		InitType()
 
-		ItAlign = 1
 		ItSize = 0
-	}
-	GetFieldFailedCB := virtual !(Str val) -> Type^
-	{
-		if newFieldCB != null
-			return newFieldCB?(val)?->{Type^}
-		return null
 	}
 }
 

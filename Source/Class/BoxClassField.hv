@@ -3,6 +3,8 @@ AppendClass BoxClass
 
 	fieldsOffset := int
 
+	newFieldCB := !(Str)&->Type^
+
 	InheritStep := !(ClassBuildContext ctx,ClassReloadOldData^ oldData) -> void
 	{
 		assert(FieldsPath.Size() == 0)
@@ -181,6 +183,8 @@ AppendClass BoxClass
 
 	GetFieldFailedCB := virtual !(Str val) -> Type^
 	{
+		if newFieldCB != null
+			return newFieldCB?(val)?
 		return null
 	}
 	GetField := virtual !(Str val) -> FieldPath^
