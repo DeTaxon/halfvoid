@@ -1,0 +1,61 @@
+
+GetFString := !(Token^ itm) -> BoxExeObj^
+{
+	if itm is not TokenFString
+		return null
+
+	downs := BoxExeObj^[]
+	downs.Push(null)
+
+	newString := char[1024]
+	size := 0
+
+	i := 0
+	ptr := itm.Value.CStr()
+
+	iter := itm.Down
+
+	while ptr[i] != 0
+	{
+		//TODO \
+		
+		if ptr[i] == '{'
+		{
+			start := i + 1
+			while ptr[i] != '}'
+				i += 1
+			end := i - 1
+
+			newString[size++] = '%'
+			newString[size++] = 'i'
+			i += 1
+
+			SyntaxCompress(iter,PriorityData)
+
+			//TODO too many objs?
+			dwn := TryGetExeCall(iter.Down)
+			downs.Push(dwn)
+
+			iter = iter.Right
+
+			continue
+		}
+
+		newString[size++] = ptr[i]
+		i += 1
+	}
+	
+	spn := StringSpan(newString[0]&,size)
+	downs[0] = GetExeString(spn&)
+
+	call :=  GStrPrintf.CreateCall(downs)
+
+	if call == null
+	{
+		MakeErrorMsg(itm,"did not find str_printf function")
+		return null
+	}
+
+	return call
+		
+}

@@ -732,6 +732,7 @@ CWorkBaseFile := class extend CWorkUnit
 					}
 				}else{
 				
+					itToken.Print(0)
 					itError = itToken.MakeError("Unknown object")
 					itState = "Failed"
 					return "Failed"

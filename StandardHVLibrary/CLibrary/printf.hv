@@ -1,12 +1,13 @@
 
 str_printf := !(char^ str, ... ) -> Str
+	#Mark("JITPass")
 {
 	va := va_list
 	va_start(va&)
 	echo := TEchoStream
 	vprintf_hv_stream(echo,str,va&)
 	va_end(va&)
-	result->AsString = echo.GetString()
+	return echo.GetStr()
 }
 printf_hv := !(char^ str, ... ) -> void
 {

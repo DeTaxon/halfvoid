@@ -138,6 +138,11 @@ LoadCachedTokensInner := !(Stream^ strm,BoxFile^ setFile,FileLine^& nowLine,char
 			spn := GetConstStringSpan(StringSpan(buf,stSize))
 			strm.Read(stSize&,4)
 			resToken = new TokenInt(spn,stSize)
+		case 116
+			strm.Read(stSize&,4)
+			strm.Read(buf,stSize)
+			spn := GetConstStringSpan(StringSpan(buf,stSize))
+			resToken = new TokenFString(spn.GetString())
 		case void
 			printf("hm %i\n",x)
 			assert(false)
@@ -330,13 +335,21 @@ SerializeTokenInner := !(Stream^ strm, Token^ itToken,FileLine^& streamedLine) -
 		strm.Write(x&,4)
 		strm^ << decor.Value
 		strm.Write(decor.Parsed&,4)
+	}else if itToken is TokenFString
+	{
+		decor := itToken->{TokenFString^}
+		x = 116
+		strm.Write(x&,4)
+		x = decor.Value.Size()
+		strm.Write(x&,4)
+		strm.Write(decor.Value.CStr(),x)
 	} else {
 		printf("hm %s\n",itToken.GetValue())
 		assert(false)
 	}
 	strm.Write(subs&,4)
 
-	//Latest id is 115
+	//Latest id is 116
 
 	itr = itToken.Down
 	while itr != null

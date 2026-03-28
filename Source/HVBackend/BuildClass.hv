@@ -34,11 +34,11 @@ HVClassImpl := class extend HV_Class
 	}
 	AddCallback_GetFieldFailed := virtual !(!(Str)&->HV_Object^ cb ) -> void
 	{
-		if baseClass is not hvr_Class
-			return void
-		cls := baseClass->{hvr_Class^}
-		cls.newFieldCB = null
-		cls.newFieldCB = cb?.Capture()
+		// if baseClass is not hvr_Class
+		// 	return void
+		// cls := baseClass->{hvr_Class^}
+		// cls.newFieldCB = null
+		// cls.newFieldCB = cb?.Capture()
 	}
 	GetType := virtual !() -> HV_Object^ 
 	{

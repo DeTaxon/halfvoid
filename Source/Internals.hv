@@ -28,6 +28,8 @@ TemplateInternalTupleConstructor := BoxFuncTemplate^
 
 GMapType := TypedefTemplateConst^
 
+GStrPrintf := BoxFunc^
+
 InitInternals := !() -> void
 {
 	GetAnyFile()	
@@ -69,6 +71,8 @@ InitInternals := !() -> void
 	GVectorConstructor4Scalar = intGetTemplate("internalVectorConstructor4Scalar")
 
 	GMapType = intGetTypedef("internalHVMap")?.Value
+
+	GStrPrintf = intGetFunc("str_printf")
 }
 
 intGetTemplate := !(char^ name) -> BoxFuncTemplate^

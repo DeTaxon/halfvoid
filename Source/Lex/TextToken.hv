@@ -251,7 +251,7 @@ TokenSymbol := class extend Token
 	Print := virtual !(int x) -> void
 	{
 		for x printf("-")
-		printf("symbol %s\n",Value)
+		printf("symbol <%s>\n",Value)
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
@@ -314,6 +314,28 @@ TokenString := class extend Token
 		Down?.Print(x+1)
 		Right?.Print(x)
 	}
+}
+
+TokenFString := class extends Token
+{
+	Value := Str
+	IsData := virtual true
+	this := !(Str val) -> void
+	{
+		Value = val
+	}
+	GetValue := virtual !() -> StringSpan
+	{
+		return StringSpan("~@str")
+	}
+	Print := virtual !(int x) -> void
+	{
+		for x printf("-")
+		printf("formated string <%s>\n",Value.Str())
+		Down?.Print(x+1)
+		Right?.Print(x)
+	}
+	
 }
 TokenDouble := class extend Token
 {

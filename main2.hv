@@ -4,20 +4,7 @@
 
 main := !(char^[] args) -> int
 {
-	// RunFunc()
-	x := 0
-	y := 12
-
-	for i : 2
-	{
-		z := x + y
-		b := 404
-	}
-
-	{
-		R := 3
-	}
-	iu := float
+	RunFunc()
 }
 
 
@@ -28,7 +15,17 @@ RunFunc := !() -> void
 	// tst()
 	// FlacTest()
 	// OpusTest()
-	ReflectionTest()
+	// ReflectionTest()
+	FStringTest()
+}
+
+FStringTest := !() -> void
+{
+	val1 := 13
+	val2 := 99
+
+	x := @"Test: <{val1}> + <{val2}>*3 = <{val1 + val2*3}>"
+	printf("test %s\n",x)
 }
 
 ReflectionTest := !() -> void

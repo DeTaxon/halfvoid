@@ -1,5 +1,6 @@
 TryExePrime := !(Token^ itm) -> BoxExeObj^
 {
+	return GetFString(itm)?
 	if itm is TokenString
 	{
 		tkn := itm->{TokenString^}

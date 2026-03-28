@@ -21,7 +21,7 @@ GetConstString := !(char^ val) -> ref StringSpan
 }
 
 
-PackedExeObj := class extend BoxExeObj
+PackedExeObj := class extends BoxExeObj
 {
 	preCalls := List.{BoxExeObj^}
 	mainCall := BoxExeObj^	
@@ -66,7 +66,7 @@ PackedExeObj := class extend BoxExeObj
 	}
 
 }
-BlankObjectExe := class extend BoxExeObj
+BlankObjectExe := class extends BoxExeObj
 {
 	IsRefObj := bool
 	this := !(Type^ tp,bool isRef) -> void

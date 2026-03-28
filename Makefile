@@ -104,7 +104,7 @@ unit.exe:
 jit:
 	$(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -jit -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 run:
-	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunFunc $(NoScary) -g $(AddExtra) -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -cache /tmp/TestCache.zip --vk vk.xml
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunFunc $(NoScary) -g $(AddExtra) -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv --vk vk.xml
 run2:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv
 run.exe:
@@ -129,7 +129,7 @@ Objs/hres.zip: $(wildcard ./hres/*)
 $(CurrentLex):
 	$(CurrentWork) $(TargetPlatform) $(ForcedLibs)  -C1 "Source/" LexBuilder/main.hv  -g -o Objs/Lex.ll; clang Objs/Lex.ll -g -ldl -lpthread -o $(CurrentLex)
 Mach.m: LexBuilder/main.hv $(wildcard *.pr)
-	./halfvoid -C0 StandardHVLibrary Source/Lex/PriorityRead.hv Source/Lex/Lex.hv Source/Utils.hv LexBuilder/main.hv -g -o /tmp/lex.ll
+	./halfvoid -C0 StandardHVLibrary -C0 Source LexBuilder/main.hv -g -o /tmp/lex.ll
 	clang /tmp/lex.ll -g -lm -lpthread -o lex
 	./lex
 SizeCheck:

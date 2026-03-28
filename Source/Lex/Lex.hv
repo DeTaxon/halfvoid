@@ -165,9 +165,17 @@ GetObjectsFromMemory := !(BoxFile^ fil,char^ memPtr,int Siz) -> Token^
 					}	
 				}
 				DaBuff[j] = 0
-				//val := GetConstString(DaBuff)
-				ns = new TokenString(new String(DaBuff,j))
-				addNewLines(tok.NonNullStr(),tok.Size())
+
+				if tok.Size() > 0 and tok[0] == '@'
+				{
+					ns = new TokenFString(new String(DaBuff[1]&,j-1))
+					spn := StringSpan(DaBuff[1]&,j - 1)
+					LexParseFString(fil,ns,spn)
+					addNewLines(tok.NonNullStr(),tok.Size())
+				}else{
+					ns = new TokenString(new String(DaBuff,j))
+					addNewLines(tok.NonNullStr(),tok.Size())
+				}
 			}
 			if a == 4 {
 				newVal := s64
@@ -367,6 +375,57 @@ UniteSkobs := !(Token^ Tree) -> Token^
 	}
 	return null
 }
+
+LexParseFString := !(BoxFile^ fil,Token^ ns,StringSpan spn) -> void
+{
+	i := 0
+	ptr := spn.NonNullStr()
+	size := spn.Size()
+
+	iter := Token^
+	while i < size
+	{
+		if ptr[i] == '{'
+		{
+			start := i + 1
+
+			while ptr[i] != '}' and i < size
+				i += 1
+			end := i - 1
+
+			mm := calloc(end - start + 2,1) //TODOTODOTODO memory leak
+			memcpy(mm,ptr[start]&,end - start + 1)
+
+			objs := GetObjectsFromMemory(fil,mm->{char^},end - start + 1)
+
+			holder := new TokenData
+			holder.Down = objs
+
+			c := objs
+			while c != null
+			{
+				c.Up = holder
+				c = c.Right
+			}
+
+			if iter == null
+			{
+				holder.Up = ns
+				ns.Down = holder
+				iter = ns.Down
+			}else{
+				iter.Right = holder
+				holder.Left = iter
+				holder.Up = ns
+				iter = iter.Right
+
+			}
+		}
+
+		i += 1
+	}
+}
+
 UNext := !(Token^ where,Token^ nObj, int count) -> Token^
 {
 	Last := where
