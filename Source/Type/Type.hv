@@ -356,6 +356,7 @@ GTypeFloat := Type^
 GTypeHalf := Type^
 GTypeU8 := Type^
 GTypeChar := Type^
+GTypeCharP := Type^
 GTypeInt := Type^
 GTypeU32 := Type^
 GTypeU64 := Type^
@@ -503,6 +504,7 @@ CreateStandardTypes := !() -> void
 	GTypeTypeId = TypeTable[27]
 
 	GTypeVoidP->SetType(TypeVoidPoint)
+	GTypeCharP = GTypeChar.GetPointer()
 
 	DefsTable[0] = new TypeDef("u8",TypeTable[0])
 	DefsTable[1] = new TypeDef("u16",TypeTable[1])

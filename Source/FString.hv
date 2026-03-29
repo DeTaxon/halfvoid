@@ -26,15 +26,36 @@ GetFString := !(Token^ itm) -> BoxExeObj^
 				i += 1
 			end := i - 1
 
-			newString[size++] = '%'
-			newString[size++] = 'i'
 			i += 1
 
 			SyntaxCompress(iter,PriorityData)
 
 			//TODO too many objs?
 			dwn := TryGetExeCall(iter.Down)
+
+			if dwn == null
+				return null
+
+			dwnType := dwn.GetType()
+
 			downs.Push(dwn)
+
+			if IsInt(dwnType)
+			{
+				newString[size++] = '%'
+				newString[size++] = 'i'
+			}else if IsFloat(dwnType) {
+				newString[size++] = '%'
+				newString[size++] = 'f'
+			}else if dwnType == GTypeCharP {
+				newString[size++] = '%'
+				newString[size++] = 's'
+			}else if dwnType is in TypePoint {
+				newString[size++] = '%'
+				newString[size++] = 'p'
+			}else{
+				assert(false)
+			}
 
 			iter = iter.Right
 
