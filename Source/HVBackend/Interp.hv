@@ -721,7 +721,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				cPtr := callerFrame.func.Lines.GetPointer()
 				oPtr := callerFrame.func.Objects.GetPointer()
 
-				assert(cPtr[bs].opcode == "call_end")
+				assert(cPtr[bs].opcode == "call_end" or cPtr[bs].opcode == "load_var" or cPtr[bs].opcode == "call_start")
 
 				while cPtr[bs].opcode != "call_start"
 					bs -= 1

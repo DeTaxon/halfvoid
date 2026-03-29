@@ -16,34 +16,23 @@ RunFunc := !() -> void
 	// FlacTest()
 	// OpusTest()
 	// ReflectionTest()
-	// FStringTest()
-	c := "a"
-	printf("Hey %p\n",c)
-	Hmm(3,c)
+	FStringTest()
 }
 
-Hmm := !(int x,...) -> void
+
+FStringTest := !() -> void
 {
-	tst := va_list
-	va_start(tst&)
-	c := va_arg(tst&).{void^}
-	printf("test %p\n",c)
-	va_end(tst&)
-}
+	val1 := 13
+	val2 := 99
+	val3 := 3.9
 
-// FStringTest := !() -> void
-// {
-// 	val1 := 13
-// 	val2 := 99
-// 	val3 := 3.9
-//
-// 	val4 := "asd"
-// 	kk := val4&
-//
-// 	printf("Hey %p\n",val4)
-// 	x := @"Test: {val4}>"
-// 	printf("test %s\n",x)
-// }
+	val4 := "asd"
+	kk := val4&
+
+	printf("Hey %p\n",val4)
+	x := @"Test: <{val4}>"
+	printf("test %s\n",x)
+}
 
 ReflectionTest := !() -> void
 {
