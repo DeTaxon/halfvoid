@@ -146,6 +146,13 @@ SizeTToPtr := class extend BoxExeObj
 	{
 		ctx.writeStream^ << "%TUnref" << resId
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
+	}
 }
 PtrToRef := class extend BoxExeObj
 {

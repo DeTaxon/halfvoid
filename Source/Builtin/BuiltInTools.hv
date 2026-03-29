@@ -240,12 +240,16 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 
 				if callGetInt?.GetType() != getType
 				{
-					callGetInt = GetExchange(callGetInt,getType)
+					callGetInt = GetExchange2(callGetInt,getType,false)
+					if callGetInt == null
+					{
+						assert(false)
+						return null
+					}
 				}
 
 				return callGetInt?
-			}
-			if IsFloat(getType)
+			} else if IsFloat(getType)
 			{
 				callGetFloat := CreateFuncCall("vaListLoadFloat",objs)
 				assert(callGetFloat != null)
@@ -257,6 +261,8 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 
 				return callGetFloat?
 
+			}else {
+				assert(false)
 			}
 		}
 		return super(objs,consts,iObjs)

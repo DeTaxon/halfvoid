@@ -14,7 +14,7 @@ va_list_registers := class
 }
 
 
-vaListLoadInt := !(va_list^ va) -> u64
+vaListLoadInt := !(va_list^ va) -> size_t
 {
 	if va.intOffset < 48
 	{
