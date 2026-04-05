@@ -1,0 +1,21 @@
+
+
+EngTools := class
+{
+	window := TWindow^
+	
+	shadersDB := VulkanShaderLoader
+
+	Init := !() -> void
+	{
+		x := 800
+		y := 800
+
+		window = new TWindow
+		window.Init(x,y,"Pixels",true)
+
+		VulkanInit(window)
+
+		vk.CreateSwapchain(x,y)
+	}
+}

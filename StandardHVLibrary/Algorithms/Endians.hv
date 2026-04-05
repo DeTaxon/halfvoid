@@ -36,3 +36,4 @@ ToBigEndian := !(s32 val) -> s32
 }
 
 FromBigEndian := !(@T x) -> T { return ToBigEndian(x) }
+ToOtherEndian := !(@T x) -> T { return ToBigEndian(x) }

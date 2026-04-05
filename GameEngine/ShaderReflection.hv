@@ -1,0 +1,94 @@
+
+ShaderReflectionLoader := class
+{
+	types := TypeId[]
+
+	BaseTypes := TypeId[int]
+	PointerTo := int[int]
+
+	Load := !(Stream^ blb) -> void
+	{
+		end := EndianStreamWrapper(blb)
+
+		magic := end.Read32()
+		version := end.Read32()
+		compiler := end.Read32()
+		bounds := end.Read32()
+		reserved := end.Read32()
+
+
+		printf("-----------------------\n")
+		printf("test %p\n",magic)
+		printf("test %p\n",version)
+		printf("test %p\n",compiler)
+		printf("test %p\n",bounds)
+		printf("test %p\n",reserved)
+
+		buf := char[256]
+
+		i := 0
+		while true
+		{
+			instr := end.Read32()
+
+			count := instr shr 16
+			instr = instr and_b 0xFFFF
+
+			switch instr
+			{
+			case 22 // OpTypeFloat
+				indx := end.Read32()
+				size := end.Read32()
+				switch size
+				{
+				case 32
+					BaseTypes[indx] = float
+				case void
+					assert(false)
+				}
+			case 23 // OpTypeVector
+				indx := end.Read32()
+				baseId := end.Read32()
+				count := end.Read32()
+
+				if BaseTypes.Contain(baseId)
+				{
+					baseType := BaseTypes[baseId]
+					assert(baseType == float)
+
+					switch count
+					{
+					case 2 BaseTypes[indx] = vec2f
+					case 3 BaseTypes[indx] = vec3f
+					case 4 BaseTypes[indx] = vec4f
+					case void assert(false)
+					}
+				}
+			case 6 // OpMemberName
+				stType := end.Read32()
+				indx := end.Read32()
+
+				stSize := count - 3
+				for j : stSize
+				{
+					buf&->{u32^}[j] = end.Read32()
+				}
+				buf&->{u32^}[stSize] = 0
+				printf("hoy %i %i <%s>\n",count,indx,buf[0]&)
+			case void
+				for j : (count - 1)
+					end.Read32()
+			}
+
+
+			if instr == 54 // OpFunction
+				break
+			i += 1
+		}
+	}
+}
+
+LoadShaderReflection := !(Stream^ blb) -> ShaderReflectionLoader
+{
+	result.Load(blb)
+}

@@ -54,4 +54,11 @@ EndianStreamWrapper := class
 		}
 		stream.Write(x&,4)
 	}
+
+	Read32 := !() -> u32
+	{
+		stream.Read(result&,4)
+		if SwapBytes
+			result = ToOtherEndian(result)
+	}
 }

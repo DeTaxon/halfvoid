@@ -27,7 +27,8 @@ VkInputTopology := enum
 {
 	"None", //for errors
 	"Triangles",
-	"Points"
+	"Points",
+	"TriangleStrip"
 }
 
 TShaderInput := class 
@@ -166,6 +167,8 @@ TShaderInput := class
 			paC1.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST
 		case "Triangles"
 			paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
+		case "TriangleStrip"
+			paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
 		}
 
 		stts := VkDynamicState[2]

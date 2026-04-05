@@ -32,6 +32,7 @@ GetFString := !(Token^ itm) -> BoxExeObj^
 
 			//TODO too many objs?
 			dwn := TryGetExeCall(iter.Down)
+			printf("wut  %p\n",dwn)
 
 			if dwn == null
 				return null
@@ -53,8 +54,13 @@ GetFString := !(Token^ itm) -> BoxExeObj^
 			}else if dwnType is in TypePoint {
 				newString[size++] = '%'
 				newString[size++] = 'p'
-			}else{
-				assert(false)
+			}else {
+				while dwn != null and dwn.GetType() != GTypeCharP
+					dwn = GetExchange2(dwn,GTypeCharP,false)
+				if dwn == null
+					return null
+				newString[size++] = '%'
+				newString[size++] = 's'
 			}
 
 			iter = iter.Right

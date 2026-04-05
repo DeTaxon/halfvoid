@@ -11,12 +11,12 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	// makeSpirv()
+	makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()
 	// ReflectionTest()
-	FStringTest()
+	// FStringTest()
 }
 
 
@@ -29,8 +29,11 @@ FStringTest := !() -> void
 	val4 := "asd"
 	kk := val4&
 
+	z := Str
+	z = "Bla"
+
 	printf("Hey %p\n",val4)
-	x := @"Test: <{val4}>"
+	x := @"Test: <{z}>"
 	printf("test %s\n",x)
 }
 
