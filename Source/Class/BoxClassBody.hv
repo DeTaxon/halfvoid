@@ -750,16 +750,29 @@ BoxClassBody := class extend BoxClassPoison
 							cnsts := Vector.{BoxExeConstObj^}
 							switch name
 							{
+								case "this"
+									SubWork(() ==> {
+										this.AwaitTypeState()
+
+										types := MakeVectorOnStack.{Type^,100}()
+
+										types.Push(this&)
+										for it,i : Fields
+											types.Push(it.Value)
+										fType := GetFuncType(types,GTypeVoid)
+										cnstrFunc := TemplateInternalTupleConstructor.CreateFunc(fType,![])
+										DefaultSpace.Methods[StringSpan("this")].Push(cnstrFunc)
+									})
 								case "="
 									setFunc = GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+									DefaultSpace.Methods[name].Push(setFunc)
 								case "<=>"
 									setFunc = GDefaultCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+									DefaultSpace.Methods[name].Push(setFunc)
 								case void
 									CurrentWork?.SetErrorMessage(itm.MakeError("unknown default operator"))
 									return void
 							}
-							assert(setFunc != null)
-							DefaultSpace.Methods[name].Push(setFunc)
 						}else {
 							exeObj := TryGetExeCall(itm)
 							if exeObj == null

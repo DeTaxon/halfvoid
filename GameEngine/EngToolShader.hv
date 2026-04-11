@@ -1,0 +1,128 @@
+
+AppendClass EngTools
+{
+	PushConstants := PushConstantMeta[]
+
+	DeltaTime := float
+	MousePosition := vec2f
+
+	InitPushConstants := !() -> void
+	{
+		PushConstants.Emplace("DeltaTime",float->{TypeId},DeltaTime&)
+		PushConstants.Emplace("MousePosition",vec2f->{TypeId},MousePosition&)
+	}
+
+	LoadComputeShader := !(Str path) -> WackyShader^
+	{
+		stream := FSGetFile(path).GetStream()
+		info := LoadShaderReflection(stream)
+
+		if shaderLayout == null
+		{
+			zeroPass = vk.CreateRenderPass(![],false)
+			tmp := TShaderInputVertexInfo
+			shaderLayout = zeroPass.CreateLayout(tmp,![new TComputeStorage()],![ new TComputePushConstant(128)])
+		}
+		result = new WackyShader
+		result.base = shadersDB.LoadComputeShader(vk,shaderLayout,path)
+
+		while true
+		{
+			if info.PushConstants.Size() != 1
+				break
+			tpId := info.PushConstants[0].0
+
+			if not info.PointerTo.Contain(tpId)
+				break
+			tpId = info.PointerTo[tpId].0
+
+
+			if not info.Structures.Contain(tpId)
+				break
+
+			
+
+			for it : info.Structures[tpId]
+			{
+				name := it.1
+
+				found := false
+				for cnst,i : PushConstants
+				{
+					if cnst.Name == name
+					{
+						found = true
+						result.pushConsts.Push(i)
+						break
+					}
+				}
+				printf("here <%s> %i\n",it.1,found)
+			}
+
+			break
+		}
+	}
+
+	ExecuteComputeShader := !(TVkCommandBuffer cmds,WackyShader^ shader,int dimX) -> void
+	{
+		constBuffer := u8[256]
+		resSize := populateConsts(constBuffer[0]&,shader)
+
+		vk.Funcs.vkCmdBindPipeline(cmds.Get(),VK_PIPELINE_BIND_POINT_COMPUTE,shader.base.itPipe)
+		vk.Funcs.vkCmdPushConstants(cmds.Get(),shader.base.itLayout,VK_SHADER_STAGE_COMPUTE_BIT,0,resSize,constBuffer&)
+		vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(), VK_PIPELINE_BIND_POINT_COMPUTE, shaderLayout.itLayout , 0, 1, desc&, 0, null);
+		vk.Funcs.vkCmdDispatch(cmds.Get(),dimX,1,1)
+	}
+
+	populateConsts := !(u8^ buf, WackyShader^ shader) -> int
+	{
+		written := int
+
+		for id : shader.pushConsts
+		{
+			info := ref PushConstants[id]
+
+			align := 0
+			size := 0
+
+			switch info.ItType
+			{
+			case float align = 4 size = 4
+			case vec2f align = 8 size = 8
+			case void assert(false)
+			}
+
+			if written mod align != 0
+				written += (align - (written mod align))
+
+			setPtr := buf[written]&
+			switch size
+			{
+			case 4 setPtr->{u32^}^ = info.Pointer->{u32^}^
+			case 8 setPtr->{u64^}^ = info.Pointer->{u64^}^
+			}
+			written += size
+		}
+		return written
+	}
+}
+
+PushConstantMeta := class
+{
+	Name := Str
+	ItType := TypeId
+	Pointer := void^
+
+	this := !(Str name, TypeId typ, void^ ptr) -> void
+	{
+		Name = name
+		ItType = typ
+		Pointer = ptr
+	}
+	"=" := default
+}
+WackyShader := class
+{
+	base := vShader^
+	pushConsts := int[]
+}

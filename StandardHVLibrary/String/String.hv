@@ -71,13 +71,6 @@ String := class extend StringView
 	NonNullStr := virtual !() -> char^ { return charPtr }
 }
 
-//"->{}" := !(TString^ st) .{char^} -> char^
-//{
-//	return st.Str()
-//}
-
-
-
 "->{}" := !(String st) .{char^} -> char^
 {
 	return st.Str()
@@ -107,4 +100,11 @@ StrConcat := !(args...) -> Str
 		echo << it
 	}
 	return echo.GetStr()
+}
+
+MakeStr := !(char^ ptr) -> Str
+{
+	if ptr == null
+		return ""
+	result->AsString = new String(ptr)
 }

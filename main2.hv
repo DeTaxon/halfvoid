@@ -11,12 +11,32 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	makeSpirv()
+	// makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()
 	// ReflectionTest()
 	// FStringTest()
+	tst := ClassA.{ClassB}
+	// tst.Emplace(int->{TypeId})
+	tst.Emplace(int)
+}
+
+ClassB := class
+{
+	this := !(TypeId test) -> void
+	{
+		printf("yep\n")
+	}
+}
+
+ClassA := class .{@T}
+{
+	Emplace := !(args...) -> void
+		#MimicInput(T.this)
+	{
+		c := ClassB(args...)
+	}
 }
 
 
@@ -77,6 +97,7 @@ ReflectionTest := !() -> void
 //	"GetArray",
 //)
 
+//TODO !(int size = -1) ,  -1 does not work as default value
 //TODO size_t comparation does not work in x86_64 toRead + redData > tstData.Size(), redData is int
 //TODO for it : Cls1->#ClassFamily , what if extends change for a class None->SomeClass, SomeClass1->SomeClass2
 //TODO closure api?

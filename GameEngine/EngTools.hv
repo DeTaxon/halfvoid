@@ -6,6 +6,7 @@ EngTools := class
 	
 	shadersDB := VulkanShaderLoader
 
+
 	Init := !() -> void
 	{
 		x := 800
@@ -17,5 +18,37 @@ EngTools := class
 		VulkanInit(window)
 
 		vk.CreateSwapchain(x,y)
+
+		InitPushConstants()
+	}
+
+
+	zeroPass := TRenderPass^
+	shaderLayout := TShaderInput^
+
+	vertStorage := TVkMemBuffer^
+
+	CreateStorageBuffer := !(Str name,int size,Str flags) -> void
+	{
+		vertStorage = vk.CreateMemBuffer(size,"vsr")
+	}
+
+	desc := VkDescriptorSet
+	Hack := !() -> void
+	{
+		pool := shaderLayout.CreateDescriptorPool(0,1)
+		desc = pool.CreateDescriptor()
+
+		f2 := VkDescriptorBufferInfo
+		f2.buffer = vertStorage.itBuffer
+		f2.range = vertStorage.gpuSize
+
+		setD := VkWriteDescriptorSet()
+		setD.dstSet = desc
+		setD.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+		setD.descriptorCount = 1
+		setD.pBufferInfo&->{void^^}^ = f2&
+
+		vk.Funcs.vkUpdateDescriptorSets(vk.LogicalDevice,1,setD&,0,null)
 	}
 }

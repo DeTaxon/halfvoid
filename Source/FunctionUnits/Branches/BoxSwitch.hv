@@ -78,8 +78,10 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 			}
 			thisCaseBlock = new BoxBlock(startNode)
 		}
+
+		caseVal := currentCase.Down.Right
 		
-		if currentCase.Down.Right is TokenIndent and currentCase.Down.Right->{TokenIndent^}.Value == "void"
+		if caseVal is TokenIndent and caseVal->{TokenIndent^}.Value == "void"
 		{
 			//todo if too much default cases
 			defaultNode = thisCaseBlock
@@ -87,7 +89,6 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 		}
 		checkRes := BoxExeObj^
 
-		caseVal := currentCase.Down.Right
 		caseCheckFuncName := StringSpan("==")
 		if caseVal.GetValue() == "in"
 		{
@@ -102,6 +103,14 @@ TryParseRegularSwitch := !(Token^ obj) -> BoxExeObj^
 			CurrentWork?.SetErrorMessage(currentCase.MakeError("Could not get case object"))
 			return void
 		}
+
+		if caseCheck == GObjNone
+		{
+			//todo if too much default cases
+			defaultNode = thisCaseBlock
+			return void
+		}
+
 		allConsts = false
 		baseObj := caseCheck
 

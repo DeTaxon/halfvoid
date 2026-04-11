@@ -1,10 +1,12 @@
 
 ShaderReflectionLoader := class
 {
-	types := TypeId[]
-
 	BaseTypes := TypeId[int]
-	PointerTo := int[int]
+	PointerTo := Tuple.{int,int}[int] // type of base, storage type
+	Structures := Tuple.{int,Str}[][int] // type of field, name of field
+
+	PushConstants := Tuple.{int,Str}[] // type of var, name
+	StorageBuffers := Tuple.{int,Str}[] // type of var, name
 
 	Load := !(Stream^ blb) -> void
 	{
@@ -17,14 +19,17 @@ ShaderReflectionLoader := class
 		reserved := end.Read32()
 
 
-		printf("-----------------------\n")
-		printf("test %p\n",magic)
-		printf("test %p\n",version)
-		printf("test %p\n",compiler)
-		printf("test %p\n",bounds)
-		printf("test %p\n",reserved)
+		//printf("-----------------------\n")
+		//printf("test %p\n",magic)
+		//printf("test %p\n",version)
+		//printf("test %p\n",compiler)
+		//printf("test %p\n",bounds)
+		//printf("test %p\n",reserved)
 
 		buf := char[256]
+
+		memberNames := Str[int][int]
+		defer memberNames.Destroy()
 
 		i := 0
 		while true
@@ -64,6 +69,28 @@ ShaderReflectionLoader := class
 					case void assert(false)
 					}
 				}
+			case 32 // OpTypePointer
+				indx := end.Read32()
+				classType := end.Read32()->{int}
+				baseId := end.Read32()->{int}
+				PointerTo[indx] = !{baseId,classType}
+			case 30 // OpTypeStruct
+				indx := end.Read32()
+
+				res := ref Structures[indx]
+
+				fieldsCount := count - 2
+				res.Resize(fieldsCount)
+				for i : fieldsCount
+				{
+					name := Str
+					name = ""
+					name = memberNames[indx]?[i]?
+
+					typeId := end.Read32()->{int}
+
+					res[i] = !{typeId,name}
+				}
 			case 6 // OpMemberName
 				stType := end.Read32()
 				indx := end.Read32()
@@ -74,7 +101,32 @@ ShaderReflectionLoader := class
 					buf&->{u32^}[j] = end.Read32()
 				}
 				buf&->{u32^}[stSize] = 0
-				printf("hoy %i %i <%s>\n",count,indx,buf[0]&)
+				memberNames[stType][indx] = MakeStr(buf[0]&)
+			case 59
+				itType := end.Read32()
+				indx := end.Read32()
+				storageType := end.Read32()
+
+				name := Str
+				name = ""
+
+				if count == 5
+					end.Read32() // initializer
+				switch storageType
+				{
+				case 0 // uniform constant
+				case 1 // Input
+				case 2 // Uniform
+				case 3 // output
+				case 4 // Workgroup
+				case 5 // CrossWorkgroup
+
+				case 9 // PushConstant
+					PushConstants.Emplace(itType,name)
+				case 12 // StorageBuffer
+					StorageBuffers.Emplace(itType,name)
+				}
+
 			case void
 				for j : (count - 1)
 					end.Read32()
