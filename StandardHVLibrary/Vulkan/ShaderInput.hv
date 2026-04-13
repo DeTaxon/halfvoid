@@ -26,9 +26,10 @@ TShaderInputVertexInfo := class
 VkInputTopology := enum
 {
 	"None", //for errors
+	"Dynamic",
 	"Triangles",
 	"Points",
-	"TriangleStrip"
+	"TriangleStrip",
 }
 
 TShaderInput := class 
@@ -171,12 +172,19 @@ TShaderInput := class
 			paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
 		}
 
-		stts := VkDynamicState[2]
+		stts := VkDynamicState[3]
+		dynamicStatesCount := 2
 		stts[0] = VK_DYNAMIC_STATE_VIEWPORT
 		stts[1] = VK_DYNAMIC_STATE_SCISSOR
 
+		if topology == "Dynamic"
+		{
+			dynamicStatesCount = 3
+			stts[2] = VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY
+		}
+
 		dins := VkPipelineDynamicStateCreateInfo()
-		dins.dynamicStateCount = 2
+		dins.dynamicStateCount = dynamicStatesCount
 		dins.pDynamicStates = stts[0]&
 
 		pVSC := VkPipelineViewportStateCreateInfo()

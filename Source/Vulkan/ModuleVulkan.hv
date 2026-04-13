@@ -160,6 +160,13 @@ ModuleVulkan := class extend ModuleInterface
 									offst += extNumber
 									offst += 1000000000
 
+									ext2 := asN2.Attrs.TryFind("extnumber")
+									if ext2 != null
+									{
+										offst -= extNumber
+										offst += ((ToInt(ext2^) - 1) * 1000)
+									}
+
 									if itDir != null offst = -offst
 									ItInts[itName^] = offst
 								}else{

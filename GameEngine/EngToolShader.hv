@@ -105,6 +105,34 @@ AppendClass EngTools
 		}
 		return written
 	}
+
+	testShaders := void^[2]
+
+	LoadShader2 := !() -> void
+	{
+		vert := FSGetFile("ShadersBin/test.vert").GetBlob()
+		frag := FSGetFile("ShadersBin/test.frag").GetBlob()
+
+		inf1 := VkShaderCreateInfoEXT()
+		inf1.flags = VK_SHADER_CREATE_LINK_STAGE_BIT_EXT
+		inf1.stage = VK_SHADER_STAGE_VERTEX_BIT
+		inf1.nextStage = VK_SHADER_STAGE_FRAGMENT_BIT
+		inf1.codeType = VK_SHADER_CODE_TYPE_SPIRV_EXT
+		inf1.codeSize = vert.Size()
+		inf1.pCode = vert.GetPointer()
+		inf1.pName = "main"
+
+		inf2 := VkShaderCreateInfoEXT()
+		inf2.flags = VK_SHADER_CREATE_LINK_STAGE_BIT_EXT
+		inf2.stage = VK_SHADER_STAGE_FRAGMENT_BIT
+		inf2.codeType = VK_SHADER_CODE_TYPE_SPIRV_EXT
+		inf2.codeSize = frag.Size()
+		inf2.pCode = frag.GetPointer()
+		inf2.pName = "main"
+
+		vk.Funcs.vkCreateShadersEXT(vkLogCard,1,inf1&,null,testShaders[0]&)
+		vk.Funcs.vkCreateShadersEXT(vkLogCard,1,inf2&,null,testShaders[1]&)
+	}
 }
 
 PushConstantMeta := class
@@ -125,4 +153,8 @@ WackyShader := class
 {
 	base := vShader^
 	pushConsts := int[]
+}
+WackyShader2 := class
+{
+
 }

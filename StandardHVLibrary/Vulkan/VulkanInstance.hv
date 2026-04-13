@@ -135,6 +135,10 @@ VulkanInstance := class
 		maintn4.maintenance4 = 1
 		pushIter(maintn4&)
 
+		shaderObject := VkPhysicalDeviceShaderObjectFeaturesEXT()
+		shaderObject.shaderObject = 1
+		pushIter(shaderObject&)
+
 
 		res11 := Funcs.vkCreateDevice(PhysicalDevice,logDevice&,null,LogicalDevice&)
 
