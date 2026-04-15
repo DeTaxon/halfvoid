@@ -56,7 +56,7 @@ AppendClass EngTools
 						break
 					}
 				}
-				printf("here <%s> %i\n",it.1,found)
+				// printf("here <%s> %i\n",it.1,found)
 			}
 
 			break
@@ -106,32 +106,70 @@ AppendClass EngTools
 		return written
 	}
 
-	testShaders := void^[2]
+	testShaders := WackyShader2^
 
-	LoadShader2 := !() -> void
+	subShaders := void^[Str]
+	getSubShader := !(Str path) -> void^
 	{
-		vert := FSGetFile("ShadersBin/test.vert").GetBlob()
-		frag := FSGetFile("ShadersBin/test.frag").GetBlob()
+		return subShaders[path]?
 
-		inf1 := VkShaderCreateInfoEXT()
-		inf1.flags = VK_SHADER_CREATE_LINK_STAGE_BIT_EXT
-		inf1.stage = VK_SHADER_STAGE_VERTEX_BIT
-		inf1.nextStage = VK_SHADER_STAGE_FRAGMENT_BIT
-		inf1.codeType = VK_SHADER_CODE_TYPE_SPIRV_EXT
-		inf1.codeSize = vert.Size()
-		inf1.pCode = vert.GetPointer()
-		inf1.pName = "main"
+		blob := FSGetFile(path).GetBlob()
+		defer delete blob
 
-		inf2 := VkShaderCreateInfoEXT()
-		inf2.flags = VK_SHADER_CREATE_LINK_STAGE_BIT_EXT
-		inf2.stage = VK_SHADER_STAGE_FRAGMENT_BIT
-		inf2.codeType = VK_SHADER_CODE_TYPE_SPIRV_EXT
-		inf2.codeSize = frag.Size()
-		inf2.pCode = frag.GetPointer()
-		inf2.pName = "main"
+		info := VkShaderCreateInfoEXT()
+		info.flags = VK_SHADER_CREATE_LINK_STAGE_BIT_EXT
+		info.codeType = VK_SHADER_CODE_TYPE_SPIRV_EXT
+		info.codeSize = blob.Size()
+		info.pCode = blob.GetPointer()
+		info.pName = "main"
 
-		vk.Funcs.vkCreateShadersEXT(vkLogCard,1,inf1&,null,testShaders[0]&)
-		vk.Funcs.vkCreateShadersEXT(vkLogCard,1,inf2&,null,testShaders[1]&)
+		switch path.End
+		{
+		case ".vert"
+			info.stage = VK_SHADER_STAGE_VERTEX_BIT
+			info.nextStage = VK_SHADER_STAGE_FRAGMENT_BIT
+		case ".frag"
+			info.stage = VK_SHADER_STAGE_FRAGMENT_BIT
+			info.nextStage = 0
+		case none
+			assert(false)
+		}
+
+		vk.Funcs.vkCreateShadersEXT(vkLogCard,1,info&,null,result&)
+		subShaders[path] = result
+
+	}
+
+	fullShaders := WackyShader2^[Str]
+	LoadShader2 := !(Str path) -> WackyShader2^
+	{
+		jsonFile := FSGetFile(path)
+		dat := jsonFile.GetBlob()
+		defer delete dat
+
+		js := Json
+		js.ParseString(dat.GetPointer()->{char^},dat.Size())
+
+		result = new WackyShader2
+
+		for nd , nodeName : js
+		{
+			echo := TEchoStream
+			echo << "ShadersBin/" << nd.Value()
+			st := echo.GetStr()
+
+			defer echo.Destroy()
+
+			switch nodeName
+			{
+				case "vertex"
+					result.VertShader = getSubShader(st)
+				case "fragment"
+					result.FragShader = getSubShader(st)
+			}
+		}
+
+		testShaders = result
 	}
 }
 
@@ -156,5 +194,7 @@ WackyShader := class
 }
 WackyShader2 := class
 {
-
+	VertShader := void^
+	FragShader := void^
+	GeometryShader := void^
 }
