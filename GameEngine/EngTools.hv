@@ -2,7 +2,7 @@
 
 EngTools := class
 {
-	window := TWindow^
+	window := Window^
 	
 	shadersDB := VulkanShaderLoader
 
@@ -12,7 +12,7 @@ EngTools := class
 		x := 800
 		y := 800
 
-		window = new TWindow
+		window = new Window
 		window.Init(x,y,"Pixels",true)
 
 		VulkanInit(window)

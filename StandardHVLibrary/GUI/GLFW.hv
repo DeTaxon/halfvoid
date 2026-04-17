@@ -13,6 +13,9 @@ GLFWWindow := class
 	MouseX := int
 	MouseY := int
 
+	MousePosition := vec2f
+	WindowSize := vec2f
+
 	Init := !(int x, int y,char^ title, bool noApi) -> void
 	{
 		glfwSetErrorCallback(glfwErrorCB)
@@ -20,6 +23,9 @@ GLFWWindow := class
 
 		Width = x
 		Height = y
+
+		WindowSize.x = x
+		WindowSize.y = y
 
 		if noApi
 		{
@@ -71,6 +77,9 @@ GLFWWindow := class
 	{
 		MouseX = x
 		MouseY = y
+
+		MousePosition.x = x
+		MousePosition.y = y
 
 		MouseMoved(x,y)
 	}

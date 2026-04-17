@@ -171,6 +171,12 @@ AppendClass EngTools
 
 		testShaders = result
 	}
+
+	PrepareConstants := !(double delta) -> void
+	{
+		DeltaTime = delta
+		MousePosition = window.MousePosition / window.WindowSize
+	}
 }
 
 PushConstantMeta := class
