@@ -17,9 +17,11 @@ RunFunc := !() -> void
 	// OpusTest()
 	// ReflectionTest()
 	// FStringTest()
-	tst := ClassA.{ClassB}
-	// tst.Emplace(int->{TypeId})
-	tst.Emplace(int)
+	ClosureTest()
+	
+	//tst := ClassA.{ClassB}
+	//// tst.Emplace(int->{TypeId})
+	//tst.Emplace(int)
 }
 
 ClassB := class
