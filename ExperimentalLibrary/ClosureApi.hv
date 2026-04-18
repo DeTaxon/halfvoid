@@ -59,7 +59,7 @@ ClosureTest := !() -> void
 
 	test := ctx.CreateClosure(like_printf)->{!(char^,...)^->int}
 
-	assert(false)
+	// assert(false)
 	c := test("hello %i %i\n",6,12)
 	printf("res %i\n",c)
 }

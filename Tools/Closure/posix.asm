@@ -1,6 +1,7 @@
 .text
 _start:
 	push %rbp
+	mov %rsp,%rbp
 	sub $240,%rsp
 	movaps %xmm7,-16(%rbp)
 	movaps %xmm6,-32(%rbp)
@@ -44,7 +45,7 @@ _start:
 	mov -208(%rbp),%rax
 	movaps -224(%rbp),%xmm0
 
-	add 240,%rsp
+	add $240,%rsp
 	pop %rbp
 	ret
 
@@ -69,6 +70,6 @@ tail_call:
 
 	mov -240(%rbp),%rax
 
-	add 240,%rsp
+	add $240,%rsp
 	pop %rbp
 	jmp *%r11
