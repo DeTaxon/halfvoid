@@ -1,0 +1,104 @@
+
+
+ClosureTests := !() -> void
+	#Mark("UnitTest")
+{
+	ctx := CreateClosureContext()
+
+	testRetInt := ctx.CreateClosure(closure_ret_int,printf)->{!()^->int}
+	assert(testRetInt() == 62471)
+
+	testRetFloat := ctx.CreateClosure(closure_ret_float,null)->{!()^->float}
+	assert(testRetFloat() == 3.5)
+
+	testPass := ctx.CreateClosure(closure_pass,null)->{!(int,int)^->int}
+	assert(testPass(3,16) == 19)
+
+	testManyArgs1 := ctx.CreateClosure(test_closure_many_args_1,null)->{!(int,int,...)^->double}
+
+	assert(testManyArgs1(3,0, 1,2,3) == 6)
+	assert(testManyArgs1(0,3, 1.0,2.0,3.0) == 6.0)
+
+	testManyArgs2 := ctx.CreateClosure(test_closure_many_args_2,null)->{!(int,float,...)^->double}
+	assert(testManyArgs2(3,4.0,0.5,vec4f(5.0,6.0,8.0,3.0),1.0,2.0,3.0,4.0,5.0,6.0,vec4f(0.0,13.0,0.0,8.0),vec2f(3.0,2.0)) == 76.5)
+}
+
+
+closure_ret_int := !(s64^ retInt,void^ retFloat,va_list^ lst, void^ magic) -> void^
+{
+	assert(magic == printf)
+
+	retInt^ = 62471
+}
+
+closure_ret_float := !(s64^ retInt,float^ retFloat) -> void^
+{
+	retFloat^ = 3.5
+}
+
+test_closure_add := !(int x,int y) -> int
+{
+	return x + y
+}
+
+closure_pass := !() -> void^
+{
+	return test_closure_add
+}
+
+test_closure_many_args_1 := !(s64^ retInt,double^ retFloat,ClosureArgsList^ lst) -> void^
+{
+	intsCount := lst.GetInt()->{int}
+	doublesCount := lst.GetInt()->{int}
+
+	va := va_list
+	ClosureArgsToVaList(va&,lst)
+
+	sum := double
+
+	for i : intsCount
+	{
+		sum += va_arg(va&).{int}
+	}
+	for i : doublesCount
+	{
+		sum += va_arg(va&).{double}
+	}
+
+	retFloat^ = sum
+}
+test_closure_many_args_2 := !(s64^ retInt,double^ retFloat,ClosureArgsList^ lst) -> void^
+{
+	sum := double
+
+	sum += lst.GetInt()
+	sum += lst.GetFloat()
+
+	va := va_list
+	ClosureArgsToVaList(va&,lst)
+
+	sum += va_arg(va&).{float}
+
+	v := va_arg(va&).{vec4f}
+
+	sum += v.x
+	sum += v.y
+	sum += v.z
+	sum += v.w
+
+	for 6
+		sum += va_arg(va&).{double}
+
+	v = va_arg(va&).{vec4f}
+
+	sum += v.x
+	sum += v.y
+	sum += v.z
+	sum += v.w
+
+	v2 := va_arg(va&).{vec2f}
+	sum += v2.x
+	sum += v2.y
+
+	retFloat^ = sum
+}
