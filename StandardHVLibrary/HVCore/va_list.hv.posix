@@ -31,10 +31,8 @@ vaListLoadInt := !(va_list^ va) -> size_t
 		va.stackArea = va.stackArea[8]&
 	}
 }
-vaListLoadFloat := !(va_list^ va) -> double
-{
-	return vaListLoadFloatFamily.{double}(va)
-}
+vaListLoadFloat := !(va_list^ va) -> double { return vaListLoadFloatFamily.{double}(va) }
+
 vaListLoadFloatFamily := !(va_list^ va) .{@T} -> T
 {
 	if va.floatOffset < 176
@@ -45,5 +43,16 @@ vaListLoadFloatFamily := !(va_list^ va) .{@T} -> T
 		result = va.stackArea->{T^}^
 		va.stackArea = va.stackArea[8]&
 	}
+}
 
+vaListLoadVec4f := !(va_list^ va) -> vec4f
+{
+	if va.floatOffset < 176
+	{
+		result = va.regArea[va.floatOffset]&->{vec4f^}^
+		va.floatOffset += 16
+	}else{
+		result = va.stackArea->{vec4f^^}^^
+		va.stackArea = va.stackArea[8]&
+	}
 }

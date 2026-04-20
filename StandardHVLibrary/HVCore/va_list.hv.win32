@@ -11,3 +11,8 @@ vaListLoadFloat := !(va_list^ va) -> double
 	result = va->{double^^}^^
 	va->{size_t^}^ += void^->TypeSize
 }
+vaListLoadVec4f := !(va_list^ va) -> vec4f
+{
+	result = va->{vec4f^^^}^^^
+	va->{size_t^}^ += void^->TypeSize
+}
