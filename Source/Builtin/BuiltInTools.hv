@@ -224,6 +224,11 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 		if consts[0] is not in Type
 			return null
 
+		tp := consts[0]->{Type^}
+
+		if not tp.IsInt() and not IsFloat(tp) and not tp.IsVector() and tp is not in TypePoint
+			return null
+
 
 		return GetFuncType(![GTypeVoidP],consts[0]->{Type^})
 		
@@ -261,6 +266,10 @@ BuiltInVaArgTemplate := class extend BoxFuncTemplate
 
 				return callGetFloat?
 
+			} else if getType.IsVector() {
+				callGetVec4f := CreateFuncCall("vaListLoadVecFamily",objs,![getType])
+				assert(callGetVec4f != null)
+				return callGetVec4f?
 			}else {
 				assert(false)
 			}
@@ -313,6 +322,6 @@ CreateBuildInTools := !() -> void
 
 	bSpace.Functions["va_start"].Push(new BuiltInLLVMProxy("@llvm.va_start",GetFuncType(![GTypeVoidP],GTypeVoid)))
 	bSpace.Functions["va_end"].Push(new BuiltInLLVMProxy("@llvm.va_end",GetFuncType(![GTypeVoidP],GTypeVoid)))
-	bSpace.Functions["va_copy"].Push(new BuiltInLLVMProxy("@llvm.va_copy",GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeVoid)))
+	// bSpace.Functions["va_copy"].Push(new BuiltInLLVMProxy("@llvm.va_copy",GetFuncType(![GTypeVoidP,GTypeVoidP],GTypeVoid)))
 	bSpace.Templates["va_arg"].Push(new BuiltInVaArgTemplate)
 }

@@ -41,18 +41,30 @@ vaListLoadFloatFamily := !(va_list^ va) .{@T} -> T
 		va.floatOffset += 16
 	}else{
 		result = va.stackArea->{T^}^
-		va.stackArea = va.stackArea[8]&
+		va.stackArea = va.stackArea[void^->TypeSize]&
 	}
 }
 
-vaListLoadVec4f := !(va_list^ va) -> vec4f
+vaListLoadVecFamily := !(va_list^ va) .{@T} -> T
 {
 	if va.floatOffset < 176
 	{
-		result = va.regArea[va.floatOffset]&->{vec4f^}^
+		result = va.regArea[va.floatOffset]&->{T^}^
 		va.floatOffset += 16
 	}else{
-		result = va.stackArea->{vec4f^^}^^
-		va.stackArea = va.stackArea[8]&
+		if T->TypeSize <= 8
+		{
+			result = va.stackArea->{T^}^
+			va.stackArea = va.stackArea[8]&
+		}else{
+
+			c := va.stackArea->{size_t} mod 16 
+			if c != 0
+			{
+				va.stackArea&->{size_t^}^ += (16 - c)
+			}
+			result = va.stackArea->{T^}^
+			va.stackArea = va.stackArea[16]&
+		}
 	}
 }
