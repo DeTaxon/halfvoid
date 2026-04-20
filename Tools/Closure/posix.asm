@@ -39,7 +39,7 @@ _start:
 	movq $0x1234567887654321,%rcx
 	call *%r11
 
-	test $0,%rax
+	cmp $0,%rax
 	jne tail_call
 
 	mov -208(%rbp),%rax

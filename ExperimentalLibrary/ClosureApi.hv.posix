@@ -1,0 +1,11 @@
+ClosureArgsList := class extends va_list
+{
+	GetPtr := !() -> size_t { return vaListLoadInt(this&->{va_list^}) }
+	GetInt := !() -> size_t { return vaListLoadInt(this&->{va_list^}) }
+	GetFloat := !() -> float { return vaListLoadFloatFamily.{float}(this&) }
+	GetDouble := !() -> double { return vaListLoadFloatFamily.{double}(this&) }
+	GetVec := !() -> vec { return vaListLoadFloatFamily.{vec4f}(this&) }
+}
+
+ClosureArgsToVaList := !(va_list^ lst,ClosureArgsList^ args) -> void { va_copy(lst,args) }
+

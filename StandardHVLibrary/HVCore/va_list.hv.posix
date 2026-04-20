@@ -5,12 +5,18 @@ va_list := class
 	floatOffset := int
 	stackArea := u8^
 	regArea := u8^
+
+	"=" := default
 }
 
 va_list_registers := class
 {
 	ints := s64[6]
 	floats := vec4f[8]
+}
+va_copy := !(va_list^ dst, va_list^ src) -> void
+{
+	dst^ = src^
 }
 
 
@@ -27,12 +33,17 @@ vaListLoadInt := !(va_list^ va) -> size_t
 }
 vaListLoadFloat := !(va_list^ va) -> double
 {
+	return vaListLoadFloatFamily.{double}(va)
+}
+vaListLoadFloatFamily := !(va_list^ va) .{@T} -> T
+{
 	if va.floatOffset < 176
 	{
-		result = va.regArea[va.floatOffset]&->{double^}^
+		result = va.regArea[va.floatOffset]&->{T^}^
 		va.floatOffset += 16
 	}else{
-		result = va.stackArea->{double^}^
+		result = va.stackArea->{T^}^
 		va.stackArea = va.stackArea[8]&
 	}
+
 }

@@ -119,6 +119,7 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 				}else if vr.opcode == "clob_str"{
 					clobObjs.Push(vr.var1)
 				}else{
+					printf("wut %s %s\n",vr.opcode.ToCStr(),fnc.BaseFunction->{BoxFuncBody^}.OutputName)
 					assert(false)
 				}
 				i += 1

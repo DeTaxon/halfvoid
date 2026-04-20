@@ -11,7 +11,7 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction->{BoxFuncBody^}
 
-	needPrint := base->{BoxFuncBody^}.OutputName == "NormalizeFuncTypeasd"
+	needPrint := false // base->{BoxFuncBody^}.OutputName == "CallFunctionPtr"
 	//needPrint = true
 	//needPrint = false
 

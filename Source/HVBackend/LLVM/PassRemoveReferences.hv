@@ -74,9 +74,10 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 		vars[id] = result
 	}
 
-	for lin : fnc.Lines
+	ii := 0
+	while ii < fnc.Lines.Size()
 	{
-		line := lin
+		line := ref fnc.Lines[ii]
 
 		isRetObj := tbl.Contain(line.opcode) or line.opcode == "mov"
 
@@ -96,21 +97,38 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 			if isRetObj
 				inIndx = 1
 
-			for i : inIndx..4
+			subSize := 1
+
+			if line.opcode == "asm_start"
 			{
-				if not IsOpcodeUsesVar(line.opcode,i)
-					continue
-				v := line.var1&[i]
-				if oPtr[v] is MCReference
+				while fnc.Lines[ii + subSize].opcode != "asm_end"
+					subSize += 1
+				subSize += 1
+			}
+
+			for j : subSize
+			{
+				line := ref fnc.Lines[ii + j]
+
+				for i : inIndx..4
 				{
-					v2 := grd.PushConstVar(oPtr[v].GetType())
-					v3 := grd.PushConstVar(oPtr[v].GetType())
-					cPtr[c++] = MCLine("load",v2,getVar(v))
-					line.var1&[i] = v2
+					if not IsOpcodeUsesVar(line.opcode,i)
+						continue
+					v := line.var1&[i]
+					if oPtr[v] is MCReference
+					{
+						v2 := grd.PushConstVar(oPtr[v].GetType())
+						v3 := grd.PushConstVar(oPtr[v].GetType())
+						cPtr[c++] = MCLine("load",v2,getVar(v))
+						line.var1&[i] = v2
+					}
 				}
 			}
 
-			cPtr[c++] = line
+			for j : subSize
+				cPtr[c++] = fnc.Lines[ii + j]
+
+			ii += subSize - 1
 
 		}
 		if line.opcode == "get_field_ptr" or line.opcode == "get_array_elem_ptr"
@@ -130,7 +148,7 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c++] = MCLine("store",retPtr,v2)
 			}
 		}
-		
+		ii += 1
 	}
 
 	return grd.GenerateFunc()

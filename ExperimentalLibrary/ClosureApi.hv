@@ -11,15 +11,17 @@ ClosureContext := class
 {
 	closureBlob := Blob^
 	offsetToPointer := int
+	offsetToUserData := int
 
 	allocator := AllocateOnly
 
-	CreateClosure := !(void^ callFunc) -> void^
+	CreateClosure := !(void^ callFunc,void^ userData) -> void^
 	{
 		ptr := allocator.AllocMem(closureBlob.Size())
 
 		memcpy(ptr,closureBlob.GetPointer(),closureBlob.Size())
 		ptr->{u8^}[offsetToPointer]&->{void^^}^ = callFunc
+		ptr->{u8^}[offsetToUserData]&->{void^^}^ = userData
 
 		return ptr
 	}
@@ -34,7 +36,7 @@ CreateClosureContext := !() -> ClosureContext^
 	result.closureBlob = #File("closure.bin").GetBlob()
 
 	magicWord := 0x8765432112345678->{void^}
-	// magicWord := 0x1234567887654321->{void^}
+	userMagicWord := 0x1234567887654321->{void^}
 
 	ptr := result.closureBlob.GetPointer()->{u8^}
 	i := result.closureBlob.Size() - 8
@@ -45,26 +47,13 @@ CreateClosureContext := !() -> ClosureContext^
 		if val == magicWord
 		{
 			result.offsetToPointer = i
-			break
+		}
+		if val == userMagicWord
+		{
+			result.offsetToUserData = i
 		}
 		
 		i -= 1
 	}
-
 }
 
-ClosureTest := !() -> void
-{
-	ctx := CreateClosureContext()
-
-	test := ctx.CreateClosure(like_printf)->{!(char^,...)^->int}
-
-	// assert(false)
-	c := test("hello %i %i\n",6,12)
-	printf("res %i\n",c)
-}
-
-like_printf := !(void^ retInt,void^ retFloat,va_list^ lst, u64 magic ) -> void^
-{
-	printf("mag %p\n",magic)
-}
