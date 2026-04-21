@@ -1,0 +1,42 @@
+ClosureArgsList := class extends va_list
+{
+	CurrentIndex := u64
+	StackPtr := u8^
+	RegsPtr := u8^
+
+	GetPtr := !() -> void^
+	{
+		if CurrentIndex <= 3
+		{
+			return RegsPtr->{size_t^}[CurrentIndex++]
+		}else{
+			return StackPtr->{size_t^}[CurrentIndex++]
+		}
+	}
+	GetInt := !() -> size_t { return GetPtr() }
+
+	GetFloat := !() -> float { return getFloatFamily.{float}() }
+	GetDouble := !() -> double { return getFloatFamily.{double}() }
+
+	getFloatFamily := !() .{@T} -> T 
+	{
+		if CurrentIndex <= 3
+		{
+			return RegsPtr->{T^}[CurrentIndex++ + 4]
+		}else{
+			return StackPtr->{T^}[CurrentIndex++]
+		}
+	}
+
+	GetVec := !() -> vec4f { return GetPtr()->{vec4f^}^ }
+	}
+}
+
+ClosureArgsToVaList := !(va_list^ lst,ClosureArgsList^ args) -> void
+{
+	for i : args.CurrentIndex..3
+		args.StackPtr->{size_t^}[i] = args.RegsPtr->{size_t^}[i]
+
+	lst^ = args.StackPtr[args.CurrentIndex]&
+}
+
