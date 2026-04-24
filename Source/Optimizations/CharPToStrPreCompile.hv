@@ -9,7 +9,7 @@ CarPToStrPreCompile := !() -> void
 	if extraFieldClass == null
 		return void
 
-	expFuncType := GetFuncType(![GTypeChar.GetPoint(),extraFieldClass.ItType],![false,true],GTypeStr,false)
+	expFuncType := GetFuncType(![GTypeChar.GetPoint(),extraFieldClass],![false,true],GTypeStr,false)
 
 	changeFunc := BoxFuncBody^
 	GetItemGlobal("->{}", objs ==> {

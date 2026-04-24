@@ -7,7 +7,7 @@ ClassFamilyMeta := class extends BoxMetaObj
 	MetaIteretableSize := virtual !() -> int { return family.Size() }
 
 	GetMetaIterValueVar := virtual !(int ind) -> LocalVar^  { return null }
-	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ { return family[ind].ItType }
+	GetMetaIterValue := virtual !(int ind) -> BoxUnit^ { return family[ind] }
 
 	GetMetaIterIndex := virtual !(int ind) -> BoxExeObj^ { return null }
 

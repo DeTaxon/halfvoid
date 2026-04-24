@@ -359,7 +359,7 @@ NormalizeFuncType := !(TypeFunc^ inp) -> TypeFunc^
 				typs2.Push(it.ItType)
 			}
 		}
-		resType = GetTuple(typs2).ItType
+		resType = GetTuple(typs2)
 	}
 
 	k := 0

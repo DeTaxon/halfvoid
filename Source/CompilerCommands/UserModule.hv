@@ -81,7 +81,7 @@ UserModule := class
 
 
 			bodyClass.AwaitReadyState()
-			resType := bodyClass.ItType
+			resType := bodyClass->{Type^}
 			tmpl := intGetTemplate("internalHVCreateBase")
 			assert(tmpl != null)
 			b := Vector.{BoxExeObj^}

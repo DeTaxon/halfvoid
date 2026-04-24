@@ -92,7 +92,7 @@ TryGetCommand := !(Token^ itm) -> BoxExeObj^
 			CurrentWork?.SetErrorMessage(itm.MakeError("Command is not in class"))
 			return null
 		}
-		return itrScope->{BoxClass^}.ItType
+		return itrScope->{BoxClass^}
 	}
 
 	if cmd == "#CompileAnyLine" or cmd == "#TryCompileAnyLine" or cmd == "#TryCompile"

@@ -42,7 +42,7 @@ HVClassImpl := class extend HV_Class
 	}
 	GetType := virtual !() -> HV_Object^ 
 	{
-		return baseClass.ItType
+		return baseClass
 	}
 	AddMethod := virtual !(Str funcName,HV_Object^ fncObj) -> void
 	{

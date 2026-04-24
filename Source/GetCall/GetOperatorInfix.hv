@@ -320,12 +320,12 @@ innerTryGetInfixCall := !(StringSpan oper,Vector.{BoxExeObj^} lst,Token^ errToke
 
 		hldr := tmpList[0]->{BoxArrayHolder^}
 
-		enumArray := hldr.createUse(tmpList[1].GetType())
+		enumArray := hldr.createUse(tmpList[1].GetType())->{Type^}
 
 		if enumArray != null
 		{
-			vecType := GVectorTemplate.GetClass(![en.ItType])
-			enumAsVector := GetExchange(enumArray,vecType.ItType)
+			vecType := GVectorTemplate.GetClass(![en->{Type^}])
+			enumAsVector := GetExchange(enumArray,vecType)
 			return innerTryGetMethodCall(oper,enumAsVector,![tmpList[1]],![])
 		}
 	}

@@ -21,9 +21,9 @@ InitInternalsTypes := !() -> void
 
 	GBlobClass = intGetClass2("Blob")
 	assert(GBlobClass != null)
-	GBlobType = GBlobClass.ItType
+	GBlobType = GBlobClass
 
-	GRepoFileType = intGetClass2("File").ItType
+	GRepoFileType = intGetClass2("File")
 
 	GVectorTemplate = intGetClassTemplate("Vector")
 }

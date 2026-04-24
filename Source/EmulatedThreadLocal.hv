@@ -26,11 +26,11 @@ TLSStep := !() -> void
 
 	tlsTuple := GetTuple(tlsTypes)
 
-	TLSSize = tlsTuple.ItType.GetSize()
+	TLSSize = tlsTuple.GetSize()
 
 	mpty := CheckExeDownList
 	getPtr := CreateFuncCall(StringSpan("internalGetTLSVar"),mpty)
-	varGet := GetExchange2(getPtr,tlsTuple.ItType.GetPoint(),false)
+	varGet := GetExchange2(getPtr,tlsTuple.GetPoint(),false)
 
 	for it,i : tlsVars
 	{

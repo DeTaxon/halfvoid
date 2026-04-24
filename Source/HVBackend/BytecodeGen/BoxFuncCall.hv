@@ -80,7 +80,7 @@ AppendClass BoxFuncCall
 				if dwnType is not in TypeClass
 					clsType = clsType.Base->{TypeClass^}
 				assert(clsType != null and clsType is in TypeClass)
-				vTableType := clsType.ToClass->{BoxClassBody^}.VTableType.ItType
+				vTableType := clsType.ToClass->{BoxClassBody^}.VTableType
 
 				assert(clsType is in TypeClass)
 				//if (vTableType->{TypeClass^}.ToClass.GetFieldByIndexRaw(vCall.funcIndex) == null) {

@@ -3,7 +3,6 @@ AppendClass BoxClass
 	ToClass := BoxClass^
 	InitType := !() -> void
 	{
-		ItType = this&
 		MetaId = ItId
 		ToClass = this&
 

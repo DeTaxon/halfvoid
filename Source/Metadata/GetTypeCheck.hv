@@ -151,9 +151,9 @@ IsSameTypeChecker := class extend BoxExeObj
 
 		f^ <<", i32 0, i32 0\n"
 		f^ << "%TVTable" << resId << " = load "
-		vTableType.ItType.PrintType(ctx)
+		vTableType.PrintType(ctx)
 		f^ << "* , "
-		vTableType.ItType.PrintType(ctx)
+		vTableType.PrintType(ctx)
 		f^ << "** %TPtr" << resId
 
 		if DebugMode
@@ -161,14 +161,14 @@ IsSameTypeChecker := class extend BoxExeObj
 		f^ << "\n"
 
 		f^ << "%TPre" << resId << " = bitcast "
-		vTableType.ItType.PrintType(ctx)
+		vTableType.PrintType(ctx)
 		f^ << "* %TVTable" << resId << " to "
-		TargetType.ToClass.VTableType.ItType.PrintType(ctx)
+		TargetType.ToClass.VTableType.PrintType(ctx)
 		f^ << "*"
 		f^ << "\n"
 
 		f^ << "%TVal" << resId << " = icmp eq "
-		TargetType.ToClass.VTableType.ItType.PrintType(ctx)
+		TargetType.ToClass.VTableType.PrintType(ctx)
 		f^ << "* %TPre" << resId << " , "
 		TargetType.ToClass.VTableValue.PrintOutputName(ctx)
 		f^ << "\n"

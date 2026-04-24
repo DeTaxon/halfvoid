@@ -748,6 +748,7 @@ BoxClassBody := class extend BoxClassPoison
 
 							setFunc := BoxFunc^
 							cnsts := Vector.{BoxExeConstObj^}
+							ItType := this&->{Type^}
 							switch name
 							{
 								case "this"

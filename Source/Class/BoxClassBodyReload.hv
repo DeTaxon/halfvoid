@@ -8,7 +8,7 @@ AppendClass BoxClassBody
 
 		oldSize := 0
 		if FieldsState.IsEmitted() 
-			oldSize = ItType.GetSize()
+			oldSize = GetSize()
 
 		thisWork = null
 		FieldsState.Reset()
@@ -83,7 +83,7 @@ AppendClass BoxClassBody
 			return void
 		}
 
-		newSize := ItType.GetSize()
+		newSize := GetSize()
 		newHash := GetMemStructureHash()
 
 		if newSize != oldSize
@@ -152,7 +152,7 @@ AppendClass BoxClassBody
 		hs := Crc32
 		for it : Parents
 		{
-			th := it.ItType.ItHash
+			th := it.ItHash
 			hs.Feed(th&,4)
 		}
 		for it : Fields

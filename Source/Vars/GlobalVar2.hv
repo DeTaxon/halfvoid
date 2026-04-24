@@ -282,8 +282,8 @@ GlobalVar2 := class extend BoxUnit
 		}
 		createConstTypeClass2(dwn,cls)
 
-		dwn.ItType = cls.ItType
-		dwn.ObjType = cls.ItType
+		dwn.ItType = cls
+		dwn.ObjType = cls
 		return dwn
 	}
 	createConstTypeClass2 := !(ClassConstValue^ dwn,BoxClass^ cls) -> void

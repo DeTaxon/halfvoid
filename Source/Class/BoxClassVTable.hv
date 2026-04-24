@@ -26,7 +26,7 @@ AppendClass BoxClass
 	{
 		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
 		{
-			VTableId = TypeIdFromType(ItType)
+			VTableId = TypeIdFromType(this&)
 
 			arrHolder := BoxArrayHolder(GTypeInt,true,null)
 			GetVTableIds(arrHolder)
@@ -127,19 +127,19 @@ AppendClass BoxClass
 		}
 
 		VTableType.StartParseBody()
-		VTableValue = new GlobalVar2("",VTableType.ItType,false)
+		VTableValue = new GlobalVar2("",VTableType,false)
 
 		VirtualTables.Add(this&,VTableValue)
 		
 		cnst := new ClassConstValue
-		cnst.ItType = VTableType.ItType
+		cnst.ItType = VTableType
 
 		for it : VTable
 		{
 			cnst.Value.Push(it.GetConst())
 		}
 		VTableValue.value = cnst
-		VTableField = new FieldPathAbs(ItType,VTableType.ItType.GetPoint())
+		VTableField = new FieldPathAbs(this&,VTableType.GetPoint())
 	}
 
 	GetFieldInVTable := virtual !(Str val) -> BoxFunc^
@@ -152,7 +152,7 @@ AppendClass BoxClass
 				and it->{VTableVar^}.Name == val
 			{
 				asVar := it->{VTableVar^}
-				res := TemplateInternalGetVTableVariable.CreateFunc(GetFuncType(1,![ItType][0]&,![true][0]&,asVar.GetType(),true,false), ![GetExeInt(i)])
+				res := TemplateInternalGetVTableVariable.CreateFunc(GetFuncType(1,![this&->{Type^}][0]&,![true][0]&,asVar.GetType(),true,false), ![GetExeInt(i)])
 				return res
 			}
 		}

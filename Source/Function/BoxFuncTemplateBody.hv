@@ -138,7 +138,7 @@ BoxFuncTemplateBody := class extend BoxFuncTemplate
 			if CurrentScope is in BoxClass //TODO allow static functions
 			{
 				cls := CurrentScope->{BoxClass^}
-				hData.Types.Emplace(StringSpan("this"),cls.ItType,true,null->{Token^})
+				hData.Types.Emplace(StringSpan("this"),cls,true,null->{Token^})
 				Attrs.IsMethod = true
 			}
 		}

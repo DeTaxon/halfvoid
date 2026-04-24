@@ -216,7 +216,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 				cls := unroll.BaseClass
 
 				extraObjs := CheckExeDownList
-				dummyThis := DummyThis(cls.ItType)
+				dummyThis := DummyThis(cls)
 
 				extraObjs.Push(dummyThis&)
 				extraObjs.Push(Objs[^])

@@ -27,7 +27,7 @@ AppendClass BoxFuncBody
 
 		tpl := GetYieldTuple()
 		cnsts := List.{BoxExeConstObj^}
-		cnsts.Push(tpl.ItType)
+		cnsts.Push(tpl)
 
 		locVarThis := Params[0]
 		skipedVars := 0
@@ -43,7 +43,7 @@ AppendClass BoxFuncBody
 			tp := it.GetBaseType()
 			pth := tpl.GetFieldByIndex(i - skipedVars)
 
-			asCls := GetExchange2(locVarThis.CreateVarCall(),lambdaClass.ItType.GetPoint(),false)
+			asCls := GetExchange2(locVarThis.CreateVarCall(),lambdaClass.GetPoint(),false)
 
 			Objs2 := CheckExeDownList
 			Objs2.Push(asCls)

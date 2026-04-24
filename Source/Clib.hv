@@ -179,7 +179,7 @@ CLib := class extend ModuleInterface
 		AllClasses.Push(newStruct)
 		newStruct.FinilizeCreation()
 
-		return newStruct.ItType
+		return newStruct
 	}
 	innerGetFunc := !(Str name) -> BoxUnit^
 	{

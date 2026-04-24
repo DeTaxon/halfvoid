@@ -728,8 +728,8 @@ TypeFight := !(Type^ a, Type^ b) -> Type^
 
 	if a is in TypeClass and b is in TypeClass
 	{
-		ac := a->{TypeClass^}.ToClass
-		bc := b->{TypeClass^}.ToClass
+		ac := a->{TypeClass^}
+		bc := b->{TypeClass^}
 		ac.AwaitParentStep()
 		bc.AwaitParentStep()
 
@@ -741,13 +741,13 @@ TypeFight := !(Type^ a, Type^ b) -> Type^
 				{
 					if ap.2 == bp.2
 					{
-						return TypeFight(ap.1.ItType,bp.1.ItType)
+						return TypeFight(ap.1,bp.1)
 					}else{
 						if ap.2 > bp.2
 						{
-							return TypeFight(ap.1.ItType,bc.ItType)
+							return TypeFight(ap.1,bc)
 						}else{
-							return TypeFight(ac.ItType,bp.1.ItType)
+							return TypeFight(ac,bp.1)
 						}
 					}
 				}

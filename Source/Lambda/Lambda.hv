@@ -195,13 +195,13 @@ BoxLambdaHolder := class extend BoxExeObj
 		}
 
 		tplTuple := GetTuple(tplTypes,true)
-		tplType := tplTuple.ItType
+		tplType := tplTuple->{Type^}
 
 
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
 	
-		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,![tplType,newFunc.GetYieldTuple().ItType])
+		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,![tplType,newFunc.GetYieldTuple()])
 
 		step1 := createLambdaFunc.CreateCall(objs)
 		step2 := new UnrefFuncCall(step1)
@@ -210,7 +210,7 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		assert(cleanType is in TypeClass)
 
-		lambdaType := GCLambda.GetClass(![newFunc.GetType().GetPoint()]).ItType
+		lambdaType := GCLambda.GetClass(![newFunc.GetType().GetPoint()])
 
 		lambdaCapturePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("capturedVars"))
 		assert(lambdaCapturePath != null)
@@ -281,7 +281,7 @@ BoxLambdaHolder := class extend BoxExeObj
 	{ //TODO: check argument count and types
 		if not (tp is in TypePoint)
 			return false
-		if TypeFight(tp.Base,GCILambda.ItType) != GCILambda.ItType
+		if TypeFight(tp.Base,GCILambda) != GCILambda
 			return false
 		return true
 	}

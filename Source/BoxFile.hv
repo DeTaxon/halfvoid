@@ -221,7 +221,7 @@ BoxFile := class extend BoxUnit
 		{
 			cls2 := cls->{BoxClassBody^}
 			cls2.SetName(name)
-			clsVar := new TypeVar(name,cls2.ItType)
+			clsVar := new TypeVar(name,cls2)
 			CurrentCodeSpace.Types[name] = clsVar
 			FileClasses.Push(cls2)
 			cls2.ClassFile = this&

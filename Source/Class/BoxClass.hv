@@ -9,7 +9,6 @@ TypeClass := type BoxClass
 BoxClass := class extends Type
 {
 	ItId := int
-	ItType := Type^
 	IsPacked := bool
 	Parents := HybridQueue.{BoxClass^,1}
 	Reserved := HybridQueue.{BoxClass^,1}
@@ -93,7 +92,7 @@ BoxClass := class extends Type
 		}else{
 			if VTable.Size() != 0
 			{
-				VTableType.ItType.GetPoint().PrintType(ctx)
+				VTableType.GetPoint().PrintType(ctx)
 				needComma = true
 			}
 			printFieldsPath(ctx,needComma&)

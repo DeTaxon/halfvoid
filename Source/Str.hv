@@ -7,7 +7,7 @@ CreateStrType := !() -> void
 {
 	GTypeStrBaseClass := intGetClass2("String")
 	assert(GTypeStrBaseClass != null)
-	GTypeStrBase = GTypeStrBaseClass.ItType
+	GTypeStrBase = GTypeStrBaseClass
 	GTypeStringP = GTypeStrBase.GetPoint()
 
 	GTypeStr = new TypeStr(GTypeStrBase)

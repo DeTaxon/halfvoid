@@ -55,13 +55,13 @@ BoxClassTuple := class extend BoxClassPoison
 			buildCtx.MemParents.Push(Parents[^])
 
 			cnsts := Vector.{BoxExeConstObj^}
-			setFunc := GDefaultSetTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeVoid,false,false),cnsts)
+			setFunc := GDefaultSetTemplate.CreateFunc(GetFuncType(2,![this&,this&],![true,true],GTypeVoid,false,false),cnsts)
 			DefaultSpace.Methods[StringSpan("=")].Push(setFunc)
 
 			typs := Type^[100]
 			isRef := bool[100]
 
-			typs[0] = ItType
+			typs[0] = this&
 			isRef[0] = true
 
 			for it,i : Fields
@@ -79,7 +79,7 @@ BoxClassTuple := class extend BoxClassPoison
 			DefaultSpace.Methods[StringSpan("this")].Push(cnstrFunc)
 
 			
-			cmpFunc := GDefaultCompareTemplate.CreateFunc(GetFuncType(2,![ItType,ItType],![true,true],GTypeInt,false,false),cnsts)
+			cmpFunc := GDefaultCompareTemplate.CreateFunc(GetFuncType(2,![this&,this&],![true,true],GTypeInt,false,false),cnsts)
 			DefaultSpace.Methods[StringSpan("<=>")].Push(cmpFunc)
 
 			ScopePutConstants()

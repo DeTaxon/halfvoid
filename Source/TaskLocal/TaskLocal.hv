@@ -14,7 +14,7 @@ TaskLocalVar := class extend NamedVar
 	{
 		TaskLocalHatch.Await()
 		getVar := getTaskVarFunc.CreateCall()
-		getVarTypes := GetExchange2(getVar,tupleVarType.ItType.GetPoint(),false)
+		getVarTypes := GetExchange2(getVar,tupleVarType.GetPoint(),false)
 
 		funcObj := tupleVarType.GetFieldByIndex(itIndex)
 
@@ -54,7 +54,7 @@ TaskLocalVarDelayed := class extend NamedVar
 		itHatch.Await()
 		TaskLocalHatch.Await()
 		getVar := getTaskVarFunc.CreateCall()
-		getVarTypes := GetExchange2(getVar,tupleVarType.ItType.GetPoint(),false)
+		getVarTypes := GetExchange2(getVar,tupleVarType.GetPoint(),false)
 
 		funcObj := tupleVarType.GetFieldByIndex(itIndex)
 
@@ -84,7 +84,7 @@ PreInitTaskLocal := !() -> void
 	bSpace := CodeSpaces[-1]&
 
 	varName := StringSpan("internalHVTaskLocalTuple")
-	CodeSpaces[-1].Types[varName] = new TypeVar(varName,tupleVarType.ItType) //todo make it pretty
+	CodeSpaces[-1].Types[varName] = new TypeVar(varName,tupleVarType) //todo make it pretty
 }
 
 InitTaskLocal := !() -> void

@@ -155,7 +155,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		{
 			rl := GCLambda.GetClass(![fType.GetPoint()])
 			assert(rl != null)
-			return rl.ItType.GetPoint()
+			return rl.GetPoint()
 		}
 
 		for i : ptrSize
@@ -177,7 +177,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		resType := CheckTemplateType(obj,null,tk.Down,resCnsts) //TODO non null value so it could work in template
 		if resType == null
 			return null
-		return OptionalTemplate.GetClass(![resType]).ItType
+		return OptionalTemplate.GetClass(![resType])
 	}
 	if tk.Down?.Right?.GetValue() == "." and tk.Down.Right.Right?.GetValue() == "{}"
 	{
@@ -290,7 +290,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		{
 			if cls?.Constants?.Constants.Size() != cnsts.Size()
 				return null
-			return tmpl.GetClass(cnsts).ItType
+			return tmpl.GetClass(cnsts)
 		}
 		if typedefTemplate != null
 		{
@@ -313,7 +313,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 			dTyp2 := CheckTemplateType(dwnType,tk.Down,resCnsts) //TODO: unnull
 			if dTyp2 == null
 				return null
-			return GVectorTemplate.GetClass(![dTyp2]).ItType
+			return GVectorTemplate.GetClass(![dTyp2])
 		}
 
 		baseType := Type^

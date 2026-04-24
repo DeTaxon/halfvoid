@@ -81,7 +81,7 @@ AppendClass BoxClass
 			}
 
 			if fPath == null
-				fPath = new FieldPath(ItType,fil.Value)
+				fPath = new FieldPath(this&,fil.Value)
 			fPath.Field = fil
 			fPath.Index = i
 
@@ -134,7 +134,7 @@ AppendClass BoxClass
 		posMemOffset := ItSize
 
 		newField := new FieldParam(newName,newFieldType)
-		newPath := new FieldPath(ItType,newFieldType)
+		newPath := new FieldPath(this&,newFieldType)
 		newPath.Index = FieldsPath.Size()
 
 		newPath.Field = newField

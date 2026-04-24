@@ -77,7 +77,7 @@ ClassVTablePtrConst := class extend BoxExeConstObj
 	this := !(BoxClassBody^ cls) -> void
 	{
 		itClass = cls
-		ObjType = cls.VTableType.ItType.GetPoint()
+		ObjType = cls.VTableType.GetPoint()
 	}
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{

@@ -23,7 +23,7 @@ TryGetTemplateCall := !(Token^ itm) -> BoxExeObj^
 
 	tps := MakeVectorOnStack.{Type^,20}()
 	tps.Push(objs[^].GetType())
-	tplType := GetTuple(tps).ItType
+	tplType := GetTuple(tps)
 	tps.Destroy()
 
 	assert(TemplateInternalCreateTuple != null)

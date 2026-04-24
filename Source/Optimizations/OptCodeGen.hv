@@ -450,7 +450,7 @@ GlobTryPrintConst2 := !(Type^ varType,void^ varPtr,Stream strm) -> bool
 		stPtr := ref varPtr->{String^}^
 		GTypeStrBase.PrintType(ctx&)
 		strm << " {"
-		stClass.VTableType.ItType.PrintType(ctx&)
+		stClass.VTableType.PrintType(ctx&)
 		strm << "* "
 		stClass.VTableValue.PrintOutputName(ctx&)
 		strm <<  ","
