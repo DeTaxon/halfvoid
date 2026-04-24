@@ -48,7 +48,7 @@ BuildInVirtualCall := class extend BoxFuncCommon
 		clsType := thisItem.GetType()
 
 		assert(clsType is in TypeClass)
-		vTableType := clsType->{TypeClass^}.ToClass->{BoxClassBody^}.VTableType
+		vTableType := clsType->{TypeClass^}->{BoxClassBody^}.VTableType
 
 		newList := ExeDownList
 		newList.Push(lst[^])

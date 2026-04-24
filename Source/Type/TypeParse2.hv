@@ -75,9 +75,9 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 
 			if tp != null and tp is in TypePoint 
 				and tp.Base is in TypeClass 
-				and tp.Base->{TypeClass^}.ToClass.TemplateParent == GCLambda
+				and tp.Base->{TypeClass^}.TemplateParent == GCLambda
 			{
-				lCls := tp.Base->{TypeClass^}.ToClass
+				lCls := tp.Base->{TypeClass^}
 				clsFnc := lCls.Constants.Constants[0]->{Type^}.Base->{TypeFunc^}
 				baseFuncType = FuncTypePopFront(clsFnc)
 				if baseFuncType == null
@@ -196,7 +196,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		{
 			if tp is not in TypeClass
 				return null
-			cls = tp->{TypeClass^}.ToClass
+			cls = tp->{TypeClass^}
 		}
 
 		checkRes := TypeGetGlobalByIndent(tk.Down->{TokenIndent^}.Value)
@@ -305,9 +305,9 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		{
 			dwnType := Type^
 
-			if tp? is in TypeClass and tp->{TypeClass^}.ToClass.TemplateParent == GVectorTemplate
+			if tp? is in TypeClass and tp->{TypeClass^}.TemplateParent == GVectorTemplate
 			{
-				dwnType = tp->{TypeClass^}.ToClass.Constants.Constants[0]->{Type^}
+				dwnType = tp->{TypeClass^}.Constants.Constants[0]->{Type^}
 			}
 
 			dTyp2 := CheckTemplateType(dwnType,tk.Down,resCnsts) //TODO: unnull

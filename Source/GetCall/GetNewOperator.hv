@@ -80,7 +80,7 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 
 			if tp is in TypeClass
 			{
-				cls := tp->{TypeClass^}.ToClass
+				cls := tp->{TypeClass^}
 				callFunc := BoxUnit^
 				zeroConsts := Vector.{BoxExeConstObj^}
 				cls.GetMethods("this",x ==> {

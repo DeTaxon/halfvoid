@@ -40,11 +40,11 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 
 		if typ is in TypeClass
 		{
-			cls = typ->{TypeClass^}.ToClass
+			cls = typ->{TypeClass^}
 		}else{
 			if typ is in TypePoint and typ.Base is in TypeClass
 			{
-				cls = typ.Base->{TypeClass^}.ToClass
+				cls = typ.Base->{TypeClass^}
 			}
 		}
 		
@@ -100,9 +100,9 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			cls :=  BoxClass^
 			if typ is in TypeClass
 			{
-				cls = typ->{TypeClass^}.ToClass
+				cls = typ->{TypeClass^}
 			}else{
-				cls = typ.Base->{TypeClass^}.ToClass
+				cls = typ.Base->{TypeClass^}
 			}
 			
 			fld := cls.GetFieldByIndexTuple(fieldInd)

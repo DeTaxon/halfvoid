@@ -84,7 +84,7 @@ BoxLambdaHolder := class extend BoxExeObj
 			return null
 
 
-		cls := toType.Base->{TypeClass^}.ToClass
+		cls := toType.Base->{TypeClass^}
 		if cls.Constants == null or cls.Constants.Constants.Size() != 1
 			return null
 		cnst1 := cls.Constants.Constants[0]
@@ -212,7 +212,7 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		lambdaType := GCLambda.GetClass(![newFunc.GetType().GetPoint()])
 
-		lambdaCapturePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("capturedVars"))
+		lambdaCapturePath := cleanType->{TypeClass^}.GetField(StringSpan("capturedVars"))
 		assert(lambdaCapturePath != null)
 
 		lambFuncThis := newFunc.Params[0]
@@ -258,9 +258,9 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		if newFunc.IsGenerator()
 		{
-			newFunc.LocalVariablesForYield(cleanType->{TypeClass^}.ToClass)
+			newFunc.LocalVariablesForYield(cleanType->{TypeClass^})
 
-			yieldStatePath := cleanType->{TypeClass^}.ToClass.GetField(StringSpan("yieldState"))
+			yieldStatePath := cleanType->{TypeClass^}.GetField(StringSpan("yieldState"))
 			assert(yieldStatePath != null)
 
 			objs3 := CheckExeDownList

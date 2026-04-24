@@ -269,7 +269,7 @@ GlobalVar2 := class extend BoxUnit
 	{
 		dwn := new ClassConstValue
 
-		cls := tp->{TypeClass^}.ToClass
+		cls := tp->{TypeClass^}
 		cls.AwaitTypeState()
 
 		if cls is in BoxClassBody

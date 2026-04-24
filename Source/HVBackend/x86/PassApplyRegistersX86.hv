@@ -602,7 +602,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			assert(oPtr[it.var3] is MCConstInteger)
 			indx := oPtr[it.var3]&->{MCConstInteger^}.GetValue()
 
-			cls := tp->{TypeClass^}.ToClass
+			cls := tp->{TypeClass^}
 
 			offst := cls.GetFieldByIndexRaw(indx).MemOffset
 

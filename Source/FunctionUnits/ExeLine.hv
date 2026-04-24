@@ -569,7 +569,7 @@ CreateFuncCallOperator := !(Str name, Vector.{BoxExeObj^} Objs, Vector.{BoxExeCo
 {
 	if Objs.Size() != 0 and Objs[0].GetType() is in TypeClass
 	{
-		cls := Objs[0].GetType()->{TypeClass^}.ToClass
+		cls := Objs[0].GetType()->{TypeClass^}
 
 		callItem := BoxUnit^
 		cls.GetMethods(name, x ==> {

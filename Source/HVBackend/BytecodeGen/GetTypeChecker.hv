@@ -35,7 +35,7 @@ AppendClass IsSameTypeChecker
 		tablRef := ctx.CreateReference(GTypeVoidP)
 		HVB_ins_load_element(ctx,tablRef,cpy,zero)
 
-		vr := ctx.GetGlobalVar(TargetType.ToClass.VTableValue)
+		vr := ctx.GetGlobalVar(TargetType.VTableValue)
 		vrPointer := ctx.CreateVar(GTypeVoidP)
 		HVB_ins_get_pointer(ctx,vrPointer,vr)
 		HVB_ins_cmp(ctx,res,tablRef,"==",vrPointer)

@@ -187,10 +187,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					virtualFunc->{BoxFuncBody^}.WaitReadyState()
 
 					vTblCls := virtualFunc->{BoxFuncBody^}.Params[0].GetType()->{TypeClass^}
-					cls := vTblCls.ToClass.VTableType
+					cls := vTblCls.VTableType
 					//globVar := iCntx.GetGlobalVarFromMem(vTable)
 					//assert(globVar != null)
-					//cls := globVar.GetType()->{TypeClass^}.ToClass
+					//cls := globVar.GetType()->{TypeClass^}
 					memField := cls.GetFieldByIndex(fncHV->{BuildInVirtualCall^}.funcIndex)
 					memOffset := memField.MemOffset
 
@@ -809,7 +809,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			assert(classType is in TypeClass)
 
-			asClass := classType->{TypeClass^}.ToClass
+			asClass := classType->{TypeClass^}
 			fld := asClass.GetFieldByIndexRaw(v3->{int^}^)
 
 			setPtr := thisFrame.GetObjectPtr(thisLine.var1)

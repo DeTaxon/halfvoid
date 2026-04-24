@@ -187,11 +187,11 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		{
 			if CurrentFunc != null and itType is in TypeClass
 			{
-				DB_TypeSizeUsage.Add(CurrentFunc,itType->{TypeClass^}.ToClass)
+				DB_TypeSizeUsage.Add(CurrentFunc,itType->{TypeClass^})
 			}
 			if itType is in TypeClass
 			{
-				return itType->{TypeClass^}.ToClass.GetClassSize()
+				return itType->{TypeClass^}.GetClassSize()
 			}
 			return GetExeInt(itType.GetSize())
 		}else{
@@ -212,12 +212,12 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		typ := getMetaDownType(obj.Down)
     if typ is in TypeClass
     {
-      fam := typ.ToClass.GetFamily()
+      fam := typ.GetFamily()
       res := new ClassFamilyMeta
       res.family.Resize(fam.Classes.Size())
       for it,i : fam.Classes
         res.family[i] = it
-      DB_ClassFamilyMetaUsage.Add(CurrentFunc,typ.ToClass.GetFamily())
+      DB_ClassFamilyMetaUsage.Add(CurrentFunc,typ.GetFamily())
       return res
     }
     return null //TODO error
@@ -250,7 +250,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 				CurrentWork?.SetErrorMessage(obj.Down.MakeError("Item is not a class"))
 				return null
 			}
-			cls := typ->{TypeClass^}.ToClass
+			cls := typ->{TypeClass^}
 			cls.AwaitVTableStep()
 			if cls.VTable.Size() == 0
 				return GObjNone
@@ -270,7 +270,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			}
 			if cls is in TypeClass 
 			{
-				cls2 := cls->{TypeClass^}.ToClass
+				cls2 := cls->{TypeClass^}
 				cls2.AwaitVTableStep()
 				if cls2.VTable.Size() != 0
 				{

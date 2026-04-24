@@ -39,7 +39,7 @@ BoxFuncCall := class extend BoxExeObj
 			downs.Push(ResultVar.CreateVarCall())
 
 			if fType.ResultType is in TypeClass
-				DB_LocalVarUsage.Add(CurrentFunc,fType.ResultType->{TypeClass^}.ToClass)
+				DB_LocalVarUsage.Add(CurrentFunc,fType.ResultType->{TypeClass^})
 
 			if this& is BoxFuncCall
 			{
@@ -283,7 +283,7 @@ BoxFuncCall := class extend BoxExeObj
 					leftInts -= 1
 				}else if it.ItType is in TypeClass
 				{
-					cls := it.ItType->{TypeClass^}.ToClass
+					cls := it.ItType->{TypeClass^}
 					if cls.Fields.Size() <= 4
 					{
 						floats := 0

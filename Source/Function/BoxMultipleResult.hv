@@ -15,7 +15,7 @@ BoxMultipleResult := class extends BoxExeObj
 
 		assert(BaseResult.GetType() is in TypeClass)
 
-		tpl := BaseResult.GetType()->{TypeClass^}.ToClass
+		tpl := BaseResult.GetType()->{TypeClass^}
 		VarsCount = tpl.GetLocalFieldsCount()
 
 		printf("yep %i\n",VarsCount)

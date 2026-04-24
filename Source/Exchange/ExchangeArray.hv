@@ -62,7 +62,7 @@ ExchangeArrayHolderToVector := class extend ExchangeUnit
 			return CmpNoExchange
 
 		holder := obj->{BoxArrayHolder^}
-		typ := to->{TypeClass^}.ToClass
+		typ := to->{TypeClass^}
 
 		if typ.TemplateParent != GVectorTemplate
 			return CmpNoExchange
@@ -81,7 +81,7 @@ ExchangeArrayHolderToVector := class extend ExchangeUnit
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
 	{
 		hldr := obj->{BoxArrayHolder^}
-		typ := expType->{TypeClass^}.ToClass.Constants.Constants[0]->{Type^}
+		typ := expType->{TypeClass^}.Constants.Constants[0]->{Type^}
 
 		if hldr.GetArraySize() == 0
 		{

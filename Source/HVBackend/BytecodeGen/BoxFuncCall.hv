@@ -80,21 +80,9 @@ AppendClass BoxFuncCall
 				if dwnType is not in TypeClass
 					clsType = clsType.Base->{TypeClass^}
 				assert(clsType != null and clsType is in TypeClass)
-				vTableType := clsType.ToClass->{BoxClassBody^}.VTableType
+				vTableType := clsType->{BoxClassBody^}.VTableType
 
 				assert(clsType is in TypeClass)
-				//if (vTableType->{TypeClass^}.ToClass.GetFieldByIndexRaw(vCall.funcIndex) == null) {
-				//	printf("why %s\n",clsType.GetBADStr().Str())
-				//	printf("WHY %i %i\n",vTableType->{TypeClass^}.ToClass.GetFieldsCount(),clsType->{TypeClass^}.ToClass.VTable.Size())
-				//	printf("WHY %i\n",vTableType->{TypeClass^}.ToClass.GetFieldByIndexRaw(vCall.funcIndex))
-				//	printf("WHY %s\n",vCall.wrappedFunc->{BoxFuncBody^}.GetName())
-				//	printf("WHY %s\n",downs[0].GetType().GetBADStr().Str())
-				//	printf("WHY %s\n",downs[1].GetType().GetBADStr().Str())
-
-				//	assert(false)
-				//}
-
-			
 
 				vTablePtrId := ctx.CreateReference(vTableType.GetPoint())
 				vTableId := ctx.CreateReference(vTableType)

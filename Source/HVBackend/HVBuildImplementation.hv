@@ -56,7 +56,7 @@ HVContextImplementation := class extend HV_Context
 	{
 		if obj is not in TypeClass
 			return null
-		return obj.ToClass.hvClass&
+		return obj.hvClass&
 
 	}
 	CreateClass := virtual !() -> HV_Class^ 

@@ -136,7 +136,7 @@ CollectFunctionsCtx := class
 
 		if tp is in TypeClass
 		{
-			cls := tp->{TypeClass^}.ToClass
+			cls := tp->{TypeClass^}
 			checkClass(cls)
 		}
 
@@ -445,7 +445,7 @@ GlobTryPrintConst2 := !(Type^ varType,void^ varPtr,Stream strm) -> bool
 	}
 	if varType == GTypeStrBase
 	{
-		stClass := GTypeStrBase->{TypeClass^}.ToClass
+		stClass := GTypeStrBase->{TypeClass^}
 
 		stPtr := ref varPtr->{String^}^
 		GTypeStrBase.PrintType(ctx&)

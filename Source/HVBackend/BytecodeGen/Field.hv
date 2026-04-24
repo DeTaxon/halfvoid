@@ -6,7 +6,7 @@ AppendClass FieldPath
 		var1 := indexes[0].WriteMC(ctx)
 
 		tf := GetType()->{TypeFunc^}
-		classObj := tf.Params[0].ItType->{TypeClass^}.ToClass
+		classObj := tf.Params[0].ItType->{TypeClass^}
 		resType := tf.ResultType
 
 		classObj.AwaitReadyState()

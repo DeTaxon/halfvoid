@@ -141,7 +141,7 @@ TryParseVar := !(Token^ obj) -> BoxUnit^
 		}else{
 
 			if newType is in TypeClass
-				DB_LocalVarUsage.Add(CurrentFunc?,newType->{TypeClass^}.ToClass)
+				DB_LocalVarUsage.Add(CurrentFunc?,newType->{TypeClass^})
 			assert(CurrentScope is in BoxFunc) 
 			newVar := new LocalVar(name,newType,true,false)
 			CurrentFunc.AddLocalVar(newVar)

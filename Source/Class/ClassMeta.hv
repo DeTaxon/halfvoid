@@ -1,7 +1,7 @@
 
 getOffsetMeta := !(TypeClass^ clsType, Str funcName) -> BoxExeObj^
 {
-	cls := clsType.ToClass
+	cls := clsType
 
 	cls.AwaitReadyState()
 

@@ -88,7 +88,7 @@ ClassFromExchangeSet := class extend ExchangeUnit
 	{
 		if newType is not in TypeClass
 			return null
-		cls := newType->{TypeClass^}.ToClass
+		cls := newType->{TypeClass^}
 
 		expFunc := BoxFunc^
 
@@ -146,7 +146,7 @@ ClassFromExchangeType := class extend ExchangeUnit
 	{
 		if newType is not in TypeClass
 			return null
-		cls := newType->{TypeClass^}.ToClass
+		cls := newType->{TypeClass^}
 
 		expFunc := BoxFuncTemplate^
 

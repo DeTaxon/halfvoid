@@ -1,10 +1,8 @@
 AppendClass BoxClass
 {
-	ToClass := BoxClass^
 	InitType := !() -> void
 	{
 		MetaId = ItId
-		ToClass = this&
 
 		ItHash = typeHashIterator
 		typeHashIterator += 1

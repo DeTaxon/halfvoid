@@ -395,9 +395,9 @@ BoxClassBody := class extend BoxClassPoison
 				return void
 			}
 			asClsParent := inhType->{TypeClass^}
-			asClsParent.ToClass.AwaitParentStep()
+			asClsParent.AwaitParentStep()
 
-			buildCtx.All.Emplace(asClsParent.ToClass,ParentTokens[i].1)
+			buildCtx.All.Emplace(asClsParent,ParentTokens[i].1)
 		}
 		
 		for it : buildCtx.All

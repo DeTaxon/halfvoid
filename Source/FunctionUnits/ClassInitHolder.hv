@@ -62,7 +62,7 @@ ClassInitToObjExchange := class extend ExchangeUnit
 			return CmpNoExchange
 
 		holder := obj->{ClassInitHolder^}
-		cls := newType->{TypeClass^}.ToClass
+		cls := newType->{TypeClass^}
 
 		for it,ind : holder.Names
 		{
@@ -76,7 +76,7 @@ ClassInitToObjExchange := class extend ExchangeUnit
 	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
 	{
 		holder := obj->{ClassInitHolder^}
-		cls := expType->{TypeClass^}.ToClass
+		cls := expType->{TypeClass^}
 		
 		newVar := new LocalVar("",expType,true,false)
 		CurrentFunc.AddLocalVar(newVar)

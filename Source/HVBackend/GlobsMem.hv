@@ -237,7 +237,7 @@ GlobsMemType := class
 			mem->{char^^}^ = obj->{BoxExeString^}.Value.Str()
 		} else if obj is ClassConstValue {
 			cnst := obj->{ClassConstValue^}
-			cls := cnst.ItType->{TypeClass^}.ToClass
+			cls := cnst.ItType->{TypeClass^}
 
 			for it,i : cnst.Value
 			{

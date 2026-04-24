@@ -34,7 +34,7 @@ intGetClass := !(char^ name) -> BoxClass^
 	if res == null
 		return null
 	assert(res is in TypeClass)
-	return res->{TypeClass^}.ToClass
+	return res->{TypeClass^}
 }
 intGetClass2 := !(char^ name) -> BoxClass^
 {
@@ -46,7 +46,7 @@ intGetClass2 := !(char^ name) -> BoxClass^
 		if val == null and val is not TypeVar
 			return null
 
-		return val->{TypeVar^}.Value->{TypeClass^}.ToClass
+		return val->{TypeVar^}.Value->{TypeClass^}
 	}
 	return null
 }

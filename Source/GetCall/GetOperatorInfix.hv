@@ -284,10 +284,10 @@ innerTryGetInfixCall := !(StringSpan oper,Vector.{BoxExeObj^} lst,Token^ errToke
 		cls := BoxClass^
 		if holderType is in TypeClass
 		{
-			cls = holderType->{TypeClass^}.ToClass
+			cls = holderType->{TypeClass^}
 		}else{
 			assert(holderType is in TypePoint and holderType.Base is in TypeClass)
-			cls = holderType.Base->{TypeClass^}.ToClass
+			cls = holderType.Base->{TypeClass^}
 		}
 		resFunc := BoxUnit^
 		cls.GetMethodsInFields(oper,holder.GetFieldSpace(),(fncs) ==> {

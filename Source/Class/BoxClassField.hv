@@ -102,7 +102,7 @@ AppendClass BoxClass
 
 			if fil.Value is in TypeClass
 			{
-				fldClass := fil.Value->{TypeClass^}.ToClass
+				fldClass := fil.Value->{TypeClass^}
 				DB_ClassComposition.Add(this&,fldClass)
 			}
 		}
@@ -162,7 +162,7 @@ AppendClass BoxClass
 
 		if newFieldType is in TypeClass
 		{
-			fldClass := newFieldType->{TypeClass^}.ToClass
+			fldClass := newFieldType->{TypeClass^}
 			DB_ClassComposition.Add(this&,fldClass)
 		}
 		//fieldLayoutChanged()
@@ -388,7 +388,7 @@ FieldPath := class extend BoxFuncCommon
 		tp := lst[0].GetType()
 
 		assert(tp is in TypeClass)
-		cls := tp->{TypeClass^}.ToClass
+		cls := tp->{TypeClass^}
 		lst[0].PrintPointPre(ctx)
 		f^ << "%T" << resId << " = getelementptr "
 		tp.PrintType(ctx)

@@ -100,7 +100,7 @@ IsSameTypeChecker := class extend BoxExeObj
 			assert(classType is in TypeClass)
 		}
 
-		vType := classType->{TypeClass^}.ToClass
+		vType := classType->{TypeClass^}
 		vTableType := vType.VTableType
 
 		if objIsRef
@@ -163,14 +163,14 @@ IsSameTypeChecker := class extend BoxExeObj
 		f^ << "%TPre" << resId << " = bitcast "
 		vTableType.PrintType(ctx)
 		f^ << "* %TVTable" << resId << " to "
-		TargetType.ToClass.VTableType.PrintType(ctx)
+		TargetType.VTableType.PrintType(ctx)
 		f^ << "*"
 		f^ << "\n"
 
 		f^ << "%TVal" << resId << " = icmp eq "
-		TargetType.ToClass.VTableType.PrintType(ctx)
+		TargetType.VTableType.PrintType(ctx)
 		f^ << "* %TPre" << resId << " , "
-		TargetType.ToClass.VTableValue.PrintOutputName(ctx)
+		TargetType.VTableValue.PrintOutputName(ctx)
 		f^ << "\n"
 
 		EndLabel.PrintGo(ctx)
@@ -202,7 +202,7 @@ IsVirtualClass := !(Type^ tp) -> bool
 		return false
 	if not (tp is in TypeClass)
 		return false
-	asClass := tp->{TypeClass^}.ToClass
+	asClass := tp->{TypeClass^}
 
 	asClass.AwaitVTableStep()
 	return asClass.VTable.Size() != 0	

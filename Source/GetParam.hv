@@ -178,7 +178,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 
 				clsType := parGetCall.GetType()
 				assert(clsType is in TypeClass)
-				cls := clsType->{TypeClass^}.ToClass
+				cls := clsType->{TypeClass^}
 
 				fld := cls.GetField(asItm.Value)
 				if fld != null
