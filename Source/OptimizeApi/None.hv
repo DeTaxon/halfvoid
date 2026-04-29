@@ -1,7 +1,0 @@
-
-AppendClass BoxExeNone
-{
-	IsEditSupported := virtual true
-	ElementName := virtual "None"
-	SubElementsCount := virtual !() -> int { return 0 }
-}

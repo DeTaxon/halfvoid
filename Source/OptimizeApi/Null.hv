@@ -1,7 +1,0 @@
-
-AppendClass BoxExeNull
-{
-	IsEditSupported := virtual true
-	ElementName := virtual "Null"
-	SubElementsCount := virtual !() -> int { return 0 }
-}

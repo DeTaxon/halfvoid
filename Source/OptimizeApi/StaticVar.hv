@@ -1,5 +1,0 @@
-AppendClass GlobalNameAlias2
-{
-	IsEditSupported := virtual true
-	ElementName := virtual "StaticVarGetter"
-}

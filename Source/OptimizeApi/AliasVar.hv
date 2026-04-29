@@ -1,5 +1,0 @@
-AppendClass AliasVar
-{
-	IsEditSupported := virtual true
-	ElementName := virtual "AliasVar"
-}

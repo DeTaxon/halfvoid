@@ -389,17 +389,6 @@ StrToStringPointerExchange := class extend BoxExeObj
 	{
 		return Down.WriteMC(ctx)
 	}
-
-	IsEditSupported := virtual true
-	ElementName := virtual "StrToStringPointer"
-
-	SubElementsCount := virtual !() -> int { return 1 }
-	GetSubElement := virtual !(int index) -> HV_Object^
-	{
-		if index == 0
-			return Down
-		return null
-	}
 }
 
 getMetaDownType := !(Token^ obj) -> Type^

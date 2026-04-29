@@ -1,5 +1,0 @@
-AppendClass GetLocalVarVoid
-{
-	IsEditSupported := virtual true
-	ElementName := virtual "VoidVarGetter"
-}

@@ -97,18 +97,6 @@ HV_Object := class
 	//GetType
 	
 	GetObjType := virtual !() -> Type^ {}
-	
-	IsEditSupported := virtual false
-	ElementName := virtual "Unknown"
-
-	SubElementsCount := virtual !() -> int { return 0 }
-	GetSubElement := virtual !(int index) -> HV_Object^ { return null }
-	AddSubElement := virtual !(HV_Object^ newElement) -> bool { return false }
-	AddSubElementAt := virtual !(int index, HV_Object^ newElement) -> bool { return false }
-	ReplaceSubElement := virtual !(int index, HV_Object^ newElement) -> bool { return false }
-	DeleteElement := virtual !(int index) -> bool { return false}
-
-	GetStringValue := virtual !() -> Str {}
 }
 
 HV_FunctionTemplate := class

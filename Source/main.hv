@@ -371,12 +371,6 @@ main := !(Vector.{char^} args) -> int
 	if WorkBagPrintErrors()
 		exit(-1)
 
-	if OptimizeMode and not RunMode
-	{
-		printf("Optimization step\n")
-		OptimizeCode()
-	}
-
 	printf("good to go\n")
 
 	if RunMode

@@ -1,5 +1,0 @@
-AppendClass VarIntObj
-{
-	IsEditSupported := virtual true
-	ElementName := virtual "ClassSize"
-}

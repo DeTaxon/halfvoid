@@ -1,7 +1,0 @@
-AppendClass BoxUnit
-{
-	notifyEditChange := !() -> void
-	{
-
-	}
-}
