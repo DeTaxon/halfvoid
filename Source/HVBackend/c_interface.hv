@@ -256,9 +256,9 @@ HVB_ins_asm_end := !(MCBuildContext^ ctx) -> void
 {
 	ctx.lines.Push(MCLine("asm_end"))
 }
-HVB_ins_assert := !(MCBuildContext^ ctx, s32 opr1) -> void
+HVB_ins_debug_trap := !(MCBuildContext^ ctx) -> void
 {
-	ctx.lines.Push(MCLine("assert",opr1))
+	ctx.lines.Push(MCLine("debug_trap"))
 }
 
 HVB_ins_spirv_hint_loop_merge := !(MCBuildContext^ ctx, s32 opr1,s32 opr2) -> void

@@ -1055,20 +1055,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 				LLVMPrintObjValue(ctx,fnc.Objects[op.var1],op.var1)
 				out << ")"
 				printDebugEnd()
-			case "assert"
-				ob1 := ref fnc.Objects[op.var1]
-				tmpId := GetNewId()
-
-				out << "	br i1 "
-				LLVMPrintObjValue(ctx,ob1,op.var1)
-				out << ", label %End" << tmpId << ", label %Failed" << tmpId
-				printDebugEnd()
-				out << "Failed" << tmpId << ":\n"
+			case "debug_trap"
 				out << "	call void @llvm.debugtrap()"
 				printDebugEnd()
-				out << "	br label %End" << tmpId
-				printDebugEnd()
-				out << "End" << tmpId << ":\n"
 			case "spirv_hint_loop_merge"
 			case void
 				printf("LLVM: unknown opcode %s at %s %i\n",op.opcode.ToCStr(),base.GetName(),indx)

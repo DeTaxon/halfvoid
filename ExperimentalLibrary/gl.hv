@@ -217,7 +217,7 @@
 		return funcClassType
 	}
 
-	GetItem := virtual !(Str name) -> HV_Object^
+	GetItem := !(Str name) -> HV_Object^
 	{
 		if name.Start == "GL_"
 		{

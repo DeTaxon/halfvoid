@@ -4,20 +4,21 @@
 
 main := !(char^[] args) -> int
 {
-	RunFunc()
+	assert(false,"error message HAHA")
+	// RunFunc()
 }
 
 
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	// makeSpirv()
+	makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()
 	// ReflectionTest()
 	// FStringTest()
-	ClosureTest()
+	// ClosureTest()
 	
 	//tst := ClassA.{ClassB}
 	//// tst.Emplace(int->{TypeId})

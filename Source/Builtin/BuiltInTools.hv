@@ -1,31 +1,50 @@
-BuiltInAssert := class extend BoxFuncCommon
+BuildInDebugTrap := class extend BoxFuncCommon
 {
-	trueLabel := BoxLabel^
-	falseLabel := BoxLabel^
 	this := !() -> void
 	{
-		SetType(GetFuncType(![GTypeBool],GTypeVoid))
+		SetType(GetFuncType(GTypeVoid))
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		if not DebugMode
-			return void
+		HVB_ins_debug_trap(ctx)
+	}
+}
 
-		trueLabel = new BoxLabel()
-		falseLabel = new BoxLabel()
-
-		lst[0].PrintPre(ctx)
-		
-		PrintBranch(ctx,lst[0],trueLabel,falseLabel)
-		
-		f := ctx.writeStream
-
-		falseLabel.PrintCode(ctx)
-		f^ << "call void @llvm.debugtrap()"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
-		trueLabel.PrintCode(ctx)
+BuildInAssert := class extends BoxFuncCommon
+{
+	this := !() -> void
+	{
+		SetType(GetFuncType(![GTypeBool,GTypeCharP],GTypeVoid))
+	}
+	GetDefaultValuesCount := virtual !() -> int
+	{
+		return 1
+	}
+	GetDefaultValue := virtual !(int i) -> BoxExeObj^
+	{
+		if i == 1
+			return GObjNull
+		return null
+	}
+	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^
+	{
+		ln := GetExeInt(0)
+		line := GObjNull->{BoxExeObj^}
+		msg := GObjNull->{BoxExeObj^}
+		if CurrentLine?.ItToken != null
+		{
+			ln = GetExeInt(CurrentLine.ItToken.Line?.Line)
+			line = GetExeString(CurrentLine.ItToken.Line.File.fileName)
+		}
+		if objs.Size() >= 2
+			msg = objs[1]
+		anti := CreateFuncCall(". not",![objs[0]])
+		onTrue := new BoxBlock
+		call := CreateFuncCall("internalAssertCallback",![line,ln,msg])
+		assert(call != null)
+		onTrue.exeLines.Push(call)
+		return new BoxIf(null,anti,onTrue,null,null)
 	}
 }
 
@@ -309,7 +328,8 @@ BuiltInVaArg := class extend BoxFuncCommon
 CreateBuildInTools := !() -> void
 {
 	bSpace := CodeSpaces[-1]&
-	bSpace.Functions["assert"].Push(new BuiltInAssert() )
+	bSpace.Functions["assert"].Push(new BuildInAssert() )
+	bSpace.Functions["DebugTrap"].Push(new BuildInDebugTrap() )
 	bSpace.Functions["llvmLongJump"].Push(new BuiltInLongJump() )
 	bSpace.Functions["MemBarrier"].Push(new BuiltInMemBarrier() )
 	bSpace.Functions["llvmMemsetInlineInt"].Push(new BuiltInMemsetInlineInt() )

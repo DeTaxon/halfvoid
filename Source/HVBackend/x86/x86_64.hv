@@ -1117,7 +1117,7 @@ MCBuildFuncContext_x86_64 := class
 					Mov(fnc,line.var1,"rax")
 				}
 
-			case "assert"
+			case "debug_trap"
 				//TODO call only if bool worked
 				//WriteData(0xCC) //int3
 				WriteData(0x90) //NOP
