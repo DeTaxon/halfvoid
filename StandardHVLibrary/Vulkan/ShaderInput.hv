@@ -2,7 +2,7 @@
 
 TShaderInputVertexInfo := class
 {
-	VertTypes := Vector.{VKType}
+	VertTypes := HybridQueue.{VKType,20}
 
 	"{}<-" := !(VKType[] vInputs) -> void
 	{
@@ -20,6 +20,11 @@ TShaderInputVertexInfo := class
 				VertTypes.Push(VKTypeFromType().{it})
 			}
 		}
+	}
+	"=" := !(TShaderInputVertexInfo inp) -> void
+	{
+		VertTypes.Destroy()
+		VertTypes.Push(inp.VertTypes[^])
 	}
 }
 

@@ -28,9 +28,20 @@ EngTools := class
 
 	vertStorage := TVkMemBuffer^
 
-	CreateStorageBuffer := !(Str name,int size,Str flags) -> void
+	globalObjects := TVkMemBuffer^[Str]
+
+	CreateGlobalBuffer := !(Str name,int size,Str flags) -> void
 	{
-		vertStorage = vk.CreateMemBuffer(size,"vsr")
+		vertStorage = vk.CreateMemBuffer(size,flags)
+		globalObjects[name] = vertStorage
+	}
+
+	GlobalBufferAsModel := !(Str name, TShaderInputVertexInfo vInput) -> WackyModel^
+	{
+		if not globalObjects.Contain(name)
+			return null
+		result = new WackyModel
+		result.inputInfo = vInput
 	}
 
 	desc := VkDescriptorSet
@@ -51,4 +62,8 @@ EngTools := class
 
 		vk.Funcs.vkUpdateDescriptorSets(vk.LogicalDevice,1,setD&,0,null)
 	}
+}
+WackyModel := class
+{
+	inputInfo := TShaderInputVertexInfo
 }
