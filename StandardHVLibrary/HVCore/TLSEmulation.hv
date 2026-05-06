@@ -19,12 +19,14 @@
 
 TLSMutex := Mutex
 TLSData := AVLMap.{u64,void^}
+TLSAllocator := AllocateOnly
 
 internalGetTLSVar := !() -> void^
 {
 	//#MarkFunction("ThreadBegin",internalTLSCreateStruct)
 	//#MarkFunction("ThreadEnd",internalTLSDeleteStruct)
 
+	TLSData.SetAllocator(TLSAllocator&)
 	TLSMutex.Lock()
 	res := ref TLSData[osGetThreadId()]
 	if res == null

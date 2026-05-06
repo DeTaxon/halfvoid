@@ -10,6 +10,10 @@ ContainerCommonMap := class .{@TreeType,@KEY,@VALUE}
 	{
 		itSize = 0
 	}
+	SetAllocator := !(IAllocator^ alc) -> void
+	{
+		itTree.ThisAllocator = alc
+	}
 	"[]?" := !(KEY dat) -> ref VALUE
 	{
 		resl := itTree.FindNodeByFirst(dat)

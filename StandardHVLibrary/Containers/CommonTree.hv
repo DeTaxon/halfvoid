@@ -17,6 +17,7 @@ CommonTreeNode := class .{@DATA}
 CommonTree := class .{@DATA}
 {
 	Start := CommonTreeNode.{DATA}^
+	ThisAllocator := IAllocator^
 	
 	FindNode := !(DATA dat) -> CommonTreeNode.{DATA}^
 	{
@@ -56,7 +57,10 @@ CommonTree := class .{@DATA}
 	}
 	createNode := virtual !(CommonTreeNode.{DATA}^& res) -> void
 	{
-		res = new CommonTreeNode.{DATA}
+		alc := ThisAllocator
+		if alc == null
+			alc = GetAllocator()
+		res = alc.new CommonTreeNode.{DATA}
 	}
 	RotateLeft := !(CommonTreeNode.{DATA}^ toRotate) -> void
 	{
