@@ -23,7 +23,7 @@ ExposeClasses2 := !() -> void
 		baseType = tp
 		tpPointer := tp.GetPointer()
 
-		if #Var("Expr")
+		// if #Var("Expr")
 		{
 			ctx1.passFuncs[Type->OffsetInVirtualTable("GetPointer")] = !{GetFuncType(![tp],![true],tpPointer),"GetPointer"}
 			ctx1.passFuncs[Type->OffsetInVirtualTable("IsInt")] = !{GetFuncType(![tp],![true],GTypeBool),"IsInt"}
@@ -49,7 +49,7 @@ ExposeClasses2 := !() -> void
 		tp := ctx.target
 		tpPointer := tp.GetPoint()
 
-		if #Var("Expr")
+		// if #Var("Expr")
 		{
 			ctx.passFuncs[TypeClass->OffsetInVirtualTable("GetFieldsCount")] = !{GetFuncType(![tp],![true],GTypeInt),"GetFieldsCount"}
 			ctx.passFuncs[TypeClass->OffsetInVirtualTable("AddExtraField")] = !{GetFuncType(![tp,GTypeStr,baseType.GetPointer()],![true,false,false],GTypeVoid),"AddField"}
