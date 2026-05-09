@@ -10,7 +10,13 @@ AppendClass GlobalVarProxy
 {
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		result.CreatedId = ctx.GetGlobalVar(baseVar)
+		if EmulateTLS and baseVar.isThreadLocal
+		{
+			//TODO maybe do it on bytecode side?
+			result.CreatedId = Down.WriteMC(ctx).CreatedId
+		}else{
+			result.CreatedId = ctx.GetGlobalVar(baseVar)
+		}
 	}
 }
 AppendClass BorrowedCallVar 

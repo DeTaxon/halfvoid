@@ -11,9 +11,9 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 
 	base := fnc.BaseFunction->{BoxFuncBody^}
 
-	needPrint := false // base->{BoxFuncBody^}.OutputName == "CallFunctionPtr"
-	//needPrint = true
-	//needPrint = false
+	needPrint := base->{BoxFuncBody^}.OutputName == "main"
+	// needPrint = true
+	needPrint = false
 
 	tmpAlloc := MakeTempAllocator()
 	oldAlloc := SwapAllocator(tmpAlloc&)
