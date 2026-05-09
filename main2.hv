@@ -11,11 +11,12 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
+	// printf("test %p\n",deflate)
 	// OpenFontTest()
-	makeSpirv()
+	// makeSpirv()
 	// tst()
 	// FlacTest()
-	// OpusTest()
+	OpusTest()
 	// ReflectionTest()
 	// FStringTest()
 	// ClosureTest()

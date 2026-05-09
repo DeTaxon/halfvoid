@@ -1,6 +1,6 @@
 internalAssertCallback := !(char^ fileName,int fileLine,char^ msg) -> void
 // TODO internalAssertCallback := !(Str fileName,int fileLine,Str msg) -> void
 {
-	printf("test %s %i %s\n",fileName,fileLine,msg)
+	printf("Assert triggered.  File: %s Line: %i Message: \"%s\"\n",fileName,fileLine,msg)
 	DebugTrap()
 }

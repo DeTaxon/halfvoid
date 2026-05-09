@@ -285,7 +285,9 @@ MCInterpFuncFrame := class
 
 	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,Vector.{int} indexes,int resultIndex) -> void
 	{
+		assert(fType != null)
 		fType = NormalizeFuncType(fType)
+		assert(fType != null)
 		varsCount := fType.Params.Size()
 		assert(varsCount <= 40) //TODO Unconst
 

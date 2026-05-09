@@ -1,0 +1,102 @@
+PassLazyLoadLibGlobals := !(MCFunction^ fnc) ->MCFunction^
+{
+	preloadVars := GlobalVar2^[]
+
+	for vr : fnc.Objects
+	{
+		if vr is not MCGlobalVariable
+			continue
+		obj := vr.GetValueObject()
+
+		foundInCLib := false
+		for space : CodeSpaces //TODO too bad, cycle in cycle in cycle
+		{
+			for module : space.Modules
+			{
+				if module is not CLib
+					continue
+
+				cLib := module->{CLib^}
+
+				for it, ind : cLib.itFuncs
+				{
+					if it == obj
+					{
+						foundInCLib = true
+						break
+					}
+				}
+			}
+		}
+		if foundInCLib
+		{
+			preloadVars.Push(obj)
+		}
+	}
+
+	if preloadVars.Size() == 0
+		return fnc
+
+	ctx := MakeGreedyPass(fnc,1,2,true)
+
+	oPtr := ctx.oPtr
+	cPtr := ctx.cPtr
+
+	o := ref ctx.objsSize
+	c := ref ctx.cmdsSize
+
+	iPtr := fnc.Lines.GetPointer()
+
+	loadFncId := o
+	fncPtr := MCConstPointerTyped
+	fncPtr.GetValue() = hiddenLoadLibGlobalVar
+	fncPtr.SetType(GetFuncType(![GTypeVoidP],GTypeVoid).GetPointer())
+	oPtr[o] = fncPtr
+	o += 1
+
+	for it,i : preloadVars
+	{
+		thisVar := MCConstPointer
+		thisVar.GetValue() = it
+		id := o
+		oPtr[o++] = thisVar
+
+		cPtr[c++] = MCLine("call_start",0,loadFncId)
+		cPtr[c++] = MCLine("load_var",id)
+		cPtr[c++] = MCLine("call_end")
+	}
+
+	for it,i : fnc.Lines
+		cPtr[c++] = it
+
+	return ctx.GenerateFunc()
+}
+
+hiddenLoadLibGlobalVar := !(GlobalVar2^ vr) -> void
+{
+	ptr := GlobsMem.GetGlobalVarMem(vr)->{void^^}
+
+	if ptr^ != null
+		return void
+
+	for space : CodeSpaces //TODO too bad, cycle in cycle in cycle
+	{
+		for module : space.Modules
+		{
+			if module is not CLib
+				continue
+
+			cLib := module->{CLib^}
+
+			for it, ind : cLib.itFuncs
+			{
+				if it == vr
+				{
+					lib := GInterpCntx.GetClibDll(cLib,ind)
+					fncPtr := lib.Get(ind.AsStringSpan())
+					ptr^ = fncPtr
+				}
+			}
+		}
+	}
+}

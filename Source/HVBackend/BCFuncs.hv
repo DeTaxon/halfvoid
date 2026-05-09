@@ -47,6 +47,7 @@ BCFuncsType := class
 		oldAlloc := SwapAllocator(tmpAlloc&)
 
 		result = PassRemoveReferences(result)
+		result = PassLazyLoadLibGlobals(result)
 
 		// result = PassAddStackInterp(result)
 		// result = PassStackRemovePushPop(result)
@@ -80,6 +81,7 @@ BCFuncsType := class
 		oldAlloc := SwapAllocator(tmpAlloc&)
 
 		result = PassFirstOpt(result,false)
+		result = PassLazyLoadLibGlobals(result)
 
 		result = InterpPassPrepare(result)
 		result.BaseFunction = itm

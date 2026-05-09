@@ -232,6 +232,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					assert(false)
 				}
 			} else if fncObj& is MCConstPointerTyped {
+				assert(fncObj.GetType() is in TypePoint)
 				fType := fncObj.GetType().Base->{TypeFunc^}
 				thisFrame.CallFuncPtr(fType,fncObj&->{MCConstPointer^}.GetValue(),resultPtr,indxs,0)
 			} else if fncObj& is MCVariable or fncObj& is MCReference or fncObj is MCConstValue {

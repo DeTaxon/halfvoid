@@ -193,26 +193,27 @@ GlobsMemType := class
 			WriteGlobToMem(vr.value,result)
 		}
 
-		for space : CodeSpaces //TODO too bad, cycle in cycle in cycle
-		{
-			for module : space.Modules
-			{
-				if module is not CLib
-					continue
-
-				cLib := module->{CLib^}
-
-				for it, ind : cLib.itFuncs
-				{
-					if it == vr
-					{
-						lib := GInterpCntx.GetClibDll(cLib,ind)
-						fncPtr := lib.Get(ind.AsStringSpan())
-						result->{void^^}^ = fncPtr
-					}
-				}
-			}
-		}
+		// for space : CodeSpaces //TODO too bad, cycle in cycle in cycle
+		// {
+		// 	for module : space.Modules
+		// 	{
+		// 		if module is not CLib
+		// 			continue
+		//
+		// 		cLib := module->{CLib^}
+		//
+		// 		for it, ind : cLib.itFuncs
+		// 		{
+		// 			if it == vr
+		// 			{
+		// 				IsLibVar.Insert(vr)
+		// 				// lib := GInterpCntx.GetClibDll(cLib,ind)
+		// 				// fncPtr := lib.Get(ind.AsStringSpan())
+		// 				// result->{void^^}^ = fncPtr
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 	WriteGlobToMem := !(BoxExeConstObj^ obj,void^ mem)-> void
 	{
