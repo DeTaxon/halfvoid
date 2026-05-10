@@ -49,7 +49,7 @@ AllocateOnly := class extends IAllocator
 	}
 	Reset := !() -> void
 	{
-		iterPtr = 0
+		iterPtr = null
 		leftSize = 0
 	}
 	Destroy := !() -> void
