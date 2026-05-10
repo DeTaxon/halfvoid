@@ -9,9 +9,17 @@ DefaultAllocator := class extends IAllocator
 		}else{
 			result = calloc(1,size)
 		}
+		if #Var("TracyMem")
+		{
+			___tracy_emit_memory_alloc_callstack(result,size,0,0)
+		}
 	}
 	FreeMem := virtual !(void^ mem) -> void
 	{
+		if #Var("TracyMem")
+		{
+			___tracy_emit_memory_free_callstack(mem,0,0)
+		}
 		free(mem)
 	}
 }

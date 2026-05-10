@@ -19,6 +19,11 @@ PageMemory := class
 		//TODO ptr != MAP_FAILED != 0xFFFFFFFFF
 		memPointer = ptr
 		memSize = setMemSize
+
+		if #Var("TracyMem")
+		{
+			___tracy_emit_memory_alloc_callstack(memPointer,memSize,0,0)
+		}
 	}
 	GetPointer := !() -> void^
 	{
@@ -31,7 +36,13 @@ PageMemory := class
 	Close := !() -> void
 	{
 		if memPointer != null
+		{
+			if #Var("TracyMem")
+			{
+				___tracy_emit_memory_free_callstack(memPointer,0,0)
+			}
 			munmap(memPointer,memSize)
+		}
 		memPointer = null
 		memSize = 0
 	}
