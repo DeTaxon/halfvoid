@@ -5,9 +5,9 @@ DefaultAllocator := class extends IAllocator
 	{
 		if dirty
 		{
-			return malloc(size)
+			result = malloc(size)
 		}else{
-			return calloc(1,size)
+			result = calloc(1,size)
 		}
 	}
 	FreeMem := virtual !(void^ mem) -> void

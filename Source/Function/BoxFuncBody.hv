@@ -340,7 +340,7 @@ BoxFuncBody := class extend BoxFuncCommon
 	}
 	WaitReadyState := virtual !() -> void
 	{
-		if #Var("Tracy") and not readyState.Emited()
+		if #Var("Tracy") and not readyState.IsEmitted()
 		{
 			if #Var("Tracy") TracyPrintf("Task paused on function %p %s",this&,GetGoodName())
 			readyState.Await()

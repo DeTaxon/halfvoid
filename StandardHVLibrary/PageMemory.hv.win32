@@ -16,6 +16,11 @@ PageMemory := class
 
 		memPointer = VirtualAlloc(null,setMemSize,MEM_COMMIT,memFlags)
 		memSize = setMemSize
+
+		if #Var("TracyMem")
+		{
+			___tracy_emit_memory_alloc_callstack(memPointer,memSize,0,0)
+		}
 	}
 	GetPointer := !() -> void^
 	{
@@ -28,7 +33,13 @@ PageMemory := class
 	Close := !() -> void
 	{
 		if memPointer != null
+		{
 			VirtualFree(memPointer)
+			if #Var("TracyMem")
+			{
+				___tracy_emit_memory_free_callstack(memPointer,0,0)
+			}
+		}
 		//TODO cleanup
 		memPointer = null
 		memSize = 0

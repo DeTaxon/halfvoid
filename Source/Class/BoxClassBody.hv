@@ -271,7 +271,7 @@ BoxClassBody := class extend BoxClassPoison
 	{
 		StartParseBody()
 
-		if #Var("Tracy") and not FieldsState.Emited()
+		if #Var("Tracy") and not FieldsState.IsEmitted()
 		{
 			if #Var("Tracy") TracyPrintf("Task paused on class %p %s",this&,GetGoodName())
 			FieldsState.Await()
