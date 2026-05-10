@@ -3,6 +3,7 @@ PageMemory := class
 {
 	memPointer := void^
 	memSize := s64
+	tracySet := bool
 	
 	Create := !(s64 setMemSize, char^ flags) -> bool
 	{
@@ -17,8 +18,9 @@ PageMemory := class
 		memPointer = VirtualAlloc(null,setMemSize,MEM_COMMIT,memFlags)
 		memSize = setMemSize
 
-		if #Var("TracyMem")
+		if #Var("TracyMem") and ___tracy_emit_memory_alloc_callstack != null
 		{
+			tracySet = true
 			___tracy_emit_memory_alloc_callstack(memPointer,memSize,0,0)
 		}
 	}
@@ -34,8 +36,8 @@ PageMemory := class
 	{
 		if memPointer != null
 		{
-			VirtualFree(memPointer)
-			if #Var("TracyMem")
+			VirtualFree(memPointer,0,0x4000) // MEM_DECOMMIT
+			if #Var("TracyMem") and tracySet
 			{
 				___tracy_emit_memory_free_callstack(memPointer,0,0)
 			}

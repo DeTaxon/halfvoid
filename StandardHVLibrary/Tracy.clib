@@ -4,7 +4,8 @@
 	"initname" : "tracy_init",
 	"libs" : [
 		"libTracyClient.so",
-		"libTracyClient.dll"
+		"libTracyClient.dll",
+		"TracyClient.dll"
 	],
 	"structs" : {
 		"___tracy_source_location_data" : {

@@ -11,12 +11,16 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
+	tst := GetLibrary("/home/max/Projects/Lanq2_1/libTracyClient.so")
+
+	printf("hey %p\n",tst)
+	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()
 	// FlacTest()
-	OpusTest()
+	// OpusTest()
 	// ReflectionTest()
 	// FStringTest()
 	// ClosureTest()

@@ -3,6 +3,7 @@ PageMemory := class
 {
 	memPointer := void^
 	memSize := s64
+	addedToTracy := bool
 	
 	Create := !(s64 setMemSize, char^ flags) -> bool
 	{
@@ -20,9 +21,10 @@ PageMemory := class
 		memPointer = ptr
 		memSize = setMemSize
 
-		if #Var("TracyMem")
+		if #Var("TracyMem") and ___tracy_emit_memory_alloc_callstack != null
 		{
-			___tracy_emit_memory_alloc_callstack(memPointer,memSize,0,0)
+			addedToTracy = true
+			___tracy_emit_memory_alloc_callstack(memPointer,memSize,3,0)
 		}
 	}
 	GetPointer := !() -> void^
@@ -37,9 +39,9 @@ PageMemory := class
 	{
 		if memPointer != null
 		{
-			if #Var("TracyMem")
+			if #Var("TracyMem") and addedToTracy
 			{
-				___tracy_emit_memory_free_callstack(memPointer,0,0)
+				___tracy_emit_memory_free_callstack(memPointer,3,0)
 			}
 			munmap(memPointer,memSize)
 		}

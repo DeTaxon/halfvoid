@@ -1,4 +1,5 @@
 
+
 DefaultAllocator := class extends IAllocator
 {
 	AllocMem := virtual !(int size,bool dirty) -> void^
@@ -9,7 +10,7 @@ DefaultAllocator := class extends IAllocator
 		}else{
 			result = calloc(1,size)
 		}
-		if #Var("TracyMem")
+		if #Var("TracyMem") and ___tracy_emit_memory_alloc_callstack != null
 		{
 			___tracy_emit_memory_alloc_callstack(result,size,0,0)
 		}

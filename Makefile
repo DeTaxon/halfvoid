@@ -154,7 +154,7 @@ cycle_debug_release:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang -mfsgsbase -O3 -Os -g $(TempFile) -lm -ldl -o halfvoid
 cycle.exe:
-	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -emulate-tls $(trc) -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
+	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -emulate-tls $(flags) -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
 	clang++ --target=x86_64-w64-mingw32-gnu -gdwarf-4 -static out.exe.ll -g -o halfvoid.exe
 cycle_release.exe:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -win32 -C0 StandardHVLibrary/ -C1 Source/ $(CacheFlags)
