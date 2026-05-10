@@ -7,7 +7,12 @@
 "=" := !(Str& st1, String^ st2) -> void
 	#ExpectExactType(1)
 {
-	st1->AsString = st2.GetString()
+	if st2 == null
+	{
+		st1->AsString = null
+	}else{
+		st1->AsString = st2.GetString()
+	}
 }
 //"=" := !(Str& st1, char^ chData) -> void
 //{
