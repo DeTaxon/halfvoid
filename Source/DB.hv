@@ -3,6 +3,7 @@
 
 DB_EmbeddedFiles := HVTable2.{BoxFuncBody^,File^}
 
+DB_FunctionCalls := HVTable2.{BoxFunc^,BoxFunc^} // left calls right
 DB_ClassExtends := HVTable2.{BoxClass^,BoxClass^} //Left extend right
 DB_TypeSizeUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_VTableUsage := HVTable2.{BoxClass^, BoxFunc^}
@@ -22,6 +23,8 @@ DB_ForgetFunction := !(BoxFunc^ fnc) -> void
 	DB_FieldUsage.Key.RemoveAll(fnc)
 	DB_LocalVarUsage.Key.RemoveAll(fnc)
 	DB_EnumUsage.Key.RemoveAll(fnc)
+	DB_FunctionCalls.Key.RemoveAll(fnc)
+	DB_FunctionCalls.Value.RemoveAll(fnc)
 }
 
 DB_ForgetClass := !(HotloadContext^ ctx, BoxClass^ cls) -> void

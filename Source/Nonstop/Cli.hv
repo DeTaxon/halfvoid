@@ -272,6 +272,7 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 		return void
 	}
 	ReloadFile(hotload,asFile)
+	ReloadApply(hotload)
 }
 
 ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void

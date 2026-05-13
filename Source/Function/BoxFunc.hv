@@ -158,6 +158,10 @@ BoxFunc := class extend BoxExeConstObj
 				return Execute(objs)
 			}
 		}
+
+		if CurrentFunc != null
+			DB_FunctionCalls.Add(CurrentFunc,this&)
+
 		fCall := new BoxFuncCall //MUST BE NEW BOXFUNCCALL
 
 		if not fCall.Init(this&,objs,iObjs)

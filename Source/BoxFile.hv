@@ -393,6 +393,19 @@ BoxFile := class extend BoxUnit
 
 			c := PFunctionParser(stVal.Right)
 
+			isSuffix := false
+			name := StringSpan
+			if stVal.Left is TokenString
+			{
+				name = StringSpan(stVal.Left->{TokenString^}.Value.Str())
+				isSuffix = true
+			}else if stVal.Left is TokenIndent
+			{
+				name = stVal.Left->{TokenIndent^}.Value
+			}else{
+				assert(false)
+			}
+
 			if oldData != null
 			{
 				hsh := c.ComputeHeaderHash()
@@ -400,7 +413,7 @@ BoxFile := class extend BoxUnit
 				foundFunc := BoxFuncTemplateBody^
 				for it : oldData.Functions
 				{
-					if it.GetHeaderHash() == hsh
+					if it.GetHeaderHash() == hsh and name == it.Name
 					{
 						foundFunc = it
 						break
@@ -419,19 +432,6 @@ BoxFile := class extend BoxUnit
 					oldData.UsedFunctions.Insert(foundFunc)
 					continue
 				}
-			}
-
-			isSuffix := false
-			name := StringSpan
-			if stVal.Left is TokenString
-			{
-				name = StringSpan(stVal.Left->{TokenString^}.Value.Str())
-				isSuffix = true
-			}else if stVal.Left is TokenIndent
-			{
-				name = stVal.Left->{TokenIndent^}.Value
-			}else{
-				assert(false)
 			}
 
 			CreateFunc(name,isSuffix,c&,iter)

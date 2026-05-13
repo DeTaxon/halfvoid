@@ -4,16 +4,19 @@
 
 main := !(char^[] args) -> int
 {
-	assert(false,"error message HAHA")
+	// assert(false,"error message HAHA")
 	// RunFunc()
+	printf("func2\n")
+	SecondFunc()
+}
+SecondFunc := !() -> void
+{
+	printf("Second\n")
 }
 
 
 RunFunc := !() -> void
 {
-	tst := GetLibrary("/home/max/Projects/Lanq2_1/libTracyClient.so")
-
-	printf("hey %p\n",tst)
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()

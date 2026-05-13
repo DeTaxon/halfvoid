@@ -40,6 +40,25 @@ AppendClass BoxFile
 		ParseAppendClasses(oldData&)
 		ParseFunctions(oldData&)
 		ReloadGlobals(fileTokens,oldData&)
+
+		for fnc : oldData.Functions
+		{
+			if oldData.UsedFunctions.Contain(fnc)
+				continue
+
+
+			DB_FunctionCalls.Value.Get(fnc.AllFuncs[^][^], x ==> {ctx.AddFunction(x) })
+
+			for spc : CodeSpaces
+			{
+				if spc.Templates.Contain(fnc.Name)
+				{
+					spc.Templates[fnc.Name].DeleteIf(x ==> {  return x == fnc})
+				}
+			}
+
+			HotloadStream << "Removed function " << fnc.Name << "\n"
+		}
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
 	{
