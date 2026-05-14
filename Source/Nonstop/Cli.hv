@@ -272,6 +272,15 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 		return void
 	}
 	ReloadFile(hotload,asFile)
+
+	for it : WorkBag.works
+	{
+		if it is CWorkFuncCompile
+		{
+			hotload.AddFunction(it.itFunc)
+			// HotloadStream << "Reloading failed function\n"
+		}
+	}
 	ReloadApply(hotload)
 }
 
