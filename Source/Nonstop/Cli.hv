@@ -191,20 +191,12 @@ StartWorkBox := !() -> void
 			switch it is
 			{
 			case CWorkClassCompile
-				if it.oldData != null and not GHotloadCntx.ReloadClasses.Contain(it.itClass)
+				if (it.oldData != null or it.HaveError()) and not GHotloadCntx.ReloadClasses.Contain(it.itClass)
 					it.itClass.ReloadClass(GHotloadCntx&,it.oldData)
 			}
 		}
 
 		WaitForParsingObjects()
-
-		for it : WorkBag.works
-		{
-			if it is not CWorkClassCompile
-				continue
-			else 
-				HotloadStream << "Nope\n"
-		}
 
 		for fnc : GHotloadCntx.ChangedFunctions
 		{
