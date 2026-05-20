@@ -175,6 +175,7 @@ EnterCliMode := !() -> int
 
 }
 
+
 gSomeOneOnWork := bool
 StartWorkBox := !() -> void
 {
@@ -197,13 +198,18 @@ StartWorkBox := !() -> void
 
 		WaitForParsingObjects()
 
+		for it : WorkBag.works
+		{
+			if it is not CWorkClassCompile
+				continue
+			else 
+				HotloadStream << "Nope\n"
+		}
+
 		for fnc : GHotloadCntx.ChangedFunctions
 		{
 			BCFuncs.ForgetFunction(fnc)
 		}
-
-		if WorkBag.WorkCount() != 0
-			WorkBag.CancelAll()
 
 		GInterpCntx.ReloadFunctions(GHotloadCntx&)
 		if FastestRunner

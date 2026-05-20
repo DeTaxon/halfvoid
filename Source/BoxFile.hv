@@ -152,6 +152,8 @@ BoxFile := class extend BoxUnit
 						if foundClass.hash != dHsh
 						{
 							//TODO extends tokens
+							foundClass.ParentTokens.Destroy()
+							foundClass.Push(d.parents[^])
 							foundClass.Body = d.bodyToken
 							foundClass.hash = dHsh
 
@@ -193,25 +195,25 @@ BoxFile := class extend BoxUnit
 			ParsedTokens.Insert(iter)
 		}
 
-		if oldData != null
-		{
-			for oldClass : oldData.FileClasses
-			{
-				foundIt := false
-				for newClass : FileClasses
-				{
-					if newClass.Name != oldClass.Name
-						continue
-					foundIt = true
-					break
-				}
-
-				if foundIt
-					continue
-
-				DB_ForgetClass(oldData.ctx,oldClass)
-			}
-		}
+		// if oldData != null
+		// {
+		// 	for oldClass : oldData.FileClasses
+		// 	{
+		// 		foundIt := false
+		// 		for newClass : FileClasses
+		// 		{
+		// 			if newClass.Name != oldClass.Name
+		// 				continue
+		// 			foundIt = true
+		// 			break
+		// 		}
+		//
+		// 		if foundIt
+		// 			continue
+		//
+		// 		DB_ForgetClass(oldData.ctx,oldClass)
+		// 	}
+		// }
 	}
 	AddClass := !(StringSpan name, PClassParser^ d) -> void
 	{

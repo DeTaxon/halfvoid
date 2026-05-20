@@ -34,7 +34,7 @@ AppendClass BoxFile
 		}
 		ClassAppends.Destroy()
 
-		//TODO deleted functions,classtemplates,typedefs
+		//TODO deleted classtemplates,typedefs
 		ParseClasses(oldData&)
 		ParseTypedefs(oldData&)
 		ParseAppendClasses(oldData&)
@@ -57,7 +57,28 @@ AppendClass BoxFile
 				}
 			}
 
+			// DB_ForgetFunction(fnc)
+
 			HotloadStream << "Removed function " << fnc.Name << "\n"
+		}
+
+		for cls : oldData.FileClasses
+		{
+			if oldData.UsedFileClasses.Contain(cls)
+				continue
+
+			for spc : CodeSpaces
+			{
+				if spc.Types.Contain(cls.Name) and spc.Types[cls.Name] == cls
+				{
+					spc.Types.Remove(cls.Name)
+				}
+			}
+
+			DB_ClassExtends.Key.Get(cls, x ==> { ctx.AddClass(x) })
+
+			HotloadStream << "Removed class " << cls.Name << "\n"
+			DB_ForgetClass(ctx,cls)
 		}
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void

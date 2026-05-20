@@ -316,8 +316,6 @@ BoxClassBody := class extend BoxClassPoison
 		CurrentWork = AddClassWork()
 		CurrentScope = this&
 
-		defer thisWork = null
-
 		ScopePutConstants()
 
 		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
@@ -369,7 +367,7 @@ BoxClassBody := class extend BoxClassPoison
 			ParseHeader()
 		})
 	}
-	ParseHeader := !() -> void
+	ParseHeader := !(ClassReloadOldData^ oldData = null) -> bool
 	{
 		GParsedAllFiles.Await()
 		CurrentScope = this&
@@ -379,20 +377,18 @@ BoxClassBody := class extend BoxClassPoison
 
 		buildCtx = new ClassBuildContext
 
-		defer thisWork = null
-
 		for i : ParentTokens.Size()
 		{
 			inhType := CheckTemplateType(null,ParentTokens[i].0,NamedConstants)
 			if inhType == null
 			{
 				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("can not inherit unknown class"))
-				return void
+				return false
 			}
 			if not (inhType is in TypeClass)
 			{
 				CurrentWork?.SetErrorMessage(ParentTokens[i].0.MakeError("parent type must be class"))
-				return void
+				return false
 			}
 			asClsParent := inhType->{TypeClass^}
 			asClsParent.AwaitParentStep()
@@ -486,6 +482,8 @@ BoxClassBody := class extend BoxClassPoison
 		headerParseHatch.Emit()
 
 		thisHeaderWork = null
+
+		return true
 	}
 	AwaitHeaderParse := !() -> void
 	{
@@ -904,11 +902,15 @@ CWorkClassCompile := class extend CWorkUnit
 		{
 			if itClass.thisHeaderWork != this&
 				return "Complete"
+			if errMessage->AsString != null
+				return "Failed"
 			if itClass.headerParseHatch.IsEmitted()
 				return "Complete"
 		}else{
 			if itClass.thisWork != this&
 				return "Complete"
+			if errMessage->AsString != null
+				return "Failed"
 			if IsDone()
 				return "Complete"
 		}

@@ -1,6 +1,5 @@
 AppendClass BoxClassBody
 {
-	
 	ReloadClass := !(HotloadContext^ ctx, ClassReloadOldData^ oldData = null) -> void
 	{
 		if not startedParse
@@ -58,8 +57,6 @@ AppendClass BoxClassBody
 			oldData.OldFieldPaths.Push(FieldsPath[^])
 		}
 
-		AddClassWork().oldData = oldData
-
 		oldHash := GetMemStructureHash()
 
 		PrimeParents.Destroy()
@@ -69,12 +66,21 @@ AppendClass BoxClassBody
 
 		Fields.Destroy()
 		FieldsPath.Destroy()
+		FieldsState.Reset()
 
 		VTable.Destroy()
 		VTableType = null
 		VTableValue = null
 		VTableField = null
 
+		thisWork = null
+
+		if not ParseHeader(oldData)
+		{
+			return void
+		}
+
+		AddClassWork().oldData = oldData
 		res := WorkBody(oldData)
 
 		if not res
