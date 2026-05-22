@@ -100,10 +100,13 @@ AppendClass BoxClass
 
 			FieldsPath.Push(fPath)
 
-			if fil.Value is in TypeClass
+			itr := fil.Value
+			while itr?.Base != null
+				itr = itr.Base
+
+			if itr is in TypeClass
 			{
-				fldClass := fil.Value->{TypeClass^}
-				DB_ClassComposition.Add(this&,fldClass)
+				DB_ClassComposition.Add(this&,itr)
 			}
 		}
 		if IsPacked

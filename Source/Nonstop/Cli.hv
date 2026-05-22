@@ -186,16 +186,6 @@ StartWorkBox := !() -> void
 
 	SubWork(() ==> {
 
-		for it : WorkBag.works
-		{
-			switch it is
-			{
-			case CWorkClassCompile
-				if (it.oldData != null or it.HaveError()) and not GHotloadCntx.ReloadClasses.Contain(it.itClass)
-					it.itClass.ReloadClass(GHotloadCntx&,it.oldData)
-			}
-		}
-
 		WaitForParsingObjects()
 
 		for fnc : GHotloadCntx.ChangedFunctions
@@ -278,6 +268,10 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 			hotload.AddFunction(it.itFunc)
 			// HotloadStream << "Reloading failed function\n"
 		}
+		if it is CWorkClassCompile
+		{
+			hotload.AddClass(it.itClass)
+		}
 	}
 	ReloadApply(hotload)
 }
@@ -309,7 +303,6 @@ ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void
 	HotloadStream << "Changed file " << asFile.GetName() <<" , reloading content\n"
 
 	foundFile.ReloadFile(hotload,asFile)
-
 }
 
 CliParseMain := !() -> void

@@ -14,8 +14,8 @@ HotloadTest := !() -> void
 	// SecondFunc2()
 
 	a1 := ExtendsClass
-	// a2 := ComposeClass
-	// a3 := ComposeClass2
+	a2 := ComposeClass
+	a3 := ComposeClass2
 	// a4 := ComposeClass3
 }
 
@@ -29,14 +29,14 @@ ExtendsClass := class extends TestClass
 
 }
 
-// ComposeClass := class
-// {
-// 	r := TestClass
-// }
-// ComposeClass2 := class
-// {
-// 	r := TestClass^
-// }
+ComposeClass := class
+{
+	r := TestClass
+}
+ComposeClass2 := class
+{
+	r := TestClass^
+}
 // ComposeClass3 := class
 // {
 // 	r := MakeItTemplate.{TestClass}

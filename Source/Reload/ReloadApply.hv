@@ -1,6 +1,16 @@
 
 ReloadApply := !(HotloadContext^ hotload) -> void
 {
+	for it1,i  : hotload.ReloadClasses
+	{
+		assert(not it1.reloadInProgress)
+		for it2,j : hotload.ReloadClasses
+		{
+			if i == j
+				continue
+			assert(it1 != it2)
+		}
+	}
 	while hotload.ReloadFunctions.Size() != 0 or hotload.ReloadClasses.Size() != 0
 	{
 		if hotload.ReloadClasses.Size() != 0
@@ -30,4 +40,13 @@ ReloadApply := !(HotloadContext^ hotload) -> void
 
 	hotload.FailedToCompile[^].Recompile()
 	hotload.FailedToCompile.Destroy()
+
+	for it : WorkBag.works
+	{
+		if it is CWorkClassCompile
+		{
+			it.Cancel()
+		}
+	}
+	//TODO wait for CWorkClassCompile.Cancel() to finish
 }

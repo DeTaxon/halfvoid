@@ -76,6 +76,7 @@ AppendClass BoxFile
 			}
 
 			DB_ClassExtends.Key.Get(cls, x ==> { ctx.AddClass(x) })
+			DB_ClassComposition.Value.Get(cls, x ==> { ctx.AddClass(x) })
 
 			HotloadStream << "Removed class " << cls.Name << "\n"
 			DB_ForgetClass(ctx,cls)

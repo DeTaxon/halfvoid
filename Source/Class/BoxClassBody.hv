@@ -320,7 +320,8 @@ BoxClassBody := class extend BoxClassPoison
 
 		funcs := List.{Tuple.{StringSpan,BoxFunc^}}
 
-		checkClassBody(Body,oldData,funcs)
+		if not checkClassBody(Body,oldData,funcs)
+			return false
 		if thisWork.IsCanceled
 			return false
 		for it : Appends
@@ -516,6 +517,9 @@ BoxClassBody := class extend BoxClassPoison
 				thisWork.ClearError()
 
 				checkBodyElement(bodyVal,iter,oldData,funcs)
+
+				if oldData != null and thisWork.HaveError() //TODO instead of this, start tasks and WaitForObjects
+					return false
 
 				if not thisWork.HaveError()
 					break

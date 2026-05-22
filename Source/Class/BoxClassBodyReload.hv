@@ -5,6 +5,8 @@ AppendClass BoxClassBody
 		if not startedParse
 			return void
 
+		assert(not reloadInProgress)
+
 		oldSize := 0
 		if FieldsState.IsEmitted() 
 			oldSize = GetSize()
@@ -19,8 +21,15 @@ AppendClass BoxClassBody
 		})
 	}
 
+	reloadInProgress := bool //TODO bugfix, who calls ReloadClass twice? remove after making better reload
+
 	ReloadClassCore := !(HotloadContext^ ctx,int oldSize,ClassReloadOldData^ prevOldData) -> void
 	{
+		if reloadInProgress
+			return void
+		reloadInProgress = true
+		defer reloadInProgress = false
+
 		className := GetGoodName()
 
 		HotloadStream << "Started reload of class " << className << "\n"
