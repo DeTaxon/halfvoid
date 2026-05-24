@@ -42,6 +42,20 @@ TryCheckMathOperatorCall := !(Token^ itm) -> BoxExeObj^
 	if tmpList[0] == null or tmpList[1] == null
 		return null
 
+
+	if oper in !["==","!="]
+	{
+		t1 := tmpList[0].GetType()
+		t2 := tmpList[1].GetType()
+
+		if (t1 == GTypeStr and tmpList[1] == GObjNull)
+		 or(t2 == GTypeStr and tmpList[0] == GObjNull)
+		{
+			idx := t1 == GTypeStr ?: 0 : 1
+			tmpList[idx] = strAsString(tmpList[idx])
+		}
+	}
+
 	if oper in ![">",">=","<","<=","==","!="]
 	{
 		res := innertTryGetCompareOverSpaceship(oper,tmpList,itm)

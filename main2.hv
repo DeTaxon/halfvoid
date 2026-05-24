@@ -6,7 +6,11 @@ main := !(char^[] args) -> int
 {
 	// assert(false,"error message HAHA")
 	// RunFunc()
-	HotloadTest()
+	// HotloadTest()
+	st := Str
+	printf("Hop %i\n",st == null)
+	st = "asd"
+	printf("Hop %i\n",st == null)
 }
 HotloadTest := !() -> void
 {
@@ -16,12 +20,17 @@ HotloadTest := !() -> void
 	a1 := ExtendsClass
 	a2 := ComposeClass
 	a3 := ComposeClass2
-	// a4 := ComposeClass3
+	a4 := ComposeClass3
+
+	// a1.Huh()
 }
 
 TestClass := class
 {
-	
+	// Huh := !() -> void
+	// {
+	// 	printf("Test\n")
+	// }
 }
 
 ExtendsClass := class extends TestClass
@@ -37,10 +46,10 @@ ComposeClass2 := class
 {
 	r := TestClass^
 }
-// ComposeClass3 := class
-// {
-// 	r := MakeItTemplate.{TestClass}
-// }
+ComposeClass3 := class
+{
+	r := MakeItTemplate.{TestClass}
+}
 // SecondFunc := !() -> void
 // {
 // 	c := TestClass
@@ -50,10 +59,10 @@ ComposeClass2 := class
 // 	c := TestClass^
 // }
 //
-// MakeItTemplate := class .{@T}
-// {
-// 	h := T
-// }
+MakeItTemplate := class .{@T}
+{
+	h := T
+}
 
 
 RunFunc := !() -> void

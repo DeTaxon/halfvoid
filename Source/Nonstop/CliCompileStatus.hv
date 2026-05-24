@@ -29,9 +29,10 @@ mainStatusFunc := !() -> void
 
 		lst.Push(st.GetStr())
 
+		messagesLimit := 30
 
 		gotWorks := AVLSet.{CWorkUnit^}
-		maxMessages := 30
+		maxMessages := messagesLimit
 		for it : WorkBag.works
 		{
 			msg := it.GetErrorMessage()
@@ -45,7 +46,7 @@ mainStatusFunc := !() -> void
 				break
 		}
 
-		if maxMessages != 0
+		if maxMessages == messagesLimit
 		{
 			for it : WorkBag.works
 			{

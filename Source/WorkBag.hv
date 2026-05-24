@@ -16,11 +16,6 @@ CompilerWork := class
 	CancelAll := !() -> void
 	{
 		works[^].Cancel()
-		for it : WorkBag.works
-		{
-			if it.GetErrorMessage()->AsString != null
-				HotloadStream << "YEP2\n"
-		}
 	}
 
 	RemoveComplete := !() -> void

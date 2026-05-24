@@ -190,7 +190,7 @@ main := !(Vector.{char^} args) -> int
 				GVInitInterpreted = false
 			case "-emulate-tls"
 				EmulateTLS = true
-			case "-target-cpu"
+			case "--target-cpu"
 				i += 1
 				switch args[i]
 				{

@@ -53,6 +53,8 @@
 		"mktime" : "u64,void^",
 		"localtime" : "void^,u64^",
 
+		"setjmp" : "int,void^",
+		"longjmp" : "void,void^,int",
 
 		"srand" : "void,int",
 		"rand" : "int",

@@ -73,7 +73,7 @@ ifeq ($(emulatetls),yes)
 endif
 
 ifeq ($(arm64),yes)
-	cpuflag := -target-cpu arm64
+	cpuflag := --target-cpu arm64
 endif
 
 
