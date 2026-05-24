@@ -1,0 +1,4 @@
+jmp_buf := class
+{
+	data := u8[256] // its 200 on my pc
+}
