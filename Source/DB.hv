@@ -7,7 +7,8 @@ DB_FunctionCalls := HVTable2.{BoxFunc^,BoxFunc^} // left calls right
 DB_ClassExtends := HVTable2.{BoxClass^,BoxClass^} //Left extend right
 DB_TypeSizeUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_VTableUsage := HVTable2.{BoxClass^, BoxFunc^}
-DB_ClassComposition := HVTable2.{BoxClass^, BoxClass^} // Left uses right
+DB_ClassComposition := HVTable2.{BoxClass^, BoxClass^} // Left uses right directly
+DB_ClassUsesClass := HVTable2.{BoxClass^,BoxClass^}
 DB_FieldUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_LocalVarUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_EnumUsage := HVTable2.{BoxFunc^,BoxEnum^}
@@ -46,4 +47,5 @@ DB_ForgetClass := !(HotloadContext^ ctx, BoxClass^ cls) -> void
 	}
 	CodeSpaces[^].Globals[cls.Name].DeleteIf(x ==> { return x == cls } )
 	CodeSpaces[^].Types.Remove(cls.Name)
+
 }

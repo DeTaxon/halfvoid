@@ -100,13 +100,15 @@ AppendClass BoxClass
 
 			FieldsPath.Push(fPath)
 
+			if fil.Value is in TypeClass
+				DB_ClassComposition.Add(this&,fil.Value->{TypeClass^})
 			itr := fil.Value
 			while itr?.Base != null
 				itr = itr.Base
 
 			if itr is in TypeClass
 			{
-				DB_ClassComposition.Add(this&,itr)
+				DB_ClassUsesClass.Add(this&,itr)
 			}
 		}
 		if IsPacked
@@ -168,6 +170,12 @@ AppendClass BoxClass
 			fldClass := newFieldType->{TypeClass^}
 			DB_ClassComposition.Add(this&,fldClass)
 		}
+
+		itr := newFieldType
+		while itr.Base != null
+			itr = itr.Base
+		if itr is in TypeClass
+			DB_ClassUsesClass.Add(this&,itr)
 		//fieldLayoutChanged()
 
 		DB_TypeSizeUsage.Value.Get(this&,x ==> {
