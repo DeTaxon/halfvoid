@@ -341,6 +341,7 @@ GetAnyFile := !() -> BoxFile^
 		return DummyFile
 
 	res := new BoxFileDummy
+	res.fileId = GetNewId()
 	res.fileName = StringSpan("DummyFile")
 	DummyFile = res
 	return res

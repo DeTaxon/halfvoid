@@ -135,6 +135,7 @@ BoxClass := class extends Type
 			f^ << "}\n"
 
 			f^ << "!" << ItId
+			assert(GDebugFileId != 0)
 			f^ << "= distinct !DICompositeType(tag: DW_TAG_class_type, name: \""
 			f^ << Name
 			f^ << "\", file: !" << GDebugFileId << ", line: 1, size: "<< ItSize*8 <<", flags: DIFlagTypePassByValue, elements: !" <<fieldTypes << ", identifier: \""

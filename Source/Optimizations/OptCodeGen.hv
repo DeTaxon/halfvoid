@@ -17,7 +17,13 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	PrintDeclares(ctx)
 	
 	c.UsedStrings[^].PrintCode(ctx)
+
+	//TODO correctly select file
+	GDebugFileId = GetAnyFile().fileId
+	assert(GDebugFileId != 0)
 	c.UsedClasses[^].PrintAsType(ctx)
+
+
 	OptPrintGlobals(ctx,c.WriteGlobals)
 	c.DeclareFunctions[^].PrintCode(ctx)
 

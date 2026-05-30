@@ -7,10 +7,11 @@ main := !(char^[] args) -> int
 	// assert(false,"error message HAHA")
 	// RunFunc()
 	// HotloadTest()
-	st := Str
-	printf("Hop %i\n",st == null)
-	st = "asd"
-	printf("Hop %i\n",st == null)
+	// st := Str
+	// printf("Hop %i\n",st == null)
+	// st = "asd"
+	// printf("Hop %i\n",st == null)
+	ModuleTest()
 }
 HotloadTest := !() -> void
 {
@@ -83,6 +84,22 @@ RunFunc := !() -> void
 	//tst.Emplace(int)
 }
 
+ModuleTest := !() -> void
+{
+	z := CreatedTestClass
+	z.first = 12
+
+	// r := OnDemandTestClass
+	// r.x = 12
+	// r.u = 3
+	// r.x = 1
+	//
+	// for it,ind : r->#AllFields
+	// {
+	// 	printf("yep %s %i\n",ind,it)
+	// }
+}
+
 ClassB := class
 {
 	this := !(TypeId test) -> void
@@ -130,6 +147,7 @@ ReflectionTest := !() -> void
 
 #Module(
 	cls := TypeClass^
+	clsOnDemand := TypeClass^
 
 	GetItem := virtual !(Str name) -> HV_Object^
 	{
@@ -143,9 +161,20 @@ ReflectionTest := !() -> void
 
 			cls.AddField("first",HV.GetType("int"))
 
-			printf("after created %i <%s>\n",cls.GetFieldsCount(),cls.GetDebugStr())
+			printf("after created %i <%s>\n",cls.GetFieldsCount(),cls.GetDebugStr().CStr())
 
 			return cls->{HV_Object^}
+		}
+
+		if name == "OnDemandTestClass"
+		{
+			return clsOnDemand->{HV_Object^}?
+
+			clsOnDemand = HV.CreateClass2()
+			HV.SetGetClassFieldCallback(clsOnDemand,(x) ==> {
+				return HV.GetTypeObj(int)
+			})
+			return clsOnDemand->{HV_Object^}
 		}
 
 	}

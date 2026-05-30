@@ -17,11 +17,12 @@ SoundEngine := class
 		context = alcCreateContext(device,null)
 		alcMakeContextCurrent(context)
 	}
-	CreateSound := !(File^ fil) -> Sound^
-	{
-		result = new Sound(fil)
-		buffers.Push(result)
-	}
+	// CreateSound := !(File^ fil) -> Sound^
+	// {
+	// 	f := SoundFile(fil)
+	// 	result = new Sound(fil)
+	// 	buffers.Push(result)
+	// }
 	ReserveSources := !(int exp) -> void
 	{
 		diff := exp - freeSources.Size()
