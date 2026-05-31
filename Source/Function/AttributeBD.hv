@@ -48,7 +48,15 @@ AttributeDBType := class
 		{
 			st << "attributes #" << id << " = {"
 			st << "nounwind "
-			st << """ "target-cpu"="x86-64" "target-features"="+cmov,+cx8,+fxsr,+mmx,+sse,+sse2,+x87" """
+			switch TargetCPUArch
+			{
+			case "x86_64"
+				st << """ "target-cpu"="x86-64" "target-features"="+cmov,+cx8,+fxsr,+mmx,+sse,+sse2,+x87" """
+			case "AArch64"
+				st << """ "frame-pointer"="non-leaf" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="generic" "target-features"="+fp-armv8,+neon,+outline-atomics,+v8a,-fmv" """
+			case none
+				assert(false,"unknown architecture")
+			}
 			st  << it << "}\n"
 		}
 	}

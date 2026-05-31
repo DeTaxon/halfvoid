@@ -29,7 +29,17 @@ osIsFolder := !(char^ nm) -> bool
 	st1 := char[144]
 	if stat(nm,st1[0]&) != 0
 		return false
-	itflg := st1[24]&->{s32^}^
+	itflg := s32
+
+	if #CPUArch() == "x86_64"
+	{
+		itflg = st1[24]&->{s32^}^
+	}else if #CPUArch() == "AArch64"
+	{
+		itflg = st1[16]&->{s32^}^
+	}else{
+		assert(false,"Unknown arcitecture")
+	}
 	if (itflg and_b S_IFDIR) == S_IFDIR
 		return true
 	return false

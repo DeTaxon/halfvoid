@@ -83,19 +83,19 @@ MainTarget: test
 
 test:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid $(flags) --vk vk.xml -g -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -o /tmp/out.ll
-	clang -g /tmp/out.ll -mfsgsbase -lm -o test
+	clang -g /tmp/out.ll -lm -o test
 comp:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid -test $(flags) --vk vk.xml -g -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv -o /tmp/out.ll
-	/home/max/clang+llvm-15.0.0-x86_64-linux-gnu-rhel-8.4/bin/clang -g /tmp/out.ll -mfsgsbase -lm -o test
+	/home/max/clang+llvm-15.0.0-x86_64-linux-gnu-rhel-8.4/bin/clang -g /tmp/out.ll -lm -o test
 testground:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid $(flags) -g -O -C0 StandardHVLibrary -C0 ExperimentalLibrary TestGround.hv -o /tmp/out.ll
-	clang -g /tmp/out.ll -mfsgsbase -lm -o test
+	clang -g /tmp/out.ll -lm -o test
 test.exe:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid.exe -emulate-tls -win32 -g -C0 StandardHVLibrary/ main2.hv -o out.ll
-	clang -g out.ll -mfsgsbase -o test.exe
+	clang -g out.ll -o test.exe
 test2.exe:
 	$(gdb_tui) $(TimeF) $(vgrind)  $(cg)  ./halfvoid -emulate-tls -win32 -g -C0 StandardHVLibrary/ main2.hv -cache /tmp/TestCache.zip -o /tmp/out.ll
-	clang --target=x86_64-w64-mingw32-gnu -g /tmp/out.ll -mfsgsbase -o test.exe -lws2_32
+	clang --target=x86_64-w64-mingw32-gnu -g /tmp/out.ll -o test.exe -lws2_32
 unit:
 	./halfvoid -g $(flags) -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Tests -o /tmp/out.ll
 	clang -g /tmp/out.ll -o /tmp/hv_tests -lm -ldl
@@ -146,13 +146,13 @@ halfvoid.exe:
 	clang -g  --target=x86_64-w64-mingw32-gnu -gdwarf-4 out.ll -lm -ldl -o halfvoid.exe
 cycle:
 	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid $(flags) -self-build -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
-	clang -g -mfsgsbase -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
+	clang -g -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 cycle_release:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -self-build -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
-	clang -mfsgsbase -O3 -Os -s $(TempFile) -lm -ldl -o halfvoid
+	clang -O3 -Os -s $(TempFile) -lm -ldl -o halfvoid
 cycle_debug_release:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
-	clang -mfsgsbase -O3 -Os -g $(TempFile) -lm -ldl -o halfvoid
+	clang  -O3 -Os -g $(TempFile) -lm -ldl -o halfvoid
 cycle.exe:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -emulate-tls $(flags) -win32 -g -C0 StandardHVLibrary/ -C1 Source/ -o out.exe.ll
 	clang++ --target=x86_64-w64-mingw32-gnu -gdwarf-4 -static out.exe.ll -g -o halfvoid.exe
