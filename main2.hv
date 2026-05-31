@@ -89,15 +89,15 @@ ModuleTest := !() -> void
 	z := CreatedTestClass
 	z.first = 12
 
-	// r := OnDemandTestClass
-	// r.x = 12
-	// r.u = 3
-	// r.x = 1
-	//
-	// for it,ind : r->#AllFields
-	// {
-	// 	printf("yep %s %i\n",ind,it)
-	// }
+	r := OnDemandTestClass
+	r.x = 12
+	r.u = 3
+	r.x = 1
+
+	for it,ind : r->#AllFields
+	{
+		printf("yep %s %i\n",ind,it)
+	}
 }
 
 ClassB := class

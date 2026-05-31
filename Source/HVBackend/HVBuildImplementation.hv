@@ -71,6 +71,7 @@ HVContextImplementation := class extend HV_Context
 	CreateClass2 := virtual !() -> TypeClass^ 
 	{
 		newClass := new BoxClass
+		newClass.ItId = GetNewId()
 		newClass.InitType()
 
 		AllClasses.Push(newClass)
