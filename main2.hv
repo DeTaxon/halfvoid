@@ -5,13 +5,14 @@
 main := !(char^[] args) -> int
 {
 	// assert(false,"error message HAHA")
-	// RunFunc()
+	RunFunc()
 	// HotloadTest()
 	// st := Str
 	// printf("Hop %i\n",st == null)
 	// st = "asd"
 	// printf("Hop %i\n",st == null)
-	ModuleTest()
+	// ModuleTest()
+	//
 }
 HotloadTest := !() -> void
 {
@@ -68,6 +69,10 @@ MakeItTemplate := class .{@T}
 
 RunFunc := !() -> void
 {
+	c := () ==> {
+		printf("yep\n")
+	}
+	c()
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()

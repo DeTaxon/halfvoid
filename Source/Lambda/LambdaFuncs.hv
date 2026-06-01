@@ -1,0 +1,22 @@
+
+innerTryLambdaCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+{
+	tp := dwnItem.GetType()
+
+	if tp.Base is not in TypeClass
+		return null
+
+	cls := tp.Base->{TypeClass^}
+
+	if cls.TemplateParent is not LambdaClassTemplate
+		return null
+	
+	tmp := TokenIndent
+	tmp.Value = "callFunc"
+	fld := innerTryGetFieldCall(dwnItem,tmp&)
+
+	newArgs := BoxExeObj^[]
+	newArgs.Push(dwnItem)
+	newArgs.Push(Objs[^])
+	return innerTryGetPtrCall(fld,newArgs)
+}

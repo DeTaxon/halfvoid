@@ -305,6 +305,7 @@ TryCheckRegularFuncCall := !(Token^ itm) -> BoxExeObj^
 		}
 		return innerTryGetPtrCall(dwnItem,Objs)?
 		return innerTryGetSkobCall(dwnItem,Objs,consts)?
+		return innerTryLambdaCall(dwnItem,Objs,consts)?
 	}
 
 	CurrentFuncWork.SetErrorMessage(itm.MakeError("Can not parse function call"))
