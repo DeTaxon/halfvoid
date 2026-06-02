@@ -200,6 +200,8 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
+
+		lType := GLambdaImp.GetClass(![tplType,newFunc.GetYieldTuple()])
 	
 		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,![tplType,newFunc.GetYieldTuple()])
 

@@ -69,6 +69,7 @@ TLambdaImp := class .{@FuncPtr,@CaptureTuple,@YieldTuple} extends TLambda.{FuncP
 	}
 }
 
+// TODO delete after new stable point
 internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by compiler on result type of @FuncType
 {
 	return lmb.callFunc(lmb&,args...)

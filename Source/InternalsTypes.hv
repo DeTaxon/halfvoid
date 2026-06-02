@@ -3,6 +3,7 @@ OptionalTemplate := BoxClassTemplate^
 
 GCILambda := BoxClass^
 GCLambda := BoxClassTemplate^
+GLambdaImp := BoxClassTemplate^
 
 
 GBlobClass := BoxClass^
@@ -18,6 +19,7 @@ InitInternalsTypes := !() -> void
 
 	GCILambda = intGetClass2("TILambda")
 	GCLambda = intGetClassTemplate2("TLambda")
+	GLambdaImp = intGetClassTemplate2("TLambdaImp")
 
 	GBlobClass = intGetClass2("Blob")
 	assert(GBlobClass != null)

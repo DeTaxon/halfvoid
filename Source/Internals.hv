@@ -3,9 +3,6 @@ TemplateInternalInitClass := BoxFuncTemplate^
 TemplateInternalNewOne := BoxFuncTemplate^
 FunctionInternalDelete := BoxFunc^
 
-TemplateInternalCreateLambda := BoxFuncTemplate^
-TemplateInternalLambdaCall := BoxFuncTemplate^
-
 TemplateInternalGetVTableVariable := BoxFuncTemplate^
 
 TemplateInternalIsInSameType := BoxFuncTemplate^
@@ -48,9 +45,6 @@ InitInternals := !() -> void
 	//TemplateInternalVirtualCall = intGetTemplate("internalHVVirtualMethodCall")
 	TemplateInternalNewOne = intGetTemplate("internalHVNew")
 	FunctionInternalDelete = intGetFunc("internalHVDelete")
-
-	TemplateInternalCreateLambda = intGetTemplate("internalHVCreateLambda")
-	TemplateInternalLambdaCall = intGetTemplate("internalHVLambdaCall")
 
 	//TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
 
