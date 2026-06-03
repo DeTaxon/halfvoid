@@ -320,9 +320,6 @@ main := !(Vector.{char^} args) -> int
 	InitInternalsTypes()
 	InitInternals()
 
-	if not SelfBuild
-		ExposeClasses()
-
 	for spc : CodeSpaces
 	{
 		spc.Modules[^].Work()
@@ -334,6 +331,10 @@ main := !(Vector.{char^} args) -> int
 
 	InitTaskLocal()
 	InitLambda()
+
+	if not SelfBuild
+		ExposeClasses() //depende on InitLambda
+
 	GParsedAllFiles.Emit()
 
 	if NonStopBuild

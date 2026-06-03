@@ -223,6 +223,13 @@ StrToFunctionTemplate := !(Str funcText) -> BoxFuncTemplate^
 	return c.CreateObject()->{BoxFuncTemplate^}
 }
 
+CreateFieldCall := !(BoxExeObj^ obj,Str fieldName) -> BoxExeObj^
+{
+	tmp := TokenIndent
+	tmp.Value = fieldName
+	return innerTryGetFieldCall(obj,tmp&)
+}
+
 ComputeHash := !(Token^ itm) -> u32
 {
 	if itm == null

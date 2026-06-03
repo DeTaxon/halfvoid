@@ -201,14 +201,21 @@ BoxLambdaHolder := class extend BoxExeObj
 		objs := CheckExeDownList
 		objs.Push(fncPtr)
 
-		lType := GLambdaImp.GetClass(![tplType,newFunc.GetYieldTuple()])
-	
-		createLambdaFunc := TemplateInternalCreateLambda.GetFunc(objs,![tplType,newFunc.GetYieldTuple()])
+		lType := GLambdaImp.GetClass(![newFunc.GetType().GetPoint(),tplType,newFunc.GetYieldTuple()])
 
-		step1 := createLambdaFunc.CreateCall(objs)
-		step2 := new UnrefFuncCall(step1)
+		lVar := new LocalVar("lambda",lType,true,false)
+		CurrentFunc.AddLocalVar(lVar)
 
-		cleanType = step1.GetType()
+		vCall := lVar.CreateVarCall()
+		fncField := CreateFieldCall(vCall,"callFunc")
+		assert(fncField != null)
+		setter := CreateFuncCall("=",![fncField,newFunc])
+		assert(setter != null)
+		lVar.extraWork.Push(setter)
+
+		step2 := new UnrefFuncCall(lVar.CreateVarCall())
+
+		cleanType = lType
 
 		assert(cleanType is in TypeClass)
 
@@ -237,8 +244,7 @@ BoxLambdaHolder := class extend BoxExeObj
 
 		if capturedVars.Size() != 0
 		{
-			assert(step1 is in BoxFuncCall)
-			lambVar := step1->{BoxFuncCall^}.ResultVar
+			lambVar := lVar
 			assert(lambVar != null)
 
 			getCaptureList := lambdaCapturePath.CreateCall(![lambVar.CreateVarCall()])
@@ -271,6 +277,7 @@ BoxLambdaHolder := class extend BoxExeObj
 			newFunc.YieldStateInt.SetCall(getState)
 		}
 
+		resObj.preCalls.Push(lVar)
 		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())
 
 		while UnitStack.Size() > stackSize
