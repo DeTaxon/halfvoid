@@ -276,6 +276,7 @@ main := !(Vector.{char^} args) -> int
 	#ForceVirtualFunctions("MCConstValue")
 	#ForceVirtualFunctions("MCConstFloat")
 	#ForceVirtualFunctions("Type")
+	#ForceVirtualFunctions("BoxClass")
 
 	GetFuncMangle(StringSpan("main"))
 
@@ -333,7 +334,7 @@ main := !(Vector.{char^} args) -> int
 	InitLambda()
 
 	if not SelfBuild
-		ExposeClasses() //depende on InitLambda
+		ExposeClasses()
 
 	GParsedAllFiles.Emit()
 

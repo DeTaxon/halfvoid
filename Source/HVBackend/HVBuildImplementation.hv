@@ -135,10 +135,6 @@ HVContextImplementation := class extend HV_Context
 	{
 		return obj->{GlobalVar2^}.ItName
 	}
-	SetGetClassFieldCallback := virtual !(TypeClass^ cls, !(Str)&->Type^ cb) -> void
-	{
-		cls.newFieldCB = cb.Capture()
-	}
 }
 HV_FunctionTemplateImp := class extend HV_FunctionTemplate
 {

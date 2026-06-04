@@ -42,7 +42,6 @@ HV_Context := class
 
 	//Temp
 	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void {}
-	SetGetClassFieldCallback := virtual !(TypeClass^ cls, !(Str)&->Type^ cb) -> void {} // TODO embed lambda code and make this as method of TypeClass
 }
 
 TypeGroups := enum

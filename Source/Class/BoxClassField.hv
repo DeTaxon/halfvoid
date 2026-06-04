@@ -194,6 +194,15 @@ AppendClass BoxClass
 			return newFieldCB?(val)?
 		return null
 	}
+	SetFieldFailedCallback := virtual !(!(Str)&->Type^ cb) -> void
+	{
+		if cb == null
+		{
+			newFieldCB = null
+		}else{
+			newFieldCB = cb.Capture()
+		}
+	}
 	GetField := virtual !(Str val) -> FieldPath^
 	{
 		AwaitTypeState()

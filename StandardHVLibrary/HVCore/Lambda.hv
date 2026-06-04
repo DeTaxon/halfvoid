@@ -74,6 +74,7 @@ internalHVLambdaCall := !(@T lmb,args...) -> void // return type replaced by com
 {
 	return lmb.callFunc(lmb&,args...)
 }
+// TODO delete after new stable point
 internalHVCreateLambda := !(@FuncPtr fnc).{@CaptureTuple,@YieldVars} -> TLambdaImp.{FuncPtr,CaptureTuple,YieldVars}
 {
 	result.callFunc = fnc

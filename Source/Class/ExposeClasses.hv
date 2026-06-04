@@ -31,7 +31,7 @@ ExposeClasses2 := !() -> void
 			ctx1.passFuncs[Type->OffsetInVirtualTable("GetBase")] = !{GetFuncType(![tp],![true],tpPointer),"GetBase"}
 			ctx1.passFuncs[Type->OffsetInVirtualTable("GetSize")] = !{GetFuncType(![tp],![true],GTypeInt),"GetSize"}
 			ctx1.passFuncs[Type->OffsetInVirtualTable("GetArrayLength")] = !{GetFuncType(![tp],![true],GTypeInt),"GetArrayLength"}
-			ctx1.passFuncs[Type->OffsetInVirtualTable("GetBADStr")] = !{GetFuncType(![tp],![true],GTypeStr),"GetDebugStr"}
+			ctx1.passFuncs[Type->OffsetInVirtualTable("GetBADStr")] = !{GetFuncType(![tp],![true],GTypeStr),"GetDebugRepr"}
 
 			ctx1.Populate()
 
@@ -51,6 +51,11 @@ ExposeClasses2 := !() -> void
 		{
 			ctx.passFuncs[TypeClass->OffsetInVirtualTable("GetFieldsCount")] = !{GetFuncType(![tp],![true],GTypeInt),"GetFieldsCount"}
 			ctx.passFuncs[TypeClass->OffsetInVirtualTable("AddExtraField")] = !{GetFuncType(![tp,GTypeStr,baseType.GetPointer()],![true,false,false],GTypeVoid),"AddField"}
+
+			ctx.passFuncs[TypeClass->OffsetInVirtualTable("SetName")] = !{GetFuncType(![tp,GTypeStr],![true,false,false],GTypeVoid),"SetName"}
+
+			lmb := GetLambdaType(GetFuncType(![GTypeVoidP,GTypeStr],baseType.GetPointer())).GetPointer()
+			ctx.passFuncs[TypeClass->OffsetInVirtualTable("SetFieldFailedCallback")] = !{GetFuncType(![tp,lmb],![true,false],GTypeVoid),"SetFieldFailedCallback"}
 
 			ctx.Populate()
 		}

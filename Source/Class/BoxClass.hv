@@ -43,7 +43,7 @@ BoxClass := class extends Type
 	CreateCommon := !() -> void
 	{
 	}
-	SetName := !(Str name) -> void
+	SetName := virtual !(Str name) -> void
 	{
 		Name = name
 	}

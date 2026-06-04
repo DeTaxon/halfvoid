@@ -11,7 +11,7 @@ main := !(char^[] args) -> int
 	// printf("Hop %i\n",st == null)
 	// st = "asd"
 	// printf("Hop %i\n",st == null)
-	// ModuleTest()
+	ModuleTest()
 	//
 }
 HotloadTest := !() -> void
@@ -161,12 +161,13 @@ ReflectionTest := !() -> void
 			return cls->{HV_Object^}?
 
 			cls = HV.CreateClass2()
+			cls.SetName("CreatedTestClass")
 
 			cls.GetFieldsCount()
 
 			cls.AddField("first",HV.GetType("int"))
 
-			printf("after created %i <%s>\n",cls.GetFieldsCount(),cls.GetDebugStr().CStr())
+			printf("after created %i <%s>\n",cls.GetFieldsCount(),cls.GetDebugRepr().CStr())
 
 			return cls->{HV_Object^}
 		}
@@ -176,7 +177,7 @@ ReflectionTest := !() -> void
 			return clsOnDemand->{HV_Object^}?
 
 			clsOnDemand = HV.CreateClass2()
-			HV.SetGetClassFieldCallback(clsOnDemand,(x) ==> {
+			clsOnDemand.SetFieldFailedCallback((x) ==> {
 				return HV.GetTypeObj(int)
 			})
 			return clsOnDemand->{HV_Object^}

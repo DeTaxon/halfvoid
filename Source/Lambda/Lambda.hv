@@ -325,3 +325,11 @@ LambdaObject := class extend PackedExeObj
 		lambdaFunc.CapturedVars2.Push(result)
 	}
 }
+
+GetLambdaType := !(Type^ fncType) -> Type^
+{
+	if fncType is not in TypeFunc
+		return null
+	cls := GCLambda.GetClass(![fncType.GetPoint()])
+	return cls
+}
