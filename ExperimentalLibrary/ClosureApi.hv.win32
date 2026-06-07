@@ -29,7 +29,6 @@ ClosureArgsList := class extends va_list
 	}
 
 	GetVec := !() -> vec4f { return GetPtr()->{vec4f^}^ }
-	}
 }
 
 ClosureArgsToVaList := !(va_list^ lst,ClosureArgsList^ args) -> void

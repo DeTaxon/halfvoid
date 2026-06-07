@@ -37,7 +37,9 @@ HV_closure_func_x86 := class
 HV_closure_func_x86 := !(void^ cif,void^ ret,void^^ args,HV_closure_func_x86^ data) -> void
 {
 	assert(data.interpFunc is BoxFuncBody)
+	hmAlloc := SwapAllocator(GetDefaultAllocator())
 	fncPtr := GX86Cntx.GetFunctionPtr(data.interpFunc)
+	SetAllocator(hmAlloc)
 	data.targetPtr^ = fncPtr
 	ffi_call(cif,fncPtr,ret,args)
 }
