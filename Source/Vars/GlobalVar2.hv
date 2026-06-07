@@ -215,7 +215,8 @@ GlobalVar2 := class extend BoxUnit
 		{
 			BodyInit()
 		}
-	
+		if isThreadLocal
+			TLSStep() //TODO only change var type
 	}
 	CheckValue := !() -> void
 	{

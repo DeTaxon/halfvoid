@@ -1,4 +1,4 @@
-ClosureArgsList := class extends va_list
+ClosureArgsList := class
 {
 	CurrentIndex := u64
 	StackPtr := u8^
