@@ -65,7 +65,7 @@
 			return null
 
 		cmd := glCommands[str]
-		types := MakeVectorOnStack.{Type^,16}()
+		types := MakeVectorOnStack.{Type^,32}()
 
 		for pars : cmd.Values 
 		{
@@ -196,25 +196,24 @@
 		}
 	}
 
-	funcClass := HV_Class^
-	funcClassType := HV_Object^
+	funcClass := TypeClass^
 	FuncClass := !() -> HV_Object^
 	{
-		return funcClassType?
+		return funcClass?->{HV_Object^}
 
-		funcClass = HV.CreateClass()
+		funcClass = HV.CreateClass2()
 
 		ParseXml()
 
-		funcClassType = funcClass.GetType()
-		funcClass.AddCallback_GetFieldFailed(x ==> void^ {
+		funcClass.SetFieldFailedCallback(x ==> {
 			if glCommands.Contain(x.AsStringSpan())
 			{
-				return GetCommandType(x)->{HV_Object^}
+				res := GetCommandType(x)
+				return res
 			}
 			return null
 		})
-		return funcClassType
+		return funcClass->{HV_Object^}
 	}
 
 	GetItem := !(Str name) -> HV_Object^

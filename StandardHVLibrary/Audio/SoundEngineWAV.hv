@@ -9,6 +9,9 @@ AppendClass SoundEngine
 		isStereo := false
 		bitsPerSample := int
 
+		format := 0
+		freq := 0
+
 		i := 12
 		while i < siz
 		{
@@ -51,7 +54,11 @@ AppendClass SoundEngine
 			}
 		}
 
-		alGenBuffers(1,buf&)
-		alBufferData(buf,format,data.GetPointer(),data.Size(),freq)
+		result = new Sound
+		result.format = format
+		result.freq = freq
+
+		alGenBuffers(1,result.buf&)
+		alBufferData(result.buf,format,data.GetPointer(),data.Size(),freq)
 	}
 }

@@ -5,7 +5,7 @@
 main := !(char^[] args) -> int
 {
 	// assert(false,"error message HAHA")
-	RunFunc()
+	// RunFunc()
 	// HotloadTest()
 	// st := Str
 	// printf("Hop %i\n",st == null)
@@ -69,10 +69,6 @@ MakeItTemplate := class .{@T}
 
 RunFunc := !() -> void
 {
-	c := () ==> {
-		printf("yep\n")
-	}
-	c()
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()
@@ -95,9 +91,9 @@ ModuleTest := !() -> void
 	z.first = 12
 
 	r := OnDemandTestClass
-	r.x = 12
-	r.u = 3
-	r.x = 1
+	r.x = null
+	r.u = null
+	r.x = null
 
 	for it,ind : r->#AllFields
 	{
@@ -178,6 +174,10 @@ ReflectionTest := !() -> void
 
 			clsOnDemand = HV.CreateClass2()
 			clsOnDemand.SetFieldFailedCallback((x) ==> {
+				c := HV.GetTypeObj(int)
+
+				c2 := HV.GetFuncType(![c],![false],c,false,false)
+				return c2.GetPointer()
 				return HV.GetTypeObj(int)
 			})
 			return clsOnDemand->{HV_Object^}
