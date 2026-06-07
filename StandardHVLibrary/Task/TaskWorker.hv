@@ -29,6 +29,9 @@ TaskWorker := class extend TGCObject
 	}
 	CreateThread := !() -> void
 	{
+		// oldAllocator := SwapAllocator(GetDefaultAllocator())
+		// defer SetAllocator(oldAllocator)
+
 		itThread = new Thread(() ==> [wk = this&->{void^}] { //todo: make a way for passing variable as weak pointer
 			CurrentThread = wk->{TaskWorker^}
 			CurrentThread.ThreadMainTask = CurrentTask
@@ -40,6 +43,9 @@ TaskWorker := class extend TGCObject
 	}
 	CreateTask := !(!()&-> void cb) -> Task^
 	{
+		// oldAllocator := SwapAllocator(GetDefaultAllocator())
+		// defer SetAllocator(oldAllocator)
+		
 		startTask := new Task(cb.Capture())
 
 		TaskCheckMutex.Lock()
@@ -59,6 +65,8 @@ TaskWorker := class extend TGCObject
 	}
 	PopReadyTask := !() -> Task^
 	{
+		// oldAllocator := SwapAllocator(GetDefaultAllocator())
+		// defer SetAllocator(oldAllocator)
 
 		if CustomTaskPoll != null
 		{

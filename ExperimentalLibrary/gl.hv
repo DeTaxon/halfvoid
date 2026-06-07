@@ -113,9 +113,11 @@
 			switch node.Values[2].ValueSpan
 			{
 			case " *const*"
-				pointers = 2
+				return HV.GetTypeObj(void^)
+				// pointers = 2
 			case " *"
-				pointers = 1
+				return HV.GetTypeObj(void^)
+				// pointers = 1
 			case void
 				//printf("opengl unknown modifier %s\n",nodeValues[2].ValueSpan)
 			}
@@ -130,21 +132,22 @@
 		 	pType := node.GetNode("ptype")
 		 	if pType != null
 		 	{
-				pointers := 0
-
-				switch node.Values[1].ValueSpan
-				{
-				case " *const*"
-					pointers = 2
-				case " *"
-					pointers = 1
-				case void
-					//printf("opengl unknown modifier %s\n",nodeValues[2].ValueSpan)
-				}
-		 		res := GetStringType(pType.Values[0].ValueSpan)
-				for it : pointers
-					res = res.GetPointer()
-				return res
+				return HV.GetTypeObj(void^)
+				// pointers := 0
+				//
+				// switch node.Values[1].ValueSpan
+				// {
+				// case " *const*"
+				// 	pointers = 2
+				// case " *"
+				// 	pointers = 1
+				// case void
+				// 	//printf("opengl unknown modifier %s\n",nodeValues[2].ValueSpan)
+				// }
+				// 	res := GetStringType(pType.Values[0].ValueSpan)
+				// for it : pointers
+				// 	res = res.GetPointer()
+				// return res
 		 	}
 		case "11"
 		 	pType := node.GetNode("ptype")
@@ -177,7 +180,7 @@
 			case "GLsizeiptr"
 				return HV.GetType("size_t")
 			case "GLchar"
-				return HV.GetType("char")
+				return HV.GetType("int")
 			case "GLenum"
 				return HV.GetType("u32")
 			case "GLbitfield"

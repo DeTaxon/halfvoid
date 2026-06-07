@@ -40,6 +40,9 @@ BCFuncsType := class
 		if interpFuncs.Contain(itm)
 			return interpFuncs[itm]
 
+		hmAlloc := SwapAllocator(GetDefaultAllocator())
+		defer SetAllocator(hmAlloc)
+
 		result = GetBaseFunc(itm)
 		// assert(false)
 

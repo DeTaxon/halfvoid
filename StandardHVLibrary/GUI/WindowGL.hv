@@ -4,10 +4,6 @@ AppendClass Window
 	{
 		Init(windowSize.x,windowSize.y,windowTitle.Str(),false)
 		mainGUIObject = InitWindow()
-		ClearColor.x = 0
-		ClearColor.y = 0
-		ClearColor.z = 0
-		ClearColor.w = 1
 	}
 	InitGL := virtual !(WindowGLContext^ ctx) -> bool
 	{
