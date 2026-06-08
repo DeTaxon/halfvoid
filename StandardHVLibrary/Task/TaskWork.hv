@@ -16,26 +16,26 @@ internalWorkCall := !(!()&->void lmbd) -> void
 
 	ExpectWorkers(1)
 
-	TaskWorkersToDo.Push(GetCurrentTask())
+	TaskWorkersToDo.Push(HVGetCurrentTask())
 
 	for i : TaskAdditionalWorkersCount //TODO optimize
 	{
 		TaskAdditionalWorkers[i].innerNotify()
 	}
 
-	GetCurrentThread().switchToMain()
+	HVGetCurrentThread().switchToMain()
 	TaskCheckMutex.Unlock()
 
 	lmbd()
 	
 	TaskCheckMutex.Lock()
 
-	myTask := GetCurrentTask()
+	myTask := HVGetCurrentTask()
 	myTask.resume()
 	myTask.itTaskWorker.innerNotify()
 
 	TaskMainEvent.Emit()
-	GetCurrentThread().switchToMain()
+	HVGetCurrentThread().switchToMain()
 
 	TaskCheckMutex.Unlock()
 }

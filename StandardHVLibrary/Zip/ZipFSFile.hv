@@ -32,6 +32,7 @@ File := class extend vRepoObject
 		{
 			st := GetStream()
 			st.Read(fileBlob.GetPointer(),fileBlob.Size())
+			st.Close()
 			//mp := MappedFile(tst.Str())
 			//memcpy(fileBlob.GetPointer(),mp.Get(),fileBlob.Size())
 			//desc := fopen(tst.Str(),"rb")

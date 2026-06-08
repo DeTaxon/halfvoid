@@ -21,12 +21,12 @@ TaskAdditionalWorkersCount := int
 
 TaskPauseList := AVLMap.{double,Task^}
 
-GetCurrentTask := !() -> Task^
+HVGetCurrentTask := !() -> Task^
 	#Attr("optnone") #Attr("noinline")
 {
 	return CurrentTask
 }
-GetCurrentThread := !() -> TaskWorker^
+HVGetCurrentThread := !() -> TaskWorker^
 	#Attr("optnone") #Attr("noinline")
 {
 	return CurrentThread
