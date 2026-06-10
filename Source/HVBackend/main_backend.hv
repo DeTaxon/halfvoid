@@ -9,6 +9,11 @@ CompileAndRunInit := !() -> void
 }
 CompileAndRunCode := !(BoxFuncBody^ funcToRun) -> InterpWork^
 {
+	if #CPUArch() == "AArch64"
+	{
+		return CompileAndRunCode_arm64(funcToRun)
+	}
+	
 	result = new InterpWork(CurrentTask)
 	oldWork := CurrentWork
 	CurrentWork = result

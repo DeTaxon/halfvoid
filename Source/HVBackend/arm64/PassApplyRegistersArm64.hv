@@ -1,0 +1,31 @@
+PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
+{
+	bldr := MakeGreedyPass(fnc,4,6)
+
+	c := ref bldr.cmdsSize
+	cPtr := bldr.cmds.GetPointer()
+
+	o := ref bldr.objsSize
+	oPtr := bldr.objs.GetPointer()
+
+	i := 0
+	while i < fnc.Lines.Size()
+	{
+		line := ref fnc.Lines[i]
+		switch line.opcode
+		{
+		case "debug_set_file"
+		case "debug_set_line"
+		case "debug_block_start"
+		case "debug_block_end"
+		case "jmp"
+		case "label"
+			cPtr[c++] = line
+		case void
+			// assert(false,"unsupported opcode")
+		}
+		i += 1
+	}
+	
+	return bldr.GenerateFunc()
+}

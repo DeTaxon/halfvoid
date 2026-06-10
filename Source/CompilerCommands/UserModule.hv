@@ -4,6 +4,9 @@ TryAddCreateModule := !(Token^ itm) -> BoxExeObj^
 	if cmd != "#Module"
 		return null
 
+	if IgnoreModules
+		return GObjNone
+
 	posArgs := List.{Token^}
 	namedArgs := AVLMap.{Str,Token^}
 

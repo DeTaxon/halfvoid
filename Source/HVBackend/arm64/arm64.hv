@@ -1,0 +1,98 @@
+
+CompileAndRunCode_arm64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
+{
+	
+	ctx := BuildArm64Context
+	ctx.Init()
+
+	
+	func := BCFuncs.GetBaseFunc(funcToRun)
+	func.Print()
+	func = PassFirstOpt(func,false)
+	func = PassLazyLoadLibGlobals(func)
+	func = InterpPassPrepare(func)
+	func = PassRemoveSpaceship(func)
+	func = PassSimplifyVectors(func)
+	func = PassRemoveVoidParams(func)
+	func = PassRemoveReferences(func)
+	func = PassApplyRegistersArm64(func)
+	func.Print()
+	fnc := ctx.Build(func)->{!()^->void}
+	fnc()
+	// result = new InterpWork(CurrentTask)
+	// oldWork := CurrentWork
+	// CurrentWork = result
+	//
+	// ctx := GX86Cntx&
+	//
+	//
+	// createdFunc := ctx.GetFunctionPtr(funcToRun)->{!()^->void}
+	// createdFunc()
+	//
+	// CurrentWork->{InterpWork^}.isDone = true
+	// CurrentWork = oldWork
+}
+
+BuildArm64Context := class
+{
+	bigMem := PageMemory
+	wrt := u32^
+
+	Init := !() -> void
+	{
+		bigMem.Create(4096,"rwe")
+		wrt = bigMem.GetPointer()->{u32^}
+	}
+	Build := !(MCFunction^ fnc) -> void^
+	{
+		result = wrt
+
+		fnc.ComputeStackFrame()
+		stackSize := fnc.StackFrameSize
+
+		bumpStack := stackSize + 16
+
+		offstMinus := ((-bumpStack)->{u32} shr 3) and_b 0x7F
+		offstMinus = offstMinus shl 15
+
+		offstPlus := (bumpStack->{u32} shr 3) and_b 0x7F
+		offstPlus = offstPlus shl 15
+
+		assert(stackSize < 470)
+
+	// 0b10 1010 0110 1111110 11110 11111 11101
+		WriteCmd(0xa9807bfd or_b offstMinus) // stp x29 x39 [sp,-16]!
+		WriteCmd(0xa8c07bfd or_b offstPlus) // ldp x29 x39 [sp], 16
+
+		printf("wut %i %p\n",bumpStack,offstMinus)
+		
+		i := 0
+		linesCount := fnc.Lines.Size()
+		iPtr := fnc.Lines.GetPointer()
+
+		while i < linesCount
+		{
+			line := ref iPtr[i]
+
+			switch line.opcode
+			{
+			case "label"
+				/// TODO
+			case void
+				assert(false,"unknown opcode")
+			}
+
+			i += 1
+		}
+
+
+		WriteCmd(0xd65f03c0) // ret
+	
+	}
+	outIndx := int
+	WriteCmd := !(u32 cmd) -> void
+	{
+		wrt[outIndx++] = cmd
+	}
+}
+

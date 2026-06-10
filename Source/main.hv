@@ -54,6 +54,8 @@ FastestRunner := false
 
 SelfBuild := false
 
+IgnoreModules := false
+
 OutputFile := Str
 main := !(Vector.{char^} args) -> int
 {
@@ -166,6 +168,8 @@ main := !(Vector.{char^} args) -> int
 	{
 		switch args[i]
 		{
+			case "-nomodules"
+				IgnoreModules = true
 			case "-entry"
 				i += 1
 				mainFuncName = args[i]
@@ -392,7 +396,7 @@ main := !(Vector.{char^} args) -> int
 
 		if FastestRunner
 		{
-			CompileAndRunCode_x86_64(toRun->{BoxFuncBody^})
+			CompileAndRunCode(toRun->{BoxFuncBody^})
 		}else{
 			CompileAndRunCode(toRun->{BoxFuncBody^})
 		}
