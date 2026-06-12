@@ -58,17 +58,17 @@ BuildArm64Context := class
 		offstPlus := (bumpStack->{u32} shr 3) and_b 0x7F
 		offstPlus = offstPlus shl 15
 
-		assert(stackSize < 470)
+		assert(stackSize < 470) //TODO other stack sizes
 
 	// 0b10 1010 0110 1111110 11110 11111 11101
 		WriteCmd(0xa9807bfd or_b offstMinus) // stp x29 x39 [sp,-16]!
 		WriteCmd(0xa8c07bfd or_b offstPlus) // ldp x29 x39 [sp], 16
-
-		printf("wut %i %p\n",bumpStack,offstMinus)
 		
 		i := 0
 		linesCount := fnc.Lines.Size()
 		iPtr := fnc.Lines.GetPointer()
+
+		oPtr := fnc.Objects.GetPointer()
 
 		while i < linesCount
 		{
@@ -78,6 +78,26 @@ BuildArm64Context := class
 			{
 			case "label"
 				/// TODO
+			case "mov"
+				ob1 := ref oPtr[line.var1]
+				ob2 := ref oPtr[line.var2]
+
+				if ob1 is MCConstRegisterArm64 and ob2 is MCConstString
+				{
+					val := ob2&->{MCConstString^}.GetValue().CStr()->{size_t}
+					for i : 4
+					{
+						v := (val and_b 0xFFFF) shl 4
+						rg := 0
+						shft := i shl 21
+						WriteCmd(0xf2800000 + v + rg + shft)
+						val = val shr 16
+					}
+				}else if ob1 is MCVariable and ob2 is MCConstRegisterArm64 {
+					
+				}else{
+					
+				}
 			case void
 				assert(false,"unknown opcode")
 			}
@@ -96,3 +116,29 @@ BuildArm64Context := class
 	}
 }
 
+AppendClass GreedyPass
+{
+
+	PushArmReg := !(int reg, Type^ regType) -> int
+	{
+		newReg := MCConstRegisterArm64
+
+		newReg.GetValue() = reg
+		newReg.SetType(regType)
+
+		result = objsSize
+		oPtr[objsSize++] = newReg
+	}
+}
+
+MCConstRegisterArm64 := class extend MCObject
+{
+	IsConstant := virtual true
+
+	GetValue := !() -> ref int { return Value&->{int^}^}
+
+	PrintObject := virtual !() -> void { printf("Register \"%i\" with type %s",GetValue(), GetType().GetBADStr().CStr()) }
+	GetType := virtual !() -> Type^ { return Value2&->{Type^^}^ }
+
+	SetType := virtual !(Type^ newType) -> Type^ { Value2&->{Type^^}^ = newType }
+}

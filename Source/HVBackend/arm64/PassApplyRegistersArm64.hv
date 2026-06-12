@@ -21,6 +21,18 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 		case "jmp"
 		case "label"
 			cPtr[c++] = line
+
+		case "mov"
+			ob1 := ref oPtr[line.var1]
+			ob2 := ref oPtr[line.var2]
+			if ob1 is MCVariable and ob2 is MCConstString
+			{
+				newReg := bldr.PushArmReg(1,GTypeVoidP)
+				cPtr[c++] = MCLine("mov",newReg,line.var2)
+				cPtr[c++] = MCLine("mov",line.var1,newReg)
+			}else{
+				assert(false,"unknown move")
+			}
 		case void
 			// assert(false,"unsupported opcode")
 		}
