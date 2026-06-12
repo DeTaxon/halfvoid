@@ -7,7 +7,6 @@ CompileAndRunCode_arm64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 
 	
 	func := BCFuncs.GetBaseFunc(funcToRun)
-	func.Print()
 	func = PassFirstOpt(func,false)
 	func = PassLazyLoadLibGlobals(func)
 	func = InterpPassPrepare(func)
@@ -15,6 +14,7 @@ CompileAndRunCode_arm64 := !(BoxFuncBody^ funcToRun) -> InterpWork^
 	func = PassSimplifyVectors(func)
 	func = PassRemoveVoidParams(func)
 	func = PassRemoveReferences(func)
+	func.Print()
 	func = PassApplyRegistersArm64(func)
 	func.Print()
 	fnc := ctx.Build(func)->{!()^->void}
@@ -62,7 +62,6 @@ BuildArm64Context := class
 
 	// 0b10 1010 0110 1111110 11110 11111 11101
 		WriteCmd(0xa9807bfd or_b offstMinus) // stp x29 x39 [sp,-16]!
-		WriteCmd(0xa8c07bfd or_b offstPlus) // ldp x29 x39 [sp], 16
 		
 		i := 0
 		linesCount := fnc.Lines.Size()
@@ -82,19 +81,43 @@ BuildArm64Context := class
 				ob1 := ref oPtr[line.var1]
 				ob2 := ref oPtr[line.var2]
 
-				if ob1 is MCConstRegisterArm64 and ob2 is MCConstString
+				if ob1 is MCVariable or ob2 is MCVariable
+				{
+					isStore := ob1 is MCVariable
+
+					varId := line.var2
+					other := ob1&
+					if isStore
+					{
+						varId = line.var1
+						other = ob2&
+					}
+
+					if other is MCConstRegisterArm64
+					{
+						//TODO sizes of 4 2 1
+						offst := (getObjsStackOffset(fnc,varId) shl 10) shr 3 // TODO check for unaligned vars
+						spReg := (31 shl 5)
+						targ := other.GetValue()
+
+						ldCmd := 0
+						if not isStore
+							ldCmd = 0x00400000
+						WriteCmd(0xf9000000 + targ + spReg + offst + ldCmd)
+					}else{
+					}
+
+				}else if ob1 is MCConstRegisterArm64 and ob2 is MCConstString
 				{
 					val := ob2&->{MCConstString^}.GetValue().CStr()->{size_t}
 					for i : 4
 					{
 						v := (val and_b 0xFFFF) shl 4
-						rg := 0
+						rg := ob1&->{MCConstRegisterArm64^}.GetValue()
 						shft := i shl 21
 						WriteCmd(0xf2800000 + v + rg + shft)
 						val = val shr 16
 					}
-				}else if ob1 is MCVariable and ob2 is MCConstRegisterArm64 {
-					
 				}else{
 					
 				}
@@ -105,7 +128,7 @@ BuildArm64Context := class
 			i += 1
 		}
 
-
+		WriteCmd(0xa8c07bfd or_b offstPlus) // ldp x29 x39 [sp], 16
 		WriteCmd(0xd65f03c0) // ret
 	
 	}
@@ -113,6 +136,20 @@ BuildArm64Context := class
 	WriteCmd := !(u32 cmd) -> void
 	{
 		wrt[outIndx++] = cmd
+	}
+
+	getObjsStackOffset := !(MCFunction^ fnc, int index) -> s32
+	{
+		// obj := ref fnc.Objects[index]
+		// if obj is MCConstVarX86
+		// 	return obj.GetValue()
+
+
+		assert(index < fnc.StackOffsets.Size())
+
+		plainOffset := fnc.StackOffsets[index]
+		return plainOffset + 16 //  16 - registers
+		
 	}
 }
 

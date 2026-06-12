@@ -22,6 +22,16 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 		case "label"
 			cPtr[c++] = line
 
+		case "call_start"
+			i += 1
+			printf("hey\n")
+			while fnc.Lines[i].opcode != "call_end"
+			{
+				printf("WUT\n")
+				cPtr[c++] = MCLine("mov",bldr.PushArmReg(1,GTypeVoidP),fnc.Lines[i].var1)
+				i += 1
+			}
+
 		case "mov"
 			ob1 := ref oPtr[line.var1]
 			ob2 := ref oPtr[line.var2]

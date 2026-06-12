@@ -11,8 +11,12 @@ main := !(char^[] args) -> int
 	// printf("Hop %i\n",st == null)
 	// st = "asd"
 	// printf("Hop %i\n",st == null)
-	ModuleTest()
-	//
+	// ModuleTest()
+	while balba != 0 // TODO must break compilation
+	{
+	}
+	x := 12
+
 }
 HotloadTest := !() -> void
 {
@@ -69,6 +73,7 @@ MakeItTemplate := class .{@T}
 
 RunFunc := !() -> void
 {
+	puts("hello")
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()
