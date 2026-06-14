@@ -80,65 +80,71 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxExeObj^
 }
 GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb) -> BoxExeObj^
 {
-	failed := false
-	res := new BoxBlockBreak(itm, () ==> BoxUnit^ {
+	res := new BoxBlockBreak
 
-		forLine := new BoxExeLine()
-		forLine.ItToken = itm
+	stackAtStart := UnitStack.Size()
+	UnitStack.PushFront(res)
 
-		containMeta := false
+	forLine := new BoxExeLine()
+	forLine.ItToken = itm
 
-		for it : lst
+	containMeta := false
+
+	for it : lst
+	{
+		dwnRes := TryGetExeCall(it.DownToken)
+
+		if dwnRes == null
 		{
-			dwnRes := TryGetExeCall(it.DownToken)
+			CurrentWork?.SetErrorMessage(it.DownToken.MakeError("Could not get result for cycle over obj"))
+			while UnitStack.Size() > stackAtStart
+				UnitStack.Pop()
+			return null
+		}
 
-			if dwnRes == null
+		if dwnRes is BoxArrayHolder
+			dwnRes = dwnRes->{BoxArrayHolder^}.CreateDefaultUse()
+
+		if dwnRes is in BoxMetaObj
+		{
+			//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< META VERSION
+
+			if not dwnRes->{BoxMetaObj^}.IsMetaIteratable()
 			{
-				CurrentWork?.SetErrorMessage(it.DownToken.MakeError("Could not get result for cycle over obj"))
-				failed = true
+				CurrentWork?.SetErrorMessage(it.DownToken.MakeError("Meta object is not iteratable"))
+				while UnitStack.Size() > stackAtStart
+					UnitStack.Pop()
 				return null
 			}
 
-			if dwnRes is BoxArrayHolder
-				dwnRes = dwnRes->{BoxArrayHolder^}.CreateDefaultUse()
+			it.IsMeta = true
+			it.MetaObj = dwnRes->{BoxMetaObj^}
 
-			if dwnRes is in BoxMetaObj
-			{
-				//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< META VERSION
+			containMeta = true
+		}else{
+			//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REGULAR VERSION
+			it.DownResult = dwnRes
+		}//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<END
+	}
 
-				if not dwnRes->{BoxMetaObj^}.IsMetaIteratable()
-				{
-					CurrentWork?.SetErrorMessage(it.DownToken.MakeError("Meta object is not iteratable"))
-					failed = true
-					return null
-				}
+	if containMeta
+	{
+		//return new BoxForOverMeta(lst,itm)
+		while UnitStack.Size() > stackAtStart
+			UnitStack.Pop()
+		res.exeLines.Push(new BoxForOverGrowableMeta(lst,itm))
+		return res
+	}
 
-				it.IsMeta = true
-				it.MetaObj = dwnRes->{BoxMetaObj^}
+	resFor := new BoxFor()
+	resFor.values.Push(lst[^])
+	resFor.HeadLine = forLine
 
-				containMeta = true
-			}else{
-				//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< REGULAR VERSION
-				it.DownResult = dwnRes
-			}//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<END
-		}
+	resFor.StepTwo(itm,cb)
 
-		if containMeta
-		{
-			//return new BoxForOverMeta(lst,itm)
-			return new BoxForOverGrowableMeta(lst,itm)
-		}
-
-		resFor := new BoxFor()
-		resFor.values.Push(lst[^])
-		resFor.HeadLine = forLine
-
-		resFor.StepTwo(itm,cb)
-
-		return resFor
-	})
-	if failed
-		return null
+	res.exeLines.Push(resFor)
+	while UnitStack.Size() > stackAtStart
+		UnitStack.Pop()
 	return res
 }
 

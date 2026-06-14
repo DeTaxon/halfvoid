@@ -10,7 +10,6 @@ BoxBlock := class extend BoxExeObj
 
 	down := Token^
 	infoToken := Token^
-	lambdaWay := !()&->BoxUnit^
 
 	ParentFunc := BoxFuncBody^
 
@@ -20,17 +19,6 @@ BoxBlock := class extend BoxExeObj
 		down = bdy
 		infoToken = bdy
 		ItLine = bdy.Line
-		if DebugMode
-			MetaId = GetNewId()
-		ParentFunc = CurrentFunc
-		innerWork()
-	}
-	this := !(Token^ tokenLine , !()&->BoxUnit^ l) -> void
-	{
-		ObjType = GTypeVoid
-		lambdaWay = l
-		infoToken = tokenLine
-		ItLine = tokenLine.Line
 		if DebugMode
 			MetaId = GetNewId()
 		ParentFunc = CurrentFunc
@@ -49,13 +37,6 @@ BoxBlock := class extend BoxExeObj
 		iter := Token^
 		if down != null
 			iter = down.Down
-		if lambdaWay->{void^} != null
-		{
-			obj := lambdaWay()
-			//assert(obj != null)
-			if obj != null
-				exeLines.Push(obj)
-		}
 		while iter != null
 		{
 			NeedGuardLocalVar = false
@@ -172,10 +153,6 @@ BoxBlockContinue := class extend BoxBlock
 	{
 		this."BoxBlock.this"(itm)
 	}
-	this := !(Token^ tokenLine ,!()&->BoxUnit^ l) -> void
-	{
-		this."BoxBlock.this"(tokenLine,l)
-	}
 }
 
 BoxBlockBreak := class extend BoxBlock
@@ -183,9 +160,5 @@ BoxBlockBreak := class extend BoxBlock
 	this := !(Token^ itm) -> void
 	{
 		this."BoxBlock.this"(itm)
-	}
-	this := !(Token^ tokenLine ,!()&->BoxUnit^ l) -> void
-	{
-		this."BoxBlock.this"(tokenLine,l)
 	}
 }
