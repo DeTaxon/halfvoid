@@ -52,7 +52,12 @@ BoxFor := class extend BoxExeObj
 			UnitStack.PushFront(it.IndVar?)
 		}
 
-		body = new BoxBlockContinue(itm,cb)
+		body = new BoxBlockContinue
+		UnitStack.PushFront(body)
+
+		res := cb()
+		if res != null
+			body.exeLines.Push(res)
 
 		while stackSize < UnitStack.Size()
 			UnitStack.Pop()
