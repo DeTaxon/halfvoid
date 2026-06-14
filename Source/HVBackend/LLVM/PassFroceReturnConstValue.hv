@@ -61,7 +61,7 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 
 				if it.opcode == "call_start"
 				{
-					while fnc.Lines[indx] != "call_end"
+					while fnc.Lines[indx].opcode != "call_end"
 					{
 						newCmds.Push(fnc.Lines[indx])
 						indx += 1

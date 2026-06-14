@@ -6,8 +6,7 @@ TShaderInputVertexInfo := class
 
 	"{}<-" := !(VKType[] vInputs) -> void
 	{
-		VertTypes = vInputs
-
+		VertTypes.Push(vInputs[^])
 	}
 	"{}<-" := !().{@Cls} -> void
 	{

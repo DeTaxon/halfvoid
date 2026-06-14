@@ -3,28 +3,39 @@ TryParseWhile := !(Token^ itm) -> BoxExeObj^
 	if itm == null or itm.Down.GetValue() != "while"
 		return null
 
-	return new BoxBlockBreak(itm, () ==> BoxUnit^ {
-		cmpExe := TryGetExeCall(itm.Down.Right)
+	breakBlock := new BoxBlockBreak
 
-		if cmpExe == null
-		{
-			CurrentWork?.SetErrorMessage(itm.Down.Right.MakeError("Could not parse while statement"))
-			return null
-		}
+	stackAtStart := UnitStack.Size()
+	UnitStack.PushFront(breakBlock)
 
-		if cmpExe.GetType() != GTypeBool
-		{
-			CurrentWork?.SetErrorMessage(itm.MakeError("While statement is not boolean type"))
-			return null
-		}
+	cmpExe := TryGetExeCall(itm.Down.Right)
 
-		token := MakeItBlock(itm.Down.Right.Right)
-		body := new BoxBlockContinue(token)
-		body.Work()
+	if cmpExe == null
+	{
+		CurrentWork?.SetErrorMessage(itm.Down.Right.MakeError("Could not parse while statement"))
+		while UnitStack.Size() > stackAtStart
+			UnitStack.Pop()
+		return null
+	}
 
-		return new BoxWhile(itm.Down.Right,cmpExe,body)
-	})
-	
+	if cmpExe.GetType() != GTypeBool
+	{
+		CurrentWork?.SetErrorMessage(itm.MakeError("While statement is not boolean type"))
+		while UnitStack.Size() > stackAtStart
+			UnitStack.Pop()
+		return null
+	}
+
+	token := MakeItBlock(itm.Down.Right.Right)
+	body := new BoxBlockContinue(token)
+	body.Work()
+
+	while UnitStack.Size() > stackAtStart
+		UnitStack.Pop()
+
+	breakBlock.exeLines.Push(new BoxWhile(itm.Down.Right,cmpExe,body))
+
+	return breakBlock
 }
 
 BoxWhile := class extend BoxExeObj
@@ -46,37 +57,26 @@ BoxWhile := class extend BoxExeObj
 		CycleCheck."this"()
 		WhileLine = new BoxExeLineSimple(whileToken,val)
 	}
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		PrintCode(ctx)
-	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		oldLine := GDebugLineCallId
-		defer GDebugLineCallId = oldLine
-		GDebugLineCallId = WhileLine.MetaId
-
-		f := ctx.writeStream
-
-		CycleCheck.PrintCode(ctx)
-
-		Val.PrintPre(ctx)
-		f^ << "br i1 "
-		Val.PrintUse(ctx)
-		f^ << ", label "
-		CycleStart.PrintLabel(ctx)
-		f^ << ", label "
-		CycleEnd.PrintLabel(ctx)
-		f^ << "\n"
-
-		CycleStart.PrintCode(ctx)
-		Body.PrintCode(ctx)
-		CycleCheck.PrintGo(ctx)
-		CycleEnd.PrintCode(ctx)
-	}
 	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		WhileLine.PrintDebugMeta(ctx)
 		Body.PrintDebugMeta(ctx)
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		startLabel := ctx.CreateLabel()
+		bodyLabel := ctx.CreateLabel()
+		endLabel := ctx.CreateLabel()
+
+		HVB_ins_label(ctx,startLabel)
+		cmpRes := Val.WriteMC(ctx)
+		HVB_ins_jump_if_bool(ctx,bodyLabel,cmpRes.CreatedId)
+		HVB_ins_jump(ctx,endLabel)
+		HVB_ins_label(ctx,bodyLabel)
+
+		Body.WriteMC(ctx)
+
+		HVB_ins_jump(ctx,startLabel)
+		HVB_ins_label(ctx,endLabel)
 	}
 }
