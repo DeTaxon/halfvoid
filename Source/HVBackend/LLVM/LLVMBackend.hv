@@ -366,19 +366,19 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 					varType := fnc.Objects[op.var1].GetType()
 					varType = NormalizeType(varType) //TODO some pass should remove this
 
-					out << "	#dbg_declare("
-					out << "ptr %Var" << op.var1 << ","
-					out << "!" << metaId << ","
-					out << "!DIExpression(),"
-					out << "!" << currentDbgId << ")\n"
+					//out << "	#dbg_declare("
+					//out << "ptr %Var" << op.var1 << ","
+					//out << "!" << metaId << ","
+					//out << "!DIExpression(),"
+					//out << "!" << currentDbgId << ")\n"
 
-					// out << "	call void @llvm.dbg.declare(metadata "
-					// varType.PrintType(ctx)
-					// //if baseVar.isReference
-					// //	f^ << "*"
-					// out << "* %Var" << op.var1
-					// out << " , metadata !" << metaId << " , metadata !DIExpression())"
-					// printDebugEnd()
+					out << "	call void @llvm.dbg.declare(metadata "
+					varType.PrintType(ctx)
+					//if baseVar.isReference
+					//	f^ << "*"
+					out << "* %Var" << op.var1
+					out << " , metadata !" << metaId << " , metadata !DIExpression())"
+					printDebugEnd()
 				}
 
 			// case "debug_var_lifetime_start"
