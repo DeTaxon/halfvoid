@@ -155,7 +155,7 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		expectDeviceExtensions.Push("VK_KHR_dynamic_rendering")
 		expectDeviceExtensions.Push("VK_KHR_depth_stencil_resolve")
 		expectDeviceExtensions.Push("VK_KHR_create_renderpass2")
-		expectDeviceExtensions.Push("VK_EXT_shader_object")
+		// expectDeviceExtensions.Push("VK_EXT_shader_object")
 
 
 		for it : deviceExtensions

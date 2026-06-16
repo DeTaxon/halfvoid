@@ -12,9 +12,6 @@ main := !(char^[] args) -> int
 	// st = "asd"
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
-	while balba != 0 // TODO must break compilation
-	{
-	}
 	x := 12
 
 }

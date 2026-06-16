@@ -2,6 +2,7 @@
 	"initname" : "shadercInit",
 	"libs" : [
 		"libshaderc_shared.so",
+		"libshaderc.so.1",
 		"libshaderc_shared.dll"
 	],
 	"consts" : {

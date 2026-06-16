@@ -59,6 +59,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 
 	printf("end\n")
 
+	FinilizeCache()
 	exit(0)
 }
 

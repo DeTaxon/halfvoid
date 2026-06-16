@@ -3,6 +3,7 @@
 	"initname" : "webp_init",
 	"libs" : [
 		"libwebp.so",
+		"libwebp.so.7",
 		"libwebp.dll",
 		"libwebp-7.dll"
 	],
