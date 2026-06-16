@@ -17,7 +17,7 @@ AppendClass Window
 		ctx := WindowGLContext
 		ctx.gl = new glFuncsClass
 
-		lib := GetLibrary(!["libGL.so","OpenGL32.dll"])
+		lib := GetLibrary(!["libGL.so","libGL.so.1","OpenGL32.dll"])
 		glGetProcAddress := lib.Get("glXGetProcAddress")->{!(char^)^->void^}
 
 		if glGetProcAddress == null

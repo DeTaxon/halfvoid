@@ -3,6 +3,7 @@
 	"initname" : "openal_init",
 	"libs" : [
 		"libopenal.so",
+		"libopenal.so.1",
 		"libopenal-1.dll",
 		"soft_oal.dll"
 	],

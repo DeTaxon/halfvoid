@@ -62,7 +62,6 @@ loadDllFromEmbeddedFile := !(File^ fl) -> Library^
 	fileName := CreateString(tempDirName,"/",fl.GetName())
 	
 	someFile := new TFile(fileName.Str(),"wb")
-	printf("test %s\n",fileName.CStr())
 
 	mp := fl.GetMap()
 	someFile.Write(mp.Get(),mp.Size())
