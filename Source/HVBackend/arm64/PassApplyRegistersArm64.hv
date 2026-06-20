@@ -23,21 +23,34 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 			cPtr[c++] = line
 
 		case "call_start"
+			callObj := ref fnc.Objects[fnc.Lines[i].var2]
+
 			i += 1
-			printf("hey\n")
+
 			while fnc.Lines[i].opcode != "call_end"
 			{
-				printf("WUT\n")
-				cPtr[c++] = MCLine("mov",bldr.PushArmReg(1,GTypeVoidP),fnc.Lines[i].var1)
+				cPtr[c++] = MCLine("mov",bldr.PushArmReg(0,GTypeVoidP),fnc.Lines[i].var1)
 				i += 1
 			}
+
+			if callObj is MCConstFunction
+			{
+				fncReg := bldr.PushArmReg(9,GTypeVoidP)
+				callFunc := bldr.PushPtr(puts)
+
+				cPtr[c++] = MCLine("mov",fncReg,callFunc)
+				cPtr[c++] = MCLine("call_start",fncReg)
+			}else{
+				assert(false,"unknown function call")
+			}
+
 
 		case "mov"
 			ob1 := ref oPtr[line.var1]
 			ob2 := ref oPtr[line.var2]
 			if ob1 is MCVariable and ob2 is MCConstString
 			{
-				newReg := bldr.PushArmReg(1,GTypeVoidP)
+				newReg := bldr.PushArmReg(0,GTypeVoidP)
 				cPtr[c++] = MCLine("mov",newReg,line.var2)
 				cPtr[c++] = MCLine("mov",line.var1,newReg)
 			}else{

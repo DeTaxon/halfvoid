@@ -50,6 +50,8 @@ BuildArm64Context := class
 		fnc.ComputeStackFrame()
 		stackSize := fnc.StackFrameSize
 
+		pcValues := size_t[int]
+
 		bumpStack := stackSize + 16
 
 		offstMinus := ((-bumpStack)->{u32} shr 3) and_b 0x7F
@@ -62,6 +64,7 @@ BuildArm64Context := class
 
 	// 0b10 1010 0110 1111110 11110 11111 11101
 		WriteCmd(0xa9807bfd or_b offstMinus) // stp x29 x39 [sp,-16]!
+		WriteCmd(0x910003fd)
 		
 		i := 0
 		linesCount := fnc.Lines.Size()
@@ -77,6 +80,10 @@ BuildArm64Context := class
 			{
 			case "label"
 				/// TODO
+			case "call_start"
+				assert(oPtr[line.var1] is MCConstRegisterArm64)
+				rg := oPtr[line.var1]&->{MCConstRegisterArm64^}.GetValue()
+				WriteCmd(0xd63f0000 + (rg shl 5))
 			case "mov"
 				ob1 := ref oPtr[line.var1]
 				ob2 := ref oPtr[line.var2]
@@ -107,17 +114,27 @@ BuildArm64Context := class
 					}else{
 					}
 
-				}else if ob1 is MCConstRegisterArm64 and ob2 is MCConstString
+				}else if ob1 is MCConstRegisterArm64 and (ob2 is MCConstString or ob2 is MCConstPointerTyped)
 				{
-					val := ob2&->{MCConstString^}.GetValue().CStr()->{size_t}
-					for i : 4
+					val := size_t
+					if ob2 is MCConstString
 					{
-						v := (val and_b 0xFFFF) shl 4
-						rg := ob1&->{MCConstRegisterArm64^}.GetValue()
-						shft := i shl 21
-						WriteCmd(0xf2800000 + v + rg + shft)
-						val = val shr 16
+						val = ob2&->{MCConstString^}.GetValue().CStr()->{size_t}
+					}else if ob2 is MCConstPointerTyped {
+						val = ob2&->{MCConstPointerTyped^}.GetValue()->{size_t}
+					}else {
+						assert(false)
 					}
+					rg := ob1&->{MCConstRegisterArm64^}.GetValue()
+					newLdr := WriteCmd(0x58000000 + rg)
+					pcValues[newLdr] = val 
+					//for i : 4
+					//{
+					//	v := (val and_b 0xFFFF) shl 4
+					//	shft := i shl 21
+					//	WriteCmd(0xf2800000 + v + rg + shft)
+					//	val = val shr 16
+					//}
 				}else{
 					
 				}
@@ -130,12 +147,23 @@ BuildArm64Context := class
 
 		WriteCmd(0xa8c07bfd or_b offstPlus) // ldp x29 x39 [sp], 16
 		WriteCmd(0xd65f03c0) // ret
-	
+
+		for val,indx : pcValues
+		{
+			pos := outIndx
+			wrt[outIndx++] = val
+			wrt[outIndx++] = val shr 32
+
+			diff := (pos - indx) shl 5
+			assert(diff->{u32} < 0xFF000000)
+			wrt[indx] += diff
+		}
 	}
 	outIndx := int
-	WriteCmd := !(u32 cmd) -> void
+	WriteCmd := !(u32 cmd) -> int
 	{
 		wrt[outIndx++] = cmd
+		return outIndx - 1
 	}
 
 	getObjsStackOffset := !(MCFunction^ fnc, int index) -> s32
