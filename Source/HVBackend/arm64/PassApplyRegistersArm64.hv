@@ -36,10 +36,23 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 			if callObj is MCConstFunction
 			{
 				fncReg := bldr.PushArmReg(9,GTypeVoidP)
-				callFunc := bldr.PushPtr(puts)
 
-				cPtr[c++] = MCLine("mov",fncReg,callFunc)
-				cPtr[c++] = MCLine("call_start",fncReg)
+				fncHV := callObj&->{MCConstFunction^}.GetValue()
+
+				if fncHV is ResistFunc {
+					fncHV = fncHV.base
+				}
+
+				if fncHV is BoxFuncDeclare {
+					ptr := GInterpCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^})
+
+					callFunc := bldr.PushPtr(ptr)
+
+					cPtr[c++] = MCLine("mov",fncReg,callFunc)
+					cPtr[c++] = MCLine("call_start",fncReg)
+				}else{
+					assert(false)
+				}
 			}else{
 				assert(false,"unknown function call")
 			}
