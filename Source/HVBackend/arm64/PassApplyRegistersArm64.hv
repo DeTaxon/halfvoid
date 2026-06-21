@@ -60,6 +60,18 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 			}
 
 
+		case "cast"
+			ob1 := ref oPtr[line.var1]
+			ob2 := ref oPtr[line.var2]
+			if ob1 is MCVariable and ob2 is MCVariable
+			{
+				//TODO floats
+				newReg := bldr.PushArmReg(0,GTypeVoidP)
+				cPtr[c++] = MCLine("mov",newReg,line.var2)
+				cPtr[c++] = MCLine("mov",line.var1,newReg)
+			}else{
+				assert(false)
+			}
 		case "mov"
 			ob1 := ref oPtr[line.var1]
 			ob2 := ref oPtr[line.var2]
@@ -68,7 +80,13 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 				newReg := bldr.PushArmReg(0,GTypeVoidP)
 				cPtr[c++] = MCLine("mov",newReg,line.var2)
 				cPtr[c++] = MCLine("mov",line.var1,newReg)
+			}else if ob1 is MCVariable and ob2 is MCVariable {
+				//TODO diff sizes
+				newReg := bldr.PushArmReg(0,GTypeVoidP)
+				cPtr[c++] = MCLine("mov",newReg,line.var2)
+				cPtr[c++] = MCLine("mov",line.var1,newReg)
 			}else{
+				printf("at line %i\n",i)
 				assert(false,"unknown move")
 			}
 		case void
