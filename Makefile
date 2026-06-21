@@ -5,6 +5,8 @@ TempFile := /tmp/out.ll
 
 Libs := -ldl -lpthread -mf16c -lm
 
+archType := $(shell uname -m)
+
 ifeq ($(grind),yes)
 vgrind := valgrind --leak-check=full --log-file=grind.txt
 endif
@@ -76,6 +78,10 @@ ifeq ($(arm64),yes)
 	cpuflag := --target-cpu arm64
 endif
 
+ifeq ($(archType),aarch64)
+	cpuflag := --target-cpu arm64
+endif
+
 
 flags := $(NoScary) $(trc) $(trcm) $(Exper) $(opt_mode) $(Test) $(GCFlag) $(emtls) $(cpuflag) $(FastFlag)
 
@@ -110,6 +116,8 @@ run:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunFunc $(NoScary) -g $(AddExtra) -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv --vk vk.xml
 run2:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv
+run_test:
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -nomodules -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv
 run.exe:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 
@@ -139,7 +147,7 @@ SizeCheck:
 	nm --print-size --size-sort --radix=d --reverse-sort ./halfvoid  | less
 
 halfvoid:
-	$(TimeF) $(gdb_tui) ./ver3_2_stable -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll
+	$(TimeF) $(gdb_tui) ./ver3_2_stable $(flags) -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll
 	clang -gdwarf-4 out.ll -lm -ldl -o halfvoid
 halfvoid.exe:
 	$(TimeF) $(gdb_tui) ./halfvoid $(flags) -emulate-tls -win32 -g -C0  StandardHVLibrary/ -C1 Source/ -o out.ll

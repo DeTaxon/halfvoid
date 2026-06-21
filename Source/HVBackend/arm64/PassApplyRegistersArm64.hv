@@ -27,9 +27,11 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 
 			i += 1
 
+			intReg := 0
+
 			while fnc.Lines[i].opcode != "call_end"
 			{
-				cPtr[c++] = MCLine("mov",bldr.PushArmReg(0,GTypeVoidP),fnc.Lines[i].var1)
+				cPtr[c++] = MCLine("mov",bldr.PushArmReg(intReg++,GTypeVoidP),fnc.Lines[i].var1)
 				i += 1
 			}
 
@@ -61,7 +63,7 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 		case "mov"
 			ob1 := ref oPtr[line.var1]
 			ob2 := ref oPtr[line.var2]
-			if ob1 is MCVariable and ob2 is MCConstString
+			if ob1 is MCVariable and (ob2 is MCConstString or ob2 is MCConstS64 or ob2 is MCConstInteger)
 			{
 				newReg := bldr.PushArmReg(0,GTypeVoidP)
 				cPtr[c++] = MCLine("mov",newReg,line.var2)

@@ -112,9 +112,15 @@ BuildArm64Context := class
 							ldCmd = 0x00400000
 						WriteCmd(0xf9000000 + targ + spReg + offst + ldCmd)
 					}else{
+						assert(false)
 					}
 
-				}else if ob1 is MCConstRegisterArm64 and (ob2 is MCConstString or ob2 is MCConstPointerTyped)
+				}else if ob1 is MCConstRegisterArm64 and (
+					ob2 is MCConstString or 
+					ob2 is MCConstPointerTyped or
+					ob2 is MCConstInteger or
+					ob2 is MCConstS64
+					)
 				{
 					val := size_t
 					if ob2 is MCConstString
@@ -122,20 +128,18 @@ BuildArm64Context := class
 						val = ob2&->{MCConstString^}.GetValue().CStr()->{size_t}
 					}else if ob2 is MCConstPointerTyped {
 						val = ob2&->{MCConstPointerTyped^}.GetValue()->{size_t}
+					}else if ob2 is MCConstS64{
+						val = ob2&->{MCConstS64^}.GetValue()->{size_t}
+					}else if ob2 is MCConstInteger{
+						val = ob2&->{MCConstInteger^}.GetValue()->{s64}->{size_t}
 					}else {
 						assert(false)
 					}
 					rg := ob1&->{MCConstRegisterArm64^}.GetValue()
 					newLdr := WriteCmd(0x58000000 + rg)
 					pcValues[newLdr] = val 
-					//for i : 4
-					//{
-					//	v := (val and_b 0xFFFF) shl 4
-					//	shft := i shl 21
-					//	WriteCmd(0xf2800000 + v + rg + shft)
-					//	val = val shr 16
-					//}
 				}else{
+					assert(false)
 					
 				}
 			case void
