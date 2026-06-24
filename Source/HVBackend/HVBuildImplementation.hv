@@ -73,6 +73,25 @@ HVContextImplementation := class extend HV_Context
 
 		return newClass
 	}
+	FindFunction := virtual !(Str funcName) -> HV_Object^
+	{
+		res := BoxFuncTemplate^
+		GetItemGlobal(funcName,x ==> {
+			for itm : x
+			{
+				if itm is in BoxFuncTemplate
+				{
+					res = itm->{BoxFuncTemplate^}
+					return true
+				}
+			}
+		})
+		if res == null
+			return res
+		if not res.IsOneFunc()
+			return null
+		return res.GetOneFunc()
+	}
 	CreateFunction := virtual !(Str funcText) -> HV_Object^
 	{
 		return StrToFunctionTemplate(funcText)
@@ -102,7 +121,6 @@ HVContextImplementation := class extend HV_Context
 
 		// c.Workarounds()
 		c.Collect()
-
 
 		result.Functions.Resize(c.WriteFunctions.Size())
 		for it,i : c.WriteFunctions

@@ -356,6 +356,8 @@ SpirvCompiler := class
 	{
 		builtIns := int[int]
 
+		MainFuncId = 500
+
 		for id,obj : globIds
 		{
 			name := HV.GetGlobalVarName(obj)
@@ -401,6 +403,8 @@ SpirvCompiler := class
 		c.Write32((entryCnt shl 16) + 15) // OpEntryPoint
 		c.Write32(5) // Vertex,TessCon,TessEv,Geo,Frag,Compute
 		c.Write32(MainFuncId) // id of function
+
+		printf("yep %i\n",MainFuncId)
 
 		nm := "main"
 		c.Write32(nm[0]&->{u32^}^)

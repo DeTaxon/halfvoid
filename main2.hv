@@ -12,9 +12,63 @@ main := !(char^[] args) -> int
 	// st = "asd"
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
-	x := 12
+	// x := 12
 
 }
+
+
+RunFunc := !() -> void
+{
+	puts("hello")
+	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
+	// printf("test %p\n",deflate)
+	// OpenFontTest()
+	makeSpirv()
+	// tst()
+	// FlacTest()
+	// OpusTest()
+	// ReflectionTest()
+	// FStringTest()
+	// ClosureTest()
+	
+	//tst := ClassA.{ClassB}
+	//// tst.Emplace(int->{TypeId})
+	//tst.Emplace(int)
+}
+
+ModuleTest := !() -> void
+{
+	z := CreatedTestClass
+	z.first = 12
+
+	r := OnDemandTestClass
+	r.x = null
+	r.u = null
+	r.x = null
+
+	for it,ind : r->#AllFields
+	{
+		printf("yep %s %i\n",ind,it)
+	}
+}
+
+ClassB := class
+{
+	this := !(TypeId test) -> void
+	{
+		printf("yep\n")
+	}
+}
+
+ClassA := class .{@T}
+{
+	Emplace := !(args...) -> void
+		#MimicInput(T.this)
+	{
+		c := ClassB(args...)
+	}
+}
+
 HotloadTest := !() -> void
 {
 	// SecondFunc()
@@ -66,60 +120,6 @@ MakeItTemplate := class .{@T}
 {
 	h := T
 }
-
-
-RunFunc := !() -> void
-{
-	puts("hello")
-	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
-	// printf("test %p\n",deflate)
-	// OpenFontTest()
-	// makeSpirv()
-	// tst()
-	// FlacTest()
-	// OpusTest()
-	// ReflectionTest()
-	// FStringTest()
-	// ClosureTest()
-	
-	//tst := ClassA.{ClassB}
-	//// tst.Emplace(int->{TypeId})
-	//tst.Emplace(int)
-}
-
-ModuleTest := !() -> void
-{
-	z := CreatedTestClass
-	z.first = 12
-
-	r := OnDemandTestClass
-	r.x = null
-	r.u = null
-	r.x = null
-
-	for it,ind : r->#AllFields
-	{
-		printf("yep %s %i\n",ind,it)
-	}
-}
-
-ClassB := class
-{
-	this := !(TypeId test) -> void
-	{
-		printf("yep\n")
-	}
-}
-
-ClassA := class .{@T}
-{
-	Emplace := !(args...) -> void
-		#MimicInput(T.this)
-	{
-		c := ClassB(args...)
-	}
-}
-
 
 FStringTest := !() -> void
 {
