@@ -1,7 +1,8 @@
 AppendClass EngTools
 {
-	currentIndex := int
 
+	previosTime := double
+	currentIndex := u32
 
 	DrawPoints := !(TVkCommandBuffer cmds,WackyModel^ model) -> void
 	{
@@ -66,5 +67,35 @@ AppendClass EngTools
 			bar1.subresourceRange.layerCount = 1
 			vk.Funcs.vkCmdPipelineBarrier(cmds.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
 		}
+	}
+
+	ShouldClose := !() -> bool
+	{
+		return window.ShouldClose()
+	}
+
+	PrepareMainLoop := !() -> void
+	{
+		previosTime = GetSteadyTime()
+	}
+
+	AsyncStartDrawing := !() -> void
+	{
+		shadersDB.UpdateShaders(vk)
+
+		drawRes := false
+		@work vk.DrawGetImage(currentIndex&,drawRes&)
+
+		thisTime := GetSteadyTime()
+		deltaTime := thisTime - previosTime
+		previosTime = thisTime
+
+		PrepareConstants(deltaTime)
+	}
+	StopDrawing := !() -> void
+	{
+		vk.DrawPresentImage(currentIndex)
+		
+		window.PollEvents()
 	}
 }

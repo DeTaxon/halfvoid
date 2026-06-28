@@ -11,16 +11,16 @@ AppendClass EngTools
 	
 		vk.CreateSurface(win.windowHandle)
 	
-		crtFence := VkFenceCreateInfo()
+		// crtFence := VkFenceCreateInfo()
 		// vk.Funcs.vkCreateFence(vk.LogicalDevice,crtFence&,null,vkFence&)
 	
 		//testTextureFormat := VkFormatProperties
 		//vkGetPhysicalDeviceFormatProperties(vkPhysCard,VK_FORMAT_R8G8B8_UNORM,testTextureFormat&)
 	
+		shadersDB.SetFolderHotload("ShadersBin/")
 		printf("finished\n")
 	}
 }
-
 
 VKNonRelative := class extend VulkanDefaultInstance
 {
