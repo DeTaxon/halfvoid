@@ -115,7 +115,7 @@ jit:
 run:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run RunFunc $(NoScary) -g $(AddExtra) -C0 StandardHVLibrary -C0 ExperimentalLibrary main2.hv --vk vk.xml
 run2:
-	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv --vk vk.xml
 run_test:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -nomodules -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv
 run.exe:

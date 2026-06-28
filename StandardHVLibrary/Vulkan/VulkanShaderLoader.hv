@@ -57,7 +57,10 @@ VulkanShaderLoader := class
 	LoadComputeShader := !(VulkanDefaultInstance^ inst,TShaderInput^ pass,Str vertName, bool ignoreHotload = false) -> vShader^
 	{
 		vertBlob := FSGetFile(vertName).GetBlob()
-
+		return LoadComputeShaderBlob(inst,pass,vertName,vertBlob,ignoreHotload)
+	}
+	LoadComputeShaderBlob := !(VulkanDefaultInstance^ inst,TShaderInput^ pass,Str vertName,Blob^ vertBlob, bool ignoreHotload = false) -> vShader^
+	{
 		shdr2 := LoadShaderModule3(inst,vertBlob)
 
 		cSS := VkPipelineShaderStageCreateInfo()

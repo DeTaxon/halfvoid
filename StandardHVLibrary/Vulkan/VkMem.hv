@@ -144,7 +144,6 @@ TVkMemoryObject := class
 		memToRet := void^
 		itInstance.Funcs.vkMapMemory(itInstance.LogicalDevice,memObj,0,gpuSize,0,memToRet&)
 		return memToRet
-		
 	}
 	Unmap := !() -> void
 	{

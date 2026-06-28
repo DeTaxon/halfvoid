@@ -356,8 +356,6 @@ SpirvCompiler := class
 	{
 		builtIns := int[int]
 
-		MainFuncId = 500
-
 		for id,obj : globIds
 		{
 			name := HV.GetGlobalVarName(obj)
@@ -403,8 +401,6 @@ SpirvCompiler := class
 		c.Write32((entryCnt shl 16) + 15) // OpEntryPoint
 		c.Write32(5) // Vertex,TessCon,TessEv,Geo,Frag,Compute
 		c.Write32(MainFuncId) // id of function
-
-		printf("yep %i\n",MainFuncId)
 
 		nm := "main"
 		c.Write32(nm[0]&->{u32^}^)
@@ -753,6 +749,5 @@ gl_GlobalInvocationID := vec3ui^
 TestShader := !() -> void
 {
 	indx := gl_GlobalInvocationID^.x
-	// i := 3
-	// uni.particles[i].pos.x += 0.1
+	uni.particles[indx].pos.x += 0.1
 }

@@ -23,7 +23,7 @@ RunFunc := !() -> void
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()
-	makeSpirv()
+	// makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()
@@ -216,12 +216,59 @@ ReflectionTest := !() -> void
 //TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
 //TODO allow !(ref int x) , in functions and function types, lambdas
 
+
 makeSpirv := !() -> void
 {
 	ts := new TFile("tst.comp","wr")
 	c := #SpirvTest()
 	ts.Write(c.GetPointer(),c.Size())
 	ts.Close()
+
+	// return void
+
+	vk := new VulkanDefaultInstance
+	vk.Init()
+
+	loader := VulkanShaderLoader
+
+	rendrPass := vk.CreateRenderPass(![],false)
+	tmp := TShaderInputVertexInfo
+	pass := rendrPass.CreateLayout(tmp,![new TComputeStorage()],![ new TComputePushConstant(128)])
+
+	testShader := loader.LoadComputeShaderBlob(vk,pass,"",c)
+
+	count := 128
+	vertStorage := vk.CreateMemBuffer(PartType->TypeSize*count,"sr")
+
+	testData := vertStorage.Map()->{PartType^}
+	printf("here %p %p\n",testData,vertStorage.memObj)
+	if testData == null
+		exit(0)
+	for i : count
+		testData[i].pos.x = 12
+
+	pool := pass.CreateDescriptorPool(0,1)
+	desc := pool.CreateDescriptor()
+
+	f2 := VkDescriptorBufferInfo
+	f2.buffer = vertStorage.itBuffer
+	f2.range = vertStorage.gpuSize
+
+	setD := VkWriteDescriptorSet()
+	setD.dstSet = desc
+	setD.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
+	setD.descriptorCount = 1
+	setD.pBufferInfo&->{void^^}^ = f2&
+
+	vk.Funcs.vkUpdateDescriptorSets(vk.LogicalDevice,1,setD&,0,null)
+	
+	cmds := TVkCommandBuffer(vk,vk.itDrawCmdPool2)
+
+	vk.Funcs.vkCmdBindPipeline(cmds.Get(),VK_PIPELINE_BIND_POINT_COMPUTE,testShader.itPipe)
+	// vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(), VK_PIPELINE_BIND_POINT_COMPUTE, pass.itLayout , 0, 1, desc&, 0, null);
+	// vk.Funcs.vkCmdDispatch(cmds.Get(),count,1,1)
+
+	
 }
 
 sortTest := !(int^ buf, int lo, int hi) -> void
