@@ -1,0 +1,79 @@
+AppendClass EngTools
+{
+	vk := VKNonRelative^
+
+	VulkanInit := !(Window^ win) -> void
+	{
+		vk = new VKNonRelative
+	    //vk.UseMeshShader()
+		vk.PreferIntegratedGPU()
+		vk.Init()
+	
+		vk.CreateSurface(win.windowHandle)
+	
+		crtFence := VkFenceCreateInfo()
+		// vk.Funcs.vkCreateFence(vk.LogicalDevice,crtFence&,null,vkFence&)
+	
+		//testTextureFormat := VkFormatProperties
+		//vkGetPhysicalDeviceFormatProperties(vkPhysCard,VK_FORMAT_R8G8B8_UNORM,testTextureFormat&)
+	
+		printf("finished\n")
+	}
+}
+
+
+VKNonRelative := class extend VulkanDefaultInstance
+{
+	vkDebugObj := VkDebugReportCallbackEXT
+
+	AppInfoStep := virtual !(VkApplicationInfo appInfo) -> void
+	{
+		appInfo.pApplicationName = "no one cares"
+		appInfo.applicationVersion = 1
+		appInfo.pEngineName = "pls work engine"
+		appInfo.engineVersion = 1
+		//appInfo.apiVersion = 4194325//(1 << 22) + (0 << 11) + 21
+		appInfo.apiVersion = 4206592//(1 << 22) + (3 << 11) + 0
+	}
+	DebugStep := virtual !() -> void
+	{
+		if Funcs.vkCreateDebugReportCallbackEXT != null
+		{
+			debPrint := VkDebugReportCallbackCreateInfoEXT()
+			//debPrint.sType = 1000011000
+			debPrint.pfnCallback&->{void^^}^ = VkDebugCallback->{void^}
+			debPrint.flags = 2 + 4 + 8// + 16
+			Funcs.vkCreateDebugReportCallbackEXT(Instance,debPrint&,null,vkDebugObj&)
+		}
+	}
+	DeviceExtensionStep := virtual !(VkExtensionProperties[] deviceExtensions, List.{char^} expectDeviceExtensions) -> void 
+	{
+		super(deviceExtensions,expectDeviceExtensions)
+
+		for it : deviceExtensions
+		{
+			//printf("hm %s\n",it&)
+		}
+		expectDeviceExtensions.Push("VK_KHR_imageless_framebuffer")
+		expectDeviceExtensions.Push("VK_KHR_image_format_list")
+
+		//expectDeviceExtensions.Push("VK_EXT_mesh_shader")
+		//expectDeviceExtensions.Push("VK_KHR_maintenance4")
+
+		//expectDeviceExtensions.Push("VK_KHR_acceleration_structure")
+		//expectDeviceExtensions.Push("VK_KHR_buffer_device_address")
+		//expectDeviceExtensions.Push("VK_KHR_deferred_host_operations")
+		//expectDeviceExtensions.Push("VK_EXT_descriptor_indexing")
+		//expectDeviceExtensions.Push("VK_KHR_ray_tracing_pipeline")
+		//expectDeviceExtensions.Push("VK_KHR_spirv_1_4")
+		//expectDeviceExtensions.Push("VK_KHR_shader_float_controls")
+		//expectDeviceExtensions.Push("VK_KHR_ray_query")
+	}
+}
+VkDebugCallback := !(int flags,int bojType,u64 object,u64 location,int msgCode,char^ prefix,char^ msg,void^ usrData) -> int
+{
+	printf("VkError <%s>\n",msg)
+	assert(false)
+	exit(0)
+	return 0
+}

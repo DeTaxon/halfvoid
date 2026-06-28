@@ -6,7 +6,6 @@ EngTools := class
 	
 	shadersDB := VulkanShaderLoader
 
-
 	Init := !() -> void
 	{
 		x := 800
