@@ -26,6 +26,18 @@ AppendClass EngTools
 		result = new WackyShader
 		result.base = shadersDB.LoadComputeShader(vk,shaderLayout,path)
 
+		checkShader(info&,result)
+
+	}
+	LoadShader := !(Str path) -> WackyShader^
+	{
+		stream := FSGetFile(path).GetStream()
+		// info := LoadShaderReflection(stream)
+
+	}
+
+	checkShader := !(ShaderReflectionLoader^ info,WackyShader^ shader) -> void
+	{
 		while true
 		{
 			if info.PushConstants.Size() != 1
@@ -40,8 +52,6 @@ AppendClass EngTools
 			if not info.Structures.Contain(tpId)
 				break
 
-			
-
 			for it : info.Structures[tpId]
 			{
 				name := it.1
@@ -52,7 +62,7 @@ AppendClass EngTools
 					if cnst.Name == name
 					{
 						found = true
-						result.pushConsts.Push(i)
+						shader.pushConsts.Push(i)
 						break
 					}
 				}
