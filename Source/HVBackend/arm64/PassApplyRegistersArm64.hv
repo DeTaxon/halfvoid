@@ -89,6 +89,16 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 				printf("at line %i\n",i)
 				assert(false,"unknown move")
 			}
+		case "add"
+			ob1 := ref oPtr[line.var2]
+			ob2 := ref oPtr[line.var3]
+
+			r1 := bldr.PushArmReg(0,GTypeS64)
+			r2 := bldr.PushArmReg(1,GTypeS64)
+			cPtr[c++] = MCLine("mov",r1,line.var2)
+			cPtr[c++] = MCLine("mov",r2,line.var3)
+			cPtr[c++] = MCLine("add",r1,r1,r2)
+			cPtr[c++] = MCLine("mov",line.var1,r1)
 		case void
 			// assert(false,"unsupported opcode")
 		}

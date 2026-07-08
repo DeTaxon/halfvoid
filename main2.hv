@@ -19,7 +19,8 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	puts("hello")
+	x := 15
+	printf("hello %i\n",x + 4)
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()

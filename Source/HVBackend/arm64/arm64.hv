@@ -142,6 +142,13 @@ BuildArm64Context := class
 					assert(false)
 					
 				}
+			case "add"
+				rRes := oPtr[line.var1]&->{MCConstRegisterArm64^}.GetValue()
+				r2 := oPtr[line.var2]&->{MCConstRegisterArm64^}.GetValue()
+				r3 := oPtr[line.var3]&->{MCConstRegisterArm64^}.GetValue()
+
+				// WriteCmd(0x8B200000 + (r3 shl 16) + (rRes shl 5) + (r2))
+				WriteCmd(0x8B000000 + (r3 shl 16) + (rRes shl 5) + (r2))
 			case void
 				assert(false,"unknown opcode")
 			}
