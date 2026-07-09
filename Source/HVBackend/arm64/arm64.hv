@@ -102,15 +102,33 @@ BuildArm64Context := class
 
 					if other is MCConstRegisterArm64
 					{
-						//TODO sizes of 4 2 1
-						offst := (getObjsStackOffset(fnc,varId) shl 10) shr 3 // TODO check for unaligned vars
-						spReg := (31 shl 5)
-						targ := other.GetValue()
+						tpSize := other.GetType().GetSize()
 
-						ldCmd := 0
-						if not isStore
-							ldCmd = 0x00400000
-						WriteCmd(0xf9000000 + targ + spReg + offst + ldCmd)
+						if tpSize == 1
+						{
+							offst := getObjsStackOffset(fnc,varId) shl 10 // TODO check for unaligned vars
+							spReg := (31 shl 5)
+							targ := other.GetValue()
+
+							cmd := 0x39800000
+							if isStore
+								cmd = 0x39000000
+								
+
+							WriteCmd(cmd + offst + spReg + targ)
+
+						}else{
+							//TODO sizes 4 2
+							offst := (getObjsStackOffset(fnc,varId) shr 3) shl 10 // TODO check for unaligned vars
+							spReg := (31 shl 5)
+							targ := other.GetValue()
+
+							ldCmd := 0
+							if not isStore
+								ldCmd = 0x00400000
+							WriteCmd(0xf9000000 + targ + spReg + offst + ldCmd)
+
+						}
 					}else{
 						assert(false)
 					}
@@ -142,13 +160,30 @@ BuildArm64Context := class
 					assert(false)
 					
 				}
-			case "add"
+			case in !["add","sub","mul","div"]
+
 				rRes := oPtr[line.var1]&->{MCConstRegisterArm64^}.GetValue()
 				r2 := oPtr[line.var2]&->{MCConstRegisterArm64^}.GetValue()
 				r3 := oPtr[line.var3]&->{MCConstRegisterArm64^}.GetValue()
 
+				baseCmd := 0
+
+				switch line.opcode
+				{
+				case "add" baseCmd = 0x8b000000
+				case "sub" baseCmd = 0xeb000000
+				case "mul" baseCmd = 0x9b007c00
+				case "div" baseCmd = 0x9ac00c00
+				//case "udiv" baseCmd = 0x9ac00800 
+				}
+
 				// WriteCmd(0x8B200000 + (r3 shl 16) + (rRes shl 5) + (r2))
-				WriteCmd(0x8B000000 + (r3 shl 16) + (rRes shl 5) + (r2))
+				WriteCmd(baseCmd + (r3 shl 16) + (rRes shl 5) + (r2))
+			case "cmp"
+				rRes := oPtr[line.var1]&->{MCConstRegisterArm64^}.GetValue()
+				cnd := 0xd
+				WriteCmd(0x9a9f07e0 + (cnd shl 12) + rRes)
+				
 			case void
 				assert(false,"unknown opcode")
 			}

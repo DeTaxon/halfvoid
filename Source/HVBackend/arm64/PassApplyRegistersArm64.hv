@@ -31,7 +31,9 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 
 			while fnc.Lines[i].opcode != "call_end"
 			{
-				cPtr[c++] = MCLine("mov",bldr.PushArmReg(intReg++,GTypeVoidP),fnc.Lines[i].var1)
+				// TODO float simd
+				id := fnc.Lines[i].var1
+				cPtr[c++] = MCLine("mov",bldr.PushArmReg(intReg++,oPtr[id].GetType()),id)
 				i += 1
 			}
 
@@ -82,14 +84,16 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 				cPtr[c++] = MCLine("mov",line.var1,newReg)
 			}else if ob1 is MCVariable and ob2 is MCVariable {
 				//TODO diff sizes
-				newReg := bldr.PushArmReg(0,GTypeVoidP)
+				newReg := bldr.PushArmReg(0,oPtr[line.var1].GetType())
 				cPtr[c++] = MCLine("mov",newReg,line.var2)
 				cPtr[c++] = MCLine("mov",line.var1,newReg)
 			}else{
 				printf("at line %i\n",i)
 				assert(false,"unknown move")
 			}
-		case "add"
+		case in !["add","sub","mul","div"]
+
+			//TODO floats,vectors, unsigned
 			ob1 := ref oPtr[line.var2]
 			ob2 := ref oPtr[line.var3]
 
@@ -97,8 +101,23 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 			r2 := bldr.PushArmReg(1,GTypeS64)
 			cPtr[c++] = MCLine("mov",r1,line.var2)
 			cPtr[c++] = MCLine("mov",r2,line.var3)
-			cPtr[c++] = MCLine("add",r1,r1,r2)
+			cPtr[c++] = MCLine(line.opcode,r1,r1,r2)
 			cPtr[c++] = MCLine("mov",line.var1,r1)
+		case "cmp"
+
+			//TODO floats, unsigned
+			ob1 := ref oPtr[line.var2]
+			ob1 := ref oPtr[line.var4]
+
+			r1 := bldr.PushArmReg(0,ob1.GetType())
+			r2 := bldr.PushArmReg(1,ob1.GetType())
+			res := bldr.PushArmReg(0,GTypeBool)
+
+			cPtr[c++] = MCLine("mov",r1,line.var2)
+			cPtr[c++] = MCLine("mov",r2,line.var4)
+			cPtr[c++] = MCLine("sub",r1,r1,r2)
+			cPtr[c++] = MCLine("cmp",res,line.var3)
+			cPtr[c++] = MCLine("mov",line.var1,res)
 		case void
 			// assert(false,"unsupported opcode")
 		}
