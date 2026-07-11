@@ -19,8 +19,12 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
-	if 2 > 3
-		printf("hello\n")
+	i := 3
+	while 0 < i
+	{
+		// printf("hello %i\n",i)
+		i -= 1
+	}
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()

@@ -135,14 +135,23 @@ BuildArm64Context := class
 
 						}else{
 							//TODO sizes 4 2
-							offst := (getObjsStackOffset(fnc,varId) shr 3) shl 10 // TODO check for unaligned vars
+							offst := getObjsStackOffset(fnc,varId) // TODO check for unaligned vars
 							spReg := (31 shl 5)
 							targ := other.GetValue()
+
+							si := 0
+
+							if tpSize == 8 {
+								offst = (offst shr 3) shl 10
+								si = 0x40000000
+							}else {
+								offst = (offst shr 2) shl 10
+							}
 
 							ldCmd := 0
 							if not isStore
 								ldCmd = 0x00400000
-							WriteCmd(0xf9000000 + targ + spReg + offst + ldCmd)
+							WriteCmd(0xb9000000 + si + targ + spReg + offst + ldCmd)
 
 						}
 					}else{
@@ -229,7 +238,8 @@ BuildArm64Context := class
 					case ">=" cnd = 0xa
 					}
 				}
-				WriteCmd(0x9a9f07e0 + (cnd shl 12) + rRes)
+				cnd = cnd xor_b 1
+				WriteCmd(0x9a9f07e0 or_b (cnd shl 12) or_b rRes)
 				
 			case void
 				assert(false,"unknown opcode")

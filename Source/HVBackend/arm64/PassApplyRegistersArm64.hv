@@ -94,8 +94,10 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 			ob1 := ref oPtr[line.var2]
 			ob2 := ref oPtr[line.var3]
 
-			r1 := bldr.PushArmReg(0,GTypeS64)
-			r2 := bldr.PushArmReg(1,GTypeS64)
+			tp := ob1.GetType()
+
+			r1 := bldr.PushArmReg(0,tp)
+			r2 := bldr.PushArmReg(1,tp)
 			cPtr[c++] = MCLine("mov",r1,line.var2)
 			cPtr[c++] = MCLine("mov",r2,line.var3)
 			cPtr[c++] = MCLine(line.opcode,r1,r1,r2)
