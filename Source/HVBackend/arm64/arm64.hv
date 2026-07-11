@@ -65,6 +65,10 @@ BuildArm64Context := class
 	// 0b10 1010 0110 1111110 11110 11111 11101
 		WriteCmd(0xa9807bfd or_b offstMinus) // stp x29 x39 [sp,-16]!
 		WriteCmd(0x910003fd)
+
+		labels := int[int]
+		jmps := int[int]
+		jmpIfs := int[int]
 		
 		i := 0
 		linesCount := fnc.Lines.Size()
@@ -78,13 +82,25 @@ BuildArm64Context := class
 
 			switch line.opcode
 			{
+			case "jmp_if_bool"
+
+				rg := oPtr[line.var2]&->{MCConstRegisterArm64^}.GetValue()
+				WriteCmd(0xf100001f + (rg shl 5))
+				jmpIfs[outIndx] = line.var1
+				WriteCmd(0x54000001)
+			case "jmp"
+				jmps[outIndx] = line.var1
+				WriteCmd(0x14000000)
 			case "label"
+				labels[line.var1] = outIndx
 				/// TODO
 			case "call_start"
 				assert(oPtr[line.var1] is MCConstRegisterArm64)
 				rg := oPtr[line.var1]&->{MCConstRegisterArm64^}.GetValue()
 				WriteCmd(0xd63f0000 + (rg shl 5))
 			case "mov"
+
+				//TODO more then 460 bytes size support
 				ob1 := ref oPtr[line.var1]
 				ob2 := ref oPtr[line.var2]
 
@@ -137,7 +153,8 @@ BuildArm64Context := class
 					ob2 is MCConstString or 
 					ob2 is MCConstPointerTyped or
 					ob2 is MCConstInteger or
-					ob2 is MCConstS64
+					ob2 is MCConstS64 or 
+					ob2 is MCConstBool
 					)
 				{
 					val := size_t
@@ -150,6 +167,10 @@ BuildArm64Context := class
 						val = ob2&->{MCConstS64^}.GetValue()->{size_t}
 					}else if ob2 is MCConstInteger{
 						val = ob2&->{MCConstInteger^}.GetValue()->{s64}->{size_t}
+					}else if ob2 is MCConstBool {
+						v := ob2&->{MCConstBool^}.GetValue()
+						if v 
+							val = 1
 					}else {
 						assert(false)
 					}
@@ -182,6 +203,32 @@ BuildArm64Context := class
 			case "cmp"
 				rRes := oPtr[line.var1]&->{MCConstRegisterArm64^}.GetValue()
 				cnd := 0xd
+
+				//TODO add unsigned and float
+				//
+				//this is signed
+				switch line.V2Cond()
+				{
+				case "==" cnd = 0x0
+				case "!=" cnd = 0x1
+				case "<" cnd = 0xb
+				case "<=" cnd = 0xd
+				// case ">" cnd = 0 TODO no support for it, use others
+				case ">=" cnd = 0xa
+				}
+
+				if false // float
+				{
+					switch line.V2Cond()
+					{
+					case "==" cnd = 0x0
+					case "!=" cnd = 0x1
+					case "<" cnd = 0x4
+					case "<=" cnd = 0x9
+					case ">" cnd = 0xc
+					case ">=" cnd = 0xa
+					}
+				}
 				WriteCmd(0x9a9f07e0 + (cnd shl 12) + rRes)
 				
 			case void
@@ -203,6 +250,20 @@ BuildArm64Context := class
 			diff := (pos - indx) shl 5
 			assert(diff->{u32} < 0xFF000000)
 			wrt[indx] += diff
+		}
+
+		for j , idx : jmps
+		{
+			val := labels[j] - idx
+			val = val and_b 0x03ffffff
+			wrt[idx] = wrt[idx] or_b val
+		}
+
+		for j , idx : jmpIfs
+		{
+			val := labels[j] - idx
+			val = val and_b 0x7ffff
+			wrt[idx] = wrt[idx] or_b (val shl 5)
 		}
 	}
 	outIndx := int
