@@ -45,37 +45,3 @@ BuildInVirtualCall := class extend BoxFuncCommon
 		return wrappedFunc.GetDefaultToken(i)
 	}
 }
-
-virtualGetPointer := class extend BoxExeObj
-{
-	varIndex := int
-	this := !(Type^ tp,int inIndex) -> void
-	{
-		ObjType = tp
-		varIndex = inIndex
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%FuncPtr" << varIndex
-	}
-}
-virtualNoPreCallWrapper := class extend BoxExeObj
-{
-	wrapped := BoxExeObj^
-	this := !(BoxExeObj^ toWrap) -> void
-	{
-		wrapped = toWrap
-		ObjType = toWrap.GetType()
-	}
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		wrapped.PrintPointUse(ctx)
-	}
-
-}
