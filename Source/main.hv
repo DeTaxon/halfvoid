@@ -56,6 +56,8 @@ SelfBuild := false
 
 IgnoreModules := false
 
+GenerateIL := false
+
 OutputFile := Str
 main := !(Vector.{char^} args) -> int
 {
@@ -215,6 +217,8 @@ main := !(Vector.{char^} args) -> int
 				osCLIBFile = ".clib.win32"
 			case "-fastest-runner"
 				FastestRunner = true
+			case "-gen-il"
+				GenerateIL = true
 			case "-self-build"
 				SelfBuild = true
 			case "-g"
@@ -401,6 +405,12 @@ main := !(Vector.{char^} args) -> int
 			CompileAndRunCode(toRun->{BoxFuncBody^})
 		}
 		FinilizeCache()
+		return 0
+	}
+
+	if GenerateIL
+	{
+		GenerateILFile()
 		return 0
 	}
 

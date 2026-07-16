@@ -121,6 +121,11 @@ run_test:
 run.exe:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 
+il:
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -entry ILTest -gen-il -nomodules -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv -o test.il
+	ilasm test.il
+	mono test.exe
+
 run_nonstop:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -run main -C0 ExperimentalLibrary/ $(NoScary) -nonstop -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 run_nonstop.exe:

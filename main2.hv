@@ -40,6 +40,15 @@ RunFunc := !() -> void
 	//// tst.Emplace(int->{TypeId})
 	//tst.Emplace(int)
 }
+ILTest := !() -> void
+{
+	i := 0
+	while (i < 5)
+	{
+		printf("Hello world\n")
+		i += 1
+	}
+}
 
 ModuleTest := !() -> void
 {

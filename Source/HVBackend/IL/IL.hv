@@ -1,0 +1,230 @@
+GenerateILFile := !() -> void
+{
+	mainFunc := intGetFunc(mainFuncName)
+	assert(mainFunc != null)
+
+	c := CollectFunctionsCtx(mainFunc->{BoxFuncBody^})
+
+	c.Workarounds()
+	c.Collect()
+
+	outFile := new TFile(OutputFile,"wb")
+	defer outFile.Close()
+
+
+	fileHeader := """
+.assembly extern mscorlib
+{
+  .ver 4:0:0:0
+  .publickeytoken = (B7 7A 5C 56 19 34 E0 89 ) // .z\V.4..
+}
+.assembly 'funcs'
+{
+  .custom instance void class [mscorlib]System.Runtime.CompilerServices.CompilationRelaxationsAttribute::'.ctor'(int32) =  (01 00 08 00 00 00 00 00 ) // ........
+
+  .custom instance void class [mscorlib]System.Runtime.CompilerServices.RuntimeCompatibilityAttribute::'.ctor'() =  (
+		01 00 01 00 54 02 16 57 72 61 70 4E 6F 6E 45 78   // ....T..WrapNonEx
+		63 65 70 74 69 6F 6E 54 68 72 6F 77 73 01       ) // ceptionThrows.
+
+  .custom instance void class [mscorlib]System.Diagnostics.DebuggableAttribute::'.ctor'(valuetype [mscorlib]System.Diagnostics.DebuggableAttribute/DebuggingModes) =  (01 00 07 01 00 00 00 00 ) // ........
+
+  .hash algorithm 0x00008004
+  .ver  0:0:0:0
+}
+.module funcs.exe // GUID = {D673C7ED-7E5F-48BD-BF00-6AE3959451ED}
+
+"""
+
+
+	funcStart := """
+  .class private auto ansi beforefieldinit MainClass
+  	extends [mscorlib]System.Object
+  {
+
+    // method line 1
+    .method public static hidebysig 
+           default void Main (string[] args)  cil managed 
+    {
+        // Method begins at RVA 0x2050
+	.entrypoint
+	// Code size 19 (0x13)
+	.maxstack 200
+	"""
+
+	//IL_0000:  nop 
+	//IL_0001:  ldc.i4.1 
+	//IL_0002:  ldc.i4.3 
+	//IL_0003:  ldc.r8 3.1400000000000001
+	//IL_000c:  call int32 class MainClass::SubFunc(int32, int32, float64)
+	//IL_0011:  pop 
+	//IL_0012:  ret 
+
+    //} // end of method MainClass::Main
+
+    //// method line 2
+    //.method public static hidebysig 
+    //       default int32 SubFunc (int32 a, int32 b, float64 c)  cil managed 
+    //{
+    //    // Method begins at RVA 0x2064
+	//// Code size 9 (0x9)
+	//.maxstack 2
+	//.locals init (
+	//	int32	V_0)
+	//IL_0000:  nop 
+	//IL_0001:  ldarg.0 
+	//IL_0002:  ldarg.1 
+	//IL_0003:  add 
+	//IL_0004:  stloc.0 
+	//IL_0005:  br.s IL_0007
+
+	//IL_0007:  ldloc.0 
+	//IL_0008:  ret 
+	funcEnd := """
+    } // end of method MainClass::SubFunc
+
+    // method line 3
+    .method public hidebysig specialname rtspecialname 
+           instance default void '.ctor' ()  cil managed 
+    {
+        // Method begins at RVA 0x2079
+	// Code size 8 (0x8)
+	.maxstack 8
+	IL_0000:  ldarg.0 
+	IL_0001:  call instance void object::'.ctor'()
+	IL_0006:  nop 
+	IL_0007:  ret 
+    } // end of method MainClass::.ctor
+
+  } // end of class MainClass
+	"""
+
+	outFile.Write(fileHeader,strlen(fileHeader))
+	outFile.Write(funcStart,strlen(funcStart))
+
+	assert(c.WriteFunctions.Size() == 1)
+
+	for func : c.WriteFunctions
+	{
+		bc := BCFuncs.GetBaseFunc(func)
+
+		bc.Print()
+
+
+		locs := Type^[]
+		oldToNew := int[int]
+
+		out:= outFile
+
+		i := 0
+
+		while i < bc.Objects.Size()
+		{
+			ob := ref bc.Objects[i]
+
+			if ob is MCVariable
+			{
+				tp := ob.GetType()
+
+				if tp == GTypeInt or tp == GTypeBool
+				{
+					oldToNew[i] = locs.Size()
+					locs.Push(tp)
+				}
+			}
+			i += 1
+		}
+
+		if locs.Size() != 0
+		{
+			outFile^ << "	.locals init("
+			for it,ind : locs
+			{
+				if ind != 0
+					outFile^ << ","
+				outFile^ << "\n		"
+
+				switch it
+				{
+				case GTypeInt outFile^ << "int32"
+				case GTypeBool outFile^ << "bool"
+				case none assert(false)
+				}
+			}
+			outFile^ << "\n	)\n"
+		}
+
+		loadObj := (int ind) ==> {
+			ob := bc.Objects[ind]&
+
+			switch ob is
+			{
+			case MCVariable
+				out^ << "	ldloc " << oldToNew[ind] << "\n"
+			case MCConstInteger
+				out^ << "	ldc.i4 " << ob.GetValue() << "\n"
+			}
+		}
+		storeObj := (int ind) ==> {
+			out^ << "	stloc " << oldToNew[ind] << "\n"
+		}
+
+
+		i = 0
+
+		while i < bc.Lines.Size()
+		{
+			line := bc.Lines[i]
+
+			switch line.opcode
+			{
+			case "jmp_if_bool"
+				loadObj(line.var2)
+				out^ << "	brtrue label" << line.var1 << "\n"
+			case "jmp"
+				out^ << "	br label" << line.var1 << "\n"
+			case "label"
+				out^ << "label" << line.var1 << ":\n"
+			case "call_start"
+				while bc.Lines[i].opcode != "call_end"
+					i += 1
+
+				out^ << "	ldstr \"helloStub\"\n "
+				out^ << "	call void class [mscorlib]System.Console::WriteLine(string)\n"
+			case "mov"
+				ob1 := ref bc.Objects[line.var1]
+				ob2 := ref bc.Objects[line.var2]
+
+				if ob1 is MCVariable and ob2 is MCConstInteger
+				{
+					val := ob2&->{MCConstInteger^}.GetValue()
+
+					out^ << "	ldc.i4 " << val << "\n"
+					storeObj(line.var2)
+				}else{
+					// assert(false,"unknown move")
+				}
+			case "cmp"
+				loadObj(line.var2)
+				loadObj(line.var4)
+
+				switch line.V3Cond()
+				{
+				case "<" out^ << "	clt\n"
+				// TODO others
+				}
+				storeObj(line.var1)
+			case in !["add"]
+				loadObj(line.var2)
+				loadObj(line.var3)
+				out^ << "	add\n"
+				storeObj(line.var1)	
+				
+			}
+			i += 1
+		}
+
+		outFile^ << "	ret\n"
+	}
+
+	outFile.Write(funcEnd,strlen(funcEnd))
+}
