@@ -370,23 +370,9 @@ ConstructorCallWrapper := class extend BoxExeObj
 	{
 		return true
 	}
-
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		itVar.PrintCode(ctx)
-		cCall.PrintPointPre(ctx)
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		cCall.PrintPointUse(ctx)
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		itVar.PrintCode(ctx)
-		cCall.PrintPre(ctx)
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		cCall.PrintUse(ctx)
+		itVar.WriteMC(ctx)
+		result = cCall.WriteMC(ctx)
 	}
 }

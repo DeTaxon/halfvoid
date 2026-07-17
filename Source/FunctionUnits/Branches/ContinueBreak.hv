@@ -58,6 +58,16 @@ BoxContinue := class extend BoxExeObj
 		}
 		goLabel.PrintGo(ctx)
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		for it : ctx.DeferObjects
+		{
+			if it == goLabel
+				break
+			it.WriteDeferMC(ctx)
+		}
+		goLabel.WriteGoMC(ctx)
+	}
 }
 
 BoxBreak := class extend BoxExeObj
@@ -76,5 +86,15 @@ BoxBreak := class extend BoxExeObj
 			it.PrintDefer(ctx)
 		}
 		goLabel.PrintGo(ctx)
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		for it : ctx.DeferObjects
+		{
+			if it == goLabel
+				break
+			it.WriteDeferMC(ctx)
+		}
+		goLabel.WriteGoMC(ctx)
 	}
 }

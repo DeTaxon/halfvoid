@@ -131,21 +131,13 @@ BuiltInMemsetInlineInt := class extend BoxFuncCommon
 		empt := Vector.{bool}
 		SetType(GetFuncType(4,![GTypeVoidP,GTypeU8,GTypeInt,GTypeBool],empt,GTypeVoid,false,false))
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
-
-		lst[^].PrintPre(ctx)
-		f^ << "call void @llvm.memset.inline.p0.p0i8.i32("
-		f^ << "i8* "
-		lst[0].PrintUse(ctx)
-		f^ << ", i8 "
-		lst[1].PrintUse(ctx)
-		f^ << ", i32 "
-		lst[2].PrintUse(ctx)
-		f^ << ",i1 "
-		lst[3].PrintUse(ctx)
-		f^ << ")\n"
+		//TODO memleak
+		cl := CreateFuncCall(StringSpan("memset"),![indexes[0],indexes[1],indexes[2]])
+		assert(cl != null)
+		return cl.WriteMC(ctx)
 	}
 }
 BuiltInGSWrite := class extend BoxFuncCommon
@@ -197,6 +189,20 @@ BuiltInDegreeSuffix := class extend BoxFuncCommon
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ << "\n"
 	}
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
+	{
+		resType := ObjType->{TypeFunc^}.ResultType
+
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+
+		mulVar := ctx.AddDouble(0.017453292519943295)
+
+		res := ctx.CreateVar(resType)
+		HVB_ins_mul(ctx,res,mulVar,dwn)
+
+		result.CreatedId = res
+	}
 }
 BuiltInLLVMProxy := class extend BoxFuncCommon
 {
@@ -225,6 +231,18 @@ BuiltInLLVMProxy := class extend BoxFuncCommon
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ <<"\n"
+	}
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
+	{
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+		switch funcName
+		{
+		case "@llvm.va_start"
+			HVB_ins_va_start(ctx,dwn)
+		case "@llvm.va_end"
+			HVB_ins_va_end(ctx,dwn)
+		}
 	}
 }
 BuiltInVaArgTemplate := class extend BoxFuncTemplate
@@ -322,6 +340,14 @@ BuiltInVaArg := class extend BoxFuncCommon
 		if DebugMode
 			f^ << " , !dbg !" << GDebugLineCallId
 		f^ <<"\n"
+	}
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
+	{
+		dwn := indexes[0].WriteMC(ctx).CreatedId
+		newVar := ctx.CreateVar(TargetType)
+		HVB_ins_va_arg(ctx,newVar,dwn)
+		result.CreatedId = newVar
 	}
 }
 

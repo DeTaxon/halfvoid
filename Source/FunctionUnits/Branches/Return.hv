@@ -29,6 +29,24 @@ BoxReturn := class extend BoxExeObj
 			iter.GetLabel().PrintGo(ctx)
 		}
 	}
+
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		ResultCall?.WriteMC(ctx)
+
+		if ctx.DeferObjects.Size() == 0
+		{
+			EndLabel.WriteGoMC(ctx)
+		}else{
+			iter := ctx.exitNodes&
+			for i : ctx.DeferObjects.Size()
+			{
+				it := ctx.DeferObjects[ctx.DeferObjects.Size() - i - 1]
+				iter = iter.subNodes[it]&
+			}
+			iter.GetLabel().WriteGoMC(ctx)
+		}
+	}
 }
 
 BoxYield := class extend BoxReturn
@@ -60,6 +78,13 @@ BoxYield := class extend BoxReturn
 	GetLabel := virtual !() -> BoxLabel^
 	{
 		return toThis
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		ResultCall?.WriteMC(ctx)
+		callSet.WriteMC(ctx)
+		EndLabel.WriteGoMC(ctx)
+		toThis.WriteMC(ctx)
 	}
 }
 
@@ -226,6 +251,10 @@ ReturnHalfState := class extend BoxExeObj
 	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		returnObj.PrintDefaultUse(ctx)
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		returnObj.WriteMC(ctx)
 	}
 }
 
