@@ -7,13 +7,11 @@ HV_Context := class
 	GetTypeObj := virtual !(TypeId tp) -> Type^ {}
 	GetFuncType := virtual !(Type^[] types,bool[] isReference, Type^ resultType,bool resultReference,bool isVariadicArguments) -> Type^ {}
 	GetTypeId := virtual !(Type^ obj) -> TypeId {}
-	GetTypeClass := virtual !(Type^ obj) -> HV_Class^ {}
 
 	GetTypeDebugName := virtual !(Type^ obj) -> Str {}
 
 	GetTypeGroup := virtual !(Type^ obj) -> TypeGroups {}
 
-	CreateClass := virtual !() -> HV_Class^ {}
 	CreateClass2 := virtual !() -> TypeClass^ {}
 
 	CreateInt32 := virtual !(int value) -> HV_Object^ {}

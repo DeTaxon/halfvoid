@@ -32,8 +32,6 @@ BoxClassTuple := class extend BoxClassPoison
 		ItId = GetNewId()
 		InitType()
 
-		hvClass.baseClass = this&
-
 		for it,i : types //todo remove i
 		{
 			Fields.Push(new FieldParam(StringSpan(""),types[i]))

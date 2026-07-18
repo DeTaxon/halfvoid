@@ -47,22 +47,6 @@ HVContextImplementation := class extend HV_Context
 	{
 		result->AsString = obj.GetBADStr()
 	}
-	GetTypeClass := virtual !(Type^ obj) -> HV_Class^
-	{
-		if obj is not in TypeClass
-			return null
-		return obj.hvClass&
-
-	}
-	CreateClass := virtual !() -> HV_Class^ 
-	{
-		newClass := new hvr_Class()
-
-		AllClasses.Push(newClass)
-
-		newClass.hvClass.baseClass =  newClass
-		return newClass.hvClass&
-	}
 	CreateClass2 := virtual !() -> TypeClass^ 
 	{
 		newClass := new BoxClass
@@ -129,8 +113,8 @@ HVContextImplementation := class extend HV_Context
 		for it,i : c.WriteGlobals
 			result.Globals[i] = it
 		result.Classes.Resize(c.UsedClasses.Size())
-		for it,i : c.UsedClasses
-			result.Classes[i] = it.hvClass&
+		//for it,i : c.UsedClasses
+		//	result.Classes[i] = it
 	}
 
 	GetSSAFunc := virtual !(HV_Object^ fnc) -> HVB_Function^

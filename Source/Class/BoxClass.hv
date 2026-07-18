@@ -14,8 +14,6 @@ BoxClass := class extends Type
 	Reserved := HybridQueue.{BoxClass^,1}
 	ApplyedReserve := HybridQueue.{BoxClass^,1}
 
-	hvClass := HVClassImpl
-
 	Name := Str
 
 	LazyFields := AVLMap.{Str,Tuple.{Type^,Token^}}

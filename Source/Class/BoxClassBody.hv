@@ -223,8 +223,6 @@ BoxClassBody := class extend BoxClassPoison
 		Body = bdy
 
 		classFile = CurrentFile
-
-		hvClass.baseClass = this&
 	}
 
 	startedParse := bool
