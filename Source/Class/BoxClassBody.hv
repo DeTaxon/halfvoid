@@ -161,7 +161,7 @@ TryParseClass := !(Token^ itm) -> BoxUnit^
 }
 
 
-BoxClassBody := class extend BoxClassPoison
+BoxClassBody := class extends BoxClass
 {
 	Body := Token^
 	ClassFile := BoxFile^

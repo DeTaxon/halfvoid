@@ -23,7 +23,7 @@ GetTuple := !(Vector.{Type^} types, bool simpleTuple = false,bool isVTable = fal
 }
 
 
-BoxClassTuple := class extend BoxClassPoison
+BoxClassTuple := class extends BoxClass
 {
 	mthHatch := THatch
 	this := !(Vector.{Type^} types,bool simpleTuple) -> void
