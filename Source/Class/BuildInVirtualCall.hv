@@ -44,4 +44,9 @@ BuildInVirtualCall := class extend BoxFuncCommon
 	{
 		return wrappedFunc.GetDefaultToken(i)
 	}
+	//TODO delete it? never used
+	GetFuncIdMC := virtual !(MCBuildContext^ ctx,Vector.{int} indx) -> int
+	{
+		return 0
+	}
 }

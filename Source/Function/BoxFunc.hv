@@ -2,6 +2,12 @@ BoxFunc := class extend BoxExeConstObj
 {
 	ItTypeHatch := THatch
 
+	IsMCInlined := virtual false
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
+	{
+		assert(false)
+	}
+
 	GetType := virtual !() -> Type^
 	{
 		ItTypeHatch.Await()
