@@ -103,6 +103,10 @@ BoxExeBool := class extend BoxExeConstObj
 		}
 		
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddBool(Value)
+	}
 }
 
 BoxExeInt := class extend BoxExeConstObj
@@ -124,6 +128,10 @@ BoxExeInt := class extend BoxExeConstObj
 	PrintDebug := virtual !(Stream ctx) -> void {
 		ctx << Value
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddInteger(Value)
+	}
 }
 BoxExeS64 := class extend BoxExeConstObj
 {
@@ -144,6 +152,10 @@ BoxExeS64 := class extend BoxExeConstObj
 	PrintDebug := virtual !(Stream ctx) -> void {
 		ctx << Value
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddS64(Value)
+	}
 }
 BoxExeDouble := class extend BoxExeConstObj
 {
@@ -163,6 +175,10 @@ BoxExeDouble := class extend BoxExeConstObj
 	}
 	PrintDebug := virtual !(Stream ctx) -> {
 		ctx << Value
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddDouble(Value)
 	}
 }
 
@@ -222,6 +238,10 @@ BoxExeString := class extend BoxExeConstObj
 	}
 	PrintDebug := virtual !(Stream ctx) -> void {
 		ctx << Value
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result.CreatedId = ctx.AddString(Value)
 	}
 
 }
