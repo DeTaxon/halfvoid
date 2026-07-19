@@ -172,42 +172,26 @@ BoxIf := class extend BoxExeObj
 		if FalsePath == null
 			FalsePath = new BoxLabel()
 	}
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		oldLine := GDebugLineCallId
-		defer GDebugLineCallId = oldLine
-		GDebugLineCallId = IfLine.MetaId
+		truePath := ctx.GetLabel(TruePath&)
+		falsePath := ctx.GetLabel(FalsePath)
+		endPath := ctx.GetLabel(EndPath&)
 
-		f := ctx.writeStream
+		cmpTest := Val.WriteMC(ctx)
 
-		Val.PrintPre(ctx)
+		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
+		ctx.lines.Push(MCLine("jmp",falsePath))
 
-		f^ << "br i1 "
-		Val.PrintUse(ctx)
-		f^ << ", label "
-		TruePath.PrintLabel(ctx)
-		f^ << ", label "
-		FalsePath.PrintLabel(ctx)
-		f^ << "\n"
-
-		TruePath.PrintCode(ctx)
-		PreTrue[^].PrintDefaultUse(ctx)
-		OnTrue.PrintCode(ctx)
-		EndPath.PrintGo(ctx)
-
-		FalsePath.PrintCode(ctx)
-		PreFalse[^].PrintDefaultUse(ctx)
-		OnFalse?.PrintCode(ctx)
-		EndPath.PrintGo(ctx)
-		
-		EndPath.PrintCode(ctx)
-		PostIf[^].PrintDefaultUse(ctx)
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		IfLine.PrintDebugMeta(ctx)
-		OnTrue.PrintDebugMeta(ctx)
-		OnFalse?.PrintDebugMeta(ctx)
+		ctx.lines.Push(MCLine("label",truePath))
+		PreTrue[^].WriteMC(ctx)
+		OnTrue.WriteMC(ctx)
+		ctx.lines.Push(MCLine("jmp",endPath))
+		ctx.lines.Push(MCLine("label",falsePath))
+		PreFalse[^].WriteMC(ctx)
+		OnFalse?.WriteMC(ctx)
+		ctx.lines.Push(MCLine("label",endPath))
+		PostIf[^].WriteMC(ctx)
 	}
 }
 

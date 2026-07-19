@@ -26,16 +26,9 @@ GetFuncInputVar := class extend BoxExeObj
 	{
 		return false
 	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		assert(false)
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%par" << varIndex
+		result.CreatedId = ctx.GetLocalVar(baseVar)
 	}
 }
 GetFuncResultVar := class extend BoxExeObj
@@ -72,19 +65,7 @@ GetLocalVarVoid := class extend BoxExeObj
 	{
 		return false
 	}
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
 	}
 }

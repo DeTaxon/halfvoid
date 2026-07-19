@@ -93,6 +93,12 @@ LocalVar := class extend BoxExeObj
 		s3 := new PtrToRef(s2)
 		oldProxy.Down = s3
 	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+
+		createVar[^].WriteMC(ctx)
+		extraWork[^].WriteMC(ctx)
+	}
 }
 
 
@@ -115,21 +121,9 @@ LocalVarProxy := class extend BoxExeObj
 	{
 		return baseVar.isMemory
 	}
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		Down.PrintPointPre(ctx)
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintPointUse(ctx)
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintPre(ctx)
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintUse(ctx)
+		result = Down.WriteMC(ctx)
 	}
 }
 

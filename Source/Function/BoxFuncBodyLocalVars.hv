@@ -237,34 +237,24 @@ FuncLocalVarCleanup := class extend BoxExeObj
 		baseType = gV.GetType()
 		getVal = GetExchange2(new UnrefFuncCall(gV),GTypeVoidP,false)
 	}
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		f := ctx.writeStream
-		getVal.PrintPre(ctx)
+		size := baseType.GetSize()
 
-		typeSize := baseType.GetSize()
-
-		if typeSize <= 64
+		if baseType is in TypeStandard or baseType is in TypePoint
 		{
-
-			f^ << "call  void @llvm.memset.inline.p0.p0i8.i32(i8* "
-			getVal.PrintUse(ctx)
-			f^ << ", i8 0, i32 " << baseType.GetSize() << ",i1 false)"
-			if DebugMode
-				f^ << ", !dbg !" << GDebugLineCallId
-			f^ << "\n"
+			obj := ctx.AddLocalVar(baseVar)
+			HVB_ins_clean(ctx,obj)
 		}else{
-			f^ << "call  void @memset(i8* "
-			getVal.PrintUse(ctx)
-			f^ << ", i8 0, i32 " << baseType.GetSize() << ",i1 false)"
-			if DebugMode
-				f^ << ", !dbg !" << GDebugLineCallId
-			f^ << "\n"
-
+			obj := getVal.WriteMC(ctx).CreatedId
+			zero := HVB_ins_const_int32(ctx,0)
+			typeSize := HVB_ins_const_int32(ctx,baseType.GetSize())
+			HVB_ins_memset(ctx,obj,zero,typeSize)
 		}
 
+
 		if deferCall != null
-			ctx.deferObjects.PushFront(deferCall)
+			ctx.DeferObjects.PushFront(deferCall)
 	}
 }
 
@@ -279,26 +269,19 @@ FuncLocalVarAccess := class extend BoxExeObj
 		baseVar = vr
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		ctx.writeStream^ << "%Var" << ctx.GetLocalVarId(baseVar)
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		unrefInd = ctx.GetNewId()
-		f := ctx.writeStream
-
-		f^ << "%TUnref" << unrefInd << " = load "
-		ObjType.PrintType(ctx)
-		f^ << " , "
-		ObjType.PrintType(ctx)
-		f^ << "* "
-		PrintPointUse(ctx)
-		f^ << "\n"
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%TUnref" << unrefInd
+		if baseVar.isReference
+		{
+			//varId := ctx.GetLocalVar(baseVar)
+			//newId := ctx.CreateReference(baseVar.GetType())
+			//zero := HVB_ins_const_int32(ctx,0)
+			//HVB_ins_load_element(ctx,newId,varId,zero)
+			//result.CreatedId = newId
+			result.CreatedId = ctx.GetLocalVar(baseVar)
+		}else{
+			result.CreatedId = ctx.GetLocalVar(baseVar)
+		}
 	}
 }
 FuncLocalCallIfTrue := class extend BoxExeObj
@@ -389,6 +372,22 @@ FuncLocalDebugInfoDeclare := class extend BoxExeObj
 			f^ <<pType.MetaId
 		}
 		f^ << ")\n"
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		ctx.DeferObjects.PushFront(this&)
+
+		obj := ctx.GetLocalVar(baseVar)
+
+		// HVB_ins_debug_var_lifetime_start(ctx,obj)
+		if DebugMode and baseVar.itName->AsString != null and baseVar.itName.Size() > 0
+		{
+			HVB_ins_debug_set_var_name(ctx,obj,baseVar.itName.CStr())
+		}
+	}
+	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		// HVB_ins_debug_var_lifetime_start(ctx,ctx.GetLocalVar(baseVar))
 	}
 }
 FuncLocalDebugInfoValue := class extend BoxExeObj

@@ -21,19 +21,6 @@ FuncResultParam := class extend ParamFunc
 	{
 		return GetType()->{TypeFunc^}.ResultRef
 	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		exeObj.PrintDefaultUse(ctx)
-	}
-	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
-	{
-		if exeObj.IsMem()
-		{
-			exeObj.PrintPointUse(ctx)
-		}else{
-			exeObj.PrintUse(ctx)
-		}
-	}
 	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
 	{
 	}
@@ -44,5 +31,9 @@ FuncResultParam := class extend ParamFunc
 	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		return new BoxFuncCall(this&,objs)
+	}
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		exeObj.WriteMC(ctx)
 	}
 }

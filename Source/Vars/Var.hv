@@ -379,76 +379,15 @@ MemVar := class extend NamedVar
 	{
 		return Value.GetType()->{TypeFunc^}.ResultType
 	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		assert(Value != null)
-		Value.PrintCode(ctx)
-		pDebugCode(ctx)
-		doInits(ctx)
-	}
 	NotifyCaptureUse := virtual !() -> void
 	{
 		assert(Value != null)
 		Value.NotifyCaptureUse()
 	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		//Value.PrintDebugMeta(f)
-		pDebugMeta(ctx)
-	}
-	pDebugCode := !(LLVMWriteContext^ ctx) -> void
-	{
-		f := ctx.writeStream
-		if not (Value.IsDebuggable())
-			return void
-		if debugGetValue == null
-			return void
-
-		if Value.IsValue()
-		{
-			// not suppose to happen
-			debugGetValue.PrintPre(ctx)
-		}else{
-			debugGetValue.PrintPointPre(ctx)
-		}
-		
-		tp := Value.GetVarType()
-
-		f^ << "call void @llvm.dbg."
-		if Value.IsValue()
-		{
-			f^ << "value"
-		}else{
-			f^ << "declare"
-		}
-		f^ << "(metadata "
-		inType := tp
-		inType = NormalizeType(inType)
-		inType.PrintType(ctx)
-		if not Value.IsValue()
-			f^ << "*"
-		// if Value.IsRef()
-		// 	f^ << "*"
-		f^ << " " 
-		if Value.IsValue()
-		{
-			debugGetValue.PrintUse(ctx)
-		}else{
-			debugGetValue.PrintPointUse(ctx)
-		}
-		f^ << " , metadata !" << debId << " , metadata !DIExpression()) , !dbg !" << GDebugLineCallId << "\n"
-	}
-	doInits := !(LLVMWriteContext^ ctx) -> void
-	{
-		Inits[^].PrintDefaultUse(ctx)
-	}
-	pDebugMeta := !(LLVMWriteContext^ ctx) -> void
-	{
-		f := ctx.writeStream
-
-		if not DebugMode
-			return void
-		Inits[^].PrintDebugMeta(ctx)
+		Value.WriteMC(ctx)
+		Inits[^].WriteMC(ctx)
 	}
 }
 MemVarRef := class extend MemVar
@@ -459,10 +398,6 @@ MemVarRef := class extend MemVar
 		Value = clFunc
 		debId = GetNewId()
 	}
-
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
 }
 
 MemVarBorrowed := class extend MemVar
@@ -470,15 +405,6 @@ MemVarBorrowed := class extend MemVar
 	this := !(StringSpan vName, ParamFunc^ clFunc) -> void
 	{
 		this."MemVar.this"(vName,clFunc)
-	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		pDebugCode(ctx)
-		doInits(ctx)
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		pDebugMeta(ctx)
 	}
 }
 MemVarBorrowedRef := class extend MemVarBorrowed
@@ -534,16 +460,6 @@ TemplateFuncVar := class extend BoxUnit
 		IsSuffix = isSuf
 		MemObj = obj
 	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		assert(MemObj != null)
-		MemObj.PrintCode(ctx)
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		MemObj.PrintDebugMeta(ctx)
-	}
-
 	Work := virtual !() -> void
 	{
 		MemObj.SetName(Name)
