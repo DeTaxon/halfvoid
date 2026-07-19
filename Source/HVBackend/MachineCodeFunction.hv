@@ -103,9 +103,9 @@ AppendClass MCConstString
 {
 	IsConstant := virtual true
 
-	GetValue := !() -> ref String^ { return Value&->{String^^}^}
+	GetValue := !() -> ref Str { return Value&->{Str^}^ }
 
-	PrintObject := virtual !() -> void { printf("String \"%s\"",GetValue().Str()) }
+	PrintObject := virtual !() -> void { printf("String \"%s\"",GetValue().CStr()) }
 	GetType := virtual !() -> Type^ { return GTypeChar.GetPoint() }
 	GetObjType := virtual !() -> Type^ { return GetType() }
 }
