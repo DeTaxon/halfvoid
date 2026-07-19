@@ -136,6 +136,10 @@ MCBaseOpcodes := enum extend u16
 	"jmp_if_op", // label var1 operator var2,   jump if var1 >= var2 , TODO interpreter/LLVM support
 	"debug_trap", // TODO LLVM support, somehow interpreter?
 	"push"
+
+	//BACKEND IL
+	"il_push", // var1 load constant to stack
+	"il_call" // var1 - string name of function
 }
 
 MCJumpIfConditions := enum extend u16

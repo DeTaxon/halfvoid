@@ -109,6 +109,10 @@ GenerateILFile := !() -> void
 
 		bc.Print()
 
+		bc = PassILReplaceCLib(bc)
+
+		bc.Print()
+
 
 		locs := Type^[]
 		oldToNew := int[int]
@@ -188,8 +192,21 @@ GenerateILFile := !() -> void
 				while bc.Lines[i].opcode != "call_end"
 					i += 1
 
-				out^ << "	ldstr \"helloStub\"\n "
-				out^ << "	call void class [mscorlib]System.Console::WriteLine(string)\n"
+				// out^ << "	ldstr \"helloStub\"\n "
+				// out^ << "	call void class [mscorlib]System.Console::WriteLine(string)\n"
+			case "il_push"
+				ob := bc.Objects[line.var1]&
+				switch ob is
+				{
+				case MCConstString
+					out^ << "	ldstr \"" 
+					st := ob.GetValue()
+					out.Write(st.CStr(),st.Size())
+					out^ << "\"\n"
+				case void assert(false)
+				}
+			case "il_call"
+				out^ << "	call " << bc.Objects[line.var1]&->{MCConstString^}.GetValue() << "\n"
 			case "mov"
 				ob1 := ref bc.Objects[line.var1]
 				ob2 := ref bc.Objects[line.var2]

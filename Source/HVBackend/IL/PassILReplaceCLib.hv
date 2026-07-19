@@ -1,0 +1,71 @@
+
+PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
+{
+	bldr := MakeGreedyPass(fnc,4,6)
+
+	c := ref bldr.cmdsSize
+	cPtr := bldr.cmds.GetPointer()
+
+	o := ref bldr.objsSize
+	oPtr := bldr.objs.GetPointer()
+
+	lin := fnc.Lines.GetPointer()
+
+	i := 0
+	while i < fnc.Lines.Size()
+	{
+		line := lin[i]
+
+		if line.opcode == "call_start"
+		{
+			fncObj := oPtr[line.var2]&
+
+			fnc := BoxFuncDeclare^
+
+			switch fncObj is
+			{
+			case MCConstFunction
+
+				if fncObj.GetValue() is BoxFuncDeclare
+					fnc = fncObj.GetValue()->{BoxFuncDeclare^}
+
+			case void assert(false)
+			}
+
+			assert(fnc != null)
+
+			args := HybridQueue.{int,20}
+
+			i += 1
+			while lin[i].opcode != "call_end"
+			{
+				args.Push(lin[i].var1)
+				i += 1
+			}
+
+			switch fnc.itName
+			{
+			case "printf"
+				printf("yep %i\n",args.Size())
+
+				if args.Size() == 1
+				{
+					cPtr[c++] = MCLine("il_push",args[0])
+					cPtr[c++] = MCLine("il_call",bldr.PushStr("void class [mscorlib]System.Console::Write(string)"))
+				}else{
+					assert(false)
+				}
+			case none
+				assert(false)
+
+			}
+			
+
+		}else{
+			cPtr[c++] = line
+		}
+		i += 1
+	}
+	
+	return bldr.GenerateFunc()
+}
