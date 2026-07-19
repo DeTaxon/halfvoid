@@ -23,7 +23,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 		strVal := consts[0]->{BoxExeString^}
 		if strVal is not BoxExeString
 			return null
-		switch strVal.Value^
+		switch strVal.Value
 		{
 			case "x"
 				//always here
@@ -43,7 +43,7 @@ BuiltInGetVecTemplate := class extend BoxFuncTemplate
 				
 				for i : strVal.Value.Size()
 				{
-					c := strVal.Value^[i]
+					c := strVal.Value[i]
 
 					if not (c in "xyzw0")
 						return null

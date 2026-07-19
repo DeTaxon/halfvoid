@@ -132,7 +132,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 					if it.Value.Start == "local:"
 					{
 						fldr := itm.Line.File.file.GetUpFolder()
-						fil = FSGetFile2(fldr,it.Value^[6..0])
+						fil = FSGetFile2(fldr,it.Value[6..0])
 					}else{
 						fil = FSGetFile(it.Value)
 					}

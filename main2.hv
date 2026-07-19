@@ -18,6 +18,9 @@ main := !(char^[] args) -> int
 
 RunFunc := !() -> void
 {
+	hey := Str
+	hey = "Test"
+
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()

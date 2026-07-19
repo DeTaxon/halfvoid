@@ -25,7 +25,7 @@ TryGetCacheOfFile := !(File^ fl) -> Blob^
 
 
 blobsCache := AVLMap.{Blob^,BoxRawData^}
-CacheBlobByStringReg := !(StringView value, !()&-> Blob^ cb) -> BoxRawData^
+CacheBlobByStringReg := !(Str value, !()&-> Blob^ cb) -> BoxRawData^
 {
 	if not GUsingCacheFile
 	{
@@ -33,7 +33,7 @@ CacheBlobByStringReg := !(StringView value, !()&-> Blob^ cb) -> BoxRawData^
 		return new BoxRawData(blb)
 	}
 
-	blb := RegsCache.CacheBlobByString(value.GetString(),cb)
+	blb := RegsCache.CacheBlobByString(value,cb)
 
 	if blobsCache.Contain(blb)
 		return blobsCache[blb]

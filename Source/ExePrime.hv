@@ -169,8 +169,8 @@ BoxExeDouble := class extend BoxExeConstObj
 BoxExeString := class extend BoxExeConstObj
 {
 	strId := int
-	Value := String^
-	this := !(String^ dat) -> void
+	Value := Str
+	this := !(Str dat) -> void
 	{
 		strId = strIdIterator
 		strIdIterator += 1
@@ -186,18 +186,18 @@ BoxExeString := class extend BoxExeConstObj
 		SomeBuf[1] = 0
 		while k != Value.Size()
 		{
-			SomeBuf[0] = Value^[k]
-			if Value^[k] == "\n"[0]
+			SomeBuf[0] = Value[k]
+			if Value[k] == "\n"[0]
 			{
 				f^ << "\\0A"
 			}else
 			{
-				if Value^[k] == "\""[0]
+				if Value[k] == "\""[0]
 				{
 					f^ << "\\22"
 				}else
 				{
-					if Value^[k] == "\\"[0]
+					if Value[k] == "\\"[0]
 					{
 						f^ << "\\5C"
 					}else{
@@ -221,7 +221,7 @@ BoxExeString := class extend BoxExeConstObj
 		f^ << "getelementptr inbounds ([" << stSize << " x i8] , [" << stSize << " x i8]* @Str" << strId << ", i32 0, i32 0)"
 	}
 	PrintDebug := virtual !(Stream ctx) -> void {
-		ctx << Value^
+		ctx << Value
 	}
 
 }
