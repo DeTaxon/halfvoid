@@ -387,39 +387,26 @@ FieldPath := class extend BoxFuncCommon
 	{
 		return true
 	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-
-	}
-	PrintResultObj := virtual !(LLVMWriteContext^ ctx, int resId, int debId) -> void
-	{
-		ctx.writeStream^ << "%T" << resId 
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
-	{
-		f := ctx.writeStream
-		tp := lst[0].GetType()
-
-		assert(tp is in TypeClass)
-		cls := tp->{TypeClass^}
-		lst[0].PrintPointPre(ctx)
-		f^ << "%T" << resId << " = getelementptr "
-		tp.PrintType(ctx)
-		f^ << ","
-		tp.PrintType(ctx)
-		f^ << "* "
-		lst[0].PrintPointUse(ctx)
-		f^ << " , i32 0, i32 " << GetIndex(cls)
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-	}
 	GetIndex := virtual !(BoxClass^ cls) -> int
 	{
 		return cls.fieldsOffset + Index
+	}
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
+	{
+		var1 := indexes[0].WriteMC(ctx)
+
+		tf := GetType()->{TypeFunc^}
+		classObj := tf.Params[0].ItType->{TypeClass^}
+		resType := tf.ResultType
+
+		classObj.AwaitReadyState()
+
+		resId := ctx.CreateReference(resType)
+		intId := HVB_ins_const_int32(ctx,GetIndex(classObj))
+		HVB_ins_load_element(ctx,resId,var1.CreatedId,intId)
+
+		result.CreatedId = resId
 	}
 }
 FieldPathAbs := class extend FieldPath
