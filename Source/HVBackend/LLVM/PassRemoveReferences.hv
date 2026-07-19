@@ -47,9 +47,6 @@ passRemoveReferencesReplaceLoadElement := !(MCFunction^ fnc) ->MCFunction^
 }
 passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 {
-	@once RetConstFuncTableInit()
-	tbl := ref RetConstFuncTable
-
 	grd := MakeGreedyPass(fnc,2,4)
 
 	cPtr := grd.cPtr
@@ -79,7 +76,7 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 	{
 		line := ref fnc.Lines[ii]
 
-		isRetObj := tbl.Contain(line.opcode) or line.opcode == "mov"
+		isRetObj := IsOpcodeReturnsValue(line.opcode,0) or line.opcode == "mov"
 
 		if line.opcode == "mov" and oPtr[line.var1] is MCReference
 		{

@@ -1,10 +1,6 @@
 
 PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 {
-	@once RetConstFuncTableInit()
-
-	tbl := ref RetConstFuncTable
-
 	usages := Vector.{int}
 
 	usages.Resize(fnc.Objects.Size())
@@ -21,7 +17,7 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 			usages[it.var2] += 2
 		if it.opcode == "clean" and IsObjectVariable(fnc.Objects[it.var1])
 			usages[it.var1] += 1
-		if not tbl.Contain(it.opcode)
+		if not IsOpcodeReturnsValue(it.opcode,0)
 			continue
 
 		if fnc.Objects[it.var1] is MCGlobalVariable
@@ -40,7 +36,7 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 	{
 		it := ref fnc.Lines[indx]
 
-		if tbl.Contain(it.opcode)
+		if IsOpcodeReturnsValue(it.opcode,0)
 		{
 			if it.opcode == "clean" {
 
@@ -98,54 +94,46 @@ IsObjectVariable := !(MCObject obj) -> bool
 	return false
 }
 
-RetConstFuncTable := AVLSet.{MCBaseOpcodes}
-
-RetConstFuncTableInit := !() -> void
+IsOpcodeReturnsValue := !(MCBaseOpcodes opcode , int index) -> bool
 {
-	oldAlc := SwapAllocator(null)
-	defer SetAllocator(oldAlc)
+	if index != 0
+		return false
 
-	tbl := ref RetConstFuncTable
+	switch opcode
+	{
+	case "cast" return true
+	case "call_start" return true
+	case "cmp" return true
+	case "get_pointer" return true
+	case "and" return true
+	case "or" return true
+	case "xor" return true
+	case "not" return true
+	case "shl" return true
+	case "sshr" return true
+	case "ushr" return true
+	case "add" return true
+	case "sub" return true
+	case "mul" return true
+	case "div" return true
+	case "mod" return true
+	case "atomic_add" return true
+	case "atomic_sub" return true
+	case "atomic_xchg" return true
+	case "max" return true
+	case "min" return true
+	case "sqrt" return true
+	case "cos" return true
+	case "sin" return true
+	case "vec_scalar_mul" return true
+	case "vec_shuffle_begin" return true
+	case "get_field_ptr" return true
+	case "get_array_elem_ptr" return true
+	case "va_arg" return true
 
-	tbl.Insert("cast")
-
-	tbl.Insert("call_start")
-
-	tbl.Insert("cmp")
-
-	tbl.Insert("get_pointer")
-	
-	tbl.Insert("and")
-	tbl.Insert("or")
-	tbl.Insert("xor")
-	tbl.Insert("not")
-
-	tbl.Insert("shl")
-	tbl.Insert("sshr")
-	tbl.Insert("ushr")
-
-	tbl.Insert("add")
-	tbl.Insert("sub")
-	tbl.Insert("mul")
-	tbl.Insert("div")
-	tbl.Insert("mod")
-
-	tbl.Insert("atomic_add")
-	tbl.Insert("atomic_sub")
-	tbl.Insert("atomic_xchg")
-
-	tbl.Insert("max")
-	tbl.Insert("min")
-	tbl.Insert("sqrt")
-	tbl.Insert("cos")
-	tbl.Insert("sin")
-
-	tbl.Insert("vec_scalar_mul")
-	tbl.Insert("vec_shuffle_begin")
-
-	tbl.Insert("get_field_ptr")
-	tbl.Insert("get_array_elem_ptr")
-
-	tbl.Insert("va_arg")
-
+	case none return false
+	}
 }
+
+
+

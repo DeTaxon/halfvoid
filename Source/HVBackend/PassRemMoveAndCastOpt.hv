@@ -2,10 +2,6 @@
 
 PassRemMoveAndCastOpt := !(MCFunction^ fnc) ->MCFunction^
 {
-	@once RetConstFuncTableInit()
-
-	tbl := ref RetConstFuncTable
-
 	ctx := MakeGreedyPass(fnc,1,2,true)
 
 	oPtr := ctx.oPtr
@@ -37,7 +33,7 @@ PassRemMoveAndCastOpt := !(MCFunction^ fnc) ->MCFunction^
 		twoAvail := i + 1 < lSize
 
 		if line.opcode == "mov" and c > 0 and usages[line.var2] == 2
-			and tbl.Contain(cPtr[c-1].opcode) and cPtr[c-1].var1 == line.var2
+			and IsOpcodeReturnsValue(cPtr[c-1].opcode,0) and cPtr[c-1].var1 == line.var2
 		{
 			cPtr[c-1].var1 = line.var1
 		}else{
