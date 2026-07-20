@@ -88,52 +88,36 @@ TrinaryOper := class extend TrinaryOperBase
 	{
 		return false
 	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		f := ctx.writeStream
+		resVar := ctx.CreateVar(ObjType)
 
-		tp := onTrue.GetType()
+		truePath := ctx.GetLabel(trueLabel)
+		trueExitPath := ctx.GetLabel(trueExitLabel)
+		falsePath := ctx.GetLabel(falseLabel)
+		falseExitPath := ctx.GetLabel(falseExitLabel)
+		endPath := ctx.GetLabel(endLabel)
 
-		ifStatement.PrintPre(ctx)
-		PrintBranch(ctx,ifStatement,trueLabel,falseLabel)
+		cmpTest := ifStatement.WriteMC(ctx)
 
-		trueLabel.PrintCode(ctx)
-		onTrue.PrintPre(ctx)
-		trueExitLabel.PrintCode(ctx)
-		endLabel.PrintGo(ctx)
+		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
+		ctx.lines.Push(MCLine("jmp",falsePath))
 
-		falseLabel.PrintCode(ctx)
-		onFalse.PrintPre(ctx)
-		falseExitLabel.PrintCode(ctx)
-		endLabel.PrintGo(ctx)
+		HVB_ins_label(ctx,truePath)
+		tRes := onTrue.WriteMC(ctx)
+		HVB_ins_move(ctx,resVar,tRes.CreatedId)
+		HVB_ins_label(ctx,trueExitPath)
+		HVB_ins_jump(ctx,endPath)
 
-		endLabel.PrintLabelCreate(ctx)
+		HVB_ins_label(ctx,falsePath)
+		fRes := onFalse.WriteMC(ctx)
+		HVB_ins_move(ctx,resVar,fRes.CreatedId)
+		HVB_ins_label(ctx,falseExitPath)
+		HVB_ins_jump(ctx,endPath)
 
-		f^ << "%T" << ItId << " = phi "
-		tp.PrintType(ctx)
+		HVB_ins_label(ctx,endPath)
 
-		f^ << " ["
-		onTrue.PrintUse(ctx)
-		f^ << ","
-		trueExitLabel.PrintLabel(ctx)
-		f^ << "]"
-
-		f^ << ","
-
-		f^ << " ["
-		onFalse.PrintUse(ctx)
-		f^ << ","
-		falseExitLabel.PrintLabel(ctx)
-		f^ << "]"
-
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << ItId
+		result.CreatedId = resVar
 	}
 }
 TrinaryOperMem := class extend TrinaryOperBase
@@ -161,61 +145,39 @@ TrinaryOperMem := class extend TrinaryOperBase
 	{
 		return true
 	}
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		f := ctx.writeStream
+		resVar := ctx.CreateReference(ObjType)
+		resVarPointer := ctx.CreateVar(ObjType.GetPoint())
 
-		tp := onTrue.GetType()
+		truePath := ctx.GetLabel(trueLabel)
+		trueExitPath := ctx.GetLabel(trueExitLabel)
+		falsePath := ctx.GetLabel(falseLabel)
+		falseExitPath := ctx.GetLabel(falseExitLabel)
+		endPath := ctx.GetLabel(endLabel)
 
-		ifStatement.PrintPre(ctx)
-		PrintBranch(ctx,ifStatement,trueLabel,falseLabel)
+		cmpTest := ifStatement.WriteMC(ctx)
 
-		trueLabel.PrintCode(ctx)
-		onTrue.PrintPointPre(ctx)
-		trueExitLabel.PrintCode(ctx)
-		endLabel.PrintGo(ctx)
+		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
+		ctx.lines.Push(MCLine("jmp",falsePath))
 
-		falseLabel.PrintCode(ctx)
-		onFalse.PrintPointPre(ctx)
-		falseExitLabel.PrintCode(ctx)
-		endLabel.PrintGo(ctx)
+		HVB_ins_label(ctx,truePath)
+		tRes := onTrue.WriteMC(ctx)
+		HVB_ins_get_pointer(ctx,resVarPointer,tRes.CreatedId)
+		HVB_ins_label(ctx,trueExitPath)
+		HVB_ins_jump(ctx,endPath)
 
-		endLabel.PrintLabelCreate(ctx)
+		HVB_ins_label(ctx,falsePath)
+		fRes := onFalse.WriteMC(ctx)
+		HVB_ins_get_pointer(ctx,resVarPointer,fRes.CreatedId)
+		HVB_ins_label(ctx,falseExitPath)
+		HVB_ins_jump(ctx,endPath)
 
-		f^ << "%T" << ItId << " = phi "
-		tp.PrintType(ctx)
-		f^ << "*"
+		HVB_ins_label(ctx,endPath)
 
-		f^ << " ["
-		onTrue.PrintPointUse(ctx)
-		f^ << ","
-		trueExitLabel.PrintLabel(ctx)
-		f^ << "]"
+		zero := HVB_ins_const_int32(ctx,0)
+		HVB_ins_load_element(ctx,resVar,resVarPointer,zero)
 
-		f^ << ","
-
-		f^ << " ["
-		onFalse.PrintPointUse(ctx)
-		f^ << ","
-		falseExitLabel.PrintLabel(ctx)
-		f^ << "]"
-
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << ItId
-	}
-
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		PrintUnrefObj(ctx,ItId,this&)
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%TUnref" << ItId
+		result.CreatedId = resVar
 	}
 }
