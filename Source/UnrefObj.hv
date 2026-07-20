@@ -74,13 +74,12 @@ UnrefFuncCall := class extend BoxExeObj
 	{
 		return false
 	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		Down.PrintPointPre(ctx)
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintPointUse(ctx)
+		dwnObj := Down.WriteMC(ctx)
+		newVar := ctx.CreateVar(GetType())
+		HVB_ins_get_pointer(ctx,newVar,dwnObj.CreatedId)
+		result.CreatedId = newVar
 	}
 }
 
@@ -121,20 +120,8 @@ RemovedUnref := class extend BoxExeObj
 	{
 		return Down.IsMem()
 	}
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		Down.PrintPointPre(ctx)
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintPointUse(ctx)
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintPre(ctx)
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintUse(ctx)
+		result = Down.WriteMC(ctx)
 	}
 }

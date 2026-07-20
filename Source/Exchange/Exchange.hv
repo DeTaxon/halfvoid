@@ -164,44 +164,14 @@ PtrToRef := class extend BoxExeObj
 		ObjType = obj.GetType().Base
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-
-		inType := Down.GetType()
-		Down.PrintPre(ctx)
-
-		if ObjType == GTypeVoid
-			return void
-
-		f^ << "%T" << resId << " = bitcast "
-		inType.PrintType(ctx)
-		f^ << " "
-		Down.PrintUse(ctx)
-		f^ << " to "
-		ObjType.PrintType(ctx)
-		f^ << "*"
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void //todo remove copy of code, at UnrefObj.hv
-	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		rType := ObjType
-
-		PrintUnrefObj(ctx,resId + 1,this&)
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%TUnref" << resId
+		resCall := Down.WriteMC(ctx)
+		zero := ctx.AddInteger(0)
+		newRef := ctx.CreateReference(GetType())
+		//HVB_ins_set_reference(ctx,newRef,resCall.CreatedId)
+		HVB_ins_load_element(ctx,newRef,resCall.CreatedId,zero)
+		result.CreatedId = newRef
 	}
 }
 PtrToRefAuto := class extend PtrToRef
