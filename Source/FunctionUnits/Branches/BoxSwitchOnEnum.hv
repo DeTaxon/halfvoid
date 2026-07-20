@@ -186,66 +186,6 @@ BoxSwitchOnEnum := class extend BoxSwitch
 	{
 		ObjType = GTypeVoid
 	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		en := mainCall.GetType()->{TypeEnum^}.ToEnum
-		bsTyp := Type^
-		bsTyp = mainCall.GetType().Base
-		f := ctx.writeStream
-
-		mainCall.PrintPre(ctx)
-
-		f^ << "switch "
-		bsTyp.PrintType(ctx)
-		f^ << " "
-		mainCall.PrintUse(ctx)
-		f^ << " , label "
-		if defaultNode != null
-		{
-			defaultLabel.PrintLabel(ctx)
-		}else{
-			quitNode.PrintLabel(ctx)
-		}
-		f^ << " [ "
-		for it : this.caseNodes
-		{
-			indX := int
-			if it.baseObj? is BoxExeString
-			{
-				en.GetEnumIndex(it.baseObj->{BoxExeString^}.Value,indX&)
-				bsTyp.PrintType(ctx)
-				f^ << " " << indX
-				f^ << ", label "
-				it.useNode.PrintLabel(ctx)
-				f^ << "\n"
-			}
-			for ec : it.extraConsts
-			{
-				if ec is not BoxExeString
-					continue
-				en.GetEnumIndex(ec->{BoxExeString^}.Value,indX&)
-				bsTyp.PrintType(ctx)
-				f^ << " " << indX
-				f^ << ", label "
-				it.useNode.PrintLabel(ctx)
-				f^ << "\n"
-			}
-		}
-		f^ << "]\n"
-		for it : this.caseNodes
-		{
-			it.PrintItBase(ctx,quitNode)
-			quitNode.PrintGo(ctx)
-		}
-		if defaultNode != null
-		{
-			defaultLabel.PrintLabelCreate(ctx)
-			defaultNode.PrintCode(ctx)
-			quitNode.PrintGo(ctx)
-		}
-
-		quitNode?.PrintCode(ctx)
-	}
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
 		en := mainCall.GetType()->{TypeEnum^}.ToEnum

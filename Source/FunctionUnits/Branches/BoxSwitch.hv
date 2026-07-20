@@ -203,22 +203,22 @@ SwitchCase := class
 
 		defBlock."this"()
 	}
-
-	PrintIt := !(LLVMWriteContext^ ctx , BoxLabel^ qLabel) -> void
+	WriteItMC := virtual !(MCBuildContext^ ctx,BoxLabel^ qLabel) -> WriteMCResult
 	{
-		defBlock.StartBlock(ctx)
-		cmpCheck.PrintPre(ctx)
-		defBlock.EndBlock(ctx)
-
-		PrintBranch(ctx,cmpCheck,useNode,nopeLabel)
-		PrintItBase(ctx,qLabel)
+		defBlock.StartBlockMC(ctx)
+		cmpRes := cmpCheck.WriteMC(ctx).CreatedId
+		defBlock.EndBlockMC(ctx)
+		
+		HVB_ins_jump_if_bool(ctx,ctx.GetLabel(useNode),cmpRes)
+		HVB_ins_jump(ctx,ctx.GetLabel(nopeLabel))
+		WriteItBaseMC(ctx,qLabel)
 	}
-	PrintItBase := !(LLVMWriteContext^ ctx , BoxLabel^ qLabel) -> void
+	WriteItBaseMC := virtual !(MCBuildContext^ ctx,BoxLabel^ qLabel) -> WriteMCResult
 	{
-		useNode.PrintCode(ctx)
-		caseBody?.PrintCode(ctx)
-		qLabel.PrintGo(ctx)
-		nopeLabel.PrintCode(ctx)
+		HVB_ins_label(ctx,ctx.GetLabel(useNode))
+		caseBody?.WriteMC(ctx)
+		HVB_ins_jump(ctx,ctx.GetLabel(qLabel))
+		HVB_ins_label(ctx,ctx.GetLabel(nopeLabel))
 	}
 }
 BoxSwitch := class extend BoxExeObj
@@ -243,25 +243,15 @@ BoxSwitch := class extend BoxExeObj
 		defaultNode = defNode
 		caseNodes.Push(cases[^])
 	}
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		PrintCode(ctx)
-	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		mainVar.PrintCode(ctx)
+		mainVar.WriteMC(ctx)
 
 		for it : caseNodes
 		{
-			it.PrintIt(ctx,quitNode)
+			it.WriteItMC(ctx,quitNode)
 		}
-		defaultNode?.PrintCode(ctx)
-		quitNode?.PrintCode(ctx)
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		for it : caseNodes
-			it.caseBody?.PrintDebugMeta(ctx)
-		defaultNode?.PrintDebugMeta(ctx)
+		defaultNode?.WriteMC(ctx)
+		quitNode?.WriteMC(ctx)
 	}
 }

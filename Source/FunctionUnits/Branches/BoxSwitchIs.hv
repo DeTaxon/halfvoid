@@ -197,27 +197,6 @@ BoxSwitchIs := class extend BoxExeObj
 	{
 		ObjType = GTypeVoid
 	}
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		PrintCode(ctx)
-	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		mainVar.PrintCode(ctx)
-
-		for it : caseNodes
-		{
-			it.PrintIt(ctx,quitNode)
-		}
-		defaultNode?.PrintCode(ctx)
-		quitNode?.PrintCode(ctx)
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		for it : caseNodes
-			it.caseBody?.PrintDebugMeta(ctx)
-		defaultNode?.PrintDebugMeta(ctx)
-	}
 	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
 		mainVar.WriteMC(ctx)
