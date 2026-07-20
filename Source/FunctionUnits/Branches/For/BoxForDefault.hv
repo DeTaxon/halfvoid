@@ -63,57 +63,59 @@ BoxFor := class extend BoxExeObj
 			UnitStack.Pop()
 	}
 
-	PrintDefaultUse := virtual !(TIOStrean^ f) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		PrintCode(ctx)
-	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		oldLineCall := GDebugLineCallId
-		GDebugLineCallId = HeadLine.MetaId
-		defer GDebugLineCallId = oldLineCall
+		headerLabel := ctx.CreateLabel()
+		incLabel := ctx.CreateLabel()
 
-		CreatedIndex?.PrintCode(ctx)
-		values[^].InitStep?.PrintDefaultUse(ctx)
-		CheckStep.PrintCode(ctx)
+		CreatedIndex?.WriteMC(ctx)
+		values[^].InitStep.WriteMC(ctx)
+
+
+		CheckStep.WriteMC(ctx)
+
+		HVB_ins_spirv_hint_loop_merge(ctx,ctx.GetLabel(EndLabel&),incLabel)
+
+		HVB_ins_jump(ctx,headerLabel)
+		HVB_ins_label(ctx,headerLabel)
 
 		for it : values
 		{
 			if it.HaveValue != null
 			{
-				it.HaveValue.PrintPre(ctx)
-				PrintBranch(ctx,it.HaveValue,it.NextCheck,EndLabel&)
-				it.NextCheck.PrintCode(ctx)
+				res := it.HaveValue.WriteMC(ctx)
+				HVB_ins_jump_if_bool(ctx,ctx.GetLabel(it.NextCheck),res.CreatedId)
+				HVB_ins_jump(ctx,ctx.GetLabel(EndLabel&))
+				it.NextCheck.WriteMC(ctx)
 			}
 
-			it.ValueVar?.PrintCode(ctx)
-			it.IndVar?.PrintCode(ctx)
-			it.CallGetValue?.PrintDefaultUse(ctx)
+			it.ValueVar?.WriteMC(ctx)
+			it.IndVar?.WriteMC(ctx)
+			it.CallGetValue?.WriteMC(ctx)
 
 			if it.IsFinished != null
 			{
-				it.IsFinished.PrintPre(ctx)
-				PrintBranch(ctx,it.IsFinished,EndLabel&,it.NextCheck)
-				it.NextCheck.PrintCode(ctx)
+				res := it.IsFinished.WriteMC(ctx)
+				HVB_ins_jump_if_bool(ctx,ctx.GetLabel(EndLabel&),res.CreatedId)
+				HVB_ins_jump(ctx,ctx.GetLabel(it.NextCheck))
+				it.NextCheck.WriteMC(ctx)
 			}
 		}
 
-		body.PrintCode(ctx)
+		body.WriteMC(ctx)
+
+		HVB_ins_jump(ctx,incLabel)
+		HVB_ins_label(ctx,incLabel)
 
 		for it : values
 		{
-			it.IncFunc?.PrintDefaultUse(ctx)
+			it.IncFunc?.WriteMC(ctx)
 		}
 
-		CreatedIndexInc?.PrintDefaultUse(ctx)
+		CreatedIndexInc?.WriteMC(ctx)
 
-		CheckStep.PrintGo(ctx)
-		EndLabel.PrintCode(ctx)
+		CheckStep.WriteGoMC(ctx)
 
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		HeadLine?.PrintDebugMeta(ctx)
-		body.PrintDebugMeta(ctx)
+		EndLabel.WriteMC(ctx)
 	}
 }
