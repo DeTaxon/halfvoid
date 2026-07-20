@@ -97,23 +97,12 @@ PtrToSizeT := class extend BoxExeObj
 		ObjType = GTypeSizeT
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void //todo remove copy of code, at UnrefObj.hv
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		f := ctx.writeStream
-		Down.PrintPre(ctx)
-
-		f^ << "%TUnref" << resId << " = ptrtoint "
-		Down.GetType().PrintType(ctx)
-		f^ << " "
-		Down.PrintUse(ctx)
-		f^ << " to " << GArchLLVMTypeSizeT
-		if DebugMode
-			f^ << ", !dgb !" << GDebugLineCallId
-		f^ << "\n"
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%TUnref" << resId
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_move(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
 	}
 }
 SizeTToPtr := class extend BoxExeObj
@@ -191,27 +180,20 @@ RefExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		inType := Down.GetType()
+		dwnRes := Down.WriteMC(ctx)
 
-		Down.PrintPointPre(ctx)
-		f^ << "%T" << resId << " = bitcast "
-		inType.PrintType(ctx)
-		f^ << "* "
-		Down.PrintPointUse(ctx)
-		f^ << " to "
-		ObjType.PrintType(ctx)
-		f^ << "*"
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
+		baseVar := ctx.CreateVar(Down.GetType().GetPoint())
+		resVar := ctx.CreateVar(ObjType.GetPoint())
+		resRef := ctx.CreateReference(ObjType)
+
+		zero := ctx.AddInteger(0)
+		HVB_ins_get_pointer(ctx,baseVar,dwnRes.CreatedId)
+		HVB_ins_move(ctx,resVar,baseVar)
+		HVB_ins_load_element(ctx,resRef,resVar,zero)
+
+		result.CreatedId = resRef
 	}
 }
 PtrRefExchange := class extend PtrExchange
@@ -222,28 +204,20 @@ PtrRefExchange := class extend PtrExchange
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return true }
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		inType := Down.GetType()
+		dwnRes := Down.WriteMC(ctx)
 
-		Down.PrintPointPre(ctx)
-		f^ << "%T" << resId << " = bitcast "
-		inType.PrintType(ctx)
-		f^ << "* "
-		Down.PrintPointUse(ctx)
-		f^ << " to "
-		ObjType.PrintType(ctx)
-		f^ << "*"
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		baseVar := ctx.CreateVar(Down.GetType().GetPoint())
+		resVar := ctx.CreateVar(ObjType.GetPoint())
+		resRef := ctx.CreateReference(ObjType)
 
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
+		zero := ctx.AddInteger(0)
+		HVB_ins_get_pointer(ctx,baseVar,dwnRes.CreatedId)
+		HVB_ins_move(ctx,resVar,baseVar)
+		HVB_ins_load_element(ctx,resRef,resVar,zero)
+
+		result.CreatedId = resRef
 	}
 }
 ArrToPtr := class extend BoxExeObj
@@ -256,28 +230,12 @@ ArrToPtr := class extend BoxExeObj
 		ObjType = obj.GetType().Base.GetPoint()
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		inType := Down.GetType()
-
-		Down.PrintPointPre(ctx)
-		f^ << "%T" << resId << " = getelementptr "
-		inType.PrintType(ctx)
-		f^ << " , "
-		inType.GetPoint().PrintType(ctx)
-		f^ << " "
-		Down.PrintPointUse(ctx)
-		f^ << " , i32 0, i32 0"
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
+		newVar := ctx.CreateVar(ObjType)
+		dwnRes := Down.WriteMC(ctx).CreatedId
+		HVB_ins_get_pointer(ctx,newVar,dwnRes)
+		result.CreatedId = newVar
 	}
 }
 PtrExchange := class extend BoxExeObj
@@ -290,27 +248,12 @@ PtrExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		inType := Down.GetType()
-
-		Down.PrintPre(ctx)
-		f^ << "%T" << resId << " = bitcast "
-		PrintTypeNormalized(ctx,inType)
-		f^ << " "
-		Down.PrintUse(ctx)
-		f^ << " to "
-		ObjType.PrintType(ctx)
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
 	}
 }
 FloatToIntExchange := class extend BoxExeObj
@@ -323,38 +266,12 @@ FloatToIntExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		inType := Down.GetType()
-
-		Down.PrintPre(ctx)
-		f^ << "%T" << resId << " = "
-		if IsUInt(ObjType)
-		{
-			f^ << "fptoui"
-		}else{
-			f^ << "fptosi"
-		}
-		f^ << " "
-		inType.PrintType(ctx)
-		f^ << " "
-		Down.PrintUse(ctx)
-		f^ << " to "
-		ObjType.PrintType(ctx)
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintDebugMeta(ctx)
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
 	}
 }
 IntToFloatExchange := class extend BoxExeObj
@@ -367,34 +284,12 @@ IntToFloatExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		inType := Down.GetType()
-
-		Down.PrintPre(ctx)
-		f^ << "%T" << resId << " = "
-		if IsUInt(inType)
-		{
-			f^ << "uitofp"
-		}else{
-			f^ << "sitofp"
-		}
-		f^ << " "
-		inType.PrintType(ctx)
-		f^ << " "
-		Down.PrintUse(ctx)
-		f^ << " to "
-		ObjType.PrintType(ctx)
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
 	}
 }
 IntExchange := class extend BoxExeObj
@@ -407,57 +302,12 @@ IntExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		inType := Down.GetType()
-
-		Down.PrintPre(ctx)
-
-		if inType.GetSize() == ObjType.GetSize()
-		{
-			f^ << "%T" << resId << " = add "
-			inType.PrintType(ctx)
-			f^ << " "
-			Down.PrintUse(ctx)
-			f^ << " , 0 "
-			if DebugMode
-				f^ << ", !dbg !" << GDebugLineCallId
-			f^ << "\n"
-			return void
-		}
-
-		f^ << "%T" << resId << " = "
-		if inType.GetSize() > ObjType.GetSize()
-		{
-			f^ << "trunc"
-		}else{
-			if IsUInt(inType)
-			{
-				f^ << "zext"
-			}else{
-				f^ << "sext"
-			}
-		}
-		f^ << " "
-		inType.PrintType(ctx)
-		f^ << " "
-		Down.PrintUse(ctx)
-		f^ << " to "
-		ObjType.PrintType(ctx)
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintDebugMeta(ctx)
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
 	}
 }
 
@@ -471,33 +321,11 @@ FloatExchange := class extend BoxExeObj
 		ObjType = toType
 	}
 	IsMem := virtual !() -> bool { return false }
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		f := ctx.writeStream
-		inType := Down.GetType()
-
-		Down.PrintPre(ctx)
-		f^ << "%T" << resId << " = "
-		if inType.GetSize() > ObjType.GetSize()
-		{
-			f^ << "fptrunc"
-		}else{
-			f^ << "fpext"
-		}
-		f^ << " "
-		inType.PrintType(ctx)
-		f^ << " "
-		Down.PrintUse(ctx)
-		f^ << " to "
-		ObjType.PrintType(ctx)
-		if DebugMode
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
+		newVar := ctx.CreateVar(ObjType)
+		dwn := Down.WriteMC(ctx)
+		HVB_ins_cast(ctx,newVar,dwn.CreatedId)
+		result.CreatedId = newVar
 	}
 }
