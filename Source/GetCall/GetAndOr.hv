@@ -76,40 +76,6 @@ BoxAndOr := class extend BoxExeObj
 
 	IsMem := virtual !() -> bool { return false }
 
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ctx.writeStream^ << "%T" << resId
-	}
-	PrintStep1 := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		LeftCall.PrintPre(ctx)
-	}
-	PrintStep3 := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		f := ctx.writeStream
-
-		NextPath.PrintLabelCreate(ctx)
-		defBlockRight.StartBlock(ctx)
-		RightCall.PrintPre(ctx)
-		defBlockRight.EndBlock(ctx)
-
-		PrintBranch(ctx,RightCall,TruePath,FalsePath)
-
-		TruePath.PrintLabelCreate(ctx)
-		EndLabel.PrintGo(ctx)
-		FalsePath.PrintLabelCreate(ctx)
-		EndLabel.PrintGo(ctx)
-
-		EndLabel.PrintLabelCreate(ctx)
-		f^ << "%T" << resId << " = phi i1 [1,"
-		TruePath.PrintLabel(ctx)
-		f^ << "], [0,"
-		FalsePath.PrintLabel(ctx)
-		f^ << "]"
-		if DebugMode 
-			f^ << ", !dbg !" << GDebugLineCallId
-		f^ << "\n"
-	}
 }
 BoxAnd := class extend BoxAndOr
 {
@@ -117,12 +83,26 @@ BoxAnd := class extend BoxAndOr
 	{
 		CommonInit(cl1,cl2)
 	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		PrintStep1(ctx)
-		PrintBranch(ctx,LeftCall,NextPath,FalsePath)
-		PrintStep3(ctx)
+		continueLabel := ctx.CreateLabel()
+		endLabel := ctx.CreateLabel()
+		resValue := ctx.CreateVar(GTypeBool)
+
+		result.CreatedId = resValue
+
+		res1 := LeftCall.WriteMC(ctx).CreatedId
+		HVB_ins_move(ctx,resValue,res1)
+
+		HVB_ins_jump_if_bool(ctx,continueLabel,res1)
+		HVB_ins_jump(ctx,endLabel)
+
+		HVB_ins_label(ctx, continueLabel)
+		res2 := RightCall.WriteMC(ctx).CreatedId
+		HVB_ins_move(ctx,resValue,res2)
+		HVB_ins_jump(ctx,endLabel)
+
+		HVB_ins_label(ctx,endLabel)
 	}
 }
 BoxOr := class extend BoxAndOr
@@ -135,16 +115,26 @@ BoxOr := class extend BoxAndOr
 		defBlock = bd
 		CommonInit(cl1,cl2)
 	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		resId = ctx.GetNewId()
-		
-		defBlock.StartBlock(ctx)
-		PrintStep1(ctx)
-		defBlock.EndBlock(ctx)
+		continueLabel := ctx.CreateLabel()
+		endLabel := ctx.CreateLabel()
+		resValue := ctx.CreateVar(GTypeBool)
 
-		PrintBranch(ctx,LeftCall,TruePath,NextPath)
-		PrintStep3(ctx)
+		result.CreatedId = resValue
+
+		res1 := LeftCall.WriteMC(ctx).CreatedId
+		HVB_ins_move(ctx,resValue,res1)
+
+		HVB_ins_jump_if_bool(ctx,endLabel,res1)
+		HVB_ins_jump(ctx,continueLabel)
+
+		HVB_ins_label(ctx, continueLabel)
+		res2 := RightCall.WriteMC(ctx).CreatedId
+		HVB_ins_move(ctx,resValue,res2)
+		HVB_ins_jump(ctx,endLabel)
+
+		HVB_ins_label(ctx,endLabel)
 	}
 }
 
@@ -157,24 +147,6 @@ DeferBlock := class extend BoxUnit
 	{
 		EndLabel."this"()
 	}
-
-	StartBlock := !(LLVMWriteContext^ ctx) -> int
-	{
-		DefStackSize = ctx.deferObjects.Size()
-	}
-	EndBlock := !(LLVMWriteContext^ ctx) -> void
-	{
-		while DefStackSize < ctx.deferObjects.Size()
-		{
-			ob := ctx.deferObjects.Pop()
-			ob.PrintDefer(ctx)
-		}
-	}
-
-	PrintGo := !(LLVMWriteContext^ ctx) -> void
-	{
-	}
-
 	GetQLabel := virtual !() -> BoxLabel^
 	{
 		return EndLabel&
@@ -191,19 +163,17 @@ DeferBlock := class extend BoxUnit
 			ob.WriteDeferMC(ctx)
 		}
 	}
+	StartBlockMC := !(MCBuildContext^ ctx) -> int
+	{
+		DefStackSize = ctx.DeferObjects.Size()
+	}
+	EndBlockMC := !(MCBuildContext^ ctx) -> void
+	{
+		while DefStackSize < ctx.DeferObjects.Size()
+		{
+			ob := ctx.DeferObjects.Pop()
+			ob.WriteDeferMC(ctx)
+		}
+	}
 }
 
-PrintBranch := !(LLVMWriteContext^ ctx, BoxExeObj^ cmp, BoxLabel^ onTrue, BoxLabel^ onFalse) -> void
-{
-	f := ctx.writeStream
-
-	f^ << "br i1 "
-	cmp.PrintUse(ctx)
-	f^ << ", label "
-	onTrue.PrintLabel(ctx)
-	f^ << ", label "
-	onFalse.PrintLabel(ctx)
-	if DebugMode
-		f^ << ", !dbg !" << GDebugLineCallId
-	f^ << "\n"
-}
