@@ -284,59 +284,6 @@ BoxFuncCall := class extend BoxExeObj
 		return callObj.IsMem()
 	}
 
-	PassedFuncCall := !(LLVMWriteContext^ ctx, int passedId)  -> void
-	{
-		callObj.PrintFuncCall(ctx,passedId,0,downs)
-	}
-	PassedFuncResult := !(LLVMWriteContext^ ctx, int passedId)  -> void
-	{
-		callObj.PrintResultObj(ctx,passedId,-1)
-	}
-
-	PrintFuncUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ResultVar?.PrintCode(ctx)
-		BeforeCall[^].PrintDefaultUse(ctx)
-		callObj.PrintFuncCall(ctx,resId,0,downs)
-	}
-	PrintFuncResult := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		callObj.PrintResultObj(ctx,resId,-1)
-	}
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		resId = ctx.GetNewId()
-		PrintFuncUse(ctx)
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		PrintFuncResult(ctx)
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		if IsMem()
-		{
-			unrefResId = ctx.GetNewId()
-			PrintUnrefObj(ctx,unrefResId,this&)
-		}else{
-			resId = ctx.GetNewId()
-			PrintFuncUse(ctx)
-		}
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		if IsMem()
-		{
-			ctx.writeStream^ << "%TUnref" << unrefResId
-		}else{
-			PrintFuncResult(ctx)
-		}
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		downs[^].PrintDebugMeta(ctx)
-	}
-
 	WritePreCallMC := virtual !(MCBuildContext^ ctx) -> void
 	{
 
@@ -522,17 +469,6 @@ BoxFuncPointerCall := class extend BoxFuncCall
 	{
 		ft := ItPtrFunc.GetType().Base->{TypeFunc^}
 		return ft.ResultType
-	}
-	PrintFuncUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		ResultVar?.PrintCode(ctx)
-		PreVars[^].PrintCode(ctx)
-		PreCalls[^].PrintDefaultUse(ctx)
-		PrintFuncCallCommon(ctx,ItPtrFunc,resId,downs)
-	}
-	PrintFuncResult := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		PrintFuncCallResultCommon(ctx,ItPtrFunc.GetType().Base->{TypeFunc^},resId)
 	}
 	NotifyMemUse := virtual !() -> void
 	{

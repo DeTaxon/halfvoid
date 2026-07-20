@@ -6,24 +6,88 @@ BuiltInIntBase := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
+		var1 := indexes[0].WriteMC(ctx)
+		var2 := indexes[1].WriteMC(ctx)
 
-		lst[^].PrintPre(ctx)
-		
-		tFunc := GetType()->{TypeFunc^}
-		tp := tFunc.Params[0].ItType
+		resInd := ctx.CreateVar(GetType()->{TypeFunc^}.ResultType)
+		result.CreatedId = resInd
 
-		f^ << "%T" << resId << " = " << llvm << " " 
-		tp.PrintType(ctx)
-		f^ << " "
-		lst[0].PrintUse(ctx)
-		f^ << ","
-		lst[1].PrintUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		switch llvm
+		{
+		case "icmp eq"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"==",var2.CreatedId))
+		case "icmp ne"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"!=",var2.CreatedId))
+		case "icmp ult"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<",var2.CreatedId))
+		case "icmp slt"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<",var2.CreatedId))
+		case "icmp ule"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<=",var2.CreatedId))
+		case "icmp sle"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<=",var2.CreatedId))
+		case "icmp uge"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">=",var2.CreatedId))
+		case "icmp sge"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">=",var2.CreatedId))
+		case "icmp ugt"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">",var2.CreatedId))
+		case "icmp sgt"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">",var2.CreatedId))
+
+		case "fcmp ueq"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"==",var2.CreatedId))
+		case "fcmp une"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"!=",var2.CreatedId))
+		case "fcmp ugt"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">",var2.CreatedId))
+		case "fcmp uge"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,">=",var2.CreatedId))
+		case "fcmp ult"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<",var2.CreatedId))
+		case "fcmp ule"
+			ctx.lines.Push(MCLine("cmp",resInd,var1.CreatedId,"<=",var2.CreatedId))
+
+		case "add"
+			HVB_ins_add(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "fadd"
+			HVB_ins_add(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "sub"
+			HVB_ins_sub(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "fsub"
+			HVB_ins_sub(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "mul"
+			HVB_ins_mul(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "fmul"
+			HVB_ins_mul(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "udiv"
+			HVB_ins_div(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "sdiv"
+			HVB_ins_div(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "fdiv"
+			HVB_ins_div(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "and"
+			HVB_ins_and(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "or"
+			HVB_ins_or(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "xor"
+			HVB_ins_xor(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "shl"
+			HVB_ins_shl(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "ashr"
+			HVB_ins_sshr(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "lshr"
+			HVB_ins_ushr(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "srem"
+			HVB_ins_mod(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case "urem"
+			HVB_ins_mod(ctx,resInd,var1.CreatedId,var2.CreatedId)
+		case void
+			assert(false)
+		}
 	}
 }
 
@@ -35,43 +99,34 @@ BuiltInIntEqAndOper := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
-
-		lst[0].PrintPointPre(ctx)
-		lst[1].PrintPre(ctx)
-
-		tp := GetType()->{TypeFunc^}.ResultType
-
-		f^ << "%Temp" << resId << " = load "
-		tp.PrintType(ctx)
-		f^ << ","
-		tp.GetPoint().PrintType(ctx)
-		f^ << " "
-		lst[0].PrintPointUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-		f^ << "%T" << resId << " = " << llvm << " " 
-		tp.PrintType(ctx)
-		f^ << " %Temp" << resId
-		f^ << ","
-		lst[1].PrintUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-		f^ << "store "
-		tp.PrintType(ctx)
-		f^ << " %T" << resId << ","
-		tp.GetPoint().PrintType(ctx)
-		f^ << " "
-		lst[0].PrintPointUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		var1 := indexes[0].WriteMC(ctx)
+		var2 := indexes[1].WriteMC(ctx)
+		switch llvm
+		{
+		case "fadd"
+			ctx.lines.Push(MCLine("add",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "add"
+			ctx.lines.Push(MCLine("add",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "fsub"
+			ctx.lines.Push(MCLine("sub",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "sub"
+			ctx.lines.Push(MCLine("sub",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "fmul"
+			ctx.lines.Push(MCLine("mul",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "mul"
+			ctx.lines.Push(MCLine("mul",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "and"
+			ctx.lines.Push(MCLine("and",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "or"
+			ctx.lines.Push(MCLine("or",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case "xor"
+			ctx.lines.Push(MCLine("xor",var1.CreatedId,var1.CreatedId,var2.CreatedId))
+		case void
+			assert(false)
+		}
 	}
 }
 BuiltInInterlockOper := class extend BoxFuncCommon
@@ -82,31 +137,30 @@ BuiltInInterlockOper := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
+		var1 := indexes[0].WriteMC(ctx)
+		var2 := indexes[1].WriteMC(ctx)
 
-		lst[0].PrintPointPre(ctx)
-		lst[1].PrintPre(ctx)
+		rType := GetType()->{TypeFunc^}.ResultType
 
-		tp := GetType()->{TypeFunc^}.ResultType
+		resInd := ctx.CreateVar(rType)
+		tmpId := ctx.CreateVar(rType.GetPoint())
 
-		f^ << "%T" << resId << " = atomicrmw " << llvm << " " 
-		tp.GetPoint().PrintType(ctx)
-		f^ << " "
-		lst[0].PrintPointUse(ctx)
-		f^ << " , "
-		tp.PrintType(ctx)
-		f^ << " "
-		lst[1].PrintUse(ctx)
-		f^ << " acquire"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		HVB_ins_get_pointer(ctx,tmpId,var1.CreatedId)
 
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		result.CreatedId = resInd
+
+		switch llvm
+		{
+		case "add"
+			ctx.lines.Push(MCLine("atomic_add",resInd,tmpId,var2.CreatedId))
+		case "sub"
+			ctx.lines.Push(MCLine("atomic_sub",resInd,tmpId,var2.CreatedId))
+		case "xchg"
+			ctx.lines.Push(MCLine("atomic_xchg",resInd,tmpId,var2.CreatedId))
+		}
 	}
 }
 
@@ -118,41 +172,37 @@ BuiltInIntDecInc := class extend BoxFuncCommon
 		SetType(iType)
 		llvm = llvmOper
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
-
-		lst[0].PrintPointPre(ctx)
-
 		tp := GetType()->{TypeFunc^}.ResultType
+		obj := indexes[0].WriteMC(ctx).CreatedId
 
-		f^ << "%T" << resId << " = load "
-		tp.PrintType(ctx)
-		f^ << ","
-		tp.GetPoint().PrintType(ctx)
-		f^ << " "
-		lst[0].PrintPointUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		oldValue := ctx.CreateVar(tp)
+		HVB_ins_move(ctx,oldValue,obj)
 
-		f^ << "%Temp" << resId << " = " << llvm << " " 
-		tp.PrintType(ctx)
-		f^ << " %T" << resId
-		f^ << ", 1"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		one := HVB_ins_const_int32(ctx,1)
 
-		f^ << "store "
-		tp.PrintType(ctx)
-		f^ << " %Temp" << resId << ","
-		tp.GetPoint().PrintType(ctx)
-		f^ << " "
-		lst[0].PrintPointUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		if tp != GTypeInt
+		{
+			newOne := ctx.CreateVar(tp)
+			HVB_ins_cast(ctx,newOne,one)
+			one = newOne
+		}
+
+
+
+		switch llvm
+		{
+		case "add"
+			HVB_ins_add(ctx,obj,obj,one)
+		case "sub"
+			HVB_ins_sub(ctx,obj,obj,one)
+		case void
+			assert(false)
+
+		}
+		result.CreatedId = oldValue
 	}
 }
 BuiltInIntMinus := class extend BoxFuncCommon
@@ -165,21 +215,43 @@ BuiltInIntMinus := class extend BoxFuncCommon
 		llvm = lvm
 		cnstVal = cv
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
+		resType := ObjType->{TypeFunc^}.ResultType
 
-		lst[0].PrintPre(ctx)
+		dwn := indexes[0].WriteMC(ctx).CreatedId
 
-		tp := GetType()->{TypeFunc^}.ResultType
+		res := ctx.CreateVar(resType)
+		constId := int
 
-		f^ << "%T" << resId << " = "<< llvm <<" " 
-		tp.PrintType(ctx)
-		f^ << " " << cnstVal << ", "
-		lst[0].PrintUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		switch cnstVal
+		{
+		case "0"
+			constId = ctx.CreateVar(resType)
+			HVB_ins_clean(ctx,constId)
+		case "0.0"
+			constId = ctx.CreateVar(resType)
+			HVB_ins_clean(ctx,constId)
+		case "-1"
+			constId = ctx.AddInteger(-1,resType)
+		case void
+			assert(false)
+		}
+
+		switch llvm
+		{
+		case "fsub"
+			HVB_ins_sub(ctx,res,constId,dwn)
+		case "sub"
+			HVB_ins_sub(ctx,res,constId,dwn)
+		case "xor"
+			HVB_ins_xor(ctx,res,constId,dwn)
+		case void
+			assert(false)
+		}
+
+		result.CreatedId = res
 	}
 }
 BuiltInPrimeStore := class extend BoxFuncCommon
@@ -188,27 +260,12 @@ BuiltInPrimeStore := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
-
-		lst[0].PrintPointPre(ctx)
-		lst[1].PrintPre(ctx)
-
-		bs := GetType()
-		tp := bs->{TypeFunc^}.Params[0].ItType
-
-		f^ << "store "
-		PrintTypeNormalized(ctx,tp)
-		f^ << " "
-		lst[1].PrintUse(ctx)
-		f^ << ","
-		PrintTypeNormalized(ctx,tp)
-		f^ << "* "
-		lst[0].PrintPointUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		var1 := indexes[0].WriteMC(ctx)
+		var2 := indexes[1].WriteMC(ctx)
+		HVB_ins_move(ctx,var1.CreatedId,var2.CreatedId)
 	}
 }
 
@@ -251,37 +308,33 @@ BuiltinSpaceShipUnsigned := class extend BoxFuncCommon
 		isSigned = inIsSigned
 		SetType(GetFuncType(![tp,tp],GTypeInt))
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
+		res := ctx.CreateVar(GTypeInt)
+		cmpVal := ctx.CreateVar(GTypeBool)
 
-		tp := this.GetType()->{TypeFunc^}.Params[0].ItType
-		lst[0].PrintPre(ctx)
-		lst[1].PrintPre(ctx)
+		v1 := indexes[0].WriteMC(ctx).CreatedId
+		v2 := indexes[1].WriteMC(ctx).CreatedId
 
-		f^ << "%EqCheck" << resId << " = icmp eq "
-		tp.PrintType(ctx)
-		lst[0].PrintUse(ctx)
-		f^ << " , "
-		lst[1].PrintUse(ctx)
-		f^ << "\n"
+		zero := ctx.AddInteger(0)
+		one := ctx.AddInteger(1)
+		notOne := ctx.AddInteger(-1)
 
-		f^ << "%BiggerCheck" << resId << " = icmp "
-		if isSigned
-		{
-			f^ << "sgt "
-		}else{
-			f^ << "ugt "
-		}
-		tp.PrintType(ctx)
-		lst[0].PrintUse(ctx)
-		f^ << " , "
-		lst[1].PrintUse(ctx)
-		f^ << "\n"
+		endLabel := ctx.CreateLabel()
 
-		f^ << "%Possible" << resId << " = select i1 %BiggerCheck" << resId << " , i32 1, i32 -1\n"
-		f^ << "%T" << resId << " = select i1 %EqCheck" << resId << " , i32 0, i32 %Possible" << resId << "\n"
+		HVB_ins_cmp(ctx,cmpVal,v1,"==",v2)
+		HVB_ins_move(ctx,res,zero)
+		HVB_ins_jump_if_bool(ctx,endLabel,cmpVal)
 
+		HVB_ins_cmp(ctx,cmpVal,v1,">",v2)
+		HVB_ins_move(ctx,res,one)
+		HVB_ins_jump_if_bool(ctx,endLabel,cmpVal)
+
+		HVB_ins_move(ctx,res,notOne)
+
+		HVB_ins_label(ctx,endLabel)
+		result.CreatedId = res
 	}
 }
 
@@ -418,35 +471,13 @@ BuiltInFloatSpaceship := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
+		v1 := indexes[0].WriteMC(ctx).CreatedId
+		v2 := indexes[1].WriteMC(ctx).CreatedId
 
-		lst[0].PrintPre(ctx)
-		lst[1].PrintPre(ctx)
-
-		tpFunc := GetType()->{TypeFunc^}
-		tp := tpFunc.Params[0].ItType
-
-		f^ << "%TDiff" << resId << " = fsub " 
-		tp.PrintType(ctx)
-		f^ << " " 
-		lst[0].PrintUse(ctx)
-		f^ <<  ", "
-		lst[1].PrintUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
-
-		f^ << "%TIsVal" << resId << " = fcmp une " tp.PrintType(ctx) f^ << "%TDiff" << resId << " , 0.0\n"
-		f^ << "%TIsValInt" << resId << " = sext i1 %TIsVal" << resId << " to i32\n"
-		f^ << "%TIsNeg" << resId << " = fcmp ult " tp.PrintType(ctx) f^ << "%TDiff" << resId << " , 0.0\n"
-		f^ << "%TIsNegInt" << resId << " = select i1 %TIsNeg" << resId << ", i32 -1, i32 1\n"
-
-		f^ << "%T" << resId << " = and i32 %TIsNegInt" << resId << ", %TIsValInt" << resId
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		result.CreatedId = HVB_ins_cmp_new(ctx,v1,"<=>",v2)
 	}
 }
 BuiltInFloatCosSin := class extend BoxFuncCommon
@@ -457,31 +488,22 @@ BuiltInFloatCosSin := class extend BoxFuncCommon
 		SetType(iType)
 		fncName = fName
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
-		lst[0].PrintPre(ctx)
+		resType := ObjType->{TypeFunc^}.ResultType
 
-		tp := GetType()->{TypeFunc^}.ResultType
+		resVar := ctx.CreateVar(resType)
+		dwn := indexes[0].WriteMC(ctx).CreatedId
 
-		f^ << "%T" << resId << " = call "
-		tp.PrintType(ctx)
-		f^ << " @llvm." << fncName << "." 
-		if tp == GTypeFloat
+		if fncName == "cos"
 		{
-			f^ << "f32"
+			HVB_ins_cos(ctx,resVar,dwn)
 		}else{
-			assert(tp == GTypeDouble)
-			f^ << "f64"
+			HVB_ins_sin(ctx,resVar,dwn)
 		}
-		f^ << "("
-		tp.PrintType(ctx)
-		f^ << " "
-		lst[0].PrintUse(ctx)
-		f^ << ")"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+
+		result.CreatedId = resVar
 	}
 }
 BuiltInFloatSqrt := class extend BoxFuncCommon
@@ -490,30 +512,16 @@ BuiltInFloatSqrt := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
-		lst[0].PrintPre(ctx)
+		resType := ObjType->{TypeFunc^}.ResultType
 
-		tp := GetType()->{TypeFunc^}.ResultType
+		resVar := ctx.CreateVar(resType)
+		dwn := indexes[0].WriteMC(ctx).CreatedId
 
-		f^ << "%T" << resId << " = call "
-		tp.PrintType(ctx)
-		f^ << " @llvm.sqrt." 
-		if tp == GTypeFloat
-		{
-			f^ << "f32"
-		}else{
-			assert(tp == GTypeDouble)
-			f^ << "f64"
-		}
-		f^ << "("
-		tp.PrintType(ctx)
-		f^ << " "
-		lst[0].PrintUse(ctx)
-		f^ << ")"
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		HVB_ins_sqrt(ctx,resVar,dwn)
+
+		result.CreatedId = resVar
 	}
 }
