@@ -14,16 +14,12 @@ BoxDefer := class extend BoxExeObj
 		ObjType = GTypeVoid
 	}
 	IsDefered := virtual !() -> bool { return true }
-	PrintDefaultUse := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		ctx.deferObjects.PushFront(this&)
+		ctx.DeferObjects.PushFront(this&)
 	}
-	PrintDefer := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteDeferMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		onDefer[^].PrintDefaultUse(ctx)
-	}
-	PrintDebugMeta := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		onDefer[^].PrintDebugMeta(ctx)
+		onDefer[^].WriteMC(ctx)
 	}
 }
