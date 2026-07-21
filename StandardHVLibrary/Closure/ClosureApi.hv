@@ -7,7 +7,6 @@
 //}
 
 ClosureContext := class
-	#LazyClass()
 {
 	closureBlob := Blob^
 	offsetToPointer := int
@@ -33,7 +32,7 @@ CreateClosureContext := !() -> ClosureContext^
 
 	result.allocator.createFlags = "rwe"
 
-	result.closureBlob = #File("closure.bin").GetBlob()
+	result.closureBlob = #File("local:LinuxX86_64.bin").GetBlob()
 
 	magicWord := 0x8765432112345678->{void^}
 	userMagicWord := 0x1234567887654321->{void^}
