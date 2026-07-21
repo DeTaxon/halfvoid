@@ -90,10 +90,6 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c++] = MCLine("cast",line.var1,getVar(line.var2))
 		}else{
 
-			inIndx := 0
-			if isRetObj
-				inIndx = 1
-
 			subSize := 1
 
 			if line.opcode == "asm_start"
@@ -103,9 +99,20 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 				subSize += 1
 			}
 
+			if line.opcode == "call_start"
+			{
+				while fnc.Lines[ii + subSize].opcode != "call_end"
+					subSize += 1
+				subSize += 1
+			}
+
 			for j : subSize
 			{
 				line := ref fnc.Lines[ii + j]
+
+				inIndx := 0
+				if IsOpcodeReturnsValue(line.opcode,0) or line.opcode == "mov"
+					inIndx = 1
 
 				for i : inIndx..4
 				{

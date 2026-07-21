@@ -80,8 +80,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			}else{
 				rt := bldr.PushReg(reg,tp)
 
-				cPtr[c] = MCLine("mov",indx,rt)
-				c += 1
+				cPtr[c++] = MCLine("mov",indx,rt)
 			}
 		}
 

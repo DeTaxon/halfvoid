@@ -16,11 +16,35 @@ main := !(char^[] args) -> int
 }
 
 
-RunFunc := !() -> void
+hum := class
 {
-	hey := Str
-	hey = "Test"
+	TestInts := virtual !(void^ pt ,vec4f tst,vec4f^ huh) -> void
+	{
+		printf("test %f %f\n",tst.x,tst.y)
+		printf("test %f %f\n",huh^.x,huh^.y)
+	}
+}
 
+RunFunc := !(vec4f test2) -> void
+{
+	printf("Jey %f %f\n",test2.x,test2.y)
+	r := hum
+	c := vec4f
+	c.x = 3.14
+	c.y = 9.8
+	printf("why %f %f\n",c.x,c.y)
+	r.TestInts(null,c,c&)
+	// modelRenderPass := TRenderPass^
+	//
+	// x := 0
+	//
+	// modelLayout := modelRenderPass.CreateLayout(![
+	// 	VKType(float,3)
+	// ],![
+	// ],![
+	// ],
+	// x
+	// )
 	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
 	// printf("test %p\n",deflate)
 	// OpenFontTest()

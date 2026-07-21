@@ -1222,8 +1222,8 @@ LLVMPrintObjValue := !(LLVMWriteContext^ ctx,MCObject obj, int id) -> void
 				out << r[0]&
 			}
 	case void
-		//printf("unknown object to print %s\n",obj.UnitName)
-		//assert(false)
+		printf("unknown object to print %s\n",obj.UnitName)
+		assert(false)
 	}
 }
 

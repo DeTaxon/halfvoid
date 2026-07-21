@@ -105,10 +105,11 @@ MCInterpFuncFrame := class
 		if obj& is MCConstString
 		{
 			return obj&->{MCConstString^}.GetValue()
-		}else if obj& is MCVariable
+		}else if obj& is MCVariable or obj& is MCConstValue
 		{
 			return localVarTable[index]->{char^^}^
 		}else{
+			printf("unknown object %s\n",obj.UnitName)
 			assert(false)
 		}
 	}

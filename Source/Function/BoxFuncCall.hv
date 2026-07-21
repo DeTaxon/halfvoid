@@ -347,9 +347,16 @@ BoxFuncCall := class extend BoxExeObj
 					HVB_ins_get_pointer(ctx,varId,subObj.CreatedId)
 					thisIndexes.Push(varId)
 				}else{
-					varId := ctx.CreateVar(it.GetType())
-					HVB_ins_move(ctx,varId,subObj.CreatedId)
-					thisIndexes.Push(varId)
+					tp := it.GetType()
+
+					if tp is TypeVector
+					{
+						thisIndexes.Push(subObj.CreatedId)
+					}else{
+						varId := ctx.CreateVar(it.GetType())
+						HVB_ins_move(ctx,varId,subObj.CreatedId)
+						thisIndexes.Push(varId)
+					}
 				}
 			}
 
