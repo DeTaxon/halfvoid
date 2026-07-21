@@ -33,16 +33,15 @@ _start:
 	mov %rax,-240(%rbp)
 
 	movq $0x8765432112345678,%r11
-	lea -208(%rbp),%rdi
-	lea -224(%rbp),%rsi
-	lea -200(%rbp),%rdx
-	movq $0x1234567887654321,%rcx
+	lea -224(%rbp),%rdi
+	lea -200(%rbp),%rsi
+	movq $0x1234567887654321,%rdx
 	call *%r11
 
 	cmp $0,%rax
 	jne tail_call
 
-	mov -208(%rbp),%rax
+	mov -224(%rbp),%rax
 	movaps -224(%rbp),%xmm0
 
 	add $240,%rsp

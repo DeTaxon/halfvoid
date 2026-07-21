@@ -24,14 +24,14 @@ ClosureTests := !() -> void
 }
 
 
-closure_ret_int := !(s64^ retInt,void^ retFloat,va_list^ lst, void^ magic) -> void^
+closure_ret_int := !(s64^ retInt,va_list^ lst, void^ magic) -> void^
 {
 	assert(magic == printf)
 
 	retInt^ = 62471
 }
 
-closure_ret_float := !(s64^ retInt,float^ retFloat) -> void^
+closure_ret_float := !(float^ retFloat) -> void^
 {
 	retFloat^ = 3.5
 }
@@ -46,7 +46,7 @@ closure_pass := !() -> void^
 	return test_closure_add
 }
 
-test_closure_many_args_1 := !(s64^ retInt,double^ retFloat,ClosureArgsList^ lst) -> void^
+test_closure_many_args_1 := !(double^ retFloat,ClosureArgsList^ lst) -> void^
 {
 	intsCount := lst.GetInt()->{int}
 	doublesCount := lst.GetInt()->{int}
@@ -67,7 +67,7 @@ test_closure_many_args_1 := !(s64^ retInt,double^ retFloat,ClosureArgsList^ lst)
 
 	retFloat^ = sum
 }
-test_closure_many_args_2 := !(s64^ retInt,double^ retFloat,ClosureArgsList^ lst) -> void^
+test_closure_many_args_2 := !(double^ retFloat,ClosureArgsList^ lst) -> void^
 {
 	sum := double
 

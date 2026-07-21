@@ -25,16 +25,15 @@ _start:
 	// -136 , + 32 butes for shadow space call
 
 	movq $0x8765432112345678,%r11
-	lea -96(%rbp),%rcx
-	lea -224(%rbp),%rdi
-	lea -200(%rbp),%r8
-	movq $0x1234567887654321,%r9
+	lea -224(%rbp),%rcx
+	lea -200(%rbp),%rdi
+	movq $0x1234567887654321,%r8
 	call *%r11
 
 	cmp $0,%rax
 	jne tail_call
 
-	mov -208(%rbp),%rax
+	mov -224(%rbp),%rax
 	movaps -224(%rbp),%xmm0
 
 	add $138,%rsp
