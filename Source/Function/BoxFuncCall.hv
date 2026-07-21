@@ -161,7 +161,6 @@ BoxFuncCall := class extend BoxExeObj
 						tmpl << "\n"
 						tmpl << "Expected reference=" << (par.IsRef ?: "yes" : "no") << "\n"
 						c := tmpl.GetStr()
-						c.IncRef() //TODO memory leak
 						if CurrentLine?.ItToken != null
 						{
 							CurrentWork?.SetErrorMessage(CurrentLine.ItToken.MakeError(c))
@@ -349,11 +348,11 @@ BoxFuncCall := class extend BoxExeObj
 				}else{
 					tp := it.GetType()
 
-					if tp is TypeVector
+					if tp is in TypePoint
 					{
 						thisIndexes.Push(subObj.CreatedId)
 					}else{
-						varId := ctx.CreateVar(it.GetType())
+						varId := ctx.CreateVar(tp)
 						HVB_ins_move(ctx,varId,subObj.CreatedId)
 						thisIndexes.Push(varId)
 					}

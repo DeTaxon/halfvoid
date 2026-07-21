@@ -46,7 +46,6 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 			switch fnc.itName
 			{
 			case "printf"
-				printf("yep %i\n",args.Size())
 
 				if args.Size() == 1
 				{
