@@ -261,6 +261,12 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 					i += 1
 				}
 
+				if stackPassed.Size() mod 2 != 0
+				{
+					tmp := bldr.PushReg("rax",GTypeSizeT)
+					cPtr[c++] = MCLine("push",tmp)
+					stackCount += 1
+				}
 				while stackPassed.Size() != 0
 				{
 					r := stackPassed.Pop()
@@ -273,12 +279,6 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 					stackCount += 1
 				}
 
-				if stackCount mod 2 != 0
-				{
-					tmp := bldr.PushReg("rax",GTypeSizeT)
-					cPtr[c++] = MCLine("push",tmp)
-					stackCount += 1
-				}
 				stackMemUsed = stackCount*8
 				cPtr[c++] = MCLine("mov",bldr.PushReg("rax",GTypeSizeT),bldr.PushInt(usedFloats))
 

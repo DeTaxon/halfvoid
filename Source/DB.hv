@@ -14,6 +14,8 @@ DB_LocalVarUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_EnumUsage := HVTable2.{BoxFunc^,BoxEnum^}
 DB_ClassFamilyMetaUsage := HVTable2.{BoxFunc^,ClassFamily^}
 
+DB_FuncUsesGlobVar := HVTable2.{BoxFuncBody^,GlobalVar^}
+
 
 DB_ForgetFunction := !(BoxFunc^ fnc) -> void
 {

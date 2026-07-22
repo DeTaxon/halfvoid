@@ -545,6 +545,7 @@ CreateStandardTypes := !() -> void
 
 
 	DefsTable[27] = new TypeDef("TypeId",GTypeTypeId)
+	DefsTable[28] = new TypeDef("byte",TypeTable[0])
 
 	CreateVectorTypes()
 }

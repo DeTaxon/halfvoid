@@ -449,11 +449,17 @@ MCBuildFuncContext_x86_64 := class
 
 				regData := (reg2 mod 8) + ((reg1 mod 8) shl 3)
 
+				ext := 0x48
+				if reg1 >= 8
+					ext += 1 //TODO which one?
+				if reg2 >= 8
+					ext += 4
+
 				switch line.opcode
 				{
-				case "xor" WriteData(0x48,0x33,0xC0 + regData)
-				case "and" WriteData(0x48,0x23,0xC0 + regData)
-				case "or" WriteData(0x48,0x0B,0xC0 + regData)
+				case "xor" WriteData(ext,0x33,0xC0 + regData)
+				case "and" WriteData(ext,0x23,0xC0 + regData)
+				case "or" WriteData(ext,0x0B,0xC0 + regData)
 				}
 				
 				
