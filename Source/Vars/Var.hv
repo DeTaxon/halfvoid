@@ -357,6 +357,11 @@ NamedVar := class extend BoxUnit
 GlobalNameAlias2 := class extend NamedVar
 {
 	Value := GlobalVar2^
+
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result = Value.WriteMC(ctx)
+	}
 }
 MemVar := class extend NamedVar
 {

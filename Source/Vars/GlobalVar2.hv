@@ -331,7 +331,10 @@ GlobalVar2 := class extend BoxUnit
 	{
 		ctx.writeStream^ << "@V" << varId
 	}
-
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		result = proxy.WriteMC(ctx)
+	}
 }
 
 GlobalVarProxy := class extend BoxExeObj
@@ -343,21 +346,15 @@ GlobalVarProxy := class extend BoxExeObj
 	{
 		return true
 	}
-	PrintPointPre := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		Down.PrintPointPre(ctx)
-	}
-	PrintPointUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintPointUse(ctx)
-	}
-	PrintPre := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintPre(ctx)
-	}
-	PrintUse := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		Down.PrintUse(ctx)
+		if EmulateTLS and baseVar.isThreadLocal
+		{
+			//TODO maybe do it on bytecode side?
+			result.CreatedId = Down.WriteMC(ctx).CreatedId
+		}else{
+			result.CreatedId = ctx.GetGlobalVar(baseVar)
+		}
 	}
 }
 GetGlobalVar2 := class extend BoxExeObj

@@ -8,9 +8,9 @@ AliasVar := class extend BoxUnit
 		itName = setName
 		itValue = setValue
 	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		itValue.PrintCode(ctx)
+		result = itValue.WriteMC(ctx)
 	}
 }
 
@@ -34,8 +34,8 @@ BorrowedCallVar := class extend BoxUnit
 
 		itVars[setName] = setVar
 	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
 	{
-		itValue.PrintDefaultUse(ctx)
+		result = itValue.WriteMC(ctx)
 	}
 }

@@ -162,7 +162,7 @@ cycle:
 	clang -g -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
 cycle_release:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -self-build -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
-	clang -O3 -Os -s $(TempFile) -lm -ldl -o halfvoid
+	clang -O3 -flto=full -Os -s $(TempFile) -lm -ldl -o halfvoid
 cycle_debug_release:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid  $(flags) -g -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
 	clang  -O3 -Os -g $(TempFile) -lm -ldl -o halfvoid
