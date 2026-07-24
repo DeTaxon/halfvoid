@@ -2,18 +2,18 @@
 StartGCStatusMonitor := !() -> void
 {
 	TSpawnTask(() ==> {
-		cliWorks += 1
-		while not cliQuit
+		TuiWorks += 1
+		while not TuiQuit
 		{
 			gcStatusFunc()
 			TSleep(1)
 		}
-		cliWorks -= 1
+		TuiWorks -= 1
 	})
 }
 gcStatusFunc := !() -> void
 {
-	lst := ref cliWin.GCList
+	lst := ref TuiWin.GCList
 
 	if #Var("GC")
 	{
@@ -28,6 +28,6 @@ gcStatusFunc := !() -> void
 			lst.Push(StrConcat("Root i=",ToString(i),", addr =",ToString(root.0->{size_t}),", is free = ",ToString(root.2)))
 		}
 
-		cliWin.Refresh()
+		TuiWin.Refresh()
 	}
 }

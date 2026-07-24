@@ -1,25 +1,25 @@
 StartStatusMonitor := !() -> void
 {
 	TSpawnTask(() ==> {
-		cliWorks += 1
-		while not cliQuit
+		TuiWorks += 1
+		while not TuiQuit
 		{
 			mainStatusFunc()
 			TSleep(1)
 		}
-		cliWorks -= 1
+		TuiWorks -= 1
 	})
 }
 
 mainStatusFunc := !() -> void
 {
-	lst := ref cliWin.StatusList
+	lst := ref TuiWin.StatusList
 
 	if WorkBag.works.Size() == 0
 	{
 		lst.Destroy()
 		lst.Push("Everything compiled")
-		cliWin.Refresh()
+		TuiWin.Refresh()
 	}else{
 
 		lst.Destroy()
@@ -71,6 +71,6 @@ mainStatusFunc := !() -> void
 			}
 		}
 
-		cliWin.Refresh()
+		TuiWin.Refresh()
 	}
 }

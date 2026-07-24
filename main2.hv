@@ -1,9 +1,6 @@
-
-
-
-
 main := !(char^[] args) -> int
 {
+	printf("hi %i\n",Glb )
 	// assert(false,"error message HAHA")
 	// RunFunc()
 	// HotloadTest()
@@ -14,10 +11,10 @@ main := !(char^[] args) -> int
 	// ModuleTest()
 	// x := 12
 }
+Glb := int
 
 
-
-RunFunc := !(vec4f test2) -> void
+RunFunc := !() -> void
 {
 	// modelRenderPass := TRenderPass^
 	//

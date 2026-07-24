@@ -1,5 +1,5 @@
 
-CliWin := class extend WindowCli
+TuiWin := class extend WindowCli
 {
 	StatusList := Vector.{Str}
 	HotloadList := Vector.{Str}
@@ -45,10 +45,10 @@ CliWin := class extend WindowCli
 			tabs.NextTab()
 			Refresh()
 		case 'q'
-			cliQuit = true
-			while cliWorks != 0
+			TuiQuit = true
+			while TuiWorks != 0
 				TSleep(0.2)
-			cliWin.Quit()
+			TuiWin.Quit()
 		case 't'
 			TestOptWave()
 		case 'r'
@@ -123,21 +123,21 @@ StreamOnLambda := class extend Stream
 	}
 }
 
-cliWin := CliWin^
-cliQuit := bool
-cliWorks := int
+TuiWin := TuiWin^
+TuiQuit := bool
+TuiWorks := int
 
 EnterCliMode := !() -> int
 {
 	ExpectWorkers(2)
 
-	cliWin = new CliWin
+	TuiWin = new TuiWin
 
 	HotloadStream& = new StreamOnLambda(null,(data,sLen) ==> {
 		st := Str
 		st->AsString = new String(data->{char^},sLen->{int})
-		cliWin.HotloadList.Push(st)
-		cliWin.Refresh()
+		TuiWin.HotloadList.Push(st)
+		TuiWin.Refresh()
 	})
 	HotloadStream& = new TextStream(HotloadStream&)
 
@@ -168,9 +168,9 @@ EnterCliMode := !() -> int
 	})
 
 	StartStatusMonitor()
-	StartGCStatusMonitor()
+	// StartGCStatusMonitor()
 
-	cliWin.Run()
+	TuiWin.Run()
 	exit(0) 
 
 }
@@ -274,6 +274,9 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 		}
 	}
 	ReloadApply(hotload)
+
+	if not WaitForParsingObjects()
+		WorkBag.CancelAll()
 }
 
 ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void
@@ -357,15 +360,15 @@ CliParseMain := !() -> void
 		newStream = new StreamOnLambda(null,(data,sLen) ==> {
 			st := Str
 			st->AsString = new String(data->{char^},sLen->{int})
-			cliWin.ConsoleList.Push(st)
-			cliWin.Refresh()
+			TuiWin.ConsoleList.Push(st)
+			TuiWin.Refresh()
 		})
 		newStream = new TextStream(newStream)
-		cliWin.ConsoleStream = newStream
+		TuiWin.ConsoleStream = newStream
 
 		globVar->{Stream^^}^ = newStream
 	}
-	while not cliQuit 
+	while not TuiQuit 
 	{
 		WorkBag.DoWork()
 		WorkBag.RemoveComplete()

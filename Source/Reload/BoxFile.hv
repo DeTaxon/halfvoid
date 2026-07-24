@@ -120,7 +120,7 @@ AppendClass BoxFile
 		fncs := ParseFunctions(toks)
 
 		newHashs := AVLMap.{Token^,u32}
-		newFuncNames := List.{Tuple.{String^,Token^}}
+		newFuncNames := List.{Tuple.{Str,Token^}}
 
 		for iter : fncs
 		{
@@ -130,13 +130,13 @@ AppendClass BoxFile
 			crc := c.ComputeHash()
 			newHashs[iter] = crc
 
-			name := String^
+			name := Str
 			if stVal.Left is TokenString
 			{
-				name = stVal.Left->{TokenString^}.Value->AsString
+				name = stVal.Left->{TokenString^}.Value
 			}else if stVal.Left is TokenIndent
 			{
-				name = stVal.Left->{TokenIndent^}.Value.GetString()
+				name = stVal.Left->{TokenIndent^}
 			}else{
 				assert(false)
 			}
@@ -155,7 +155,7 @@ AppendClass BoxFile
 			foundFunc := Token^
 			for it : newFuncNames
 			{
-				if it.0^ != thisFunc.Name
+				if it.0 != thisFunc.Name
 					continue
 				foundFunc = it.1
 				break
@@ -259,6 +259,9 @@ ReloadFileOldData := class
 
 	FileClassTemplates := List.{BoxClassTemplateBody^}
 	UsedFileClassTemplates := AVLSet.{BoxClassTemplateBody^}
+
+
+	GlobVars := AVLSet.{GlobalVar2^}
 
 	ClassAppends := AVLMap.{Str,Tuple.{Token^,u32}}
 

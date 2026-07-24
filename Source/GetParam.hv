@@ -241,14 +241,17 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 	{
 		if callItem is in GlobalVar2
 		{
+			DB_FuncUsesGlobal.Add(CurrentFunc?,callItem)
 			return callItem->{GlobalVar2^}.CreateCall()
 		}
 		if callItem is TaskLocalVar
 		{
+			DB_FuncUsesGlobal.Add(CurrentFunc?,callItem)
 			return callItem->{TaskLocalVar^}.CreateCall()
 		}
 		if callItem is TaskLocalVarDelayed
 		{
+			DB_FuncUsesGlobal.Add(CurrentFunc?,callItem)
 			return callItem->{TaskLocalVarDelayed^}.CreateCall()
 		}
 		if callItem is in BoxFunc

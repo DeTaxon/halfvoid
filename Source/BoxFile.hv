@@ -34,7 +34,6 @@ BoxFile := class extend BoxUnit
 	fileId := int
 	file := File^
 	fileData := Blob^
-	fileSize := int
 	fileName := Str
 
 	ThisCodeSpace := BoxCodeSpace^
@@ -60,7 +59,6 @@ BoxFile := class extend BoxUnit
 		fileId = GetNewId()
 		file = inFile
 		fileData = file.GetBlob()
-		fileSize = file.Size()
 		fileName = file.GetName()
 	}
 	GetName := !() -> StringSpan

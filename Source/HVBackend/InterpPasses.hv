@@ -109,6 +109,6 @@ printf_hv_nonstop := !(char^ str, ... ) -> int
 {
 	va := va_list
 	va_start(va&)
-	vprintf_hv_stream(cliWin.ConsoleStream?^,str,va&)
+	vprintf_hv_stream(TuiWin.ConsoleStream?^,str,va&)
 	va_end(va&)
 }
