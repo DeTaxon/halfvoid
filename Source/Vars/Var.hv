@@ -317,10 +317,10 @@ TypeVar := class extend BoxUnit
 }
 TemplateTypeVar := class extend BoxUnit
 {
-	Name := StringSpan
+	Name := Str
 	Value := BoxClassTemplate^
 
-	this := !(StringSpan name, BoxClassTemplate^ val) -> void
+	this := !(Str name, BoxClassTemplate^ val) -> void
 	{
 		Name = name
 		Value = val

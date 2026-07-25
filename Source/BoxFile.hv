@@ -10,7 +10,7 @@ BoxCodeSpace := class
 	ExchangeTableFuncs :=  Vector.{BoxUnit^}
 	ExchangeTableTemplates := Vector.{BoxUnit^}
 
-	Types := HashMap.{Str,BoxUnit^}
+	Types := AVLMap.{Str,BoxUnit^}
 
 	Modules := List.{ModuleInterface^}
 
@@ -188,7 +188,7 @@ BoxFile := class extend BoxUnit
 
 			assert(d.IsFound())
 
-			AddClass(name,d&)
+			// AddClass(name,d&)
 
 			ParsedTokens.Insert(iter)
 		}
@@ -213,7 +213,7 @@ BoxFile := class extend BoxUnit
 		// 	}
 		// }
 	}
-	AddClass := !(StringSpan name, PClassParser^ d) -> void
+	AddClass := !(Str name, PClassParser^ d) -> void
 	{
 		cls := d.CreateObject()
 
@@ -532,36 +532,137 @@ BoxFile := class extend BoxUnit
 		}
 		
 	}
-	Parse := !() -> void
+
+	
+	state := CWorkParseFile^
+	
+	parsingIt := bool
+	StartParseFile := !() -> void
 	{
-		fileName = file.GetName()
+		if parsingIt
+			return void
+		state = new CWorkParseFile
+		// WorkBag.AddWork(new CWorkParseFile(this&))
+		parsingIt = true
+		TSpawnTask(() ==> { //todo pass CurrentFile directly?
+			ParseFile()
+
+			state = null
+			parsingIt = false
+		})
+	}
+	
+	ParseFile := !() -> void 
+	{
+		LoadFiles()
+
+		ParseBlock(null,fileTokens)
+	
+		loaded.Emit()
+	}
+
+	ParseBlock := !(ReloadFileOldData^ oldData, Token^ lst) -> void
+	{
+		if lst == null
+			return void
+
+		itr := lst.Down
+
+		failedTokens := List.{Token^}
+
+		while itr != null
+		{
+			ParseRound(oldData,itr,failedTokens)
+			itr = itr.Right
+		}
+
+		while failedTokens.Size() != 0
+		{
+			TaskYield()
+
+			state.itState = "Failed"
+
+			newFailedTokens := List.{Token^}
+
+			for it : failedTokens
+			{
+				ParseRound(oldData,itr,newFailedTokens)
+			}
+
+			failedTokens.Destroy()
+			failedTokens.start = newFailedTokens.start
+			failedTokens.end = newFailedTokens.end
+			failedTokens.itSize = newFailedTokens.itSize
+
+
+			if state.itState == "Cancelled"
+			{
+				return void
+			}
+
+		}
+		state.itState = "Complete"
+	}
+
+	ParseRound := !(ReloadFileOldData^ oldData, Token^ itr,List.{Token^} failedTokens) -> bool
+	{
+		if itr == null
+			return false
 
 		LoadSpace()
-
-		defer loaded.Emit()
-
-	}
-	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
-	{
-		if DebugMode //later
+		if itr.Down?.Right?.GetValue() == ":="
 		{
-			f := ctx.writeStream
-			pth := file.GetPath()
-			if fsIsExist(pth.Str())
+			name := Str
+			nameObj := itr.Down
+			isSuffix := false
+
+			switch nameObj is
 			{
-				pth2 := fsGetAbsolutePath(pth)
-				if not pth2.IsSet()
-					pth2 = pth
-				p := pth2.GetOr("")
-				f^ << "!" << fileId  << " = !DIFile(filename: \"" 
-				f^ << p.Str() << "\", directory: \""
-				f^ <<  "/" <<"\")\n"
-			}else{
-				f^ << "!" << fileId  << " = !DIFile(filename: \"" 
-				f^ << file.GetName() << "\", directory: \""
-				f^ <<  "/" <<"\")\n"
+			case TokenString
+				name = nameObj.Value
+				isSuffix = true
+			case TokenIndent
+				name = nameObj.Value
+			case void
+				assert(false)
 			}
+
+			right := nameObj.Right.Right
+
+			cls := PClassParser(right)
+
+			if cls.IsFound()
+			{
+				AddClass(name,cls&)
+				return true
+			}
+			fnc := PFunctionParser(right)
+
+			if fnc.IsFound()
+			{
+				CreateFunc(name,isSuffix,fnc&,right)
+				return true
+			}
+
+			isRef := false // TODO
+
+			tp := ParseType(right)
+
+			if tp != null
+			{
+				vr := new GlobalVar2(name,tp,isRef)
+				GlobalVars2.Push(vr)
+			}else{
+				failedTokens.Push(itr)
+				printf("failed %s\n",name.CStr())
+			}
+
+		}else{
+			//TODOTODO
+			// cmd := TryGetCommand(itr)
+			// assert(cmd != null) // TODO
 		}
+		return false
 	}
 }
 TryParseVarInFile := !(Token^ obj) -> BoxUnit^
@@ -746,6 +847,31 @@ CWorkBaseFile := class extend CWorkUnit
 	}
 	IsDone := virtual !() -> bool {
 		return false
+	}
+}
+
+CWorkParseFile := class extend CWorkUnit
+{
+	itFile := BoxFile^
+	itError := Str
+	itState := CWorkState
+
+	this := !(BoxFile^ inpFile) -> void
+	{
+		itFile = inpFile
+		itState = "Created"
+	}
+	GetErrorMessage := virtual !() -> Str
+	{
+		return itError
+	}
+	DoWork := virtual !() -> CWorkState
+	{
+		return itState
+	}
+	Cancel := virtual !() -> void
+	{
+		itState = "Cancelled"
 	}
 }
 

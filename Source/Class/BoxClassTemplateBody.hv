@@ -19,7 +19,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 
 	ItConstsTokens := List.{Token^}
 
-	ItName := StringSpan
+	ItName := Str
 
 	ParentScope := BoxUnit^
 	ItFile := BoxFile^
@@ -49,7 +49,7 @@ BoxClassTemplateBody := class extend BoxClassTemplate
 		ItName = "@anon"
 		ParentScope = CurrentScope
 	}
-	SetName := virtual !(StringSpan newName) -> void
+	SetName := virtual !(Str newName) -> void
 	{
 		ItName = newName
 	}

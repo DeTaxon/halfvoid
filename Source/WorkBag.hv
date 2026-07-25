@@ -74,5 +74,6 @@ CWorkState := enum
 	"Created",
 	"Complete",
 	"MadeProgress",
-	"Failed"
+	"Failed",
+	"Cancelled"
 }

@@ -67,6 +67,10 @@ String := class extend StringView
 	{
 		return this&
 	}
+	Clone := !() -> Str
+	{
+		return MakeStr(charPtr)
+	}
 	Size := !() -> int { return itSize }
 	NonNullStr := virtual !() -> char^ { return charPtr }
 }
