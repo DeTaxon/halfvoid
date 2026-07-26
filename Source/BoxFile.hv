@@ -794,10 +794,30 @@ BoxFile := class extend BoxUnit
 			}
 
 			// printf("failed %s\n",name)
-
-
 		}
 		return false
+	}
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		if DebugMode //later
+		{
+			f := ctx.writeStream
+			pth := file.GetPath()
+			if fsIsExist(pth.Str())
+			{
+				pth2 := fsGetAbsolutePath(pth)
+				if not pth2.IsSet()
+					pth2 = pth
+				p := pth2.GetOr("")
+				f^ << "!" << fileId  << " = !DIFile(filename: \"" 
+				f^ << p.Str() << "\", directory: \""
+				f^ <<  "/" <<"\")\n"
+			}else{
+				f^ << "!" << fileId  << " = !DIFile(filename: \"" 
+				f^ << file.GetName() << "\", directory: \""
+				f^ <<  "/" <<"\")\n"
+			}
+		}
 	}
 }
 TryParseVarInFile := !(Token^ obj) -> BoxUnit^
