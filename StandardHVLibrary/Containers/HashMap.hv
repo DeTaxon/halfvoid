@@ -29,6 +29,8 @@ HashMap := class .{@TKey,@TValue}
 
 	"[]" := !(TKey key) -> ref TValue
 	{
+		assert(this& != null)
+
 		bk := ref thisBucket(key)
 
 		iter := bk

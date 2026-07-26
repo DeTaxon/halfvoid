@@ -43,6 +43,9 @@ GlobalVar2 := class extend BoxUnit
 
 		varId = GetNewId()
 		parseHatch.Emit()
+
+		if isThreadLocal
+			TLSStep() //TODO only change var type
 	}
 
 	GetObjType := virtual !() -> Type^

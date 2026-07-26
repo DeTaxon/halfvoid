@@ -29,7 +29,7 @@ TaskLocalVarDelayed := class extend NamedVar
 	itIndex := int
 	itHatch := THatch
 	itToken := Token^
-	this := !(StringSpan name,Token^ tp) -> void
+	this := !(Str name,Token^ tp) -> void
 	{
 		Name = name
 		itToken = tp

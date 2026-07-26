@@ -319,11 +319,11 @@ main := !(Vector.{char^} args) -> int
 		CompilerVars[compilerVar] = GBoolTrue
 	}
 
+	CodeFiles[^].LoadFiles()
+	CodeFiles[^].ParseAppendClasses()
 	CodeFiles[^].StartParseFile()
-	// CodeFiles[^].LoadFiles()
 	// CodeFiles[^].ParseClasses()
 	// CodeFiles[^].ParseTypedefs()
-	// CodeFiles[^].ParseAppendClasses()
 	// CodeFiles[^].ParseFunctions()
 
 	TaskYield() //TODO remove it after internal types become part of compiler
