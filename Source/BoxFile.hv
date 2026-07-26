@@ -642,10 +642,10 @@ BoxFile := class extend BoxUnit
 		if itr.Down?.GetValue() == "AppendClass"
 			return true
 
-		if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#Module"
-			return true
-		if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#CreateCallCommand"
-			return true
+		// if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#Module"
+		// 	return true
+		// if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#CreateCallCommand"
+		// 	return true
 
 		LoadSpace()
 

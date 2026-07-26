@@ -45,8 +45,12 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 			return null
 		}
 		fncTmplt := c.CreateObject()
-		assert(fncTmplt != null and fncTmplt is in BoxFuncTemplate) //TODO to error
-		assert(fncTmplt->{BoxFuncTemplate^}.IsOneFunc()) //TODO error check
+
+		if fncTmplt == null
+			return null
+		assert(fncTmplt is in BoxFuncTemplate) //TODO to error
+		if not fncTmplt->{BoxFuncTemplate^}.IsOneFunc()
+			return null
 		fnc := fncTmplt->{BoxFuncTemplate^}.GetOneFunc()
 		userCmd.CallFunction = fnc->{BoxFuncBody^}
 
