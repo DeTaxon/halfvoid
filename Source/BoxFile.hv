@@ -760,12 +760,14 @@ BoxFile := class extend BoxUnit
 				{
 					tp = tp.GetPoint()
 				}
+				
 
 				vr := new GlobalVar2(name,tp,isThreadLocal)
 				vr.isReference = isRef
 				vr.value = value
 				GlobalVars2.Push(vr)
 				CurrentCodeSpace.Globals[name].Push(vr)
+				// vr.CheckValue()
 
 				return true
 			}

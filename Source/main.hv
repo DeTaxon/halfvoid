@@ -386,6 +386,8 @@ main := !(Vector.{char^} args) -> int
 
 	printf("good to go\n")
 
+	GlobalVars2[^].CheckValue()
+
 	if RunMode
 	{
 		toRun := intGetFunc(RunModeFuncName)
