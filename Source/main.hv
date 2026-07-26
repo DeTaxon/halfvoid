@@ -530,6 +530,12 @@ WorkBagPrintErrors := !() -> bool
 			//cWork.itFunc.bdy.Print(0)
 			fName := cWork.itFunc.GetDebugName()
 			printf("could not compile function %s %s:%i\n",fName,cWork.itFunc.GetFileScope().fileName,cWork.itLine)
+		}else if it is CWorkParseFile
+		{
+			cWork := it->{CWorkParseFile^}
+			printf("Failed parsing file %s\n",cWork.itFile.fileName.CStr())
+
+			cWork.itFile.WorkingOnToken?.Print(0)
 		}
 	}
 	return true
