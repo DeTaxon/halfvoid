@@ -13,9 +13,15 @@ main := !(char^[] args) -> int
 }
 Glb := int
 
+HateEnums := enum
+{
+	"a","b"
+}
 
 RunFunc := !() -> void
 {
+	c := HateEnums
+	printf("yep\n")
 	// modelRenderPass := TRenderPass^
 	//
 	// x := 0

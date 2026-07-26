@@ -303,6 +303,9 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 	{
 		if tk.Down.Right.Down == null
 		{
+			if GVectorTemplate == null
+				return null
+
 			dwnType := Type^
 
 			if tp? is in TypeClass and tp->{TypeClass^}.TemplateParent == GVectorTemplate

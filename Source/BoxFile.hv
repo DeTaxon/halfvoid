@@ -639,7 +639,20 @@ BoxFile := class extend BoxUnit
 
 		WorkingOnToken = itr
 
+		if itr.Down?.GetValue() == "AppendClass"
+			return true
+
+		if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#Module"
+			return true
+		if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#CreateCallCommand"
+			return true
+
 		LoadSpace()
+
+		cmd := TryGetCommand(itr)
+		if cmd != null
+			return true
+
 		if itr.Down?.Right?.GetValue() == ":="
 		{
 			name := Str
@@ -776,16 +789,13 @@ BoxFile := class extend BoxUnit
 				assert(en != null)
 				vr := new TypeVar(name,en.ItType)
 				CurrentCodeSpace.Globals[name].Push(vr)
+				CurrentCodeSpace.Types[name] = en.ItType
 				return true
 			}
 
 			// printf("failed %s\n",name)
 
 
-		}else{
-			//TODOTODO
-			// cmd := TryGetCommand(itr)
-			// assert(cmd != null) // TODO
 		}
 		return false
 	}
