@@ -320,7 +320,7 @@ main := !(Vector.{char^} args) -> int
 	}
 
 	CodeFiles[^].LoadFiles()
-	CodeFiles[^].ParseAppendClasses()
+	CodeFiles[^].ParseAppends2()
 	CodeFiles[^].StartParseFile()
 	// CodeFiles[^].ParseClasses()
 	// CodeFiles[^].ParseTypedefs()

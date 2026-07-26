@@ -213,7 +213,7 @@ BoxFile := class extend BoxUnit
 		// 	}
 		// }
 	}
-	AddClass := !(Str name, PClassParser^ d) -> void
+	AddClass := !(Str name, PClassParser^ d) -> BoxUnit^
 	{
 		cls := d.CreateObject()
 
@@ -226,6 +226,7 @@ BoxFile := class extend BoxUnit
 			FileClasses.Push(cls2)
 			cls2.ClassFile = this&
 			cls2.hash = d.ComputeHash(fileData)
+			result = cls2
 		} else if cls is in BoxClassTemplateBody
 		{
 			cls3 := cls->{BoxClassTemplateBody^}
@@ -233,6 +234,7 @@ BoxFile := class extend BoxUnit
 			templateVar := new TemplateTypeVar(name,cls3)
 			CurrentCodeSpace.Types[name] = templateVar
 			FileClassTemplates.Push(cls3)
+			result = cls3
 		}else{
 			assert(false)
 		}
@@ -331,6 +333,26 @@ BoxFile := class extend BoxUnit
 			}
 			result.Push(iter)
 			iter = iter.Right
+		}
+	}
+
+	classAppends := List.{Token^}[Str]
+	ParseAppends2 := !(ReloadFileOldData^ oldData = null) -> void
+	{
+		if fileTokens == null
+			return void
+
+		itr := fileTokens.Down
+
+		while itr != null
+		{
+			if itr.Down?.GetValue() == "AppendClass"
+			{
+				name := itr.Down.Right->{TokenIndent^}.Value
+
+				classAppends[name].Push(itr.Down.Right.Right)
+			}
+			itr = itr.Right
 		}
 	}
 	ParseTypedefs := !(ReloadFileOldData^ oldData = null) -> void
@@ -638,7 +660,16 @@ BoxFile := class extend BoxUnit
 
 			if cls.IsFound()
 			{
-				AddClass(name,cls&)
+				newObj := AddClass(name,cls&)
+
+				switch newObj is
+				{
+				case BoxClassBody
+					if classAppends.Contain(name)
+					{
+						newObj.Appends.Emplace(this&,classAppends[name][^],0) //TODO hash instead of zero
+					}
+				}
 				return true
 			}
 			fnc := PFunctionParser(right)
@@ -653,6 +684,8 @@ BoxFile := class extend BoxUnit
 			{
 				vr := new TaskLocalVarDelayed(name,right.Right)
 				CurrentCodeSpace.Globals[name].Push(vr)
+
+				return true
 			}
 
 
@@ -725,8 +758,6 @@ BoxFile := class extend BoxUnit
 			{
 				res := TryParseTypedefTemplate(itr)
 
-				printf("here %s %p\n",name.CStr(),res)
-
 				if res != null
 				{
 					assert(res is TypedefTemplateVar)
@@ -745,7 +776,7 @@ BoxFile := class extend BoxUnit
 				return true
 			}
 
-			printf("failed %s\n",name)
+			// printf("failed %s\n",name)
 
 
 		}else{
