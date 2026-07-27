@@ -52,6 +52,8 @@ BoxFile := class extend BoxUnit
 	fileTokens := Token^
 	tokensChanged := bool
 
+	itGlobalVars := List.{GlobalVar2^}
+
 	ParsedTokens := AVLSet.{Token^}
 
 	this := !(File^ inFile) -> void
@@ -107,112 +109,6 @@ BoxFile := class extend BoxUnit
 		}
 		return resultTokens
 	}
-	ParseClasses := !(ReloadFileOldData^ oldData = null, Token^ checkToken = null) -> void
-	{
-		if checkToken == null
-			checkToken = fileTokens
-
-		classes := ParseClasses(checkToken)
-
-		for iter : classes
-		{
-			stVal := iter.Down.Right
-			name := StringSpan
-			if stVal.Left is TokenString
-			{
-				name = StringSpan(stVal.Left->{TokenString^}.Value.Str())
-			}else if stVal.Left is TokenIndent
-			{
-				name = stVal.Left->{TokenIndent^}.Value
-			}else{
-				assert(false)
-			}
-			d := PClassParser(stVal.Right)
-
-			if oldData != null
-			{
-				if not d.IsTemplate() 
-				{
-					foundClass := BoxClassBody^
-
-					for it : oldData.FileClasses
-					{
-						if it.Name == name
-						{
-							foundClass = it
-							break
-						}
-					}
-
-					if foundClass != null
-					{
-						dHsh := d.ComputeHash(fileData)
-						if foundClass.hash != dHsh
-						{
-							//TODO extends tokens
-							foundClass.ParentTokens.Destroy()
-							foundClass.Push(d.parents[^])
-							foundClass.Body = d.bodyToken
-							foundClass.hash = dHsh
-
-							oldData.ctx.ReloadClasses.PushUniq(foundClass)
-						}
-
-						oldData.UsedFileClasses.Insert(foundClass)
-						FileClasses.Push(foundClass)
-						continue
-					}
-
-				}else{
-					foundTemplate := BoxClassTemplateBody^
-
-					for it : oldData.FileClassTemplates
-					{
-						if it.ItName == name
-						{
-							//TODO reload body
-							foundTemplate = it
-							break
-						}
-					}
-
-					if foundTemplate != null
-					{
-						//TODO check change of hash
-						oldData.UsedFileClassTemplates.Insert(foundTemplate)
-						FileClassTemplates.Push(foundTemplate)
-						continue
-					}
-				}
-			}
-
-			assert(d.IsFound())
-
-			// AddClass(name,d&)
-
-			ParsedTokens.Insert(iter)
-		}
-
-		// if oldData != null
-		// {
-		// 	for oldClass : oldData.FileClasses
-		// 	{
-		// 		foundIt := false
-		// 		for newClass : FileClasses
-		// 		{
-		// 			if newClass.Name != oldClass.Name
-		// 				continue
-		// 			foundIt = true
-		// 			break
-		// 		}
-		//
-		// 		if foundIt
-		// 			continue
-		//
-		// 		DB_ForgetClass(oldData.ctx,oldClass)
-		// 	}
-		// }
-	}
 	AddClass := !(Str name, PClassParser^ d) -> BoxUnit^
 	{
 		cls := d.CreateObject()
@@ -239,35 +135,6 @@ BoxFile := class extend BoxUnit
 			assert(false)
 		}
 		
-	}
-	ParseClasses := !(Token^ tokens) -> HybridQueue.{Token^,20}
-	{
-		if tokens == null
-			return void
-		LoadSpace()
-
-		iter := tokens.Down
-		while iter != null
-		{
-			if iter.Down?.Right?.GetValue() == ":="
-			{}else{
-				iter = iter.Right
-				continue
-			}
-			stVal := iter.Down.Right
-
-			p := PClassParser(stVal.Right)
-
-			if not p.IsFound()
-			{
-				iter = iter.Right
-				continue
-			}
-			
-			result.Push(iter)
-
-			iter = iter.Right
-		}
 	}
 	ParseAppendClasses := !(ReloadFileOldData^ oldData = null) -> void
 	{
@@ -401,63 +268,6 @@ BoxFile := class extend BoxUnit
 			iter = iter.Right
 		}
 	}
-	ParseFunctions := !(ReloadFileOldData^ oldData = null,Token^ checkToken = null) -> void
-	{
-		if checkToken == null
-			checkToken = fileTokens
-
-		res := ParseFunctions(checkToken)
-
-		for iter : res
-		{
-			stVal := iter.Down.Right
-
-			c := PFunctionParser(stVal.Right)
-
-			isSuffix := false
-			name := StringSpan
-			if stVal.Left is TokenString
-			{
-				name = StringSpan(stVal.Left->{TokenString^}.Value.Str())
-				isSuffix = true
-			}else if stVal.Left is TokenIndent
-			{
-				name = stVal.Left->{TokenIndent^}.Value
-			}else{
-				assert(false)
-			}
-
-			if oldData != null
-			{
-				hsh := c.ComputeHeaderHash()
-
-				foundFunc := BoxFuncTemplateBody^
-				for it : oldData.Functions
-				{
-					if it.GetHeaderHash() == hsh and name == it.Name
-					{
-						foundFunc = it
-						break
-					}
-				}
-
-				if foundFunc != null
-				{
-					if foundFunc.GetFullHash() != c.ComputeHash()
-					{
-						HotloadStream << "Function "<< foundFunc.Name << " changed its content\n"
-						foundFunc.ReloadFunctions(oldData.ctx,c&,fileData)
-					}
-
-					Functions.Push(foundFunc)
-					oldData.UsedFunctions.Insert(foundFunc)
-					continue
-				}
-			}
-
-			CreateFunc(name,isSuffix,c&,iter)
-		}
-	}
 	CreateFunc := !(Str newName,bool isSuffix,PFunctionParser^ newFunc,Token^ iter) -> void
 	{
 		fnc := newFunc.CreateObject()
@@ -475,40 +285,6 @@ BoxFile := class extend BoxUnit
 		CurrentCodeSpace.AddTemplate(res.Name,fnc->{BoxFuncTemplate^})
 
 		Functions.Push(fnc->{BoxFuncTemplateBody^})
-	}
-
-	ParseFunctions := !(Token^ checkTokens) ->	HybridQueue.{Token^,20}
-	{
-		if checkTokens == null
-			return void
-
-		LoadSpace()
-		iter := checkTokens.Down
-		while iter != null
-		{
-			if iter.Down?.Right?.GetValue() == ":="
-			{}else{
-				iter = iter.Right
-				continue
-			}
-			stVal := iter.Down.Right
-
-			if stVal.Right == null
-			{
-				iter = iter.Right
-				continue
-			}
-
-			c := PFunctionParser(stVal.Right)
-			if not c.IsFound()
-			{
-				iter = iter.Right
-				continue
-			}
-			result.Push(iter)
-
-			iter = iter.Right
-		}
 	}
 
 	LoadSpace := !() -> void
@@ -534,25 +310,6 @@ BoxFile := class extend BoxUnit
 
 	}
 
-	AddWork := !() -> void
-	{
-		fileName = file.GetName()
-		if fileTokens == null
-			return void
-
-		iter := fileTokens.Down
-		while iter != null
-		{
-			if ParsedTokens.Contain(iter)
-			{
-				iter = iter.Right
-				continue
-			}
-			WorkBag.AddWork(new CWorkBaseFile(this&,iter))
-			iter = iter.Right
-		}
-		
-	}
 
 	
 	state := CWorkParseFile^
@@ -676,6 +433,62 @@ BoxFile := class extend BoxUnit
 
 			if cls.IsFound()
 			{
+				if oldData != null
+				{
+					if not cls.IsTemplate() 
+					{
+						foundClass := BoxClassBody^
+
+						for it : oldData.FileClasses
+						{
+							if it.Name == name
+							{
+								foundClass = it
+								break
+							}
+						}
+
+						if foundClass != null
+						{
+							dHsh := cls.ComputeHash(fileData)
+							if foundClass.hash != dHsh
+							{
+								//TODO extends tokens
+								foundClass.ParentTokens.Destroy()
+								foundClass.Push(cls.parents[^])
+								foundClass.Body = cls.bodyToken
+								foundClass.hash = dHsh
+
+								oldData.ctx.ReloadClasses.PushUniq(foundClass)
+							}
+
+							oldData.UsedFileClasses.Insert(foundClass)
+							FileClasses.Push(foundClass)
+							return true
+						}
+
+					}else{
+						foundTemplate := BoxClassTemplateBody^
+
+						for it : oldData.FileClassTemplates
+						{
+							if it.ItName == name
+							{
+								//TODO reload body
+								foundTemplate = it
+								break
+							}
+						}
+
+						if foundTemplate != null
+						{
+							//TODO check change of hash
+							oldData.UsedFileClassTemplates.Insert(foundTemplate)
+							FileClassTemplates.Push(foundTemplate)
+							return true
+						}
+					}
+				}
 				newObj := AddClass(name,cls&)
 
 				switch newObj is
@@ -683,7 +496,7 @@ BoxFile := class extend BoxUnit
 				case BoxClassBody
 					if classAppends.Contain(name)
 					{
-						newObj.Appends.Emplace(this&,classAppends[name][^],0) //TODO hash instead of zero
+						newObj.Appends.Emplace(this&,classAppends[name][^],cls.ComputeHash(fileData)) //TODO hash instead of zero
 					}
 				}
 				return true
@@ -692,6 +505,34 @@ BoxFile := class extend BoxUnit
 
 			if fnc.IsFound()
 			{
+				if oldData != null
+				{
+					hsh := fnc.ComputeHeaderHash()
+
+					foundFunc := BoxFuncTemplateBody^
+					for it : oldData.Functions
+					{
+						if it.GetHeaderHash() == hsh and name == it.Name
+						{
+							foundFunc = it
+							break
+						}
+					}
+
+					if foundFunc != null
+					{
+						if foundFunc.GetFullHash() != fnc.ComputeHash()
+						{
+							HotloadStream << "Function "<< foundFunc.Name << " changed its content\n"
+							foundFunc.ReloadFunctions(oldData.ctx,fnc&,fileData)
+						}
+
+						Functions.Push(foundFunc)
+						oldData.UsedFunctions.Insert(foundFunc)
+						return true
+					}
+				}
+
 				CreateFunc(name,isSuffix,fnc&,right)
 				return true
 			}
@@ -760,12 +601,34 @@ BoxFile := class extend BoxUnit
 				{
 					tp = tp.GetPoint()
 				}
+
+				if oldData != null
+				{
+					oldVar := GlobalVar2^
+					for it, ind : oldData.GlobalVars
+					{
+						if it.ItName == name and it.GetType() == tp
+						{
+							oldVar = it
+							break
+						}
+					}
+
+					if oldVar != null
+					{
+						oldData.UsedGlobalVars.Insert(oldVar)
+						itGlobalVars.Push(oldVar)
+						HotloadStream << "Kept var" << name << "\n" 
+						return true
+					}
+				}
 				
 
 				vr := new GlobalVar2(name,tp,isThreadLocal)
 				vr.isReference = isRef
 				vr.value = value
 				GlobalVars2.Push(vr)
+				itGlobalVars.Push(vr)
 				CurrentCodeSpace.Globals[name].Push(vr)
 				// vr.CheckValue()
 
@@ -868,144 +731,6 @@ TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 	return null
 }
 
-CWorkBaseFile := class extend CWorkUnit
-{
-	itFile := BoxFile^
-	itToken := Token^
-	itState := CWorkState
-	itError := Str
-
-	this := !(BoxFile^ inpFile, Token^ inpToken) -> void
-	{
-		itFile = inpFile
-		itToken = inpToken
-		itState = "Created"
-	}
-	GetErrorMessage := virtual !() -> Str
-	{
-		return itError
-	}
-	
-	DoWork := virtual !() -> CWorkState 
-	{
-		if itState == "Complete" or itState == "Failed"
-			return itState
-
-		itFile.LoadSpace()
-		CurrentScope = itFile
-
-		if itToken.Down?.Right?.Right?.GetValue() == "@"// and itToken.Down.Right.Right.Right?.GetValue() == "{}"
-		{
-			name := itToken.Down->{TokenIndent^}.Value
-			newVarTemplate := new GlobalVarTemplate(name,itToken.Down.Right.Right.Right.Right,itToken.Down.Right.Right.Right,itToken.Down.Right.Right)
-			CurrentCodeSpace.Globals[name].Push(newVarTemplate)
-
-			itState = "Complete"
-			return "Complete"
-		}
-
-		vr := TryParseVarInFile(itToken)
-
-		if vr == null
-		{
-			if itToken.Down?.Right?.GetValue() == ":=" and itToken.Down is TokenIndent
-			{
-				isRef := false
-				itr2 := itToken.Down.Right.Right
-				if itr2.GetValue() == "ref"
-				{
-					itr2 = itr2.Right
-					isRef = true
-				}
-				vr = new GlobalVar2(itToken.Down->{TokenIndent^}.Value,itr2,isRef)
-				GlobalVars2.Push(vr->{GlobalVar2^})
-			}
-		}
-
-		if vr != null
-		{
-			if vr is TypeVar or vr is TemplateTypeVar
-			{
-				if vr is TypeVar
-				{
-					if vr.Value is TypeEnum {
-						itFile.FileEnums[vr.Name] = !{vr.Value->{TypeEnum^}.ToEnum,vr}
-					}
-					CurrentCodeSpace.Types[vr->{TypeVar^}.Name] = vr
-				}else{
-					//CurrentCodeSpace.Globals[vr->{TypeVar^}.Name].Push(vr)
-					CurrentCodeSpace.Types[vr->{TemplateTypeVar^}.Name] = vr
-				}
-			}else if vr is in GlobalVar2
-			{
-				glb := vr->{GlobalVar2^}
-
-				itr2 := itToken.Down
-				while itr2 != null
-				{
-					if itr2.Right == null and itr2.GetValue() == "{}"
-					{
-						glb.BodyToken = itr2
-					}
-					itr2 = itr2.Right
-				}
-				CurrentCodeSpace.Globals[glb.ItName].Push(vr)
-			}else if vr is in TypedefTemplateVar
-			{
-				CurrentCodeSpace.Types[vr->{TypedefTemplateVar^}.Name] = vr
-			}else if vr is in NamedVar
-			{
-				v := vr->{NamedVar^}
-				CurrentCodeSpace.Globals[v.Name].Push(vr)
-			}else {
-			}
-
-			vr.Work()
-
-			itState = "Complete"
-			return "Complete"
-		}else{
-
-			cmdRes := TryGetCommand(itToken)
-			if cmdRes == null
-			{
-				comp := TryParseBlockInFile(itToken)
-
-				if comp is BoxBlock
-				{
-					SyntaxCompress(comp.down,LexHVFileRoot)
-					itFile.ParseClasses(null,comp.down)
-					itFile.ParseFunctions(null,comp.down)
-
-					iter := comp.down.Down
-					while iter != null
-					{
-						if itFile.ParsedTokens.Contain(iter)
-						{
-							iter = iter.Right
-							continue
-						}
-						WorkBag.AddWork(new CWorkBaseFile(itFile,iter))
-						iter = iter.Right
-					}
-				}else{
-				
-					itToken.Print(0)
-					itError = itToken.MakeError("Unknown object")
-					itState = "Failed"
-					return "Failed"
-				}
-			}
-		}
-
-		itState = "Complete"
-		return "Complete"
-
-	}
-	IsDone := virtual !() -> bool {
-		return false
-	}
-}
 
 CWorkParseFile := class extend CWorkUnit
 {

@@ -34,12 +34,16 @@ CompilerWork := class
 			for i : works.Size()
 			{
 				itm := works.Pop()
+
+
 				res := CWorkState
 				res = itm.DoWork()
 				switch res
 				{
 					case "Complete"
 						completeCount += 1
+					case "Cancelled"
+						failsCount += 1
 					case "Failed"
 						works.Push(itm)
 						failsCount += 1

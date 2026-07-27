@@ -2,6 +2,25 @@ AppendClass BoxFile
 {
 	ReloadFile := !(HotloadContext^ ctx,File^ newFile) -> void
 	{
+		if parsingIt
+			return void
+
+		state = new CWorkParseFile(this&)
+		WorkBag.AddWork(state)
+
+		printf("called start of reload\n")
+
+		parsingIt = true
+		TSpawnTask(() ==> [ctx,newFile] { //todo pass CurrentFile directly?
+			ReloadFile2(ctx,newFile)
+
+			state = null
+			parsingIt = false
+		})
+
+	}
+	ReloadFile2 := !(HotloadContext^ ctx,File^ newFile) -> void
+	{
 		fileData = newFile.GetBlob()
 
 		fileTokens = LoadFile(newFile,fileData,true)
@@ -20,6 +39,9 @@ AppendClass BoxFile
 		oldData.FileClassTemplates.Push(FileClassTemplates[^])
 		FileClassTemplates.Destroy()
 
+		oldData.GlobalVars.Push(itGlobalVars[^])
+		itGlobalVars.Destroy()
+
 		for it,ind : FileEnums
 			oldData.Enums[ind] = it
 		FileEnums.Destroy()
@@ -34,11 +56,12 @@ AppendClass BoxFile
 		}
 		ClassAppends.Destroy()
 
+		ParseBlock(oldData&,fileTokens)
+
 		//TODO deleted classtemplates,typedefs
-		ParseClasses(oldData&)
-		ParseTypedefs(oldData&)
-		ParseAppendClasses(oldData&)
-		ParseFunctions(oldData&)
+		// ParseTypedefs(oldData&)
+		// ParseAppendClasses(oldData&)
+		// ParseFunctions(oldData&)
 		// ReloadGlobals(fileTokens,oldData&)
 
 		for fnc : oldData.Functions
@@ -80,6 +103,17 @@ AppendClass BoxFile
 
 			HotloadStream << "Removed class " << cls.Name << "\n"
 			DB_ForgetClass(ctx,cls)
+		}
+
+		for glb : oldData.GlobalVars
+		{
+			if oldData.UsedGlobalVars.Contain(glb)
+				continue
+
+
+			DB_ForgetGlobalVar(ctx,glb)
+
+			HotloadStream << "Removed global variable " << glb.ItName << "\n"
 		}
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
@@ -209,7 +243,8 @@ ReloadFileOldData := class
 	UsedFileClassTemplates := AVLSet.{BoxClassTemplateBody^}
 
 
-	GlobVars := AVLSet.{GlobalVar2^}
+	GlobalVars := List.{GlobalVar2^}
+	UsedGlobalVars := AVLSet.{GlobalVar2^}
 
 	ClassAppends := AVLMap.{Str,Tuple.{Token^,u32}}
 

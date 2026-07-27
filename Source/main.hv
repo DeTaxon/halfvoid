@@ -322,9 +322,7 @@ main := !(Vector.{char^} args) -> int
 	CodeFiles[^].LoadFiles()
 	CodeFiles[^].ParseAppends2()
 	CodeFiles[^].StartParseFile()
-	// CodeFiles[^].ParseClasses()
 	// CodeFiles[^].ParseTypedefs()
-	// CodeFiles[^].ParseFunctions()
 
 	TaskYield() //TODO remove it after internal types become part of compiler
 
@@ -515,7 +513,7 @@ WorkBagPrintErrors := !() -> bool
 	if WorkBag.WorkCount() == 0
 		return false
 
-	printf("failed to do some work %i\n",WorkBag.works.Size())
+	// printf("failed to do some work %i\n",WorkBag.works.Size())
 
 	for it : WorkBag.works
 	{
@@ -536,8 +534,6 @@ WorkBagPrintErrors := !() -> bool
 		{
 			cWork := it->{CWorkParseFile^}
 			printf("Failed parsing file %s\n",cWork.itFile.fileName.CStr())
-
-			cWork.itFile.WorkingOnToken?.Print(0)
 		}
 	}
 	return true

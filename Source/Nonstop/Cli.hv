@@ -261,6 +261,13 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 	}
 	ReloadFile(hotload,asFile)
 
+	if not WaitForParsingObjects()
+	{
+		WorkBag.CancelAll()
+		return void
+	}
+	// assert(false)
+
 	for it : WorkBag.works
 	{
 		if it is CWorkFuncCompile
@@ -277,6 +284,7 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 
 	if not WaitForParsingObjects()
 		WorkBag.CancelAll()
+	assert(false)
 }
 
 ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void

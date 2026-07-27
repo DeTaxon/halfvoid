@@ -51,3 +51,14 @@ DB_ForgetClass := !(HotloadContext^ ctx, BoxClass^ cls) -> void
 	CodeSpaces[^].Types.Remove(cls.Name)
 
 }
+
+DB_ForgetGlobalVar := !(HotloadContext^ ctx, GlobalVar2^ glb) -> void
+{
+
+	if ctx != null
+	{
+		DB_FuncUsesGlobal.Value.Get(glb,x ==> { ctx.AddFunction(x) })
+	}
+
+	DB_FuncUsesGlobal.Value.RemoveAll(glb)
+}

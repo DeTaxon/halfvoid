@@ -13,10 +13,6 @@ main := !(char^[] args) -> int
 }
 Glb := int
 
-HateEnums := enum
-{
-	"a","b"
-}
 
 RunFunc := !() -> void
 {
