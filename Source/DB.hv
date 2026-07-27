@@ -60,5 +60,14 @@ DB_ForgetGlobalVar := !(HotloadContext^ ctx, GlobalVar2^ glb) -> void
 		DB_FuncUsesGlobal.Value.Get(glb,x ==> { ctx.AddFunction(x) })
 	}
 
+	for spc : CodeSpaces
+	{
+		if spc.Globals.Contain(glb.ItName)
+			spc.Globals[glb.ItName].DeleteIf( x ==> {return x ==  glb} )
+	}
+
+	GlobalVars2.DeleteIf(x ==> { return x == glb })
+
+
 	DB_FuncUsesGlobal.Value.RemoveAll(glb)
 }

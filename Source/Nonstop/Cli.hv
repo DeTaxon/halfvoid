@@ -186,7 +186,24 @@ StartWorkBox := !() -> void
 
 	SubWork(() ==> {
 
-		WaitForParsingObjects()
+		hotload := GHotloadCntx&
+
+		for it : WorkBag.works
+		{
+			if it is CWorkFuncCompile
+			{
+				hotload.AddFunction(it.itFunc)
+				// HotloadStream << "Reloading failed function\n"
+			}
+			if it is CWorkClassCompile
+			{
+				hotload.AddClass(it.itClass)
+			}
+		}
+		ReloadApply(GHotloadCntx&)
+
+		if not WaitForParsingObjects()
+			WorkBag.CancelAll()
 
 		for fnc : GHotloadCntx.ChangedFunctions
 		{
@@ -262,10 +279,7 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 	ReloadFile(hotload,asFile)
 
 	if not WaitForParsingObjects()
-	{
 		WorkBag.CancelAll()
-		return void
-	}
 	// assert(false)
 
 	for it : WorkBag.works
@@ -282,9 +296,7 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 	}
 	ReloadApply(hotload)
 
-	if not WaitForParsingObjects()
-		WorkBag.CancelAll()
-	assert(false)
+	WaitForParsingObjects()
 }
 
 ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void

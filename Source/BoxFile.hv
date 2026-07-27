@@ -618,8 +618,10 @@ BoxFile := class extend BoxUnit
 					{
 						oldData.UsedGlobalVars.Insert(oldVar)
 						itGlobalVars.Push(oldVar)
-						HotloadStream << "Kept var" << name << "\n" 
+						HotloadStream << "Kept var " << name << "\n" 
 						return true
+					}else {
+						HotloadStream << "Adding new global variable " << name << "\n"
 					}
 				}
 				
@@ -747,7 +749,11 @@ CWorkParseFile := class extend CWorkUnit
 	{
 		return itError
 	}
-	IsDone :=  virtual !() -> bool { return itState == "Complete" or itState == "Cancelled"}
+	IsDone :=  virtual !() -> bool {
+		if itFile.state != this&
+			return true
+		return itState == "Complete" or itState == "Cancelled"
+	}
 	DoWork := virtual !() -> CWorkState
 	{
 		// printf("hey %s\n",itState.ToCStr())

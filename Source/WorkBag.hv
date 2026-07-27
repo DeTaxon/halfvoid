@@ -25,6 +25,8 @@ CompilerWork := class
 
 	DoWork := !() -> int
 	{
+		failsInRow := 0
+
 		while works.Size() != 0
 		{
 			completeCount := 0
@@ -42,9 +44,7 @@ CompilerWork := class
 				{
 					case "Complete"
 						completeCount += 1
-					case "Cancelled"
-						failsCount += 1
-					case "Failed"
+					case in !["Failed","Cancelled"]
 						works.Push(itm)
 						failsCount += 1
 					case void //"MadeProgress"
@@ -52,10 +52,23 @@ CompilerWork := class
 						works.Push(itm)
 				}
 			}
+
+			if progressCount == 0
+				failsInRow += 1
+			else
+				failsInRow = 0
 			//HotloadStream << "Work " << works.Size() << " " << failsCount << "\n" 
 			if completeCount == 0 and progressCount == 0 and failsCount != 0
 				break
+
+			if failsInRow >= 50
+				break
+
+			TaskYield()
+
+
 		}
+		RemoveComplete()
 		return works.Size()
 	}
 	

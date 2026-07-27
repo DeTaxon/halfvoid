@@ -110,7 +110,6 @@ AppendClass BoxFile
 			if oldData.UsedGlobalVars.Contain(glb)
 				continue
 
-
 			DB_ForgetGlobalVar(ctx,glb)
 
 			HotloadStream << "Removed global variable " << glb.ItName << "\n"
