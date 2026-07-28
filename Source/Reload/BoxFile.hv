@@ -249,7 +249,7 @@ ReloadFileOldData := class
 
 	Enums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^}}
 
-	Typedefs := List.{Tuple.{TypedefTemplateVar^,u32}}
+	Typedefs := List.{TypedefTemplateVar^}
 	UsedTypedefs := AVLSet.{TypedefTemplateVar^}
 	
 }

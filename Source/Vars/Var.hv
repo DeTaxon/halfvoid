@@ -352,7 +352,7 @@ ConstVar := class extend BoxUnit
 }
 NamedVar := class extend BoxUnit
 {
-	Name := StringSpan
+	Name := Str
 }
 GlobalNameAlias2 := class extend NamedVar
 {

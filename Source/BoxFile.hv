@@ -45,7 +45,7 @@ BoxFile := class extend BoxUnit
 	Functions := List.{BoxFuncTemplateBody^}
 	FileEnums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^}}
 
-	Typedefs := List.{Tuple.{TypedefTemplateVar^,u32}}
+	Typedefs := List.{TypedefTemplateVar^}
 
 	ClassAppends := AVLMap.{Str,Tuple.{Token^,u32}}
 
@@ -660,6 +660,21 @@ BoxFile := class extend BoxUnit
 
 			if right.GetValue() == "type"
 			{
+				hash := ComputeHash(itr)
+
+				if oldData != null
+				{
+					oldDef := TypedefTemplateVar^
+
+					for df : oldData.Typedefs
+					{
+						if df.Name == name
+						{
+							oldDef = df
+						}
+					}
+				}
+			
 				res := TryParseTypedefTemplate(itr)
 
 				if res != null
