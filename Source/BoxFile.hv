@@ -352,7 +352,7 @@ BoxFile := class extend BoxUnit
 
 		failedTokens := List.{Token^}
 
-		state.itState = "Failed"
+		state.itState = "Created"
 
 		while itr != null
 		{
@@ -361,11 +361,22 @@ BoxFile := class extend BoxUnit
 			itr = itr.Right
 		}
 
+		prevCounter := 0
+
+
 		while failedTokens.Size() != 0
 		{
-			TaskYield()
+			if prevCounter != failedTokens.Size()
+			{
+				HotloadStream << "MadeProgress\n"
+				state.itState = "MadeProgress"
+			}else{
+				HotloadStream << "Failed\n"
+				state.itState = "Failed"
+			}
+			prevCounter = failedTokens.Size()
 
-			state.itState = "Failed"
+			TaskYield()
 
 			newFailedTokens := List.{Token^}
 
@@ -597,6 +608,9 @@ BoxFile := class extend BoxUnit
 
 			if tp != null
 			{
+				hash := ComputeHash(tpObj)
+
+
 				if isRef
 				{
 					tp = tp.GetPoint()
@@ -616,6 +630,12 @@ BoxFile := class extend BoxUnit
 
 					if oldVar != null
 					{
+						if oldVar.ItHash != hash
+							oldVar = null
+					}
+
+					if oldVar != null
+					{
 						oldData.UsedGlobalVars.Insert(oldVar)
 						itGlobalVars.Push(oldVar)
 						HotloadStream << "Kept var " << name << "\n" 
@@ -629,6 +649,7 @@ BoxFile := class extend BoxUnit
 				vr := new GlobalVar2(name,tp,isThreadLocal)
 				vr.isReference = isRef
 				vr.value = value
+				vr.ItHash = hash
 				GlobalVars2.Push(vr)
 				itGlobalVars.Push(vr)
 				CurrentCodeSpace.Globals[name].Push(vr)

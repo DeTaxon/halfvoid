@@ -390,7 +390,8 @@ CliParseMain := !() -> void
 	}
 	while not TuiQuit 
 	{
-		WorkBag.DoWork()
+		if not WaitForParsingObjects()
+			WorkBag.CancelAll()
 		WorkBag.RemoveComplete()
 		TSleep(0.1)
 	}

@@ -538,6 +538,9 @@ CWorkFuncCompile := class extend CWorkUnit
 
 	DoWork := virtual !() -> CWorkState 
 	{
+		if itFunc.thisWork != this&
+			IsCanceled = true
+
 		if isFailed
 			return "Failed"
 		if IsDone()
@@ -546,6 +549,11 @@ CWorkFuncCompile := class extend CWorkUnit
 	}
 	IsDone := virtual !() -> bool 
 	{
+		if itFunc.thisWork != this&
+		{
+			IsCanceled = true
+			return true
+		}
 		return itFunc.IsComplete()
 	}
 	GetErrorMessage := virtual !() -> Str 

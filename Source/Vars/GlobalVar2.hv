@@ -20,6 +20,8 @@ GlobalVar2 := class extend BoxUnit
 
 	proxy := GlobalVarProxy
 
+	ItHash := u32
+
 	varId := int
 
 	this := !(Str varName,Token^ checkToken,bool isRef) -> void

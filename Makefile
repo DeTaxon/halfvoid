@@ -173,7 +173,7 @@ cycle_release.exe:
 	$(TimeF) $(gdb_tui)  $(vgrind) $(hg)  $(cg) ./halfvoid.exe -win32 -C0 StandardHVLibrary/ -C1 Source/ $(CacheFlags)
 	clang++ -O2 -femulated-tls -static out.exe.ll -o halfvoid.exe
 proj:
-	systemd-run --user --scope -p MemoryMax=1000M -p MemorySwapMax=1000M  $(mass_if) ./halfvoid
+	systemd-run --user --scope -p MemoryMax=1000M -p MemorySwapMax=1000M  $(mass_if) $(gdb_tui) ./halfvoid
 
 	
 clean: 

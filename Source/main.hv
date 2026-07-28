@@ -589,6 +589,7 @@ WaitForParsingObjects := !() -> bool
 		TaskYield()
 	}
 
+
 	return true
 }
 

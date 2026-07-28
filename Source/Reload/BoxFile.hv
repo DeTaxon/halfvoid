@@ -11,12 +11,12 @@ AppendClass BoxFile
 		printf("called start of reload\n")
 
 		parsingIt = true
-		TSpawnTask(() ==> [ctx,newFile] { //todo pass CurrentFile directly?
+		// TSpawnTask(() ==> [ctx,newFile] { //todo pass CurrentFile directly?
 			ReloadFile2(ctx,newFile)
 
 			state = null
 			parsingIt = false
-		})
+		// })
 
 	}
 	ReloadFile2 := !(HotloadContext^ ctx,File^ newFile) -> void
