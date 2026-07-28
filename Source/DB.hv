@@ -16,6 +16,9 @@ DB_ClassFamilyMetaUsage := HVTable2.{BoxFunc^,ClassFamily^}
 
 DB_FuncUsesGlobal := HVTable2.{BoxFunc^,BoxUnit^}
 
+DB_FuncUsesTypedef := HVTable2.{BoxFunc^,TypedefTemplateVar^}
+DB_ClassUsesTypedef := HVTable2.{BoxClass^,TypedefTemplateVar^}
+
 
 DB_ForgetFunction := !(BoxFunc^ fnc) -> void
 {
@@ -28,6 +31,7 @@ DB_ForgetFunction := !(BoxFunc^ fnc) -> void
 	DB_EnumUsage.Key.RemoveAll(fnc)
 	DB_FunctionCalls.Key.RemoveAll(fnc)
 	DB_FunctionCalls.Value.RemoveAll(fnc)
+	DB_FuncUsesTypedef.Key.RemoveAll(fnc)
 }
 
 DB_ForgetClass := !(HotloadContext^ ctx, BoxClass^ cls) -> void
@@ -50,6 +54,8 @@ DB_ForgetClass := !(HotloadContext^ ctx, BoxClass^ cls) -> void
 	CodeSpaces[^].Globals[cls.Name].DeleteIf(x ==> { return x == cls } )
 	CodeSpaces[^].Types.Remove(cls.Name)
 
+	DB_ClassUsesTypedef.Key.RemoveAll(cls)
+
 }
 
 DB_ForgetGlobalVar := !(HotloadContext^ ctx, GlobalVar2^ glb) -> void
@@ -70,4 +76,16 @@ DB_ForgetGlobalVar := !(HotloadContext^ ctx, GlobalVar2^ glb) -> void
 
 
 	DB_FuncUsesGlobal.Value.RemoveAll(glb)
+}
+
+DB_ForgetTypedef := !(HotloadContext^ ctx, TypedefTemplateVar^ def) -> void
+{
+	if ctx != null
+	{
+		DB_FuncUsesTypedef.Value.Get(def , x ==> { ctx.AddFunction(x)} )
+	}
+
+
+	DB_FuncUsesTypedef.Value.RemoveAll(def)
+	// DB_ClassUsesTypedef.Value.RemoveAll(def)
 }

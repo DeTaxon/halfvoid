@@ -1,4 +1,4 @@
-TryParseTypedefTemplate := !(Token^ obj) -> BoxUnit^
+TryParseTypedefTemplate := !(Token^ obj) -> TypedefTemplateVar^
 {
 	iter := obj.Down
 
@@ -32,6 +32,7 @@ TryParseTypedefTemplate := !(Token^ obj) -> BoxUnit^
 
 	resConst.TypeToken = typeToken
 	res.Value = resConst
+	resConst.Base = res
 
 	return res
 }
@@ -43,6 +44,7 @@ TypedefTemplateVar := class extend NamedVar
 
 TypedefTemplateConst := class extend BoxExeConstObj
 {
+	Base := TypedefTemplateVar^
 	ItConsts := HybridQueue.{Token^,5}
 	TypeToken := Token^
 	ItHash := u32
@@ -53,7 +55,10 @@ TypedefTemplateConst := class extend BoxExeConstObj
 			return null
 		if cnsts.Size() == 0
 		{
-			return ParseType(TypeToken)
+			res := ParseType(TypeToken)
+			if res != null
+				DB_FuncUsesTypedef.Add(CurrentFunc?,Base)
+			return res
 		}
 
 		resCnsts := AVLMap.{Str,BoxUnit^}
@@ -61,7 +66,10 @@ TypedefTemplateConst := class extend BoxExeConstObj
 		{
 			CheckTemplateConst(cnsts[i],ItConsts[i],resCnsts)
 		}
-		return CheckTemplateType(null,TypeToken,resCnsts)
+		res := CheckTemplateType(null,TypeToken,resCnsts)
+		if res != null
+			DB_FuncUsesTypedef.Add(CurrentFunc?,Base)
+		return res
 	}
 
 }

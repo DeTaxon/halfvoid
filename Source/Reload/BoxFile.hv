@@ -114,6 +114,16 @@ AppendClass BoxFile
 
 			HotloadStream << "Removed global variable " << glb.ItName << "\n"
 		}
+
+		for def : oldData.Typedefs
+		{
+			if oldData.UsedTypedefs.Contain(def)
+				continue
+
+			DB_ForgetTypedef(ctx,def)
+
+			HotloadStream << "Removed typedef " << def.Name << "\n"
+		}
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
 	{

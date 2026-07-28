@@ -673,15 +673,25 @@ BoxFile := class extend BoxUnit
 							oldDef = df
 						}
 					}
+
+					if oldDef?.Value.ItHash != hash
+						oldDef = null
+
+					if oldDef != null
+					{
+						Typedefs.Push(oldDef)
+						oldData.UsedTypedefs.Insert(oldDef)
+						HotloadStream << "Kept old typedef " << name << "\n"
+						return true
+					}
 				}
 			
 				res := TryParseTypedefTemplate(itr)
 
 				if res != null
 				{
-					assert(res is TypedefTemplateVar)
-					asTemplate := res->{TypedefTemplateVar^}
-					CurrentCodeSpace.Types[asTemplate.Name] = asTemplate
+					Typedefs.Push(res)
+					CurrentCodeSpace.Types[name] = res
 					return true
 				}
 			}
