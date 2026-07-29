@@ -444,6 +444,7 @@ BoxFile := class extend BoxUnit
 
 			if cls.IsFound()
 			{
+				hash := cls.ComputeHash(fileData)
 				if oldData != null
 				{
 					if not cls.IsTemplate() 
@@ -507,7 +508,7 @@ BoxFile := class extend BoxUnit
 				case BoxClassBody
 					if classAppends.Contain(name)
 					{
-						newObj.Appends.Emplace(this&,classAppends[name][^],cls.ComputeHash(fileData)) //TODO hash instead of zero
+						newObj.Appends.Emplace(this&,classAppends[name][^],0) //TODO hash instead of zero
 					}
 				}
 				return true

@@ -158,6 +158,7 @@ AppendClass BoxClassBody
 			<< "\n"
 
 		HotloadStream << "End of reload of class " << className << "\n"
+		HotloadStream << "New Size " << GetSize() << "\n"
 
 		oldData = null
 	}

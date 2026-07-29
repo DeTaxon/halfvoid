@@ -210,6 +210,8 @@ StartWorkBox := !() -> void
 			BCFuncs.ForgetFunction(fnc)
 		}
 
+		HotloadStream << "Reload functions\n"
+
 		GInterpCntx.ReloadFunctions(GHotloadCntx&)
 		if FastestRunner
 			GX86Cntx.ReloadFunctions(GHotloadCntx&)
@@ -297,6 +299,7 @@ ChangedHVFile := !(HotloadContext^ hotload,File^ asFile,FSChangeEvent changeOpti
 	ReloadApply(hotload)
 
 	WaitForParsingObjects()
+	// HotloadStream << "Forgeting function " << hotload.ChangedFunctions.Size() << " " << hotload->{void^}->{size_t} <<  "\n"
 }
 
 ReloadFile := !(HotloadContext^ hotload,File^ asFile) -> void

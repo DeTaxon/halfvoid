@@ -214,6 +214,7 @@ AppendClass BoxFile
 
 			if foundFunc != null
 			{
+				HotloadStream << "Reloading function " << foundFunc.GetName() << "\n"
 				//TODO check header types
 				d := PFunctionParser(foundFunc.Down.Right.Right)
 				thisFunc.ReloadFunctions(ctx,d&,thisData)

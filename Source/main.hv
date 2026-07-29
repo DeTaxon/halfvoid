@@ -568,6 +568,8 @@ WaitForParsingObjects := !() -> bool
 		{
 			ReloadApply(GHotloadCntx&)
 			GInterpCntx.ReloadFunctions(GHotloadCntx&)
+			if FastestRunner
+				GX86Cntx.ReloadFunctions(GHotloadCntx&)
 			GHotloadCntx.Reset()
 		}
 

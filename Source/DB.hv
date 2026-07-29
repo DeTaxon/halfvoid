@@ -87,5 +87,5 @@ DB_ForgetTypedef := !(HotloadContext^ ctx, TypedefTemplateVar^ def) -> void
 
 
 	DB_FuncUsesTypedef.Value.RemoveAll(def)
-	// DB_ClassUsesTypedef.Value.RemoveAll(def)
+	DB_ClassUsesTypedef.Value.RemoveAll(def)
 }
