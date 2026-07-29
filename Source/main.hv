@@ -567,6 +567,11 @@ WaitForParsingObjects := !() -> bool
 		if GHotloadCntx.HaveWork()
 		{
 			ReloadApply(GHotloadCntx&)
+
+			for fnc : GHotloadCntx.ChangedFunctions
+			{
+				BCFuncs.ForgetFunction(fnc)
+			}
 			GInterpCntx.ReloadFunctions(GHotloadCntx&)
 			if FastestRunner
 				GX86Cntx.ReloadFunctions(GHotloadCntx&)

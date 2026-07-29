@@ -196,7 +196,6 @@ MCInterpContext := class
 	}
 	ReloadFunctions := !(HotloadContext^ ctx) -> void
 	{
-		HotloadStream << "Reloading funcs " << ctx.ChangedFunctions.Size() << "\n"
 		for newFunc : ctx.ChangedFunctions
 		{
 			if funcs.Contain(newFunc)
