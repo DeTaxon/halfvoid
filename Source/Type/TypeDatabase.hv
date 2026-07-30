@@ -63,7 +63,10 @@ GetTypeObjByName := !(Str name) -> BoxUnit^
 			}else if itm is in BoxClass 
 			{
 				assert(false)
+			// }else if itm == null {
+				//TODO someone creating bad entry
 			}else{
+				printf("wut  %s %p\n",name,itm)
 				assert(false)
 			}
 		}

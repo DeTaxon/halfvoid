@@ -43,7 +43,7 @@ BoxFile := class extend BoxUnit
 	FileClasses := List.{BoxClassBody^}
 	FileClassTemplates := List.{BoxClassTemplateBody^}
 	Functions := List.{BoxFuncTemplateBody^}
-	FileEnums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^}}
+	FileEnums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^,u32}}
 
 	Typedefs := List.{TypedefTemplateVar^}
 
@@ -177,7 +177,6 @@ BoxFile := class extend BoxUnit
 			}
 
 		}
-		HotloadStream << "Hash " << hash << "\n"
 
 		if oldAppend != null
 		{
@@ -677,11 +676,51 @@ BoxFile := class extend BoxUnit
 
 			if right.Down?.GetValue() == "enum"
 			{
+				hash := ComputeHash(right)
+
+				if oldData != null
+				{
+					foundEnum := BoxEnum^
+					foundVr := TypeVar^
+
+					for it,ind : oldData.Enums
+					{
+						if ind != name
+							continue
+						if it.2 != hash
+							continue
+						foundEnum = it.0
+						foundVr := it.1
+
+						break
+					}
+
+					if foundEnum != null
+					{
+						entry := ref FileEnums[name]
+						entry.0 = foundEnum
+						entry.1 = foundVr
+						entry.2 = hash
+
+						oldData.UsedEnums.Insert(foundEnum)
+
+						HotloadStream << "Kept enum " << name << "\n"
+					}
+
+				}
+
 				en := TryParseEnum(right)
 				assert(en != null)
 				vr := new TypeVar(name,en.ItType)
 				CurrentCodeSpace.Globals[name].Push(vr)
 				CurrentCodeSpace.Types[name] = en.ItType
+
+				assert(en.ItType != null)
+
+				entry := ref FileEnums[name]
+				entry.0 = en
+				entry.1 = vr
+				entry.2 = hash
 				return true
 			}
 

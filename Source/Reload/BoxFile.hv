@@ -142,6 +142,24 @@ AppendClass BoxFile
 
 			HotloadStream << "Remove append of class " << app.0 << " appends count = " << cls.Appends.Size() << "\n"
 		}
+
+		for en,name : oldData.Enums
+		{
+			if oldData.UsedEnums.Contain(en.0)
+				continue
+
+			DB_EnumUsage.Value.Get(en.0,x ==> { ctx.AddFunction(x) })
+
+			for space : CodeSpaces
+			{
+				space.Globals[name]?.DeleteIf(@1 == en.1)
+				// if space.Types[name]? == en.0.ItType
+					space.Types.Remove(name)
+				assert(space.Types.Contain(name) == false)
+			}
+
+			HotloadStream << "Removed enum " << name << "\n"
+		}
 	}
 }
 
@@ -165,7 +183,8 @@ ReloadFileOldData := class
 	ClassAppends := List.{Tuple.{Str,Token^,u32}}
 	UsedClassAppends := AVLSet.{Token^}
 
-	Enums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^}}
+	Enums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^,u32}}
+	UsedEnums := AVLSet.{BoxEnum^}
 
 	Typedefs := List.{TypedefTemplateVar^}
 	UsedTypedefs := AVLSet.{TypedefTemplateVar^}
