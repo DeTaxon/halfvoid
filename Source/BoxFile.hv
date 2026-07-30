@@ -47,7 +47,7 @@ BoxFile := class extend BoxUnit
 
 	Typedefs := List.{TypedefTemplateVar^}
 
-	ClassAppends := AVLMap.{Str,Tuple.{Token^,u32}}
+	ClassAppends := List.{Tuple.{Str,Token^,u32}}
 
 	fileTokens := Token^
 	tokensChanged := bool
@@ -165,7 +165,6 @@ BoxFile := class extend BoxUnit
 
 					cls->{BoxClassBody^}.Appends.DeleteIf(@1.1 == oldAppend.0)
 
-					//TODO case when we have multiple AppendClass of same class
 					if oldAppend.1 != hsh
 					{
 						oldData.ctx.ReloadClasses.PushUniq(cls->{BoxClassBody^})
@@ -212,14 +211,58 @@ BoxFile := class extend BoxUnit
 
 		while itr != null
 		{
-			if itr.Down?.GetValue() == "AppendClass"
-			{
-				name := itr.Down.Right->{TokenIndent^}.Value
-
-				classAppends[name].Push(itr.Down.Right.Right)
-			}
+			ParseAppends2Round(oldData,itr)
 			itr = itr.Right
 		}
+	}
+	ParseAppends2Round := !(ReloadFileOldData^ oldData,Token^ itr) -> void
+	{
+		if itr.Down == null
+			return void
+		if itr.Down.GetValue() != "AppendClass"
+			return void
+
+		name := itr.Down.Right->{TokenIndent^}.Value
+		root := itr.Down.Right.Right
+
+		hash := ComputeHash(root)
+		oldAppend := Token^
+
+		if oldData != null
+		{
+			for it : oldData.ClassAppends
+			{
+				if it.0 != name
+					continue
+				if it.2 != hash
+					continue
+				
+				oldAppend = it.1
+				break
+			}
+
+		}
+		HotloadStream << "Hash " << hash << "\n"
+
+		if oldAppend != null
+		{
+			ClassAppends.Emplace(name,oldAppend,hash)
+			oldData.UsedClassAppends.Insert(oldAppend)
+			HotloadStream << "Kept old AppendClass " << name << "\n"
+		}else{
+			if oldData != null
+			{
+				cls := intGetClass2(name)->{BoxClassBody^}
+				assert(cls != null)
+				oldData.ctx.ReloadClasses.PushUniq(cls->{BoxClassBody^})
+				cls.Appends.Emplace(this&,root)
+				HotloadStream << "Added append to class " << name << "\n"
+			}
+				
+			ClassAppends.Emplace(name,root,hash)
+			classAppends[name].Push(root)
+		}
+
 	}
 	ParseTypedefs := !(ReloadFileOldData^ oldData = null) -> void
 	{
@@ -508,7 +551,7 @@ BoxFile := class extend BoxUnit
 				case BoxClassBody
 					if classAppends.Contain(name)
 					{
-						newObj.Appends.Emplace(this&,classAppends[name][^],0) //TODO hash instead of zero
+						newObj.Appends.Emplace(this&,classAppends[name][^])
 					}
 				}
 				return true

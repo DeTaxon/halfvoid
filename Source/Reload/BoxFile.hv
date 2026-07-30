@@ -52,10 +52,11 @@ AppendClass BoxFile
 
 		for it,ind : ClassAppends
 		{
-			oldData.ClassAppends[ind] = it
+			oldData.ClassAppends.Emplace(it.0,it.1,it.2)
 		}
 		ClassAppends.Destroy()
 
+		ParseAppends2(oldData&)
 		ParseBlock(oldData&,fileTokens)
 
 		//TODO deleted classtemplates,typedefs
@@ -123,6 +124,23 @@ AppendClass BoxFile
 			DB_ForgetTypedef(ctx,def)
 
 			HotloadStream << "Removed typedef " << def.Name << "\n"
+		}
+
+		for app : oldData.ClassAppends
+		{
+			if oldData.UsedClassAppends.Contain(app.1)
+				continue
+
+			HotloadStream << "Remove append of class " << app.0 << "\n"
+
+			cls := intGetClass2(app.0)->{BoxClassBody^}
+
+			cls.Appends.DeleteIf(@1.1 == app.1)
+			classAppends[app.0].DeleteIf(@1 == app.1)
+
+			oldData.ctx.ReloadClasses.PushUniq(cls->{BoxClassBody^})
+
+			HotloadStream << "Remove append of class " << app.0 << " appends count = " << cls.Appends.Size() << "\n"
 		}
 	}
 	ReloadAppends := !(HotloadContext^ ctx, File^ newFile, Blob^ thisData,Token^ toks,AVLSet.{BoxClassBody^} changedClasses) -> void
@@ -256,7 +274,8 @@ ReloadFileOldData := class
 	GlobalVars := List.{GlobalVar2^}
 	UsedGlobalVars := AVLSet.{GlobalVar2^}
 
-	ClassAppends := AVLMap.{Str,Tuple.{Token^,u32}}
+	ClassAppends := List.{Tuple.{Str,Token^,u32}}
+	UsedClassAppends := AVLSet.{Token^}
 
 	Enums := AVLMap.{Str,Tuple.{BoxEnum^,TypeVar^}}
 
