@@ -61,12 +61,6 @@ Token := class
 			}
 		}
 		result = ln.GetStr()
-
-		if CurrentWork == null or DisableScary
-		{
-			printf("Could not wistand error\n%s\n",result)
-			exit(-1)
-		}
 	}
 }
 

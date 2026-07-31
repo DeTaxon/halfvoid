@@ -56,6 +56,12 @@ AppendClass BoxFile
 		}
 		ClassAppends.Destroy()
 
+		WorkBag.works.DeleteIf(x ==> [c=this&]{
+			if x is not CWorkDetachedFileError
+				return false
+			return x.itFile == c
+		})
+
 		ParseAppends2(oldData&)
 		ParseBlock(oldData&,fileTokens)
 
@@ -135,6 +141,9 @@ AppendClass BoxFile
 
 			cls := intGetClass2(app.0)->{BoxClassBody^}
 
+			if cls == null
+				continue
+
 			cls.Appends.DeleteIf(@1.1 == app.1)
 			classAppends[app.0].DeleteIf(@1 == app.1)
 
@@ -160,6 +169,14 @@ AppendClass BoxFile
 
 			HotloadStream << "Removed enum " << name << "\n"
 		}
+	}
+
+	CreateDetachedError := !(Str msg) -> void
+	{
+		err := new CWorkDetachedFileError
+		err.itFile = this&
+		err.itError = msg
+		WorkBag.works.Push(err)
 	}
 }
 

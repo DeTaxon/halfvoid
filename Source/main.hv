@@ -345,6 +345,8 @@ main := !(Vector.{char^} args) -> int
 	if not SelfBuild
 		ExposeClasses()
 
+	CodeSpaces[^].Files[^].ErrorCheckAppends()
+
 	GParsedAllFiles.Emit()
 
 	if NonStopBuild

@@ -187,10 +187,15 @@ BoxFile := class extend BoxUnit
 			if oldData != null
 			{
 				cls := intGetClass2(name)->{BoxClassBody^}
-				assert(cls != null)
-				oldData.ctx.ReloadClasses.PushUniq(cls->{BoxClassBody^})
-				cls.Appends.Emplace(this&,root)
-				HotloadStream << "Added append to class " << name << "\n"
+				if cls != null 
+				{
+					oldData.ctx.ReloadClasses.PushUniq(cls->{BoxClassBody^})
+					cls.Appends.Emplace(this&,root)
+					HotloadStream << "Added append to class " << name << "\n"
+				}else{
+					CreateDetachedError(root.MakeError("Append class not found"))
+					return void
+				}
 			}
 				
 			ClassAppends.Emplace(name,root,hash)
@@ -387,10 +392,13 @@ BoxFile := class extend BoxUnit
 		if itr.Down?.GetValue() == "AppendClass"
 			return true
 
-		// if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#Module"
-		// 	return true
-		// if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#CreateCallCommand"
-		// 	return true
+		if oldData != null
+		{
+			if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#Module" //TODO hotload modules
+				return true
+			if itr.Down? is TokenIndent and itr.Down->{TokenIndent^}.Value == "#CreateCallCommand" //TODO hotload user commands
+				return true
+		}
 
 		LoadSpace()
 
@@ -750,6 +758,18 @@ BoxFile := class extend BoxUnit
 			}
 		}
 	}
+
+	ErrorCheckAppends := !() -> void
+	{
+		loaded.Await()
+		for app : ClassAppends
+		{
+			cls := intGetClass2(app.0)
+
+			if cls == null
+				CreateDetachedError(app.1.MakeError("Append class not found"))
+		}
+	}
 }
 TryParseVarInFile := !(Token^ obj) -> BoxUnit^
 {
@@ -827,6 +847,15 @@ CWorkParseFile := class extend CWorkUnit
 	{
 		itState = "Cancelled"
 	}
+}
+CWorkDetachedFileError := class extends CWorkUnit
+{
+	itFile := BoxFile^
+	itError := Str
+
+	IsDone := virtual !() -> bool { return false }
+	GetErrorMessage := virtual !() -> Str { return itError }
+	DoWork := virtual !() -> CWorkState { return "Failed" }
 }
 
 TryParseBlockInFile := !(Token^ it) -> BoxExeObj^

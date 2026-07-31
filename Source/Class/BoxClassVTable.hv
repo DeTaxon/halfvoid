@@ -158,6 +158,19 @@ AppendClass BoxClass
 		}
 		return null
 	}
+	IsVirtualMethodExists := !(Str name) -> bool
+	{
+		AwaitVTableStep()
+
+		if DefaultSpace.VirtualMethods.Contain(name)
+			return true
+
+		if Parents[^].IsVirtualMethodExists(name)
+			return true
+
+		return false
+	}
+
 }
 
 VTableEntry := class

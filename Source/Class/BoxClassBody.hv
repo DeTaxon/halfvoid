@@ -599,7 +599,6 @@ BoxClassBody := class extends BoxClass
 					}
 				}
 				fncParser := PFunctionParser(itm)
-				fncUsed := false
 
 				if fncParser.IsFound()
 				{
@@ -687,11 +686,18 @@ BoxClassBody := class extends BoxClass
 				}
 
 
+				if not isVirtual
+				{
+					if Parents[^].IsVirtualMethodExists(name)
+					{
+						isVirtual = true
+						break
+					}
+				}
 
-				if fncUsed
+				if asFunc != null
 				{
-				}else if asFunc != null
-				{
+
 					if isPoison
 					{
 						assert(asFunc is in BoxFuncTemplateBody)
