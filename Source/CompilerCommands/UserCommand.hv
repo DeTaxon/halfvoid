@@ -5,6 +5,10 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 	if cmd == "#CreateCallCommand"
 	{
+
+		if GBlobType == null
+			return null
+
 		posArgs := List.{Token^}
 		namedArgs := AVLMap.{Str,Token^}
 
