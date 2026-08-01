@@ -88,6 +88,7 @@ AppendClass BoxClassBody
 		PreVTableVars.Destroy()
 
 		DefaultSpace.VirtualMethods.Destroy()
+		DefaultSpace.VirtualCleanMethods.Destroy()
 
 		VirtualTables.Key.RemoveAll(this&)
 
@@ -154,7 +155,11 @@ AppendClass BoxClassBody
 		{
 			if oldData.UsedAsVirtualFuncs.Contain(it)
 				continue
-			DB_FunctionVirtualCalls.Key.Get(it, x ==> { ctx.AddFunction(x) })
+			DB_FunctionVirtualCalls.Value.Get(it, x ==> {
+				HotloadStream << "AL:DHF:AOLSHD\n"
+				ctx.AddFunction(x) 
+			})
+
 		}
 
 		if oldHash != newHash

@@ -26,10 +26,6 @@ AppendClass BoxClass
 	{
 		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
 		{
-			if oldData != null
-			{
-				HotloadStream << "Test " << Name << " Why" << PreVTableFuncs.Size() << " " << VTable.Size() << "\n"
-			}
 			VTableId = TypeIdFromType(this&)
 
 			arrHolder := BoxArrayHolder(GTypeInt,true,null)

@@ -641,7 +641,7 @@ BoxClassBody := class extends BoxClass
 								}
 							}
 
-							if isVirtual and asFunc is BoxFunc
+							if isVirtual and asFunc is in BoxFunc
 								oldData.UsedAsVirtualFuncs.Insert(asFunc->{BoxFunc^})
 						}
 					}
