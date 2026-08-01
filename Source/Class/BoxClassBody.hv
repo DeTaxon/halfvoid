@@ -516,7 +516,7 @@ BoxClassBody := class extends BoxClass
 
 				checkBodyElement(bodyVal,iter,oldData,funcs)
 
-				if oldData != null and thisWork.HaveError() //TODO instead of this, start tasks and WaitForObjects
+				if oldData != null and thisWork.HaveError()
 					return false
 
 				if not thisWork.HaveError()
@@ -640,8 +640,10 @@ BoxClassBody := class extends BoxClass
 									asFunc->{BoxFuncTemplateBody^}.ReloadFunctions(oldData.ctx,fncParser&,bodyVal.Line.File.fileData)
 								}
 							}
-						}
 
+							if isVirtual and asFunc is BoxFunc
+								oldData.UsedAsVirtualFuncs.Insert(asFunc->{BoxFunc^})
+						}
 					}
 					if asFunc == null
 					{

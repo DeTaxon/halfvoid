@@ -12,6 +12,7 @@ BuildInVirtualCall := class extend BoxFuncCommon
 	}
 	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
+		DB_FunctionVirtualCalls.Add(CurrentFunc?,wrappedFunc)
 		TryForceVirtualUse()
 		return super(objs,iObjs)
 	}

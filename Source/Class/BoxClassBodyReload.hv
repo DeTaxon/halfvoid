@@ -56,6 +56,8 @@ AppendClass BoxClassBody
 			{
 				setLine := ref oldData.OldFuncs[ind]
 				setLine.Push(it[^])
+
+				oldData.OldVirtualFuncs.Insert(it[^])
 			}
 
 			oldData.VTableType = VTableType
@@ -81,6 +83,13 @@ AppendClass BoxClassBody
 		VTableType = null
 		VTableValue = null
 		VTableField = null
+
+		PreVTableFuncs.Destroy()
+		PreVTableVars.Destroy()
+
+		DefaultSpace.VirtualMethods.Destroy()
+
+		VirtualTables.Key.RemoveAll(this&)
 
 		thisWork = null
 
@@ -126,8 +135,26 @@ AppendClass BoxClassBody
 		{
 			HotloadStream << "Class " << className << " changed virtual table\n"
 
+			bag := List.{BoxClass^}
+			bag.Push(this&)
+
+			while bag.Size() != 0
+			{
+				itm := bag.Pop()
+				DB_ClassExtends.Value.Get(itm, x ==> { 
+					bag.Push(x)
+					ctx.AddClass(x) 
+				})
+			}
 			ctx.ChangedVirtualTables.Push(this&)
 			//TODO delete old vtable
+		}
+
+		for it : oldData.OldVirtualFuncs
+		{
+			if oldData.UsedAsVirtualFuncs.Contain(it)
+				continue
+			DB_FunctionVirtualCalls.Key.Get(it, x ==> { ctx.AddFunction(x) })
 		}
 
 		if oldHash != newHash
@@ -187,6 +214,9 @@ ClassReloadOldData := class
 
 	OldFuncs := AVLMap.{Str,List.{BoxFunc^}}
 	RecoveredFuncs := List.{BoxFunc^}
+
+	OldVirtualFuncs := AVLSet.{BoxFunc^}
+	UsedAsVirtualFuncs := AVLSet.{BoxFunc^}
 
 	OldFuncTemplates := AVLMap.{Str,List.{BoxFuncTemplate^}}
 	RecoveredFuncTemplates := List.{BoxFuncTemplate^}

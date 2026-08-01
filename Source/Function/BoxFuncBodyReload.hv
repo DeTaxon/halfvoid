@@ -48,7 +48,7 @@ AppendClass BoxFuncBody
 		{
 			ParseBody()
 			ctx.ChangedFunctions.Push(this&)
-			HotloadStream << "Fnc changed " << ctx.ChangedFunctions.Size() << " " << ctx->{void^}->{size_t} << "\n"
+			// HotloadStream << "Fnc changed " << ctx.ChangedFunctions.Size() << " " << ctx->{void^}->{size_t} << "\n"
 		}
 	}
 	Recompile := !() -> void

@@ -26,6 +26,10 @@ AppendClass BoxClass
 	{
 		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
 		{
+			if oldData != null
+			{
+				HotloadStream << "Test " << Name << " Why" << PreVTableFuncs.Size() << " " << VTable.Size() << "\n"
+			}
 			VTableId = TypeIdFromType(this&)
 
 			arrHolder := BoxArrayHolder(GTypeInt,true,null)
@@ -111,7 +115,7 @@ AppendClass BoxClass
 	{
 		if VTable.Size() == 0
 			return void
-		tps := MakeVectorOnStack.{Type^,20}()
+		tps := MakeVectorOnStack.{Type^,30}()
 
 		for it : VTable
 		{
@@ -119,12 +123,12 @@ AppendClass BoxClass
 		}
 		VTableType = GetTuple(tps,true,true)
 
-		if oldData?.VTableType == VTableType
-		{
-			VTableValue = oldData.VTableValue
-			VTableField = oldData.VTableField
-			return void
-		}
+		// if oldData?.VTableType == VTableType
+		// {
+		// 	VTableValue = oldData.VTableValue
+		// 	VTableField = oldData.VTableField
+		// 	return void
+		// }
 
 		VTableType.StartParseBody()
 		VTableValue = new GlobalVar2("",VTableType,false)
@@ -204,7 +208,7 @@ CheckInfoConst := class extend BoxExeConstObj
 	}
 }
 
-VTableVar := class extend VTableEntry
+VTableVar := class extends VTableEntry
 {
 	ItConst := BoxExeConstObj^
 	this := !(Str nm, BoxExeConstObj^ cnst) -> void
