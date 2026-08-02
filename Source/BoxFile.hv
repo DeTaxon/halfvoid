@@ -452,7 +452,7 @@ BoxFile := class extend BoxUnit
 							{
 								//TODO extends tokens
 								foundClass.ParentTokens.Destroy()
-								foundClass.Push(cls.parents[^])
+								foundClass.ParentTokens.Push(cls.parents[^])
 								foundClass.Body = cls.bodyToken
 								foundClass.hash = dHsh
 

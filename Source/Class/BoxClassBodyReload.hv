@@ -102,6 +102,7 @@ AppendClass BoxClassBody
 			return void
 		}
 
+
 		AddClassWork().oldData = oldData
 		res := WorkBody(oldData)
 
@@ -186,6 +187,12 @@ AppendClass BoxClassBody
 				continue
 		 	DB_FunctionCalls.Value.Get(func,x ==> { ctx.AddFunction(x) })
 			}
+		}
+
+		if oldData.VTableValue != null 
+		{
+			DB_FuncUsesGlobal.Value.Get(oldData.VTableValue, x ==> { ctx.AddFunction(x) })
+			DB_VTableUsage.Key.Get(this&, x ==> {ctx.AddFunction(x) })
 		}
 
 		if oldHash != newHash

@@ -128,8 +128,7 @@ AppendClass BoxClass
 
 		if oldData != null
 		{
-			HotloadStream << "Creating VTable\n"
-
+			HotloadStream << "Creating VTable for " << Name << "\n"
 		}
 
 		VTableType.StartParseBody()

@@ -10,6 +10,10 @@ main := !(char^[] args) -> int
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
 	// x := 12
+	
+
+	// BUG, Push does not exists, does not create error
+	//foundClass.Push(cls.parents[^])
 }
 Glb := int
 
