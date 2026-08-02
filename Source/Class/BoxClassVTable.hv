@@ -126,6 +126,12 @@ AppendClass BoxClass
 			return void
 		}
 
+		if oldData != null
+		{
+			HotloadStream << "Creating VTable\n"
+
+		}
+
 		VTableType.StartParseBody()
 		VTableValue = new GlobalVar2("",VTableType,false)
 

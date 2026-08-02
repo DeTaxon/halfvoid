@@ -181,7 +181,7 @@ BoxClass := class extends Type
 		}
 		PrimeParents.Emplace(this&,this&,0)
 	}
-	populateMethods := !(Str name,Str fieldName, Vector.{BoxUnit^} objs) -> void
+	populateMethods := !(Str name,Str fieldName, BoxUnit^[] objs) -> void
 	{
 		AwaitTypeState()
 		itSpace := DefaultSpace&

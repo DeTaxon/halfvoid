@@ -87,6 +87,9 @@ AppendClass BoxClassBody
 		PreVTableFuncs.Destroy()
 		PreVTableVars.Destroy()
 
+		DefaultSpace.Methods.Destroy()
+		DefaultSpace.MethodTemplates.Destroy()
+
 		DefaultSpace.VirtualMethods.Destroy()
 		DefaultSpace.VirtualCleanMethods.Destroy()
 
