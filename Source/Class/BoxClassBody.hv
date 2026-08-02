@@ -640,9 +640,6 @@ BoxClassBody := class extends BoxClass
 									asFunc->{BoxFuncTemplateBody^}.ReloadFunctions(oldData.ctx,fncParser&,bodyVal.Line.File.fileData)
 								}
 							}
-
-							if isVirtual and asFunc is in BoxFunc
-								oldData.UsedAsVirtualFuncs.Insert(asFunc->{BoxFunc^})
 						}
 					}
 					if asFunc == null
@@ -699,6 +696,12 @@ BoxClassBody := class extends BoxClass
 
 				if asFunc != null
 				{
+					
+					if oldData != null
+					{
+						if isVirtual and asFunc is in BoxFunc
+							oldData.UsedAsVirtualFuncs.Insert(asFunc->{BoxFunc^})
+					}
 
 					if isPoison
 					{

@@ -155,11 +155,28 @@ AppendClass BoxClassBody
 		{
 			if oldData.UsedAsVirtualFuncs.Contain(it)
 				continue
-			DB_FunctionVirtualCalls.Value.Get(it, x ==> {
-				HotloadStream << "AL:DHF:AOLSHD\n"
-				ctx.AddFunction(x) 
-			})
+			DB_FunctionVirtualCalls.Value.Get(it, x ==> { ctx.AddFunction(x) })
+		}
 
+
+		// function changed from regular to virtual, need to promote regular call to virtual
+		for funcList, name : PreVTableFuncs
+		{
+			for func : funcList
+			{
+				if not oldData.OldFuncs.Contain(name)
+					continue
+				for sub : oldData.OldFuncs[name]
+				{
+					if sub != func
+						continue
+
+					if oldData.OldVirtualFuncs.Contain(sub)
+						continue
+
+					DB_FunctionCalls.Value.Get(func,x ==> { ctx.AddFunction(x) })
+				}
+			}
 		}
 
 		if oldHash != newHash

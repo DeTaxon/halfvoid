@@ -119,12 +119,12 @@ AppendClass BoxClass
 		}
 		VTableType = GetTuple(tps,true,true)
 
-		// if oldData?.VTableType == VTableType
-		// {
-		// 	VTableValue = oldData.VTableValue
-		// 	VTableField = oldData.VTableField
-		// 	return void
-		// }
+		if oldData?.VTableType == VTableType
+		{
+			VTableValue = oldData.VTableValue
+			VTableField = oldData.VTableField
+			return void
+		}
 
 		VTableType.StartParseBody()
 		VTableValue = new GlobalVar2("",VTableType,false)
@@ -163,6 +163,9 @@ AppendClass BoxClass
 		AwaitVTableStep()
 
 		if DefaultSpace.VirtualMethods.Contain(name)
+			return true
+
+		if PreVTableFuncs.Contain(name)
 			return true
 
 		if Parents[^].IsVirtualMethodExists(name)
