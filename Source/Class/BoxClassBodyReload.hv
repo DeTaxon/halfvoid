@@ -163,22 +163,28 @@ AppendClass BoxClassBody
 
 
 		// function changed from regular to virtual, need to promote regular call to virtual
-		for funcList, name : PreVTableFuncs
+		// for funcList, name : PreVTableFuncs
+		// {
+		// 	for func : funcList
+		// 	{
+		// 		if not oldData.RecoveredFuncs.Contain(func)
+		// 			continue
+		//
+		// 		if oldData.OldVirtualFuncs.Contain(func)
+		// 			continue
+		//
+		// 		DB_FunctionCalls.Value.Get(func,x ==> { ctx.AddFunction(x) })
+		// 	}
+		// }
+		for base : oldData.OldFuncs
 		{
-			for func : funcList
+			for func : base
 			{
-				if not oldData.OldFuncs.Contain(name)
-					continue
-				for sub : oldData.OldFuncs[name]
-				{
-					if sub != func
-						continue
-
-					if oldData.OldVirtualFuncs.Contain(sub)
-						continue
-
-					DB_FunctionCalls.Value.Get(func,x ==> { ctx.AddFunction(x) })
-				}
+			if oldData.RecoveredFuncs.Contain(func)
+				continue
+			if oldData.UsedAsVirtualFuncs.Contain(func)
+				continue
+		 	DB_FunctionCalls.Value.Get(func,x ==> { ctx.AddFunction(x) })
 			}
 		}
 
@@ -238,7 +244,7 @@ ClassReloadOldData := class
 	ctx := HotloadContext^
 
 	OldFuncs := AVLMap.{Str,List.{BoxFunc^}}
-	RecoveredFuncs := List.{BoxFunc^}
+	RecoveredFuncs := AVLSet.{BoxFunc^}
 
 	OldVirtualFuncs := AVLSet.{BoxFunc^}
 	UsedAsVirtualFuncs := AVLSet.{BoxFunc^}

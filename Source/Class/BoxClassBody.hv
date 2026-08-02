@@ -622,7 +622,7 @@ BoxClassBody := class extends BoxClass
 							{
 								asFunc = it
 								thisFullHash = it.GetFullHash()
-								oldData.RecoveredFuncs.Push(it)
+								oldData.RecoveredFuncs.Insert(it)
 								break
 							}
 						}
