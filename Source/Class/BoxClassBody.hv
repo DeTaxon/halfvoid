@@ -707,7 +707,7 @@ BoxClassBody := class extends BoxClass
 					{
 						assert(asFunc is in BoxFuncTemplateBody)
 						asTmpl := asFunc->{BoxFuncTemplateBody^}
-						PoisonFunctions[name] = !{itm,isVirtual}
+						PoisonFunctions[name] = !{itm,isVirtual,ComputeHash(itm)}
 					}
 					if asFunc is in BoxFuncTemplate and asFunc->{BoxFuncTemplate^}.IsOneFunc()
 					{

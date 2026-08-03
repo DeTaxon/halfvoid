@@ -1,11 +1,11 @@
 AppendClass BoxClass
 {
-	PoisonFunctions := AVLMap.{StringSpan,Tuple.{Token^,bool}} //bool isVirtual
+	PoisonFunctions := AVLMap.{Str,Tuple.{Token^,bool,u32}} //bool isVirtual, u32 - hash
 	PoisonFields := AVLMap.{StringSpan,Tuple.{Token^,bool}}
 
 	populatePoisons := !(BoxClass^ cls) -> void
 	{
-		if not (cls is in BoxClassBody)
+		if cls is not in BoxClassBody
 			return void
 		cls2 := cls->{BoxClassBody^}
 		for it,ind : cls2.PoisonFunctions

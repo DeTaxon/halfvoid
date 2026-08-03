@@ -93,7 +93,10 @@ AppendClass BoxClassBody
 		DefaultSpace.VirtualMethods.Destroy()
 		DefaultSpace.VirtualCleanMethods.Destroy()
 
-		// VirtualTables.Key.RemoveAll(this&)
+		PoisonFunctions.Destroy()
+		PoisonFields.Destroy()
+
+		VirtualTables.Key.RemoveAll(this&)
 
 		thisWork = null
 
@@ -256,6 +259,9 @@ ClassReloadOldData := class
 
 	OldVirtualFuncs := AVLSet.{BoxFunc^}
 	UsedAsVirtualFuncs := AVLSet.{BoxFunc^}
+
+	OldPoisonFuncs := AVLSet.{Str}
+	UsedPoisonFuncs := AVLSet.{Str}
 
 	OldFuncTemplates := AVLMap.{Str,List.{BoxFuncTemplate^}}
 	RecoveredFuncTemplates := List.{BoxFuncTemplate^}
