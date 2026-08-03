@@ -93,7 +93,7 @@ AppendClass BoxClassBody
 		DefaultSpace.VirtualMethods.Destroy()
 		DefaultSpace.VirtualCleanMethods.Destroy()
 
-		VirtualTables.Key.RemoveAll(this&)
+		// VirtualTables.Key.RemoveAll(this&)
 
 		thisWork = null
 
@@ -189,10 +189,11 @@ AppendClass BoxClassBody
 			}
 		}
 
-		if oldData.VTableValue != null 
+		if oldData.VTableValue != VTableValue 
 		{
 			DB_FuncUsesGlobal.Value.Get(oldData.VTableValue, x ==> { ctx.AddFunction(x) })
 			DB_VTableUsage.Key.Get(this&, x ==> {ctx.AddFunction(x) })
+			// DB_TypeSizeUsage.Value.Get(this&, x ==> {ctx.AddFunction(x) }) // TODO internalInitClass does not update on VTableIsage, fix it by absorbing InitClass
 		}
 
 		if oldHash != newHash

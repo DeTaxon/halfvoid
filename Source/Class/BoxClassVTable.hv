@@ -24,7 +24,14 @@ AppendClass BoxClass
 	}
 	PrepareVTable := !(ClassBuildContext buildCtx,ClassReloadOldData^ oldData) -> void
 	{
-		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0
+		Parents[^].AwaitVTableStep()
+
+		mustBeVirtual := false
+
+		if Parents[^].VTable.Size() != 0
+			mustBeVirtual = true
+
+		if PreVTableVars.Size() != 0 or PreVTableFuncs.Size() != 0 or VTable.Size() != 0 or mustBeVirtual
 		{
 			VTableId = TypeIdFromType(this&)
 

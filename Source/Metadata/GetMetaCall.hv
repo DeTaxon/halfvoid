@@ -245,18 +245,20 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 		typ := ParseType(obj.Down)
 		if typ != null
 		{
-			if not (typ is in TypeClass)
+			if typ is not in TypeClass
 			{
 				CurrentWork?.SetErrorMessage(obj.Down.MakeError("Item is not a class"))
 				return null
 			}
+
+
 			cls := typ->{TypeClass^}
 			cls.AwaitVTableStep()
+			DB_VTableUsage.Add(cls,CurrentFunc?)
 			if cls.VTable.Size() == 0
 				return GObjNone
 			fncCall := cls.VTableValue.proxy&
 
-			DB_VTableUsage.Add(cls,CurrentFunc?)
 			return new UnrefFuncCall(fncCall)
 		}
 		dObj := TryGetExeCall(obj.Down)
@@ -272,9 +274,9 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 			{
 				cls2 := cls->{TypeClass^}
 				cls2.AwaitVTableStep()
+				DB_VTableUsage.Add(cls2,CurrentFunc?)
 				if cls2.VTable.Size() != 0
 				{
-					DB_VTableUsage.Add(cls2,CurrentFunc?)
 					chk := CheckExeDownList
 					chk.Push(dObj)
 					return cls2.VTableField.CreateCall(chk)
