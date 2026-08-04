@@ -1,0 +1,73 @@
+
+
+
+
+main := !(char^[] args) -> int
+{
+	printf("-------------\n")
+
+	a := Class1
+	b := Class2
+	c := Class3
+	d := Class4
+
+	// printf("test %p\n",a->VTable)
+	// printf("test %p\n",b->VTable)
+	// printf("test %p\n",c->VTable)
+	// printf("test %p\n",d->VTable)
+
+	a.Gifting()
+	b.Gifting()
+	c.Gifting()
+	d.Gifting()
+
+	CallVirtual(![a&,b&,c&,d&])
+
+}
+
+
+CallVirtual := !(Class1^[] objs) -> void
+{
+	objs[^].Gifting()
+}
+
+
+Class1 := class
+{
+	x := int
+	y := int
+
+	Gifting := poison virtual !() -> void
+	{
+		printf("It siize %i\n",this->TypeSize)
+	}
+}
+
+Class2 := class extends Class1
+{
+	z := double
+	// Gifting := !() -> void
+	// {
+	// 	printf("end\n")
+	// }
+}
+
+Class3 := class extends Class2
+{
+	w := double
+	zz := int
+	// Gifting := !() -> void
+	// {
+	// 	printf("end1\n")
+	// }
+}
+
+Class4 := class extends Class3
+{
+	extraSize := int
+	Gifting := !() -> void
+	{
+		printf("end2\n")
+	}
+}
+

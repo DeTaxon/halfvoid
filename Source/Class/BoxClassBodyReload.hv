@@ -66,8 +66,11 @@ AppendClass BoxClassBody
 
 			oldData.OldFields.Push(Fields[^])
 			oldData.OldFieldPaths.Push(FieldsPath[^])
-		}
 
+			for it,name : PoisonFunctions
+				oldData.OldPoisonFuncs[name] = it.2
+		}
+	
 		oldHash := GetMemStructureHash()
 
 		PrimeParents.Destroy()
@@ -139,10 +142,7 @@ AppendClass BoxClassBody
 			})
 		}
 
-		if VTableType != oldData.VTableType
-		{
-			HotloadStream << "Class " << className << " changed virtual table\n"
-
+		reloadSubClasses := () ==> {
 			bag := List.{BoxClass^}
 			bag.Push(this&)
 
@@ -155,7 +155,12 @@ AppendClass BoxClassBody
 				})
 			}
 			ctx.ChangedVirtualTables.Push(this&)
-			//TODO delete old vtable
+		}
+
+		if VTableType != oldData.VTableType
+		{
+			HotloadStream << "Class " << className << " changed virtual table\n"
+			reloadSubClasses()
 		}
 
 		for it : oldData.OldVirtualFuncs
@@ -184,12 +189,67 @@ AppendClass BoxClassBody
 		{
 			for func : base
 			{
-			if oldData.RecoveredFuncs.Contain(func)
-				continue
-			if oldData.UsedAsVirtualFuncs.Contain(func)
-				continue
-		 	DB_FunctionCalls.Value.Get(func,x ==> { ctx.AddFunction(x) })
+				if oldData.RecoveredFuncs.Contain(func)
+					continue
+				if oldData.UsedAsVirtualFuncs.Contain(func)
+					continue
+		 		DB_FunctionCalls.Value.Get(func,x ==> { ctx.AddFunction(x) })
 			}
+		}
+
+		for base : oldData.OldFuncs
+		{
+			for func : base
+			{
+				if oldData.RecoveredFuncs.Contain(func)
+					continue
+		 		DB_FunctionCalls.Value.Get(func,x ==> { ctx.AddFunction(x) })
+			}
+		}
+
+		for base : oldData.OldFuncTemplates
+		{
+			for func : base
+			{
+				if oldData.RecoveredFuncTemplates.Contain(func)
+					continue
+		 		DB_FunctionCalls.Value.Get(func.AllFuncs[^][^],x ==> { ctx.AddFunction(x) })
+			}
+		}
+
+		changedPoison := false
+
+		for name : oldData.UsedPoisonFuncs
+		{
+			hash := oldData.OldPoisonFuncs[name]
+
+			if not PoisonFunctions.Contain(name) 
+				continue
+
+			if PoisonFunctions[name].2 == hash
+				continue
+
+			changedPoison = true
+		}
+
+		for hash,name : oldData.OldPoisonFuncs
+		{
+			if oldData.UsedPoisonFuncs.Contain(name)
+				continue
+			HotloadStream << "Deleted poison func\n"
+			changedPoison = true // poison func deleted
+		}
+
+		for it,name : PoisonFunctions
+		{
+			if oldData.UsedPoisonFuncs.Contain(name)
+				continue
+			changedPoison = true // added new function
+		}
+
+		if changedPoison
+		{
+			reloadSubClasses()
 		}
 
 		if oldData.VTableValue != VTableValue 
@@ -198,6 +258,8 @@ AppendClass BoxClassBody
 			DB_VTableUsage.Key.Get(this&, x ==> {ctx.AddFunction(x) })
 			// DB_TypeSizeUsage.Value.Get(this&, x ==> {ctx.AddFunction(x) }) // TODO internalInitClass does not update on VTableIsage, fix it by absorbing InitClass
 		}
+
+	
 
 		if oldHash != newHash
 		{
@@ -260,11 +322,11 @@ ClassReloadOldData := class
 	OldVirtualFuncs := AVLSet.{BoxFunc^}
 	UsedAsVirtualFuncs := AVLSet.{BoxFunc^}
 
-	OldPoisonFuncs := AVLSet.{Str}
+	OldPoisonFuncs := AVLMap.{Str,u32}
 	UsedPoisonFuncs := AVLSet.{Str}
 
 	OldFuncTemplates := AVLMap.{Str,List.{BoxFuncTemplate^}}
-	RecoveredFuncTemplates := List.{BoxFuncTemplate^}
+	RecoveredFuncTemplates := AVLSet.{BoxFuncTemplate^}
 
 	OldFields := List.{FieldParam^}
 	OldFieldPaths := List.{FieldPath^}
