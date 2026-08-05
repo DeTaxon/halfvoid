@@ -128,9 +128,32 @@ AppendClass BoxClass
 
 		if oldData?.VTableType == VTableType
 		{
-			VTableValue = oldData.VTableValue
-			VTableField = oldData.VTableField
-			return void
+
+			isSameFuncs := true
+
+			if VTable.Size() == oldData.VTable.Size()
+			{
+				for now : VTable , old : oldData.VTable
+				{
+					if now is VTableFunc and old is VTableFunc
+					{
+						if now->{VTableFunc^}.Value != old->{VTableFunc^}.Value
+							isSameFuncs = false
+
+					}else {
+						isSameFuncs = false
+					}
+				}
+			}else{
+				isSameFuncs = false
+			}
+
+			if isSameFuncs
+			{
+				VTableValue = oldData.VTableValue
+				VTableField = oldData.VTableField
+				return void
+			}
 		}
 
 		if oldData != null

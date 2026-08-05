@@ -1,6 +1,6 @@
 AppendClass BoxClassBody
 {
-	ReloadClass := !(HotloadContext^ ctx, ClassReloadOldData^ oldData = null) -> void
+	ReloadClass := !(HotloadContext^ ctx) -> void
 	{
 		if not startedParse
 			return void
@@ -16,14 +16,16 @@ AppendClass BoxClassBody
 
 		AddClassWork()
 
-		SubWork (() ==> [c = this&,ctx,oldSize, oldData] {
-			c.ReloadClassCore(ctx,oldSize,oldData)
+		SubWork (() ==> [c = this&,ctx,oldSize] {
+			c.ReloadClassCore(ctx,oldSize)
 		})
 	}
 
+	nowOldData := ClassReloadOldData^
+
 	reloadInProgress := bool //TODO bugfix, who calls ReloadClass twice? remove after making better reload
 
-	ReloadClassCore := !(HotloadContext^ ctx,int oldSize,ClassReloadOldData^ prevOldData) -> void
+	ReloadClassCore := !(HotloadContext^ ctx,int oldSize) -> void
 	{
 		if reloadInProgress
 			return void
@@ -34,7 +36,7 @@ AppendClass BoxClassBody
 
 		HotloadStream << "Started reload of class " << className << "\n"
 
-		oldData := prevOldData
+		oldData := nowOldData
 
 		if oldData == null
 		{
@@ -63,6 +65,7 @@ AppendClass BoxClassBody
 			oldData.VTableType = VTableType
 			oldData.VTableValue = VTableValue
 			oldData.VTableField = VTableField
+			oldData.VTable.Push(VTable[^])
 
 			oldData.OldFields.Push(Fields[^])
 			oldData.OldFieldPaths.Push(FieldsPath[^])
@@ -291,7 +294,7 @@ AppendClass BoxClassBody
 		HotloadStream << "End of reload of class " << className << "\n"
 		HotloadStream << "New Size " << GetSize() << "\n"
 
-		oldData = null
+		nowOldData = null
 	}
 
 	GetMemStructureHash := !() -> u32
@@ -335,5 +338,6 @@ ClassReloadOldData := class
 	VTableType := BoxClass^
 	VTableValue := GlobalVar2^
 	VTableField := FieldPath^ 
+	VTable := List.{VTableEntry^}
 
 }

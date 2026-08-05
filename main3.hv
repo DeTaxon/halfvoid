@@ -37,9 +37,9 @@ Class1 := class
 	x := int
 	y := int
 
-	Gifting := poison virtual !() -> void
+	Gifting := poison !() -> void
 	{
-		printf("It siize %i\n",this->TypeSize)
+		printf("It size %i\n",this->TypeSize)
 	}
 }
 
