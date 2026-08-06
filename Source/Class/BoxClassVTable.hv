@@ -126,7 +126,7 @@ AppendClass BoxClass
 		}
 		VTableType = GetTuple(tps,true,true)
 
-		if oldData?.VTableType == VTableType
+		if oldData?.VTableType == VTableType and false
 		{
 
 			isSameFuncs := true

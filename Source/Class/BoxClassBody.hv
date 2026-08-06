@@ -804,7 +804,17 @@ BoxClassBody := class extends BoxClass
 								PreVTableVars[name] = newVal
 								if isPoison
 								{
-									PoisonFields[name] = !{itm,true}
+									hash := ComputeHash(iter)
+
+									if oldData != null
+									{
+										found := oldData.OldPoisonFields.Contain(name) and oldData.OldPoisonFields[name] == hash
+										if found
+										{
+											oldData.UsedPoisonFields.Insert(name)
+										}
+									}
+									PoisonFields[name] = !{itm,true,hash}
 								}
 							}else{
 								if isClassLazy

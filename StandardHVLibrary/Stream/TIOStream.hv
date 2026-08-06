@@ -18,7 +18,12 @@ Stream := class extend TGCObject
 
 	"<<" := !(char^ strData) -> ref Stream
 	{
-		Write(strData,strlen(strData))
+		if strData == null
+		{
+			Write("(nil)",5)
+		}else{
+			Write(strData,strlen(strData))
+		}
 		return this
 	}
 	"<<" := !(StringView strData) -> ref Stream

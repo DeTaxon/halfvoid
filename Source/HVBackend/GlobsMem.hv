@@ -171,6 +171,12 @@ GlobsMemType := class
 					memPtr->{void^^}^ = newArr
 				}
 
+				if i != 0 and val is VTableVar
+				{
+					itVal := val->{VTableVar^}.ItConst
+					WriteGlobToMem(itVal,memPtr)
+				}
+
 				if val is VTableFunc
 				{
 					asFnc := val->{VTableFunc^}
