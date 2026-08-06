@@ -167,6 +167,27 @@ AppendClass BoxClassBody
 		{
 			HotloadStream << "Class " << className << " changed virtual table\n"
 			reloadSubClasses()
+		}else{
+			assert(VTable.Size() == oldData.VTable.Size())
+
+			changed := false
+
+			for left,i : VTable , right : oldData.VTable
+			{
+				if i == 0
+					continue
+				if left != right
+				{
+					changed = true
+					break
+				}
+			}
+			if changed
+			{
+				HotloadStream << "Class " << className << " changed virtual table\n"
+				reloadSubClasses()
+			}
+			
 		}
 
 		for it : oldData.OldVirtualFuncs

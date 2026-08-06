@@ -8,21 +8,15 @@ main := !(char^[] args) -> int
 
 	a := Class1
 	b := Class2
-	c := Class3
-	d := Class4
-
-	printf("Test %s\n",a.Test)
-	printf("Test %s\n",b.Test)
-	printf("Test %s\n",c.Test)
-	printf("Test %s\n",d.Test)
-
-	CallVirtual(![a&,b&,c&,d&])
+	
+	Test(a&)
+	Test(b&)
 }
 
 
-CallVirtual := !(Class1^[] objs) -> void
+Test := !(Class1^ a) -> void
 {
-	printf("hmm %s\n",objs[^].Test)
+	printf("natbe %i %p\n",a is in Class1,a)
 }
 
 
@@ -30,31 +24,15 @@ Class1 := class
 {
 	x := int
 	y := int
+	
+	Hm := virtual !() -> void {}
 
-	Test := poison virtual #ThisClass()->TypeName
+
 }
 
 Class2 := class extends Class1
 {
 	z := double
-	// Gifting := !() -> void
-	// {
-	// 	printf("end\n")
-	// }
 }
 
-Class3 := class extends Class2
-{
-	w := double
-	zz := int
-	// Gifting := !() -> void
-	// {
-	// 	printf("end1\n")
-	// }
-}
-
-Class4 := class extends Class3
-{
-	extraSize := int
-}
 
