@@ -84,9 +84,14 @@ BoxExeLine := class extend BoxExeLineSimple
 
 		forItems.Push(el)
 
-		return GetForParsed(itm,forItems, () ==> {
+		res := GetForParsed(itm,forItems, () ==> {
 			return GetDownObject(itm,depth+1)
 		})
+
+		if CurrentWork?.GetErrorMessage() != null
+			return null
+
+		return res
 	}
 
 }

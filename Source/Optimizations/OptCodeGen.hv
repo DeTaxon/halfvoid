@@ -320,7 +320,7 @@ CollectFunctionsCtx := class
 					// checkType(cls.VTableType?.ItType)
 				}
 				checkType(cls.Fields[^].Value)
-				checkType(cls.Parents[^].ItType)
+				checkType(cls.Parents[^])
 				checkGlobal(cls.VTableValue?)
 
 				for it : cls.VTable

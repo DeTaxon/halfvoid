@@ -125,7 +125,7 @@
 		 	{
 		 		res := GetStringType(pType.Values[0].ValueSpan)
 				for it : pointers
-					res = HV.GetTypePointer(res)
+					res = res.GetPointer()
 				return res
 		 	}
 		case "101"

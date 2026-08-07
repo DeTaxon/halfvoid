@@ -69,7 +69,7 @@ GetForCycle := !(Token^ itm) -> BoxExeObj^
 
 GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxExeObj^
 {
-	return GetForParsed(itm,lst,() ==> { //todo REFACTOR, IT'S OVERCOMPLICATED
+	res := GetForParsed(itm,lst,() ==> { //todo REFACTOR, IT'S OVERCOMPLICATED
 		if itm.GetValue() == "{}"
 			return new BoxBlock(itm)
 		
@@ -77,6 +77,11 @@ GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst) -> BoxExeObj^
 		pad.DoLine(itm)
 		return pad
 	})
+
+	if CurrentWork?.GetErrorMessage() != null
+		return null
+
+	return res
 }
 GetForParsed := !(Token^ itm,HybridQueue.{ForSubObjects,5} lst,!()&->BoxUnit^ cb) -> BoxExeObj^
 {

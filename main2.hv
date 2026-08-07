@@ -18,8 +18,14 @@ main := !(char^[] args) -> int
 	// BUG, Push does not exists, does not create error
 	//foundClass.Push(cls.parents[^])
 	//
-	for i : 5
-		printf("Nope\n",nope)
+	// for i : 5
+	// {
+	// 	printf("Nope\n",nope)
+	// 	x := int
+	// 	x += 1
+	// }
+
+	printf("Nope\n",nope,6[^])
 }
 Glb := int
 
