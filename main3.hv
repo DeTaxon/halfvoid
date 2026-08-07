@@ -16,7 +16,9 @@ main := !(char^[] args) -> int
 
 Test := !(Class1^ a) -> void
 {
-	printf("natbe %i %p\n",a is in Class1,a)
+	printf("Test %s\n",a.Test)
+	// printf("natbe %i %p\n",a is in Class1,a)
+	
 }
 
 
@@ -25,8 +27,8 @@ Class1 := class
 	x := int
 	y := int
 	
-	Hm := virtual !() -> void {}
-
+	Test := poison virtual #ThisClass()->TypeName
+	// Hm := virtual !() -> void {}
 
 }
 

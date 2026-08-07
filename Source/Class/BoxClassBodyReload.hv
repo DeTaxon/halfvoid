@@ -75,6 +75,9 @@ AppendClass BoxClassBody
 
 			for it, name : PoisonFields
 				oldData.OldPoisonFields[name] = it.2
+
+			for it,name : PreVTableVars
+				oldData.OldVirtualFields[name] = it
 		}
 	
 		oldHash := GetMemStructureHash()
@@ -294,6 +297,14 @@ AppendClass BoxClassBody
 			reloadSubClasses()
 		}
 
+		for it,name : oldData.OldVirtualFields
+		{
+			if oldData.UsedVirtualFields.Contain(it)
+				continue
+
+			DB_VirtualFieldUsage.Value.Get(it, x ==> { ctx.AddFunction(x) })
+		}
+
 		if oldData.VTableValue != VTableValue 
 		{
 			DB_FuncUsesGlobal.Value.Get(oldData.VTableValue, x ==> { ctx.AddFunction(x) })
@@ -373,6 +384,9 @@ ClassReloadOldData := class
 	OldFields := List.{FieldParam^}
 	OldFieldPaths := List.{FieldPath^}
 	RecoveredFields := List.{FieldParam^}
+
+	OldVirtualFields := AVLMap.{Str,VTableVar^}
+	UsedVirtualFields := AVLSet.{VTableVar^}
 
 	OldPoisonFields := AVLMap.{Str,u32}
 	UsedPoisonFields := AVLSet.{Str}

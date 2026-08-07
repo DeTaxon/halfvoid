@@ -1,6 +1,6 @@
 AppendClass BoxClass
 {
-	PreVTableVars := AVLMap.{Str,VTableEntry^}
+	PreVTableVars := AVLMap.{Str,VTableVar^}
 	PreVTableFuncs := AVLMap.{Str,List.{BoxFunc^}}
 
 	VTable := List.{VTableEntry^}
@@ -187,6 +187,7 @@ AppendClass BoxClass
 				and it->{VTableVar^}.Name == val
 			{
 				asVar := it->{VTableVar^}
+				DB_VirtualFieldUsage.Add(CurrentFunc?,asVar) // TODO move to better place
 				res := TemplateInternalGetVTableVariable.CreateFunc(GetFuncType(1,![this&->{Type^}][0]&,![true][0]&,asVar.GetType(),true,false), ![GetExeInt(i)])
 				return res
 			}

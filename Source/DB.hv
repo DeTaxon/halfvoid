@@ -11,6 +11,7 @@ DB_VTableUsage := HVTable2.{BoxClass^, BoxFunc^}
 DB_ClassComposition := HVTable2.{BoxClass^, BoxClass^} // Left uses right directly
 DB_ClassUsesClass := HVTable2.{BoxClass^,BoxClass^}
 DB_FieldUsage := HVTable2.{BoxFunc^,BoxClass^}
+DB_VirtualFieldUsage := HVTable2.{BoxFunc^,VTableVar^}
 DB_LocalVarUsage := HVTable2.{BoxFunc^,BoxClass^}
 DB_EnumUsage := HVTable2.{BoxFunc^,BoxEnum^}
 DB_ClassFamilyMetaUsage := HVTable2.{BoxFunc^,ClassFamily^}
@@ -35,6 +36,8 @@ DB_ForgetFunction := !(BoxFunc^ fnc) -> void
 	DB_FunctionVirtualCalls.Key.RemoveAll(fnc)
 	DB_FunctionVirtualCalls.Value.RemoveAll(fnc)
 	DB_FuncUsesTypedef.Key.RemoveAll(fnc)
+	DB_FieldUsage.Key.RemoveAll(fnc)
+	DB_VirtualFieldUsage.Key.RemoveAll(fnc)
 }
 
 DB_ForgetClass := !(HotloadContext^ ctx, BoxClass^ cls) -> void
