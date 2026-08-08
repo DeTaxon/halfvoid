@@ -3,8 +3,6 @@ TemplateInternalInitClass := BoxFuncTemplate^
 TemplateInternalNewOne := BoxFuncTemplate^
 FunctionInternalDelete := BoxFunc^
 
-TemplateInternalGetVTableVariable := BoxFuncTemplate^
-
 TemplateInternalIsInSameType := BoxFuncTemplate^
 
 GInternalSetType := BoxFuncTemplate^
@@ -47,8 +45,6 @@ InitInternals := !() -> void
 	FunctionInternalDelete = intGetFunc("internalHVDelete")
 
 	//TemplateInternalTupleConstructor = intGetTemplate("internalTupleConstructor")
-
-	TemplateInternalGetVTableVariable = intGetTemplate("internalGetVTableVariable")
 
 	TemplateInternalIsInSameType = intGetTemplate("internalCheckIsInSameType")
 

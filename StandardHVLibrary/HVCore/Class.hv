@@ -29,6 +29,7 @@ internalTupleConstructor := !(@Tpl this,args...) -> void
 	}
 }
 
+//TODO remove after updating stable exe
 internalGetVTableVariable := !(@T2 obj) .{@FieldNumber} -> void //result replaced bu compiler
 {
 	return obj->VTable.FieldNumber

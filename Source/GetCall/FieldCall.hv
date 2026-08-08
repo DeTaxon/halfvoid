@@ -62,9 +62,7 @@ innerTryGetFieldCall := !(BoxExeObj^ val,Token^ rObj) -> BoxExeObj^
 			vTableGet := cls.GetFieldInVTable(name)
 			if vTableGet != null
 			{
-				itms := CheckExeDownList
-				itms.Push(val)
-				return vTableGet.CreateCall(itms)
+				return vTableGet.CreateCall(val)
 			}
 			if cls.FieldSpaces.Contain(name)
 			{

@@ -242,54 +242,7 @@ TryMetaIndent := !(Token^ obj) -> BoxExeObj^
 	}
 	if right.Value == "VTable"
 	{
-		typ := ParseType(obj.Down)
-		if typ != null
-		{
-			if typ is not in TypeClass
-			{
-				CurrentWork?.SetErrorMessage(obj.Down.MakeError("Item is not a class"))
-				return null
-			}
-
-
-			cls := typ->{TypeClass^}
-			cls.AwaitVTableStep()
-			DB_VTableUsage.Add(cls,CurrentFunc?)
-			if cls.VTable.Size() == 0
-				return GObjNone
-			fncCall := cls.VTableValue.proxy&
-
-			return new UnrefFuncCall(fncCall)
-		}
-		dObj := TryGetExeCall(obj.Down)
-		if dObj != null
-		{
-			cls := dObj.GetType()
-			if cls is in TypePoint and cls.Base is in TypeClass
-			{
-				dObj = GetExchange(dObj,cls.Base)
-				cls = cls.Base
-			}
-			if cls is in TypeClass 
-			{
-				cls2 := cls->{TypeClass^}
-				cls2.AwaitVTableStep()
-				DB_VTableUsage.Add(cls2,CurrentFunc?)
-				if cls2.VTable.Size() != 0
-				{
-					chk := CheckExeDownList
-					chk.Push(dObj)
-					return cls2.VTableField.CreateCall(chk)
-				}else{
-					return GObjNone
-				}
-			}else{
-				CurrentWork?.SetErrorMessage(obj.MakeError("Left of ->VTable is not a class"))
-				return null
-			}
-		}
-		CurrentWork?.SetErrorMessage(obj.Down.MakeError("Compiler error. How did you get there?"))
-		return null
+		return innerGetMetaField(obj.Down,null,"VTable")
 	}
 
 	if right.Value == "SetType"
@@ -391,6 +344,69 @@ StrToStringPointerExchange := class extend BoxExeObj
 	{
 		return Down.WriteMC(ctx)
 	}
+}
+
+innerGetMetaField := !(Token^  tok, BoxExeObj^ obj, Str fieldName) -> BoxExeObj^
+{
+	if fieldName == "VTable"
+	{
+		if tok != null
+		{
+			typ := ParseType(tok)
+			if typ != null
+			{
+				if typ is not in TypeClass
+				{
+					CurrentWork?.SetErrorMessage(tok.Down.MakeError("Item is not a class"))
+					return null
+				}
+
+
+				cls := typ->{TypeClass^}
+				cls.AwaitVTableStep()
+				DB_VTableUsage.Add(cls,CurrentFunc?)
+				if cls.VTable.Size() == 0
+					return GObjNone
+				fncCall := cls.VTableValue.proxy&
+
+				return new UnrefFuncCall(fncCall)
+			}
+		}
+
+		dObj := obj
+		if obj == null
+			dObj = TryGetExeCall(tok)
+		if dObj != null
+		{
+			cls := dObj.GetType()
+			if cls is in TypePoint and cls.Base is in TypeClass
+			{
+				dObj = GetExchange(dObj,cls.Base)
+				cls = cls.Base
+			}
+			if cls is in TypeClass 
+			{
+				cls2 := cls->{TypeClass^}
+				cls2.AwaitVTableStep()
+				DB_VTableUsage.Add(cls2,CurrentFunc?)
+				if cls2.VTable.Size() != 0
+				{
+					chk := CheckExeDownList
+					chk.Push(dObj)
+					return cls2.VTableField.CreateCall(chk)
+				}else{
+					return GObjNone
+				}
+			}else{
+				CurrentWork?.SetErrorMessage(tok.MakeError("Left of ->VTable is not a class"))
+				return null
+			}
+		}
+		CurrentWork?.SetErrorMessage(tok.MakeError("Compiler error. How did you get there?"))
+		return null
+	}
+
+	return null
 }
 
 getMetaDownType := !(Token^ obj) -> Type^

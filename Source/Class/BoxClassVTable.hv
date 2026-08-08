@@ -61,17 +61,19 @@ AppendClass BoxClass
 		for it : PreVTableVars
 		{
 			found := false
-			for inVar : VTable
+			for inVar,i : VTable
 			{
 				if inVar.IsEq(it)
 				{
 					inVar = it
+					it.Index = i
 					found = true
 					break
 				}
 			}
 			if not found
 			{
+				it.Index = VTable.Size()
 				VTable.Push(it)
 			}
 		}
@@ -177,7 +179,7 @@ AppendClass BoxClass
 		VTableField = new FieldPathAbs(this&,VTableType.GetPoint())
 	}
 
-	GetFieldInVTable := virtual !(Str val) -> BoxFunc^
+	GetFieldInVTable := virtual !(Str val) -> VTableVar^
 	{
 		AwaitVTableStep()
 		
@@ -187,9 +189,7 @@ AppendClass BoxClass
 				and it->{VTableVar^}.Name == val
 			{
 				asVar := it->{VTableVar^}
-				DB_VirtualFieldUsage.Add(CurrentFunc?,asVar) // TODO move to better place
-				res := TemplateInternalGetVTableVariable.CreateFunc(GetFuncType(1,![this&->{Type^}][0]&,![true][0]&,asVar.GetType(),true,false), ![GetExeInt(i)])
-				return res
+				return asVar
 			}
 		}
 		return null
@@ -246,6 +246,7 @@ CheckInfoConst := class extend BoxExeConstObj
 VTableVar := class extends VTableEntry
 {
 	ItConst := BoxExeConstObj^
+	Index := int
 	this := !(Str nm, BoxExeConstObj^ cnst) -> void
 	{
 		Name = nm
@@ -265,6 +266,20 @@ VTableVar := class extends VTableEntry
 	}
 	GetType := virtual !() -> Type^ { return ItConst.GetType() }
 	GetConst := virtual !() -> BoxExeConstObj^ { return ItConst }
+
+	CreateCall := !(BoxExeObj^ base) -> BoxExeObj^
+	{
+		DB_VirtualFieldUsage.Add(CurrentFunc?,this&)
+
+		vtab := innerGetMetaField(null,base,"VTable")
+		assert(vtab != null)
+		tok := TokenInt
+		tok.Parsed = Index
+		obj := innerTryGetFieldCall(vtab,tok&)
+		assert(obj != null)
+		return obj
+		
+	}
 }
 VTableFunc := class extend VTableEntry
 {

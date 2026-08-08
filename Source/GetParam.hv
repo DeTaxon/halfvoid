@@ -189,7 +189,7 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 				mt := cls.GetFieldInVTable(asItm.Value)
 				if mt != null
 				{
-					return mt.CreateCall(![parGetCall])
+					return mt.CreateCall(parGetCall)
 				}
 			}
 		}
