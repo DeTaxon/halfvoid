@@ -25,7 +25,6 @@ main := !(char^[] args) -> int
 	// 	x += 1
 	// }
 
-	printf("Nope\n",nope,6[^])
 }
 Glb := int
 

@@ -7,10 +7,6 @@ CurrentLine := task_local BoxExeLine^
 CurrentReturns := task_local ReturnsHolder^
 FuncStack := task_local List.{BoxFuncBody^}
 
-//CurrentHotloadContext := task_local HotloadContext^
-//TODO somehow task local?
-CurrentHotloadContext := task_local HotloadContext^
-
 HotloadStream := ref Stream
 
 CurrentWork := task_local CWorkUnit^
@@ -72,7 +68,6 @@ StackState := class
 	itLine := BoxExeLine^
 	itReturns := ReturnsHolder^
 	itFuncWork := CWorkFuncCompile^
-	itHotloadContext := HotloadContext^
 
 	gcVarsInUse := int
 
@@ -88,7 +83,6 @@ StackState := class
 		itLine = CurrentLine
 		itReturns = CurrentReturns
 		itFuncWork = CurrentFuncWork
-		itHotloadContext = CurrentHotloadContext
 
 		gcVarsInUse = GCVarsInUse
 
@@ -106,7 +100,6 @@ StackState := class
 		CurrentLine = itLine
 		CurrentReturns = itReturns
 		CurrentFuncWork = itFuncWork
-		CurrentHotloadContext = itHotloadContext
 
 		GCVarsInUse = gcVarsInUse
 

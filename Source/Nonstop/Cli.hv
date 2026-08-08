@@ -90,8 +90,6 @@ TestOptWave := !() -> void
 		{
 			hotload := HotloadContext
 
-			CurrentHotloadContext = hotload&
-
 			toRun := intGetFunc("TestWave")
 
 			fncRn := GInterpCntx.GetMCFunc(toRun->{BoxFuncBody^})
