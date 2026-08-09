@@ -12,6 +12,8 @@ GlobsMemType := class
 			InitRunContext()
 			return HV&
 		}
+		if vr.ItName == "gLibDB"
+			return gLibDB&
 
 		return globalVariables[vr]?
 

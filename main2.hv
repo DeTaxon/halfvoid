@@ -1,6 +1,5 @@
 main := !(char^[] args) -> int
 {
-	printf("hi %i\n",Glb )
 	// assert(false,"error message HAHA")
 	// RunFunc()
 	// HotloadTest()
@@ -10,42 +9,11 @@ main := !(char^[] args) -> int
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
 	// x := 12
-
-
-			//for it,name : PoisonFunctions
-			//	oldData.OldPoisonFuncs[name] = it 
-
-	// BUG, Push does not exists, does not create error
-	//foundClass.Push(cls.parents[^])
-	//
-	// for i : 5
-	// {
-	// 	printf("Nope\n",nope)
-	// 	x := int
-	// 	x += 1
-	// }
-
 }
-Glb := int
 
 
 RunFunc := !() -> void
 {
-	c := HateEnums
-	printf("yep\n")
-	// modelRenderPass := TRenderPass^
-	//
-	// x := 0
-	//
-	// modelLayout := modelRenderPass.CreateLayout(![
-	// 	VKType(float,3)
-	// ],![
-	// ],![
-	// ],
-	// x
-	// )
-	// printf("why %p\n",___tracy_emit_memory_alloc_callstack)
-	// printf("test %p\n",deflate)
 	// OpenFontTest()
 	// makeSpirv()
 	// tst()
