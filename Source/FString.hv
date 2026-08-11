@@ -4,7 +4,7 @@ GetFString := !(Token^ itm) -> BoxExeObj^
 	if itm is not TokenFString
 		return null
 
-	downs := BoxExeObj^[]
+	downs := Vector.{BoxExeObj^}
 	downs.Push(null)
 
 	newString := char[1024]

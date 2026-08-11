@@ -27,7 +27,7 @@ EngTools := class
 
 	vertStorage := TVkMemBuffer^
 
-	globalObjects := TVkMemBuffer^[Str]
+	globalObjects := AVLMap.{Str,TVkMemBuffer^}
 
 	CreateGlobalBuffer := !(Str name,int size,Str flags) -> void
 	{

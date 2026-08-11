@@ -5,9 +5,9 @@ VulkanShaderLoader := class
 {
 	inputTypes := AVLMap.{Str,TShaderInput^}
 
-	hotloadNames := vShader^[Str]
+	hotloadNames := AVLMap.{Str,vShader^}
 	// hotloadedShaders := TShaderInput^[Blob^]
-	changedFiles := Str[]
+	changedFiles := Vector.{Str}
 
 	SetInput := !(Str name,TShaderInput^ model) -> void
 	{

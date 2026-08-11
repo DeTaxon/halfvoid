@@ -1,5 +1,5 @@
 
-innerTryLambdaCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs,BoxExeConstObj^[] consts) -> BoxExeObj^
+innerTryLambdaCall := !(BoxExeObj^ dwnItem, Vector.{BoxExeObj^} Objs,Vector.{BoxExeConstObj^} consts) -> BoxExeObj^
 {
 	tp := dwnItem.GetType()
 
@@ -15,7 +15,7 @@ innerTryLambdaCall := !(BoxExeObj^ dwnItem, BoxExeObj^[] Objs,BoxExeConstObj^[] 
 	tmp.Value = "callFunc"
 	fld := innerTryGetFieldCall(dwnItem,tmp&)
 
-	newArgs := BoxExeObj^[]
+	newArgs := Vector.{BoxExeObj^}
 	newArgs.Push(dwnItem)
 	newArgs.Push(Objs[^])
 	return innerTryGetPtrCall(fld,newArgs)

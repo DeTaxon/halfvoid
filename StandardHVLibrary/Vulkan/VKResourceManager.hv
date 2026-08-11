@@ -16,7 +16,7 @@ VKResourceManager := class
 		result = inst.CreateTexture()
 		textures.Insert(result)
 	}
-	CreateRenderPass := !(TRenderPassFrame[] lst, bool useDepth) -> TRenderPass^
+	CreateRenderPass := !(Vector.{TRenderPassFrame} lst, bool useDepth) -> TRenderPass^
 	{
 		result = inst.CreateRenderPass(lst,useDepth)
 		renderPasses.Insert(result)

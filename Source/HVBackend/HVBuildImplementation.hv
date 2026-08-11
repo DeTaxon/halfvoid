@@ -18,7 +18,7 @@ HVContextImplementation := class extend HV_Context
 	{
 		return TypeFromTypeId(tp)
 	}
-	GetFuncType := virtual !(Type^[] types,bool[] isReference, Type^ resultType,bool resultReference,bool isVariadicArguments) -> Type^ 
+	GetFuncType := virtual !(Vector.{Type^} types,Vector.{bool} isReference, Type^ resultType,bool resultReference,bool isVariadicArguments) -> Type^ 
 	{
 		return GetFuncType(types,isReference,![resultType],![resultReference],isVariadicArguments)
 	}

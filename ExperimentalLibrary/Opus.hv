@@ -109,7 +109,7 @@ OpusTestOld := !() -> void
 	decoder := decoderCreate(48000,1,err&)
 	printf("wut %p\n",decoder)
 
-	mus := s16[]
+	mus := Vector.{s16}
 	mus.Resize(20*1024*1024)
 
 	printf("wut %p\n",opusDecode)

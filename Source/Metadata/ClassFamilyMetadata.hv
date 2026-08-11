@@ -1,7 +1,7 @@
 
 ClassFamilyMeta := class extends BoxMetaObj
 {
-  family := BoxClass^[]
+	family := Vector.{BoxClass^}
 
 	IsMetaIteratable := virtual !() -> bool { return true }
 	MetaIteretableSize := virtual !() -> int { return family.Size() }

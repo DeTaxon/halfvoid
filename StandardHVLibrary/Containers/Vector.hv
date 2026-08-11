@@ -198,7 +198,7 @@ HVFixedArrayIteratorReverse := class .{@T}
 	result.itCapacity = size
 	result.isBorrowed = true
 }
-"->{}" := !(@Typ[@Size] itArr) .{@Typ[]} -> Vector.{Typ}
+"->{}" := !(@Typ[@Size] itArr) .{Vector.{@Typ}} -> Vector.{Typ}
 {
 	result.itPointer = itArr
 	result.itSize = Size

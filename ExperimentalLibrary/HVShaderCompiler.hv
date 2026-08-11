@@ -103,17 +103,17 @@ SpirvCompiler := class
 	}
 
 
-	typeIds := int[Type^][SpirvStorageGroup]
+	typeIds := AVLMap.{SpirvStorageGroup,AVLMap.{Type^,int}}
 
-	fncTypeIds := HVB_Function^[int]
-	fncIds := int[HVB_Function^]
+	fncTypeIds := AVLMap.{int,HVB_Function^}
+	fncIds := AVLMap.{HVB_Function^,int}
 
-	fncIdOffset := int[HVB_Function^]
+	fncIdOffset := AVLMap.{HVB_Function^,int}
 
-	globIds := int[HV_Object^]
+	globIds := AVLMap.{HV_Object^,int}
 
-	intConsts := int[int]
-	floatConsts := int[float]
+	intConsts := AVLMap.{int,int}
+	floatConsts := AVLMap.{float,int}
 
 	passedFuncs := AVLMap.{HVB_Function^,HVB_Function^}
 
@@ -196,7 +196,7 @@ SpirvCompiler := class
 				GetTypeId(base,"Function",touchAll)
 			if typeGroup == "Class"
 			{
-				cls := HV.GetTypeClass(x)
+				cls := x->{TypeClass^}
 
 				for i : cls.GetFieldsCount()
 				{
@@ -227,7 +227,7 @@ SpirvCompiler := class
 		for db,group : typeIds
 		{
 			gId := groupToInt(group)
-			rev := Type^[int]
+			rev := AVLMap.{int,Type^}
 			for it,ind : db
 				rev[it] = ind
 			for tp,indx : rev
@@ -287,7 +287,7 @@ SpirvCompiler := class
 					c.Write32(0x0020000 + 20)
 					c.Write32(indx)
 				}else if typeGroup == "Class" {
-					cls := HV.GetTypeClass(tp)
+					cls := tp->{TypeClass^}
 
 					fCount := cls.GetFieldsCount()
 					
@@ -354,7 +354,7 @@ SpirvCompiler := class
 
 	WriteHeader := !() -> void
 	{
-		builtIns := int[int]
+		builtIns := AVLMap.{int,int}
 
 		for id,obj : globIds
 		{
@@ -431,14 +431,14 @@ SpirvCompiler := class
 
 		used := fnc.CountVarUsage()
 
-		ignoreLine := bool[]
+		ignoreLine := Vector.{bool}
 		ignoreLine.Resize(fnc.Lines.Size())
 
-		objCodeSource := int[]
+		objCodeSource := Vector.{int}
 		objCodeSource.Resize(fnc.Objects.Size())
 		objCodeSource[^] = -1
 
-		chainSource := int[]
+		chainSource := Vector.{int}
 		chainSource.Resize(fnc.Lines.Size())
 
 		for line,ind : fnc.Lines
@@ -508,7 +508,7 @@ SpirvCompiler := class
 		cPtr := fnc.Lines.GetPointer()
 		oPtr := fnc.Objects.GetPointer()
 
-		ids := int[int]
+		ids := AVLMap.{int,int}
 
 		toLocalId := (int x) ==> int
 		{

@@ -1,7 +1,7 @@
 
 AppendClass EngTools
 {
-	PushConstants := PushConstantMeta[]
+	PushConstants := Vector.{PushConstantMeta}
 
 	DeltaTime := float
 	MousePosition := vec2f
@@ -140,5 +140,5 @@ PushConstantMeta := class
 WackyShader := class
 {
 	base := vShader^
-	pushConsts := int[]
+	pushConsts := Vector.{int}
 }

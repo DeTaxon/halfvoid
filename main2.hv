@@ -15,7 +15,7 @@ main := !(char^[] args) -> int
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	// makeSpirv()
+	makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()

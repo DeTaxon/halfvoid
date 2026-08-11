@@ -1,12 +1,12 @@
 
 ShaderReflectionLoader := class
 {
-	BaseTypes := TypeId[int]
-	PointerTo := Tuple.{int,int}[int] // type of base, storage type
-	Structures := Tuple.{int,Str}[][int] // type of field, name of field
+	BaseTypes := AVLMap.{int,TypeId}
+	PointerTo := AVLMap.{int,Tuple.{int,int}} // type of base, storage type
+	Structures := AVLMap.{int,Vector.{Tuple.{int,Str}}} // type of field, name of field
 
-	PushConstants := Tuple.{int,Str}[] // type of var, name
-	StorageBuffers := Tuple.{int,Str}[] // type of var, name
+	PushConstants := Vector.{Tuple.{int,Str}} // type of var, name
+	StorageBuffers := Vector.{Tuple.{int,Str}} // type of var, name
 
 	Load := !(Stream^ blb) -> void
 	{
@@ -28,7 +28,7 @@ ShaderReflectionLoader := class
 
 		buf := char[256]
 
-		memberNames := Str[int][int]
+		memberNames := AVLMap.{int,AVLMap.{int,Str}}
 		defer memberNames.Destroy()
 
 		i := 0

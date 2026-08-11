@@ -25,7 +25,7 @@ HVB_Function := class
 		result.IsVArgs = IsVArgs
 	}
 
-	CountVarUsage := !() -> int[]
+	CountVarUsage := !() -> Vector.{int}
 	{
 		result.Resize(Objects.Size())
 		

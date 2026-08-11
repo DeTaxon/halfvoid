@@ -6,9 +6,9 @@ OpenFont := class
 
 OFGlyph := class
 {
-	onCurve := bool[]
-	pos := vec2f[]
-	cntrs := u16[]
+	onCurve := Vector.{bool}
+	pos := Vector.{vec2f}
+	cntrs := Vector.{u16}
 
 	rangeX := Range
 	rangeY := Range
@@ -165,8 +165,8 @@ OpenFontLoader := class
 		startIndex := 0
 		for cntr : cntrVec
 		{
-			crv := bool[]
-			ps := vec2f[]
+			crv := Vector.{bool}
+			ps := Vector.{vec2f}
 
 			for i : startIndex..cntr
 			{
@@ -556,7 +556,7 @@ OpenFontLoader := class
 
 		numFlags := cntrVec[cntrVec.Size() - 1] + 1
 
-		flags := u8[]
+		flags := Vector.{u8}
 		flags.Reserve(numFlags)
 
 		flgIter := instr[instructionsCount]&->{u8^}
@@ -634,7 +634,7 @@ OpenFontLoader := class
 
 		return cc
 	}
-	OpenFontReadCoord := !(float^ arr,u8^& iter, u8[] flags, int sizeBit, int skipBit,u16[] cntrs) -> void
+	OpenFontReadCoord := !(float^ arr,u8^& iter, Vector.{u8} flags, int sizeBit, int skipBit,Vector.{u16} cntrs) -> void
 	{
 		cPos := int
 	

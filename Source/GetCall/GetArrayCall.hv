@@ -131,7 +131,7 @@ BoxArrayHolder := class extend BoxExeObj
 		{
 			en := bs->{TypeEnum^}.ToEnum
 
-			objs := BoxExeObj^[]
+			objs := Vector.{BoxExeObj^}
 
 			for v : vals
 			{

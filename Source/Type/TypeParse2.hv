@@ -303,6 +303,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 	{
 		if tk.Down.Right.Down == null
 		{
+			return null
 			if GVectorTemplate == null
 				return null
 
@@ -361,6 +362,7 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		}
 		if cnstVal is in Type and GMapType != null
 		{
+			return null
 			return GMapType.GetType(![cnstVal,dTyp])
 		}
 		return null

@@ -5,7 +5,7 @@ HV_Context := class
 {
 	GetType := virtual !(Str typeName) -> Type^ {}
 	GetTypeObj := virtual !(TypeId tp) -> Type^ {}
-	GetFuncType := virtual !(Type^[] types,bool[] isReference, Type^ resultType,bool resultReference,bool isVariadicArguments) -> Type^ {}
+	GetFuncType := virtual !(Vector.{Type^} types,Vector.{bool} isReference, Type^ resultType,bool resultReference,bool isVariadicArguments) -> Type^ {}
 	GetTypeId := virtual !(Type^ obj) -> TypeId {}
 
 	GetTypeDebugName := virtual !(Type^ obj) -> Str {}

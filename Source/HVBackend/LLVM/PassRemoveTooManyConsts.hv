@@ -10,8 +10,8 @@ PassRemoveTooManyVars := !(MCFunction^ fnc) ->MCFunction^
 	objsUsed.Resize(fnc.Objects.Size())
 	used := objsUsed.GetPointer()
 
-	used2 := u32[]
-	movedFrom := int[]
+	used2 := Vector.{u32}
+	movedFrom := Vector.{int}
 	used2.Resize(fnc.Objects.Size())
 	movedFrom.Resize(used2.Size())
 	// used outside, used from move, to move counter

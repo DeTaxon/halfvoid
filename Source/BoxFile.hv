@@ -862,4 +862,4 @@ TryParseBlockInFile := !(Token^ it) -> BoxExeObj^
 {
 	return TryParseIf(it,true)?
 }
-	classAppends := List.{Token^}[Str]
+	classAppends := AVLMap.{Str,List.{Token^}}

@@ -27,7 +27,7 @@ BuildInAssert := class extends BoxFuncCommon
 			return GObjNull
 		return null
 	}
-	CreateCall := virtual !(BoxExeObj^[] objs,FuncInputObjects^ iObjs) -> BoxExeObj^
+	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^
 	{
 		ln := GetExeInt(0)
 		line := GObjNull->{BoxExeObj^}

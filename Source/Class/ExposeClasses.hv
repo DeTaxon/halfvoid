@@ -80,7 +80,7 @@ ExposeMaker := class
 {
 	target := ExposedClass^
 	targetName := Str
-	passFuncs := Tuple.{TypeFunc^,char^}[int]
+	passFuncs := AVLMap.{int,Tuple.{TypeFunc^,char^}}
 	
 	Start := !(Str name).{@T} -> void
 	{

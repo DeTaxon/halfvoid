@@ -13,8 +13,8 @@ ExchangeUnit := class
 }
 
 
-ExchangeList := ExchangeUnit^[]
-ExplicitCasts := ExchangeUnit^[]
+ExchangeList := Vector.{ExchangeUnit^}
+ExplicitCasts := Vector.{ExchangeUnit^}
 
 ExchangeInit := !() -> void
 {

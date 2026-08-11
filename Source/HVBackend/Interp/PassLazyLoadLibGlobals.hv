@@ -1,6 +1,6 @@
 PassLazyLoadLibGlobals := !(MCFunction^ fnc) ->MCFunction^
 {
-	preloadVars := GlobalVar2^[]
+	preloadVars := Vector.{GlobalVar2^}
 
 	for vr : fnc.Objects
 	{

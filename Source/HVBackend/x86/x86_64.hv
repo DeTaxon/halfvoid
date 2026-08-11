@@ -40,7 +40,7 @@ MCBuildContext_x86_64 := class
 	bigMem := PageMemory
 	memIter := void^
 
-	functions := x86FuncData[BoxFuncBody^]
+	functions := AVLMap.{BoxFuncBody^,x86FuncData}
 
 	funcsToCompile := List.{BoxFuncBody^}
 

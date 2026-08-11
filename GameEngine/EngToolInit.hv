@@ -46,7 +46,7 @@ VKNonRelative := class extend VulkanDefaultInstance
 			Funcs.vkCreateDebugReportCallbackEXT(Instance,debPrint&,null,vkDebugObj&)
 		}
 	}
-	DeviceExtensionStep := virtual !(VkExtensionProperties[] deviceExtensions, List.{char^} expectDeviceExtensions) -> void 
+	DeviceExtensionStep := virtual !(Vector.{VkExtensionProperties} deviceExtensions, List.{char^} expectDeviceExtensions) -> void 
 	{
 		super(deviceExtensions,expectDeviceExtensions)
 

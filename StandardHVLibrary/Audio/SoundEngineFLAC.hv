@@ -122,7 +122,7 @@ HVFLACDecoder := class
 	iter := u8^
 
 	outIter := int
-	resBlob := u32[]
+	resBlob := Vector.{u32}
 
 	LoadHeader := !(Blob^ tst) -> void
 	{

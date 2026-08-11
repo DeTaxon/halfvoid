@@ -133,7 +133,7 @@ internalCreateEmptyArray := !() .{@Typ} -> ArraySpan.{Typ}
 //	return x&
 //}
 
-ToVector := !(@WAWA[] this) -> Vector.{WAWA}^
+ToVector := !(Vector.{@WAWA} this) -> Vector.{WAWA}^
 {
 	result = new Vector.{WAWA}(this.Size())
 	result^[i] = this[^i]

@@ -114,8 +114,8 @@ GenerateILFile := !() -> void
 		bc.Print()
 
 
-		locs := Type^[]
-		oldToNew := int[int]
+		locs := Vector.{Type^}
+		oldToNew := AVLMap.{int,int}
 
 		out:= outFile
 
