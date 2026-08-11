@@ -1,0 +1,36 @@
+TypeDynamicArray := class extends TypePointLike
+{
+
+}
+
+CreateBuiltinsDynamicArrays := !() -> void
+{
+	bSpace := CodeSpaces[-1]&
+	bSpace.Templates["="].Push(new DynamicArrayStoreTemplate)
+	// bSpace.Templates["[]"].Push(new DynamicArrayGetElement)
+}
+
+DynamicArrayStoreTemplate := class extend BoxFuncTemplate
+{
+	this := !() -> void
+	{
+	}
+	ToFuncType := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts) -> TypeFunc^
+	{
+		if objs.Size() != 2
+			return null
+		if not objs[0].IsMem()
+			return null
+		a := objs[0].GetType()
+		if a is in TypeDynamicArray
+		{
+			return GetFuncType(2,![a,a],![true,false],GTypeVoid,false,false)
+		}
+		return null
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		return new BuiltInPrimeStore(tp)
+	}
+}
+

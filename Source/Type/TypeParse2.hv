@@ -303,21 +303,16 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 	{
 		if tk.Down.Right.Down == null
 		{
-			return null
-			if GVectorTemplate == null
-				return null
-
 			dwnType := Type^
-
-			if tp? is in TypeClass and tp->{TypeClass^}.TemplateParent == GVectorTemplate
+			
+			if tp is TypeDynamicArray
 			{
-				dwnType = tp->{TypeClass^}.Constants.Constants[0]->{Type^}
+				dwnType = tp.Base
 			}
-
 			dTyp2 := CheckTemplateType(dwnType,tk.Down,resCnsts) //TODO: unnull
 			if dTyp2 == null
 				return null
-			return GVectorTemplate.GetClass(![dTyp2])
+			return dTyp2.GetDynamicArray()
 		}
 
 		baseType := Type^

@@ -1,4 +1,4 @@
-main := !(char^[] args) -> int
+main := !(Vector.{char^} args) -> int
 {
 	// assert(false,"error message HAHA")
 	// RunFunc()
@@ -9,13 +9,30 @@ main := !(char^[] args) -> int
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
 	// x := 12
+
+	buf := int[3]
+
+	// gmm = ![1,2,3]
+
+	buf[0] = 7
+	buf[1] = 12
+	buf[2] = -3
+
+	hmm := internalBuildBorrowDynamicArray(buf[0]&,3)
+
+	printf("Test %i\n",internalDynamicArrayGetElement(hmm,0))
+	printf("Test %i\n",internalDynamicArrayGetElement(hmm,1))
+	printf("Test %i\n",internalDynamicArrayGetElement(hmm,2))
+
+	tmp2 := internalDynamicArrayAddElement(hmm&)
+	tmp2^ = 999
 }
 
 
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	makeSpirv()
+	// makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()

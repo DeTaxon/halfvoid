@@ -1,0 +1,46 @@
+
+
+internalDynamicArrayStruct := class
+{
+	Size := int
+	Capacity := int
+	Pointer := void^
+	isBorrowedPtr := bool
+}
+
+internalBuildBorrowDynamicArray := !(@T^ ptr,int size, internalDynamicArrayStruct buf = #Var) -> T[]
+{
+	result&->{void^^}^ = buf&
+	buf.Size = size
+	buf.Capacity = size
+	buf.Pointer = ptr
+	buf.isBorrowedPtr = true
+}
+
+internalDynamicArrayGetElement := !(@T[] ptr,int index) -> ref T
+{
+	asPtr := ptr&->{internalDynamicArrayStruct^^}^
+	assert(asPtr != null)
+
+	assert(index >= 0)
+	assert(index < asPtr.Size)
+
+	result = asPtr.Pointer->{T^}[index]&
+}
+internalDynamicArrayAddElement := !(@T[]^ arr) -> T^
+{
+	ptr := arr->{internalDynamicArray^^}
+
+	if ptr^ == null
+		ptr^ = new internalDynamicArrayStruct
+	a := ptr^
+	if a.Capacity == 0
+	{
+		newSize := a.Size*2
+		newPtr := hv_malloc(T->TypeSize*newSize)
+		if T->TypeGroup == "Class"
+			for i : newSize
+				internalHVInitClass(newPtr[i])
+	}
+
+}
