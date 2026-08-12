@@ -357,7 +357,6 @@ CheckTemplateType := !(BoxExeObj^ obj, Type^ tp,Token^ tk, AVLMap.{Str,BoxUnit^}
 		}
 		if cnstVal is in Type and GMapType != null
 		{
-			return null
 			return GMapType.GetType(![cnstVal,dTyp])
 		}
 		return null
