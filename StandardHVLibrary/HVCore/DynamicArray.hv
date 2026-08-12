@@ -5,7 +5,7 @@ internalDynamicArrayStruct := class
 	Size := int
 	Capacity := int
 	Pointer := void^
-	isBorrowedPtr := bool
+	IsBorrowedPtr := bool
 }
 
 internalBuildBorrowDynamicArray := !(@T^ ptr,int size, internalDynamicArrayStruct buf = #Var) -> T[]
@@ -14,7 +14,7 @@ internalBuildBorrowDynamicArray := !(@T^ ptr,int size, internalDynamicArrayStruc
 	buf.Size = size
 	buf.Capacity = 0
 	buf.Pointer = ptr
-	buf.isBorrowedPtr = true
+	buf.IsBorrowedPtr = true
 }
 internalBuildEmptyDynamicArray := !(internalDynamicArrayStruct buf = #Var) .{@T} -> T[]
 {
@@ -22,7 +22,7 @@ internalBuildEmptyDynamicArray := !(internalDynamicArrayStruct buf = #Var) .{@T}
 	buf.Size = 0
 	buf.Capacity = 0
 	buf.Pointer = null
-	buf.isBorrowedPtr = false
+	buf.IsBorrowedPtr = false
 }
 
 "[]" := !(@T[] ptr,int index) -> ref T
@@ -61,12 +61,12 @@ internalDynamicArrayAddElement := !(@T[] arr) -> ref T
 			for i : a.Size
 				newPtr->{T^}[i] = a.Pointer->{T^}[i]
 
-		if a.Pointer != null and not a.isBorrowedPtr
+		if a.Pointer != null and not a.IsBorrowedPtr
 			alc.FreeMem(a.Pointer)
 
 		a.Capacity = newSize - a.Size
 		a.Pointer = newPtr
-		a.isBorrowedPtr = false
+		a.IsBorrowedPtr = false
 	}
 
 	a.Capacity -= 1

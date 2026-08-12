@@ -10,56 +10,14 @@ main := !(Vector.{char^} args) -> int
 	// ModuleTest()
 	// x := 12
 
-	buf := int[3]
+	tst := new int[12]
 
-	// gmm = ![1,2,3]
+	tst[^i] = i*2
 
-	buf[0] = 7
-	buf[1] = 12
-	buf[2] = -3
+	for it,i : tst
+		printf("hiep %i %i\n",it,i)
 
-	hmm := internalBuildBorrowDynamicArray(buf[0]&,3)
-
-	printf("Test %i\n",hmm[0])
-	printf("Test %i\n",hmm[1])
-	printf("Test %i\n",hmm[2])
-
-	printf("a %p\n",hmm)
-
-	tmp2 := ref internalDynamicArrayAddElement(hmm)
-	tmp2 = 999
-
-	hmm.Push(11111)
-
-	buf[1] = 13123123
-
-	printf("Test %i\n",hmm[0])
-	printf("Test %i\n",hmm[1])
-	printf("Test %i\n",hmm[2])
-	printf("Test %i\n",hmm[3])
-
-	printf("Size %i\n",hmm.Size())
-	printf("Pointer %p\n",hmm.GetPointer())
-
-	for it,i : hmm
-		printf("Pointer[%i] %i\n",i,it)
-
-	AsFunc(![6,1,10])
-
-	AsFunc(buf)
-
-	hmm2 := Vector.{int}
-	AsFunc(hmm2)
-
-
-	hmm3 := Tuple.{int^}[]
-	hmm3.Emplace(null)
-}
-
-AsFunc := !(int[] arr) -> void
-{
-	printf("HmSize %i\n",arr.Size())
-	printf("Hm %i\n",arr[^])
+	delete tst
 }
 
 

@@ -30,6 +30,31 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 
 	if objPos.GetValue() == "new"
 	{
+		if objPos.Right.Down?.Right?.GetValue() == "[]"
+		{
+			arrBase := objPos.Right.Down.Right.Down
+
+			arrVal := BoxExeObj^
+
+			if arrBase == null
+			{
+				arrVal = GetExeInt(0)
+			}else{
+				val := TryGetExeCall(arrBase)
+
+				if val?.GetType().IsInt()
+					arrVal = val
+			}
+
+			if arrVal != null
+			{
+				tp := ParseType(objPos.Right.Down)
+				if tp == null
+					return null
+				return CreateFuncCall("internalDArrayCreateMem",![allocObj,arrVal],![tp])
+			}
+		}
+		
 		resObj := new PackedExeObj
 
 		tp := ParseType(objPos.Right)
@@ -110,12 +135,13 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		if dwn == null
 			return null
 
-		if allocObj != null
+		if dwn.GetType() is TypeDynamicArray
 		{
-			consts := Vector.{BoxExeConstObj^}
-			return innerTryGetMethodCall("FreeMem",allocObj,![dwn],consts)
+			return CreateFuncCall("internalDArrayDeleteMem",![allocObj,dwn])
 		}
 
-		return FunctionInternalDelete.CreateCall(![dwn])
+		assert(allocObj != null)
+		consts := Vector.{BoxExeConstObj^}
+		return innerTryGetMethodCall("FreeMem",allocObj,![dwn],consts)
 	}
 }

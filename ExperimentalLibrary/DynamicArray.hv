@@ -12,3 +12,34 @@ internalDArrayFromFixed := !(@T[@Size] fixedArray,internalDynamicArrayStruct buf
 {
 	return internalBuildBorrowDynamicArray(fixedArray[0]&,Size,buf)
 }
+internalDArrayCreateMem := !(IAllocator^ alloc,int newSize) .{@T} -> T[]
+{
+	if newSize != 0
+	{
+		slab := alloc.AllocMem(32 + newSize*T->TypeSize)->{u8^}
+
+		base := slab->{internalDynamicArrayStruct^}
+		ptr := slab[32]&->{T^}
+		
+		if T->TypeGroup == "Class"
+			for i : newSize
+				internalHVInitClass(ptr[i])
+		base.Pointer = ptr
+		base.Size = newSize
+		base.IsBorrowedPtr = true
+		result&->{void^^}^ = base
+	}else{
+		base := alloc.new internalDynamicArrayStruct
+		result&->{void^^}^ = base
+	}
+}
+internalDArrayDeleteMem := !(IAllocator^ alloc,@T[] arr) -> void
+{
+	ptr := arr&->{internalDynamicArrayStruct^^}^
+
+	if ptr.Pointer != null and not ptr.IsBorrowedPtr
+	{
+		alloc.FreeMem(ptr.Pointer)
+	}
+	alloc.FreeMem(ptr)
+}
