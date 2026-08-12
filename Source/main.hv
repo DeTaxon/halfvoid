@@ -329,6 +329,7 @@ main := !(Vector.{char^} args) -> int
 	CreateStrType()
 	InitInternalsTypes()
 	InitInternals()
+	CreateBuiltinsDynamicArrays()
 
 	for spc : CodeSpaces
 	{

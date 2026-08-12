@@ -57,8 +57,7 @@ Type := class extend BoxExeConstObj
 		if AsDArray != null
 			return AsDArray
 
-		AsDArray = new TypeDynamicArray
-		AsDArray.Base = this&
+		AsDArray = new TypeDynamicArray(this&)
 		return AsDArray
 	}
 

@@ -1,0 +1,14 @@
+"for" := !(@T[] arr) -> HVFixedArrayIterator.{T}
+{
+	result.size = arr.Size()
+	result.pointer = arr.GetPointer()
+}
+
+"->{}" := !(Vector.{@T} arr,internalDynamicArrayStruct buf = #Var) .{T[]} -> T[]
+{
+	internalBuildBorrowDynamicArray(arr.GetPointer(),arr.Size(),buf)
+}
+internalDArrayFromFixed := !(@T[@Size] fixedArray,internalDynamicArrayStruct buf = #Var) -> T[]
+{
+	return internalBuildBorrowDynamicArray(fixedArray[0]&,Size,buf)
+}

@@ -12,12 +12,20 @@ internalBuildBorrowDynamicArray := !(@T^ ptr,int size, internalDynamicArrayStruc
 {
 	result&->{void^^}^ = buf&
 	buf.Size = size
-	buf.Capacity = size
+	buf.Capacity = 0
 	buf.Pointer = ptr
 	buf.isBorrowedPtr = true
 }
+internalBuildEmptyDynamicArray := !(internalDynamicArrayStruct buf = #Var) .{@T} -> T[]
+{
+	result&->{void^^}^ = buf&
+	buf.Size = 0
+	buf.Capacity = 0
+	buf.Pointer = null
+	buf.isBorrowedPtr = false
+}
 
-internalDynamicArrayGetElement := !(@T[] ptr,int index) -> ref T
+"[]" := !(@T[] ptr,int index) -> ref T
 {
 	asPtr := ptr&->{internalDynamicArrayStruct^^}^
 	assert(asPtr != null)
@@ -27,20 +35,57 @@ internalDynamicArrayGetElement := !(@T[] ptr,int index) -> ref T
 
 	result = asPtr.Pointer->{T^}[index]&
 }
-internalDynamicArrayAddElement := !(@T[]^ arr) -> T^
+internalDynamicArrayCheckExistance := !(@T[]^ arr) -> T[]
 {
-	ptr := arr->{internalDynamicArray^^}
-
+	ptr := arr->{internalDynamicArrayStruct^^}
 	if ptr^ == null
 		ptr^ = new internalDynamicArrayStruct
-	a := ptr^
+	
+	return arr^
+}
+internalDynamicArrayAddElement := !(@T[] arr) -> ref T
+{
+	a := arr&->{internalDynamicArrayStruct^^}^
+	assert(a != null)
+
 	if a.Capacity == 0
 	{
-		newSize := a.Size*2
-		newPtr := hv_malloc(T->TypeSize*newSize)
+		alc := GetAllocator()
+
+		newSize := max(a.Size*2,16)
+		newPtr := alc.AllocMem(T->TypeSize*newSize)->{T^}
 		if T->TypeGroup == "Class"
 			for i : newSize
 				internalHVInitClass(newPtr[i])
+		if a.Pointer != null
+			for i : a.Size
+				newPtr->{T^}[i] = a.Pointer->{T^}[i]
+
+		if a.Pointer != null and not a.isBorrowedPtr
+			alc.FreeMem(a.Pointer)
+
+		a.Capacity = newSize - a.Size
+		a.Pointer = newPtr
+		a.isBorrowedPtr = false
 	}
 
+	a.Capacity -= 1
+	a.Size += 1
+
+	return a.Pointer->{T^}[a.Size - 1]
+}
+
+Size := !(@T[] this) -> int
+{
+	ptr := this&->{internalDynamicArrayStruct^^}^
+	if ptr == null
+		return 0
+	return ptr.Size
+}
+GetPointer := !(@T[] this) -> T^
+{
+	ptr := this&->{internalDynamicArrayStruct^^}^
+	if ptr == null
+		return null
+	return ptr.Pointer->{T^}
 }

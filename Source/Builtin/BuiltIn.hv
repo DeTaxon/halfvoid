@@ -10,5 +10,4 @@ CreateBuiltins := !() -> void
 	CreateBuiltInVoid()
 	CreateBuildInEnum()
 	CreateBuiltInTypeId()
-	CreateBuiltinsDynamicArrays()
 }

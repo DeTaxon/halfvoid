@@ -20,12 +20,46 @@ main := !(Vector.{char^} args) -> int
 
 	hmm := internalBuildBorrowDynamicArray(buf[0]&,3)
 
-	printf("Test %i\n",internalDynamicArrayGetElement(hmm,0))
-	printf("Test %i\n",internalDynamicArrayGetElement(hmm,1))
-	printf("Test %i\n",internalDynamicArrayGetElement(hmm,2))
+	printf("Test %i\n",hmm[0])
+	printf("Test %i\n",hmm[1])
+	printf("Test %i\n",hmm[2])
 
-	tmp2 := internalDynamicArrayAddElement(hmm&)
-	tmp2^ = 999
+	printf("a %p\n",hmm)
+
+	tmp2 := ref internalDynamicArrayAddElement(hmm)
+	tmp2 = 999
+
+	hmm.Push(11111)
+
+	buf[1] = 13123123
+
+	printf("Test %i\n",hmm[0])
+	printf("Test %i\n",hmm[1])
+	printf("Test %i\n",hmm[2])
+	printf("Test %i\n",hmm[3])
+
+	printf("Size %i\n",hmm.Size())
+	printf("Pointer %p\n",hmm.GetPointer())
+
+	for it,i : hmm
+		printf("Pointer[%i] %i\n",i,it)
+
+	AsFunc(![6,1,10])
+
+	AsFunc(buf)
+
+	hmm2 := Vector.{int}
+	AsFunc(hmm2)
+
+
+	hmm3 := Tuple.{int^}[]
+	hmm3.Emplace(null)
+}
+
+AsFunc := !(int[] arr) -> void
+{
+	printf("HmSize %i\n",arr.Size())
+	printf("Hm %i\n",arr[^])
 }
 
 

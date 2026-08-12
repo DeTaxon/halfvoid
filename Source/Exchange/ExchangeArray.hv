@@ -92,3 +92,59 @@ ExchangeArrayHolderToVector := class extend ExchangeUnit
 		return hldr.createUse(typ)
 	}
 }
+ExchangeArrayHolderToDynamicArray := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if obj is not BoxArrayHolder
+			return CmpNoExchange
+		if to is not in TypeDynamicArray
+			return CmpNoExchange
+
+		holder := obj->{BoxArrayHolder^}
+
+		rt := to.Base
+
+		resExchange := 0
+		for it : holder.vals
+		{
+			resExchange = max(resExchange,TypePriorCmp(it,rt,false))
+		}
+
+		return resExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		hldr := obj->{BoxArrayHolder^}
+		typ := expType.Base
+
+		if hldr.GetArraySize() == 0
+		{
+			return CreateFuncCall("internalBuildEmptyDynamicArray",![],![typ])
+		}
+
+		dat := hldr.createUse(typ)
+		return CreateFuncCall("internalDArrayFromFixed",![dat])
+	}
+}
+ExchangeArrayStaticToDynamic := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if obj.GetType() is not TypeArr
+			return CmpNoExchange
+		if to is not in TypeDynamicArray
+			return CmpNoExchange
+		if to.Base != obj.GetType().Base
+			return CmpNoExchange
+
+		return 0
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		hldr := obj->{BoxArrayHolder^}
+		typ := expType.Base
+
+		return CreateFuncCall("internalDArrayFromFixed",![obj])
+	}
+}
