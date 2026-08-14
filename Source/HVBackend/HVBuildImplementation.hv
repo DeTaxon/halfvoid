@@ -113,8 +113,8 @@ HVContextImplementation := class extend HV_Context
 		for it,i : c.WriteGlobals
 			result.Globals[i] = it
 		result.Classes.Resize(c.UsedClasses.Size())
-		//for it,i : c.UsedClasses
-		//	result.Classes[i] = it
+		for it,i : c.UsedClasses
+			result.Classes[i] = it
 	}
 
 	GetSSAFunc := virtual !(HV_Object^ fnc) -> HVB_Function^

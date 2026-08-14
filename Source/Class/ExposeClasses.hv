@@ -50,6 +50,7 @@ ExposeClasses2 := !() -> void
 
 		{
 			ctx.passFuncs[TypeClass->OffsetInVirtualTable("GetFieldsCount")] = !{GetFuncType(![tp],![true],GTypeInt),"GetFieldsCount"}
+			ctx.passFuncs[TypeClass->OffsetInVirtualTable("GetFieldType")] = !{GetFuncType(![tp,GTypeInt],![true],baseType.GetPoint()),"GetFieldType"}
 			ctx.passFuncs[TypeClass->OffsetInVirtualTable("AddExtraField")] = !{GetFuncType(![tp,GTypeStr,baseType.GetPointer()],![true,false,false],GTypeVoid),"AddField"}
 
 			ctx.passFuncs[TypeClass->OffsetInVirtualTable("SetName")] = !{GetFuncType(![tp,GTypeStr],![true,false,false],GTypeVoid),"SetName"}

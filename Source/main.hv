@@ -270,7 +270,6 @@ main := !(Vector.{char^} args) -> int
 	#ForceVirtualFunctions("File")
 	#ForceVirtualFunctions("HV_Object")
 	#ForceVirtualFunctions("HV_Context")
-	#ForceVirtualFunctions("HV_Class")
 	#ForceVirtualFunctions("HVB_Function")
 	#ForceVirtualFunctions("internalHVModuleBase")
 	#ForceVirtualFunctions("BlobOnVector")

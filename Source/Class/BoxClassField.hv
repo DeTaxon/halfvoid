@@ -361,6 +361,13 @@ AppendClass BoxClass
 		})
 		RecalculateSize()
 	}
+	GetFieldType := virtual !(int indx) -> Type^
+	{
+		tpl := GetFieldByIndex(indx)
+		if tpl == null
+			return null
+		return tpl.Field.Value
+	}
 }
 FieldParam := class extend BoxUnit
 {

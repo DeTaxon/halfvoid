@@ -25,7 +25,7 @@ internalBuildEmptyDynamicArray := !(internalDynamicArrayStruct buf = #Var) .{@T}
 	buf.IsBorrowedPtr = false
 }
 
-"[]" := !(@T[] ptr,int index) -> ref T
+internalDynamicArrayGetElement := !(@T[] ptr,int index) -> ref T
 {
 	asPtr := ptr&->{internalDynamicArrayStruct^^}^
 	assert(asPtr != null)

@@ -24,7 +24,7 @@ passRemoveReferencesReplaceLoadElement := !(MCFunction^ fnc) ->MCFunction^
 				cPtr[c++] = MCLine("get_pointer",cnstObj,line.var2)
 				cPtr[c++] = MCLine("get_field_ptr",line.var1,cnstObj,line.var3)
 
-			}else if objTp is in TypePoint or objTp == GTypeStr
+			}else if objTp is in TypePoint or objTp == GTypeStr or objTp is TypeDynamicArray
 			{
 				cPtr[c++] = MCLine("get_array_elem_ptr",line.var1,line.var2,line.var3)
 			}else if objTp is TypeVector {

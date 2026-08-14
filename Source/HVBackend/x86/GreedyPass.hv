@@ -49,5 +49,14 @@ AppendClass GreedyPass
 		result = objsSize
 		oPtr[objsSize++] = newPtr
 	}
+	PushFunc := !(BoxFunc^ value) -> int
+	{
+		newPtr := MCConstFunction
+
+		newPtr.GetValue() = value
+
+		result = objsSize
+		oPtr[objsSize++] = newPtr
+	}
 }
 

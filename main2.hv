@@ -9,22 +9,18 @@ main := !(Vector.{char^} args) -> int
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
 	// x := 12
-
-	tst := new int[12]
-
-	tst[^i] = i*2
-
-	for it,i : tst
-		printf("hiep %i %i\n",it,i)
-
-	delete tst
+	//
+	tst := new int[5]
+	tst[3] = 10
+	internalDynamicArrayGetElement(tst,4) = 3
+	printf("yep %i\n",tst[^])
 }
 
 
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	// makeSpirv()
+	makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()
@@ -235,7 +231,7 @@ makeSpirv := !() -> void
 	ts.Write(c.GetPointer(),c.Size())
 	ts.Close()
 
-	// return void
+	return void
 
 	vk := new VulkanDefaultInstance
 	vk.Init()

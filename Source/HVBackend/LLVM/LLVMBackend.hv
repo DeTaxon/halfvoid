@@ -19,10 +19,12 @@ LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
 	oldAlloc := SwapAllocator(tmpAlloc&)
 
 	if needPrint fnc.Print()
+
 	fnc = PassRemoveSpaceship(fnc)
 	fnc = PassSimplifyVectors(fnc)
 	fnc = PassRemoveVoidParams(fnc)
 	fnc = PassRemoveReferences(fnc)
+	fnc = PassFixDynamicArrays(fnc)
 	//fnc = PassNormalizeTypes(fnc)
 	fnc = PassForceReturnConstValues(fnc)
 	if needPrint fnc.Print()

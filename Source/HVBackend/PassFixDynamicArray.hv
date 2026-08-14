@@ -1,0 +1,45 @@
+
+PassFixDynamicArrays := !(MCFunction^ fnc) ->MCFunction^
+{
+	ctx := MakeGreedyPass(fnc,1,2,true)
+
+	oPtr := ctx.oPtr
+	cPtr := ctx.cPtr
+
+	o := ref ctx.objsSize
+	c := ref ctx.cmdsSize
+
+	iPtr := fnc.Lines.GetPointer()
+
+	for i : fnc.Lines.Size()
+	{
+		line := iPtr[i]
+
+		switch line.opcode
+		{
+		case in !["get_array_elem_ptr","load_element"]
+
+			tp2 := oPtr[line.var2].GetType()
+			if tp2 is TypeDynamicArray
+			{
+				fnc := TemplateDynamicArrayGetElement.GetFuncByType(GetFuncType(![tp2,GTypeInt],![false,false],tp2.Base,true),![])
+				fId := ctx.PushFunc(fnc)
+
+
+				cPtr[c++] = MCLine("call_start",line.var1,fId)
+				cPtr[c++] = MCLine("load_var",line.var2)
+				cPtr[c++] = MCLine("load_var",line.var3)
+				cPtr[c++] = MCLine("call_end")
+
+			}else{
+				cPtr[c] = line
+				c += 1
+			}
+		case void
+			cPtr[c] = line
+			c += 1
+		}
+	}
+
+	return ctx.GenerateFunc()
+}

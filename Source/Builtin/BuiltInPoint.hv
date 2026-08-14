@@ -111,35 +111,15 @@ BuiltInPointGetItem := class extend BoxFuncCommon
 	{
 		SetType(iType)
 	}
-	PrintFuncCall := virtual !(LLVMWriteContext^ ctx,int resId,int debId,ExeDownList lst) -> void
+	IsMCInlined := virtual true
+	WriteFuncCallMC := virtual !(MCBuildContext^ ctx,Vector.{BoxExeObj^} indexes) -> WriteMCResult
 	{
-		f := ctx.writeStream
+		var1 := indexes[0].WriteMC(ctx)
+		var2 := indexes[1].WriteMC(ctx)
 
-		lst[^].PrintPre(ctx)
-		
-		tFunc := GetType()->{TypeFunc^}
-		tp := tFunc.Params[0].ItType
-		bs := Type^
-		if tp == GTypeVoidP
-		{
-			bs = GTypeChar
-		}else{
-			bs = tp.Base
-		}
-
-		f^ << "%T" << resId << " = getelementptr " 
-		bs.PrintType(ctx)
-		f^ << " , "
-		tp.PrintType(ctx)
-		f^ << " "
-		lst[0].PrintUse(ctx)
-		f^ << " ,  "
-		lst[1].GetType().PrintType(ctx)
-		f^ << " "
-		lst[1].PrintUse(ctx)
-		if DebugMode
-			f^ << " , !dbg !" << GDebugLineCallId
-		f^ << "\n"
+		newRef := ctx.CreateReference(GetType()->{TypeFunc^}.ResultType)
+		HVB_ins_load_element(ctx,newRef,var1.CreatedId,var2.CreatedId)
+		result.CreatedId = newRef
 	}
 }
 

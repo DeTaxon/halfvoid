@@ -20,6 +20,7 @@ CreateBuiltinsDynamicArrays := !() -> void
 	bSpace.Templates["="].Push(new DynamicArrayStoreTemplate)
 	bSpace.Templates["Push"].Push(new DynamicArrayPushTemplate)
 	bSpace.Templates["Emplace"].Push(new DynamicArrayEmplaceTemplate)
+	bSpace.Templates["[]"].Push(new DynamicArrayGetElementTemplate)
 	// bSpace.Templates["Template"].Push()
 }
 
@@ -135,5 +136,31 @@ DynamicArrayEmplaceTemplate := class extend BoxFuncTemplate
 			subObjs.Push(it)
 		}
 		return innerTryGetMethodCall("this",addElement,subObjs,![])
+	}
+}
+
+DynamicArrayGetElementTemplate := class extend BoxFuncTemplate
+{
+	this := !() -> void
+	{
+	}
+
+	ToFuncType := virtual !(Vector.{BoxExeObj^} objs, Vector.{BoxExeConstObj^} consts) -> TypeFunc^
+	{
+		if objs.Size() != 2
+			return null
+		tp0 := objs[0].GetType()
+		if tp0 is not TypeDynamicArray
+			return null
+		if not objs[1].GetType().IsInt()
+			return null
+		return GetFuncType(![tp0,GTypeInt],![false,false],tp0.Base,true)
+	}
+	CreateFunc := virtual !(TypeFunc^ tp, Vector.{BoxExeConstObj^} consts) -> BoxFunc^
+	{
+		tp1 := BlankObjectExe(tp.Params[0].ItType,false)
+		tp2 := BlankObjectExe(GTypeInt,false)
+		CreateFuncCall("internalDynamicArrayGetElement",![tp1&,tp2&]) // create function in template
+		return new BuiltInPointGetItem(tp)
 	}
 }
