@@ -5,48 +5,15 @@ LLVMPrintTextModule := !(HVModule module, LLVMWriteContext^ ctx) -> void
 }
 
 
-LLVMWriteBodyFunction := !(MCFunction^ fnc,LLVMWriteContext^ ctx) -> void
+LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 {
 	out := ref ctx.writeStream^
-
-	base := fnc.BaseFunction->{BoxFuncBody^}
 
 	needPrint := base->{BoxFuncBody^}.OutputName == "main"
 	// needPrint = true
 	needPrint = false
 
-	tmpAlloc := MakeTempAllocator()
-	oldAlloc := SwapAllocator(tmpAlloc&)
-
-	if needPrint fnc.Print()
-
-	fnc = PassRemoveSpaceship(fnc)
-	fnc = PassSimplifyVectors(fnc)
-	fnc = PassRemoveVoidParams(fnc)
-	fnc = PassRemoveReferences(fnc)
-	fnc = PassFixDynamicArrays(fnc)
-	//fnc = PassNormalizeTypes(fnc)
-	fnc = PassForceReturnConstValues(fnc)
-	if needPrint fnc.Print()
-	if needPrint fnc.Print()
-	fnc = PassForceReturnConstValues(fnc)
-	if needPrint fnc.Print()
-	fnc = PassCreateConstValues(fnc)
-	if needPrint fnc.Print()
-	fnc = PassAddingCastForPtrMove(fnc)
-	if needPrint fnc.Print()
-	fnc = PassRemoveTooManyVars(fnc)
-	if needPrint fnc.Print()
-
-	fnc = PassRemoveUnusedObjects(fnc)
-	SetAllocator(oldAlloc)
-
-	fnc = PassFinalizeFunction(fnc)
-	// defer delete fnc
-
-	tmpAlloc.Destroy()
-
-	if needPrint fnc.Print()
+	fnc := BCFuncs.GetFunc_LLVM(base)
 
 	currentDbgFileId := int
 	currentDbgBlockId := int

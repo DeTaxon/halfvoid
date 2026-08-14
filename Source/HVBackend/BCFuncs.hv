@@ -9,6 +9,7 @@ BCFuncsType := class
 	x8664Funcs := AVLMap.{BoxFuncBody^,MCFunction^}
 
 	ssaFuncs := AVLMap.{BoxFuncBody^,HVB_Function^}
+	llvmFuncs := AVLMap.{BoxFuncBody^,HVB_Function^}
 
 	ForgetFunction := !(BoxFuncBody^ fnc) -> void
 	{
@@ -139,6 +140,48 @@ BCFuncsType := class
 
 		result = ret
 		ssaFuncs[fnc] = result
+	}
+	GetFunc_LLVM := !(BoxFuncBody^ fnc) -> HVB_Function^
+	{
+		return llvmFuncs[fnc]?
+
+		ret := GetBaseFunc(fnc)
+
+		tmpAlloc := MakeTempAllocator()
+		oldAlloc := SwapAllocator(tmpAlloc&)
+
+		// if needPrint ret.Print()
+		//
+
+		ret := PassRemoveSpaceship(ret)
+		ret = PassSimplifyVectors(ret)
+		ret = PassRemoveVoidParams(ret)
+		ret = PassRemoveReferences(ret)
+		ret = PassFixDynamicArrays(ret)
+		//ret = PassNormalizeTypes(ret)
+		ret = PassForceReturnConstValues(ret)
+		// if needPrint ret.Print()
+		// if needPrint ret.Print()
+		ret = PassForceReturnConstValues(ret)
+		// if needPrint ret.Print()
+		ret = PassCreateConstValues(ret)
+		// if needPrint ret.Print()
+		ret = PassAddingCastForPtrMove(ret)
+		// if needPrint ret.Print()
+		ret = PassRemoveTooManyVars(ret)
+		// if needPrint ret.Print()
+
+		ret = PassRemoveUnusedObjects(ret)
+		SetAllocator(oldAlloc)
+
+		ret = PassFinalizeFunction(ret)
+		// defer delete ret
+
+		tmpAlloc.Destroy()
+
+		llvmFuncs[fnc] = ret
+
+		return ret
 	}
 }
 

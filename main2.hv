@@ -12,7 +12,7 @@ main := !(Vector.{char^} args) -> int
 	//
 	tst := new int[5]
 	tst[3] = 10
-	internalDynamicArrayGetElement(tst,4) = 3
+	// internalDynamicArrayGetElement(tst,4) = 3
 	printf("yep %i\n",tst[^])
 }
 

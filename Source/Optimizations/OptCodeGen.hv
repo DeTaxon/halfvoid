@@ -6,6 +6,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	assert(mainFunc != null)
 
 	c := CollectFunctionsCtx(mainFunc->{BoxFuncBody^})
+	c.LLVMBackend = true
 
 	c.Workarounds()
 	c.Collect()
@@ -29,7 +30,7 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 
 	for func : c.WriteFunctions
 	{
-		LLVMWriteBodyFunction(BCFuncs.GetBaseFunc(func),ctx)
+		LLVMWriteBodyFunction(func,ctx)
 	}
 
 	CodeSpaces[^].Files[^].PrintCode(ctx)
@@ -85,6 +86,8 @@ CollectFunctionsCtx := class
 	checkGlobals := HybridStack.{GlobalVar2^,20}
 
 	preUsedClasses := AVLSet.{BoxClass^}
+
+	LLVMBackend := bool
 
 	this := !(BoxFuncBody^ mainFunc) -> void
 	{
@@ -271,7 +274,13 @@ CollectFunctionsCtx := class
 
 				if fnc is in BoxFuncBody and not fnc->{BoxFuncBody^}.IsParsed()
 					continue
-				mcFnc := BCFuncs.GetBaseFunc(fnc)
+				mcFnc := MCFunction^
+				if LLVMBackend
+				{
+					mcFnc = BCFuncs.GetFunc_LLVM(fnc)
+				}else{
+					mcFnc = BCFuncs.GetBaseFunc(fnc)
+				}
 
 				checkType(fnc.GetType())
 
