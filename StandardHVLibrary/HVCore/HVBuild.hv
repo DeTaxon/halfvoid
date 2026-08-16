@@ -52,7 +52,8 @@ TypeGroups := enum
 	"ArrayView",
 	"Function",
 	"Enum",
-	"Class"
+	"Class",
+	"DynamicArray"
 }
 
 HVFunctionTypeInfo := class

@@ -271,18 +271,15 @@ SpirvCompiler := class
 					c.Write32(indx)
 					c.Write32(GetTypeId(tp.GetBase(),group))
 					c.Write32(tp.GetArrayLength())
-				}else if typeGroup == "Array" {
-					base := tp.GetBase()
-					arSize := tp.GetArrayLength()
+				}else if typeGroup == "DynamicArray" {
 
-					if arSize == 0
-					{
-						c.Write32(0x30000 + 29)
-						c.Write32(indx)
-						c.Write32(GetTypeId(base))
-					}else{
-						
-					}
+					base := tp.GetBase()
+					// arSize := tp.GetArrayLength()
+
+					c.Write32(0x30000 + 29)
+					c.Write32(indx)
+					c.Write32(GetTypeId(base))
+				// }else if typeGroup == "Array" {
 				}else if id == bool {
 					c.Write32(0x0020000 + 20)
 					c.Write32(indx)
@@ -740,7 +737,7 @@ PartType := class
 
 Unifrm := class
 {
-	particles := PartType[0]
+	particles := PartType[]
 }
 
 uni := Unifrm^

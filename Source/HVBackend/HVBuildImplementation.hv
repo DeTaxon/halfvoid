@@ -36,6 +36,8 @@ HVContextImplementation := class extend HV_Context
 			return "Array"
 		if obj is in TypeStandard
 			return "Prime"
+		if obj is in TypeDynamicArray
+			return "DynamicArray"
 	}
 	GetTypeId := virtual !(Type^ obj) -> TypeId 
 	{
