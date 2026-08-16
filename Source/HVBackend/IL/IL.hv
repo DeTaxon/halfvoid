@@ -129,7 +129,7 @@ GenerateILFile := !() -> void
 			{
 				tp := ob.GetType()
 
-				if tp == GTypeInt or tp == GTypeBool
+				if tp == GTypeInt or tp == GTypeBool or tp is TypeDynamicArray
 				{
 					oldToNew[i] = locs.Size()
 					locs.Push(tp)
@@ -146,13 +146,7 @@ GenerateILFile := !() -> void
 				if ind != 0
 					outFile^ << ","
 				outFile^ << "\n		"
-
-				switch it
-				{
-				case GTypeInt outFile^ << "int32"
-				case GTypeBool outFile^ << "bool"
-				case none assert(false)
-				}
+				PrintILType(outFile^,it)
 			}
 			outFile^ << "\n	)\n"
 		}
@@ -203,8 +197,11 @@ GenerateILFile := !() -> void
 					st := ob.GetValue()
 					out.Write(st.CStr(),st.Size())
 					out^ << "\"\n"
-				case void assert(false)
+				case void
+					loadObj(line.var1)
 				}
+			case "il_pop"
+				storeObj(line.var1)
 			case "il_call"
 				out^ << "	call " << bc.Objects[line.var1]&->{MCConstString^}.GetValue() << "\n"
 			case "mov"
@@ -220,6 +217,11 @@ GenerateILFile := !() -> void
 				}else{
 					// assert(false,"unknown move")
 				}
+			case "new"
+				loadObj(line.var2)
+				out^ << "	newarr [mscorlib]System.Int32\n"
+				storeObj(line.var1)
+				
 			case "cmp"
 				loadObj(line.var2)
 				loadObj(line.var4)
@@ -230,6 +232,8 @@ GenerateILFile := !() -> void
 				// TODO others
 				}
 				storeObj(line.var1)
+			case "il_stelem"
+				out^ << "	stelem.i4\n"
 			case in !["add"]
 				loadObj(line.var2)
 				loadObj(line.var3)
@@ -244,4 +248,21 @@ GenerateILFile := !() -> void
 	}
 
 	outFile.Write(funcEnd,strlen(funcEnd))
+}
+
+PrintILType := !(Stream strm,Type^ tp) -> void
+{
+	if tp is TypeDynamicArray
+	{
+		PrintILType(strm,tp.Base)
+		strm << "[]"
+		return void
+	}
+
+	switch tp
+	{
+	case GTypeInt strm << "int32"
+	case GTypeBool strm << "bool"
+	case none assert(false)
+	}
 }

@@ -11,10 +11,31 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 
 	lin := fnc.Lines.GetPointer()
 
+
+	size := fnc.Lines.Size()
+
 	i := 0
 	while i < fnc.Lines.Size()
 	{
 		line := lin[i]
+
+		if line.opcode == "load_element" and  i + 1 < size and lin[i+1].opcode == "mov"
+		{
+			cPtr[c++] = MCLine("il_push",line.var2)
+			cPtr[c++] = MCLine("il_push",line.var3)
+			cPtr[c++] = MCLine("il_push",lin[i+1].var2)
+			cPtr[c++] = MCLine("il_stelem")
+			i += 2
+			continue
+		}
+
+		if line.opcode == "mov"
+		{
+			cPtr[c++] = MCLine("il_push",line.var2)
+			cPtr[c++] = MCLine("il_pop",line.var1)
+			i += 1
+			continue
+		}
 
 		if line.opcode == "call_start"
 		{

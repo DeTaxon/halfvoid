@@ -10,10 +10,6 @@ main := !(Vector.{char^} args) -> int
 	// ModuleTest()
 	// x := 12
 	//
-	tst := new int[5]
-	tst[3] = 10
-	// internalDynamicArrayGetElement(tst,4) = 3
-	printf("yep %i\n",tst[^])
 }
 
 
@@ -31,16 +27,6 @@ RunFunc := !() -> void
 	//tst := ClassA.{ClassB}
 	//// tst.Emplace(int->{TypeId})
 	//tst.Emplace(int)
-}
-ILTest := !() -> void
-{
-	arr := byte[256]
-	i := 0
-	while i < 3
-	{
-		printf("Hello world\n")
-		i += 1
-	}
 }
 
 ModuleTest := !() -> void
@@ -310,6 +296,20 @@ sortTest := !(int^ buf, int lo, int hi) -> void
 
 }
 
+ILTest := !() -> void
+{
+	nums := 10
+
+	values := new int[nums]
+
+	i := 0
+	while i < 10
+	{
+		values[i] = 3
+		printf("test %i\n")
+		i += 1
+	}
+}
 tst := !() -> void {
 	nums := 1_000
 	// nums = 10

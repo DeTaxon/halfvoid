@@ -67,6 +67,10 @@ MCBaseOpcodes := enum extend u16
 
 	"memory_barrier",
 
+	//Experemental
+	"new",
+	"delete",
+
 	//debug
 	"debug_set_file",
 	"debug_set_line",
@@ -139,7 +143,9 @@ MCBaseOpcodes := enum extend u16
 
 	//BACKEND IL
 	"il_push", // var1 load constant to stack
-	"il_call" // var1 - string name of function
+	"il_pop", // var1 load constant to stack
+	"il_call", // var1 - string name of function
+	"il_stelem"
 }
 
 MCJumpIfConditions := enum extend u16

@@ -51,6 +51,8 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 				tp := ParseType(objPos.Right.Down)
 				if tp == null
 					return null
+				if GenerateIL
+					return new NewOperatorObject(tp.GetDynamicArray(),arrVal)
 				return CreateFuncCall("internalDArrayCreateMem",![allocObj,arrVal],![tp])
 			}
 		}
@@ -143,5 +145,23 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 		assert(allocObj != null)
 		consts := Vector.{BoxExeConstObj^}
 		return innerTryGetMethodCall("FreeMem",allocObj,![dwn],consts)
+	}
+}
+
+NewOperatorObject := class extends BoxExeObj
+{
+	CountGet := BoxExeObj^
+	this := !(Type^ arrType,BoxExeObj^ counter) -> void
+	{
+		ObjType = arrType
+		CountGet = counter
+	}
+
+	WriteMC := virtual !(MCBuildContext^ ctx) -> WriteMCResult
+	{
+		vr := ctx.CreateVar(GetType())
+		idx := CountGet.WriteMC(ctx).CreatedId
+		HVB_ins_new(ctx,vr,idx)
+		result.CreatedId = vr
 	}
 }
