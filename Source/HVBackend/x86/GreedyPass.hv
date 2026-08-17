@@ -2,6 +2,15 @@
 
 AppendClass GreedyPass
 {
+	PushVar := !(Type^ varType) -> int
+	{
+		newReg := MCVariable
+
+		newReg.GetValueType() = varType
+
+		result = objsSize
+		oPtr[objsSize++] = newReg
+	}
 	PushConstVar := !(Type^ varType) -> int
 	{
 		newReg := MCConstValue
@@ -17,6 +26,15 @@ AppendClass GreedyPass
 
 		newReg.GetValue() = reg
 		newReg.SetType(regType)
+
+		result = objsSize
+		oPtr[objsSize++] = newReg
+	}
+	PushInt := !(int value) -> int
+	{
+		newReg := MCConstInt
+
+		newReg.GetValue() = value
 
 		result = objsSize
 		oPtr[objsSize++] = newReg

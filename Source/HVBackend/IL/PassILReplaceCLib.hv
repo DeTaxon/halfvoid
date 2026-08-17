@@ -24,7 +24,7 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 			cPtr[c++] = MCLine("il_push",line.var2)
 			cPtr[c++] = MCLine("il_push",line.var3)
 			cPtr[c++] = MCLine("il_push",lin[i+1].var2)
-			cPtr[c++] = MCLine("il_stelem")
+			cPtr[c++] = MCLine("il_stelem",bldr.PushStr("i4"))
 			i += 2
 			continue
 		}
@@ -73,7 +73,46 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 					cPtr[c++] = MCLine("il_push",args[0])
 					cPtr[c++] = MCLine("il_call",bldr.PushStr("void class [mscorlib]System.Console::Write(string)"))
 				}else{
-					assert(false)
+
+					originalStr := oPtr[args[0]]&->{MCConstString^}.GetValue().CStr()
+
+					newStr := malloc(1024)->{char^}
+
+					k := 0
+					index := 0
+					while originalStr[k] != 0
+					{
+						if originalStr[k] == '%'
+						{
+							newStr[k++] = '{'
+							newStr[k++] = '0' + index++ // TODO case for 10+
+							newStr[k++] = '}'
+						}else{
+							newStr[k] = originalStr[k]
+							k += 1
+						}
+					}
+					newStr[k] = 0
+
+					vr  := bldr.PushVar(GTypeILObject.GetDynamicArray())
+
+					cPtr[c++] = MCLine("new",vr,bldr.PushInt(args.Size() - 1))
+
+					for it,i : args
+					{
+						if i == 0
+							continue
+
+						cPtr[c++] = MCLine("il_push",vr)
+						cPtr[c++] = MCLine("il_push",bldr.PushInt(i - 1))
+						cPtr[c++] = MCLine("il_push",it)
+						cPtr[c++] = MCLine("il_box")
+						cPtr[c++] = MCLine("il_stelem",bldr.PushStr("ref"))
+
+					}
+					cPtr[c++] = MCLine("il_push",args[0])
+					cPtr[c++] = MCLine("il_push",vr)
+					cPtr[c++] = MCLine("il_call",bldr.PushStr("void class [mscorlib]System.Console::Write(string,object[])"))
 				}
 			case none
 				assert(false)

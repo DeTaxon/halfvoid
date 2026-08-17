@@ -98,6 +98,8 @@ GenerateILFile := !() -> void
   } // end of class MainClass
 	"""
 
+	GTypeILObject = new Type
+
 	outFile.Write(fileHeader,strlen(fileHeader))
 	outFile.Write(funcStart,strlen(funcStart))
 
@@ -150,6 +152,8 @@ GenerateILFile := !() -> void
 			}
 			outFile^ << "\n	)\n"
 		}
+
+		oPtr := bc.Objects.GetPointer()
 
 		loadObj := (int ind) ==> {
 			ob := bc.Objects[ind]&
@@ -219,9 +223,10 @@ GenerateILFile := !() -> void
 				}
 			case "new"
 				loadObj(line.var2)
-				out^ << "	newarr [mscorlib]System.Int32\n"
+				out^ << "	newarr [mscorlib]System.Object\n" // TODO not ints
 				storeObj(line.var1)
-				
+			case "il_box"
+				out^ << "	box [mscorlib]System.Int32\n" // TODO not ints
 			case "cmp"
 				loadObj(line.var2)
 				loadObj(line.var4)
@@ -233,7 +238,9 @@ GenerateILFile := !() -> void
 				}
 				storeObj(line.var1)
 			case "il_stelem"
-				out^ << "	stelem.i4\n"
+				out^ << "	stelem."
+				out^ << oPtr[line.var1]&->{MCConstString^}.GetValue()
+				out^ << "\n"
 			case in !["add"]
 				loadObj(line.var2)
 				loadObj(line.var3)
@@ -250,6 +257,10 @@ GenerateILFile := !() -> void
 	outFile.Write(funcEnd,strlen(funcEnd))
 }
 
+PrintILCoreType := !(Stream strm,Type^ tp) -> void
+{
+
+}
 PrintILType := !(Stream strm,Type^ tp) -> void
 {
 	if tp is TypeDynamicArray
@@ -263,6 +274,9 @@ PrintILType := !(Stream strm,Type^ tp) -> void
 	{
 	case GTypeInt strm << "int32"
 	case GTypeBool strm << "bool"
+	case GTypeILObject strm << "object"
 	case none assert(false)
 	}
 }
+
+GTypeILObject := Type^

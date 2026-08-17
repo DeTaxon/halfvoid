@@ -145,7 +145,8 @@ MCBaseOpcodes := enum extend u16
 	"il_push", // var1 load constant to stack
 	"il_pop", // var1 load constant to stack
 	"il_call", // var1 - string name of function
-	"il_stelem"
+	"il_stelem",
+	"il_box"
 }
 
 MCJumpIfConditions := enum extend u16

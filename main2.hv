@@ -306,7 +306,7 @@ ILTest := !() -> void
 	while i < 10
 	{
 		values[i] = 3
-		printf("test %i\n")
+		printf("test {0}\n",i)
 		i += 1
 	}
 }
