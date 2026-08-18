@@ -227,6 +227,10 @@ GenerateILFile := !() -> void
 				storeObj(line.var1)
 			case "il_box"
 				out^ << "	box [mscorlib]System.Int32\n" // TODO not ints
+			case "cast"
+				loadObj(line.var2)
+				// out^ << "	conv.i8"
+				storeObj(line.var1)
 			case "cmp"
 				loadObj(line.var2)
 				loadObj(line.var4)
@@ -273,6 +277,7 @@ PrintILType := !(Stream strm,Type^ tp) -> void
 	switch tp
 	{
 	case GTypeInt strm << "int32"
+	case GTypeS64 strm << "int64"
 	case GTypeBool strm << "bool"
 	case GTypeILObject strm << "object"
 	case none assert(false)
