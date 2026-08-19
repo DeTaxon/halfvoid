@@ -1202,6 +1202,8 @@ IsPointLikeType := !(Type^ ptr) -> bool
 		return true
 	if ptr is in TypePoint
 		return true
+	if ptr is TypeDynamicArray
+		return true
 	return false
 }
 

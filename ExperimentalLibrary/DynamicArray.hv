@@ -27,6 +27,7 @@ internalDArrayCreateMem := !(IAllocator^ alloc,int newSize) .{@T} -> T[]
 		base.Pointer = ptr
 		base.Size = newSize
 		base.IsBorrowedPtr = true
+		base.ElementSize = T->TypeSize
 		result&->{void^^}^ = base
 	}else{
 		base := alloc.new internalDynamicArrayStruct

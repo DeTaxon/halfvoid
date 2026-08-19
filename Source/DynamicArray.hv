@@ -11,8 +11,18 @@ TypeDynamicArray := class extends TypePointLike
 			MetaId = GetNewId()
 		}
 	}
-
+	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		if Base == GTypeVoid
+		{
+			ctx.UsedTypes.Insert(this&)
+			ctx.writeStream^ << "i8*"
+		}else{
+			super(ctx)
+		}
+	}
 }
+
 
 CreateBuiltinsDynamicArrays := !() -> void
 {

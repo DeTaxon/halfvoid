@@ -5,6 +5,7 @@ internalDynamicArrayStruct := class
 	Size := int
 	Capacity := int
 	Pointer := void^
+	ElementSize := int
 	IsBorrowedPtr := bool
 }
 
@@ -15,6 +16,7 @@ internalBuildBorrowDynamicArray := !(@T^ ptr,int size, internalDynamicArrayStruc
 	buf.Capacity = 0
 	buf.Pointer = ptr
 	buf.IsBorrowedPtr = true
+	buf.ElementSize = T->TypeSize
 }
 internalBuildEmptyDynamicArray := !(internalDynamicArrayStruct buf = #Var) .{@T} -> T[]
 {
@@ -23,6 +25,7 @@ internalBuildEmptyDynamicArray := !(internalDynamicArrayStruct buf = #Var) .{@T}
 	buf.Capacity = 0
 	buf.Pointer = null
 	buf.IsBorrowedPtr = false
+	buf.ElementSize = T->TypeSize
 }
 
 internalDynamicArrayGetElement := !(@T[] ptr,int index) -> ref T
@@ -67,6 +70,7 @@ internalDynamicArrayAddElement := !(@T[] arr) -> ref T
 		a.Capacity = newSize - a.Size
 		a.Pointer = newPtr
 		a.IsBorrowedPtr = false
+		a.ElementSize = T->TypeSize
 	}
 
 	a.Capacity -= 1
@@ -80,6 +84,8 @@ Size := !(@T[] this) -> int
 	ptr := this&->{internalDynamicArrayStruct^^}^
 	if ptr == null
 		return 0
+	if T == void
+		return ptr.Size*ptr.ElementSize
 	return ptr.Size
 }
 GetPointer := !(@T[] this) -> T^
@@ -95,6 +101,7 @@ BlobOnSpan2 := !(void^ ptr,int size, internalDynamicArrayStruct buf = #Var) -> u
 	result&->{void^^}^ = buf&
 	buf.Size = size
 	buf.Capacity = 0
+	buf.ElementSize = 1
 	buf.Pointer = ptr
 	buf.IsBorrowedPtr = true
 }

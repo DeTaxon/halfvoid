@@ -148,3 +148,22 @@ ExchangeArrayStaticToDynamic := class extend ExchangeUnit
 		return CreateFuncCall("internalDArrayFromFixed",![obj])
 	}
 }
+ExchangeToVoidDynamic := class extend ExchangeUnit
+{
+	GetExchangeScore := virtual !(BoxExeObj^ obj,Type^ to,bool expectResultRef) -> int
+	{
+		if to is not in TypeDynamicArray or to.Base != GTypeVoid
+			return CmpNoExchange
+
+		tp := obj.GetType()
+
+		if tp is TypeDynamicArray
+			return 1000
+
+		return CmpNoExchange
+	}
+	CreateExchange := virtual !(BoxExeObj^ obj,Type^ expType, bool expectResultRef) -> BoxExeObj^
+	{
+		return new PtrExchange(obj,expType)
+	}
+}

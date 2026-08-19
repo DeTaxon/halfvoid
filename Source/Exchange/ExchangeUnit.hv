@@ -26,6 +26,7 @@ ExchangeInit := !() -> void
 	ExchangeList.Push(new ExchangeRefClassToBase)
 	ExchangeList.Push(new ExchangeArrayHolderToDynamicArray)
 	ExchangeList.Push(new ExchangeArrayStaticToDynamic)
+	ExchangeList.Push(new ExchangeToVoidDynamic)
 	ExchangeList.Push(new ExchangeArrayToPtr)
 	ExchangeList.Push(new ExchangeArrayHolderToArray)
 	ExchangeList.Push(new ExchangeArrayHolderToVector)

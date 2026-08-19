@@ -10,11 +10,13 @@ main := !(Vector.{char^} args) -> int
 	// ModuleTest()
 	// x := 12
 	
-	a := 6
-	b := 7
-	hmm := new int[a*b]
-	printf("yop %i %i %i\n",a,b,hmm.Size())
+	hmm := new int[10]
+	check(hmm)
+}
 
+check := !(void[] tst) -> void
+{
+	printf("Test  %p %i\n",tst.GetPointer(),tst.Size())
 }
 
 
