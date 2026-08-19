@@ -9,7 +9,12 @@ main := !(Vector.{char^} args) -> int
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
 	// x := 12
-	//
+	
+	a := 6
+	b := 7
+	hmm := new int[a*b]
+	printf("yop %i %i %i\n",a,b,hmm.Size())
+
 }
 
 

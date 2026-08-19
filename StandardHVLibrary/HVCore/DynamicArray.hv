@@ -89,3 +89,12 @@ GetPointer := !(@T[] this) -> T^
 		return null
 	return ptr.Pointer->{T^}
 }
+
+BlobOnSpan2 := !(void^ ptr,int size, internalDynamicArrayStruct buf = #Var) -> u8[]
+{
+	result&->{void^^}^ = buf&
+	buf.Size = size
+	buf.Capacity = 0
+	buf.Pointer = ptr
+	buf.IsBorrowedPtr = true
+}

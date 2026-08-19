@@ -32,6 +32,8 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 	{
 		if objPos.Right.Down?.Right?.GetValue() == "[]"
 		{
+			SyntaxCompress(objPos.Right.Down.Right,PriorityData)
+
 			arrBase := objPos.Right.Down.Right.Down
 
 			arrVal := BoxExeObj^

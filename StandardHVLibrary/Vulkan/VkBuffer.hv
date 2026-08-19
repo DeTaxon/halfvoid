@@ -19,7 +19,7 @@ TVkMemBuffer := class extend TVkMemoryObject
 	{
 		return itBuffer&
 	}
-	TransferData := !(Blob dataView) -> void
+	TransferData := !(u8[] dataView) -> void
 	{
 		assert(itMemInfo != null)
 
