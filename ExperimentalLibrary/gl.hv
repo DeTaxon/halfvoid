@@ -206,9 +206,9 @@
 
 		funcClass = HV.CreateClass2()
 
-		ParseXml()
-
 		funcClass.SetFieldFailedCallback(x ==> {
+
+			ParseXml()
 			if glCommands.Contain(x.AsStringSpan())
 			{
 				res := GetCommandType(x)
