@@ -593,7 +593,10 @@ ModuleVulkan := class extend ModuleInterface
 						assert(asFunc.IsOneFunc())
 						func := asFunc.GetOneFunc()
 						func.SetName(StringSpan("this"))
+						saveData := StackState
+						saveData.Save()
 						func.ParseBodyForced()
+						saveData.Load()
 						func->{BoxFuncBody^}.ParentScope = newStruct
 						newStruct.DefaultSpace.Methods[StringSpan("this")].Push(func)
 

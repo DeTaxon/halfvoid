@@ -178,9 +178,14 @@ BoxLambdaHolder := class extend BoxExeObj
 		resObj.lambdaFunc = newFunc
 
 		emptyConsts := List.{BoxExeConstObj^}
+
+		saveData := StackState
+		saveData.Save()
 	
 		UnitStack.PushFront(resObj)
 		newFunc.ParseBodyForced()
+
+		saveData.Load()
 		
 		fncFnc := new FuncPointerParam(newFunc)
 		fncPtr := fncFnc.CreateCall()

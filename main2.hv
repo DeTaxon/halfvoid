@@ -10,13 +10,27 @@ main := !(Vector.{char^} args) -> int
 	// ModuleTest()
 	// x := 12
 	
-	hmm := new int[10]
-	check(hmm)
+	step1Cmd := TVkCommandBuffer(null,null)
+	{
+		bar1 := VkImageMemoryBarrier()
+		// bar1.image = fbTextures[0].Img()
+		// bar1.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED
+		// bar1.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+		// bar1.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT
+		// bar1.subresourceRange.levelCount = 1
+		// bar1.subresourceRange.layerCount = 1
+		// vk.Funcs.vkCmdPipelineBarrier(step1Cmd.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
+	}
+
+	asdasd
 }
 
-check := !(void[] tst) -> void
+fbTextures := TVkTexture^[3]
+
+
+gob := class
 {
-	printf("Test  %p %i\n",tst.GetPointer(),tst.Size())
+	this := !() -> void {}
 }
 
 
