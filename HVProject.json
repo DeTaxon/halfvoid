@@ -2,11 +2,15 @@
 	"CompilerSettingsList" : [
 		{
 			"Name" : "Main",
-			"Files" : ["main3.hv"],
+			"Files" : ["main2.hv"],
 			"Folders" : [
 				{
 					"Level" : 0,
 					"FolderPath" : "StandardHVLibrary/"
+				},
+				{
+					"Level" : 0,
+					"FolderPath" : "ExperimentalLibrary/"
 				}
 			],
 			"BytecodeFilePath" : "/tmp/out.ll",

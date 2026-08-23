@@ -46,7 +46,7 @@ mainStatusFunc := !() -> void
 				break
 		}
 
-		if maxMessages == messagesLimit
+		if maxMessages != 0
 		{
 			for it : WorkBag.works
 			{
@@ -63,6 +63,10 @@ mainStatusFunc := !() -> void
 				case CWorkFuncCompile
 					st << "Working on function " << it.itFunc.GetGoodName() << " " << it.itFunc.GetFileScope().fileName.GetString().Str() << ":" << it.itLine
 					lst.Push(st.GetStr()->AsString)
+				case void
+					st << "Working on something " << it.UnitName
+					lst.Push(st.GetStr()->AsString)
+					
 				}
 
 				maxMessages -= 1

@@ -67,15 +67,12 @@ StartInterpreter := !() -> void
 	TSpawnTask(() ==> {
 		//@work 
 		{
+			GlobalVars2[^].CheckValue()
 			toRun := intGetFunc("main")
 			// toRun.ParseBody()
 			// WaitForParsingObjects()
 
-			if FastestRunner {
-				CompileAndRunCode_x86_64(toRun->{BoxFuncBody^})
-			}else{
-				CompileAndRunCode(toRun->{BoxFuncBody^})
-			}
+			CompileAndRunCode(toRun->{BoxFuncBody^})
 		}
 		runInProgress = false
 	})

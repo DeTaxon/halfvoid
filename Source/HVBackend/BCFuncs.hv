@@ -51,6 +51,7 @@ BCFuncsType := class
 		oldAlloc := SwapAllocator(tmpAlloc&)
 
 		result = PassRemoveReferences(result)
+		result = PassFixDynamicArrays(result)
 		result = PassLazyLoadLibGlobals(result)
 
 		// result = PassAddStackInterp(result)
@@ -97,6 +98,7 @@ BCFuncsType := class
 		result = PassRemoveVoidParams(result)
 		// result.Print()
 		result = PassRemoveReferences(result)
+		result = PassFixDynamicArrays(result)
 		// result = PassOptimizeJumpX86(result)
 		// result.Print()
 		result = PassSetFallbacksX86(result)

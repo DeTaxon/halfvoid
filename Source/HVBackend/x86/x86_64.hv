@@ -1470,6 +1470,8 @@ IsPtrLikeType := !(Type^ tp) -> bool
 		return true
 	if tp == GTypeStr
 		return true
+	if tp is TypeDynamicArray
+		return true
 	return false
 }
 

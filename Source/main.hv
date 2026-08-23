@@ -274,6 +274,7 @@ main := !(Vector.{char^} args) -> int
 	#ForceVirtualFunctions("internalHVModuleBase")
 	#ForceVirtualFunctions("BlobOnVector")
 	#ForceVirtualFunctions("StringSpan")
+	#ForceVirtualFunctions("StringView")
 	#ForceVirtualFunctions("String")
 	#ForceVirtualFunctions("Stream")
 	#ForceVirtualFunctions("XML")
@@ -402,13 +403,7 @@ main := !(Vector.{char^} args) -> int
 		if WorkBagPrintErrors()
 			exit(0)
 
-
-		if FastestRunner
-		{
-			CompileAndRunCode(toRun->{BoxFuncBody^})
-		}else{
-			CompileAndRunCode(toRun->{BoxFuncBody^})
-		}
+		CompileAndRunCode(toRun->{BoxFuncBody^})
 		FinilizeCache()
 		return 0
 	}

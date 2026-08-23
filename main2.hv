@@ -9,35 +9,12 @@ main := !(Vector.{char^} args) -> int
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
 	// x := 12
-	
-	step1Cmd := TVkCommandBuffer(null,null)
-	{
-		bar1 := VkImageMemoryBarrier()
-		// bar1.image = fbTextures[0].Img()
-		// bar1.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED
-		// bar1.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-		// bar1.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT
-		// bar1.subresourceRange.levelCount = 1
-		// bar1.subresourceRange.layerCount = 1
-		// vk.Funcs.vkCmdPipelineBarrier(step1Cmd.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
-	}
-
-	asdasd
+	RunFunc()
 }
-
-fbTextures := TVkTexture^[3]
-
-
-gob := class
-{
-	this := !() -> void {}
-}
-
-
 RunFunc := !() -> void
 {
 	// OpenFontTest()
-	makeSpirv()
+	// makeSpirv()
 	// tst()
 	// FlacTest()
 	// OpusTest()
@@ -48,7 +25,13 @@ RunFunc := !() -> void
 	//tst := ClassA.{ClassB}
 	//// tst.Emplace(int->{TypeId})
 	//tst.Emplace(int)
+
+	// c := gob()
+	// c.Test()
+	printf("hey %p %p\n",test2&,test2->VTable)
 }
+
+test2 := AVLMap.{int,int}
 
 ModuleTest := !() -> void
 {
@@ -209,6 +192,8 @@ ReflectionTest := !() -> void
 //	"GetArray",
 //)
 
+
+//TODO Why do i have CheckValue on GlobalVar2? works weird in non stop mode
 //TODO !(int size = -1) ,  -1 does not work as default value
 //TODO size_t comparation does not work in x86_64 toRead + redData > tstData.Size(), redData is int
 //TODO for it : Cls1->#ClassFamily , what if extends change for a class None->SomeClass, SomeClass1->SomeClass2
