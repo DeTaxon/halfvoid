@@ -172,9 +172,6 @@ AppendClass HVB_Function
 	StackOffsets := Vector.{int} // Also contains lable positions
 	ObjectsSizes := Vector.{int}
 
-	LocalPointers := Vector.{int}
-	GlobalPointers := Vector.{void^}
-
 	CreateBaseFunc := !() -> MCFunction^
 	{
 		result = new MCFunction
@@ -189,26 +186,6 @@ AppendClass HVB_Function
 	ComputeStackFrame := !() -> void
 	{
 		StackFrameSize = 0
-		//useStackSize := 0
-		//for it,i : Objects
-		//{
-		//	typ := Type^
-		//	if it& is MCVariable
-		//		typ = it&->{MCVariable^}.GetType()
-		//	if it& is MCReference
-		//		typ = GTypeVoidP
-		//	if typ != null
-		//	{
-		//		al := typ.GetAlign()
-		//		if al != 0
-		//		{
-		//			useStackSize = ((useStackSize + al - 1) div al) * al
-		//		}
-		//		useStackSize += typ.GetSize()
-		//	}
-		//}
-		//useStackSize = (useStackSize + 15) and_b 0xFFFFF0
-		//StackFrameSize = useStackSize
 
 		offset := int
 		StackOffsets.Resize(Objects.Size())
@@ -231,30 +208,6 @@ AppendClass HVB_Function
 				StackOffsets[i] = offset
 
 				offset += typ.GetSize()
-			}
-		}
-
-		GlobalPointers.Resize(Objects.Size())
-
-		for it, i : Objects
-		{
-			if it& is MCConstString
-			{
-				GlobalPointers[i] = it&->{MCConstString^}.GetValue().charPtr&
-				continue
-			}
-			if it&.IsConstant
-			{
-				GlobalPointers[i] = it.Value&
-				continue
-			}
-			if it is MCGlobalVariable
-			{
-				glbVar := it&->{MCGlobalVariable^}.GetValueObject()
-				memObj := GlobsMem.GetGlobalVarMem(glbVar)
-				assert(memObj != null)
-				GlobalPointers[i] = memObj
-				continue
 			}
 		}
 

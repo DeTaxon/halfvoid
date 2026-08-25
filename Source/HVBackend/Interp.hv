@@ -378,7 +378,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 					thisFrame.StoreVec4i(thisLine.var1,res)
 				}else{
-					assert(false) //TODO int
+					assert(false)
 				}
 			}else{
 				printf("some add %s\n",objTyp.GetBADStr().Str())
@@ -493,10 +493,6 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				printf("can not cast type %s to %s\n",fromType.GetBADStr().Str(),toType.GetBADStr().Str())
 				assert(false)
 			}
-		case "load_element_opt_class_const"
-			setPtr := thisFrame.GetReferencePtr(thisLine.var1)
-			v2 := thisFrame.GetObjectPtr(thisLine.var2)
-			setPtr->{u8^^}^ = v2->{u8^}[thisLine.ConstValue]&
 		case "set_reference"
 			assert(false)
 			// v1 := thisFrame.GetReferencePtr(thisLine.var1)
