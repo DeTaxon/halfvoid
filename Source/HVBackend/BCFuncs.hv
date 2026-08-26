@@ -69,6 +69,8 @@ BCFuncsType := class
 		result = PassFinalizeFunction(result)
 		tmpAlloc.Destroy()
 
+		// test := PassConvertToStackedBytecode(result)
+
 		result.ComputeStackFrame()
 		result.BaseFunction = itm
 

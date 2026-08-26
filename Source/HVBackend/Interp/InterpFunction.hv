@@ -1,0 +1,83 @@
+InterpMachineCode := class
+{
+	ResultIndex := int
+	InputsIndxStart := int
+	InputsIndxCount := int
+
+	IsVArgs := bool
+
+	Objects := Vector.{MCObject}
+
+	Codes := Vector.{MCBaseOpcodes}
+	CodeConsts := Vector.{u64}
+	CodeInputs := Vector.{s16}
+
+	BaseFunction := void^ //BoxFuncBody^
+
+	//optimization info
+	StackFrameSize := int
+	StackOffsets := Vector.{int} // Also contains lable positions
+	ObjectsSizes := Vector.{int}
+
+	ComputeStackFrame := !() -> void
+	{
+		StackFrameSize = 0
+
+		offset := int
+		StackOffsets.Resize(Objects.Size())
+		for it,i : Objects
+		{
+			typ := Type^
+			if it& is MCVariable or it& is MCConstValue
+				typ = it&->{MCVariable^}.GetType()
+			if it& is MCReference
+				typ = GTypeVoidP
+
+			if typ != null
+			{
+				al := typ.GetAlign()
+				if al != 0
+				{
+					offset = ((offset + al - 1) div al) * al
+				}
+
+				StackOffsets[i] = offset
+
+				offset += typ.GetSize()
+			}
+		}
+
+		StackFrameSize = (offset + 15) and_b 0xFFFFF0
+
+		if Objects.Size() != 0
+		{
+			ObjectsSizes.Resize(Objects.Size())
+
+			for it, i : Objects
+			{
+				ObjectsSizes[i] = it.GetType()?.GetSize()
+			}
+		}
+	}
+}
+
+PassConvertToStackedBytecode := !(HVB_Function^ fnc) -> InterpMachineCode^
+{
+	result = new InterpMachineCode
+
+	result.Objects.Resize(fnc.Objects.Size())
+	result.Objects[^i] = fnc.Objects[i]
+
+	result.Codes.Resize(fnc.Lines.Size())
+	result.CodeConsts.Resize(fnc.Lines.Size())
+	result.CodeInputs.Resize(fnc.Lines.Size()*5)
+
+	for it,i : fnc.Lines
+	{
+		result.Codes[i] = it.opcode
+		for j : 5
+			result.CodeInputs[i*5 + j] = it.var1&[j]
+	}
+
+	result.ComputeStackFrame()
+}
