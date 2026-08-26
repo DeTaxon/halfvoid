@@ -1,0 +1,121 @@
+
+
+PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
+{
+	ctx := MakeGreedyPass(fnc,1,2,true)
+
+	oPtr := ctx.oPtr
+	cPtr := ctx.cPtr
+
+	o := ref ctx.objsSize
+	c := ref ctx.cmdsSize
+c
+	iPtr := fnc.Lines.GetPointer()
+
+	for i : fnc.InputsIndxCount
+	{
+		indx := fnc.InputsIndxStart + i
+
+		ASDMakeStore(oPtr,cPtr,c,indx,i)
+	}
+	
+	i := 0
+	end := fnc.Lines.Size()
+	while i < end
+	{
+		if iPtr[i].opcode == "call_start"
+		{
+			resId := iPtr[i].var1
+			fncId := iPtr[i].var2
+			i++
+			j := 0
+			while iPtr[i].opcode != "call_end"
+			{
+				ASDMakeLoad(oPtr,cPtr,c,j++,iPtr[i].var1)
+				i++
+			}
+			i++
+
+			cPtr[c++] = MCLine("call_start",0,fncId,j)
+			cPtr[c++] = MCLine("call_end")
+
+			if resId != 0
+			{
+				ASDMakeStore(oPtr,cPtr,c,resId,0)
+			}
+
+		}else{
+			cPtr[c++] = iPtr[i]
+			i++
+		}
+	}
+
+	if fnc.ResultIndex != 0
+	{
+		ASDMakeLoad(oPtr,cPtr,c,0,fnc.ResultIndex)
+	}
+
+	return ctx.GenerateFunc()
+}
+
+ASDMakeStore := !(MCObject^ objects,MCLine^ cPtr,int& c,int varId,int regId) -> void
+{
+
+	tp := objects[varId].GetType()
+
+	code := MCBaseOpcodes
+
+	if IsFloat(tp)
+	{
+		switch tp.GetSize()
+		{
+		case 4 code = "reg_store_f32"
+		case 8 code = "reg_store_f64"
+		}
+	}else{
+		switch tp.GetSize()
+		{
+		case 1 code = "reg_store_i8"
+		case 2 code = "reg_store_i16"
+		case 4 code = "reg_store_i32"
+		case 8 code = "reg_store_i64"
+		}
+	}
+	cPtr[c++] = MCLine(code,varId,regId)
+}
+ASDMakeLoad := !(MCObject^ objects,MCLine^ cPtr,int& c,int regId,int varId) -> void
+{
+	tp := objects[varId].GetType()
+	code := MCBaseOpcodes
+
+	if IsFloat(tp)
+	{
+		switch tp.GetSize()
+		{
+		case 4 code = "reg_load_f32"
+		case 8 code = "reg_load_f64"
+		}
+
+	}else{
+		if IsUInt(tp)
+		{
+			switch tp.GetSize()
+			{
+			case 1 code = "reg_load_u8"
+			case 2 code = "reg_load_u16"
+			case 4 code = "reg_load_u32"
+			case 8 code = "reg_load_u64"
+			}
+		}else{
+			switch tp.GetSize()
+			{
+			case 1 code = "reg_load_s8"
+			case 2 code = "reg_load_s16"
+			case 4 code = "reg_load_s32"
+			case 8 code = "reg_load_s64"
+			}
+		}
+
+	}
+	cPtr[c++] = MCLine(code,regId,varId)
+}

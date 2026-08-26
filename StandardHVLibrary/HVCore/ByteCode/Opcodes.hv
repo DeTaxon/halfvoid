@@ -106,20 +106,26 @@ MCBaseOpcodes := enum extend u16
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	//BACKEND interpreter
-	// "stack_push",
-	// "stack_pop",
-	//
-	// "stack_add_int",
-	// "stack_sub_int",
-	// "stack_smul_int",
-	// "stack_umul_int",
-	// "stack_sdiv_int",
-	// "stack_udiv_int",
-	// "stack_smod_int",
-	// "stack_umod_int",
-	//
-	// "stack_add_float",
-	// "stack_sub_float",
+	"reg_store_i8",
+	"reg_store_i16",
+	"reg_store_i32",
+	"reg_store_i64",
+
+	"reg_load_s8",
+	"reg_load_s16",
+	"reg_load_s32",
+	"reg_load_s64",
+
+	"reg_load_u8",
+	"reg_load_u16",
+	"reg_load_u32",
+	"reg_load_u64",
+
+	"reg_load_f32",
+	"reg_load_f64",
+
+	"reg_store_f32",
+	"reg_store_f64",
 	
 	//BACKEND spirv
 	"spirv_hint_loop_merge",

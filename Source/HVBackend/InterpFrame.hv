@@ -22,6 +22,8 @@ MCInterpFuncFrame := class
 
 	ParentFrame := MCInterpFuncFrame^
 
+	Regs := void^
+
 	cs := int
 
 	CreateStack := !() -> void
@@ -37,6 +39,8 @@ MCInterpFuncFrame := class
 		}
 
 		RevStackState = StackPointer[stackSize]&
+
+		Regs = AllocateOnStack(8*256 + 16*32)
 	}
 	DestroyStack := !() -> void
 	{
@@ -52,6 +56,7 @@ MCInterpFuncFrame := class
 		StackPointer = inherStack.StackPointer
 		StackAllocated = inherStack.StackAllocated
 		RevStackState = inherStack.RevStackState
+		Regs = inherStack.Regs
 	}
 
 	AllocateOnStack := !(int allocSize) -> void^
@@ -363,6 +368,53 @@ MCInterpFuncFrame := class
 		if fType.IsVargs
 		{
 			ffi_prep_cif_var(someCif[0]&,2, varsCount,indexes.Size(),resultType,valuesTypes[0]&)
+		}else{
+			ffi_prep_cif(someCif[0]&,2, varsCount,resultType,valuesTypes[0]&)
+		}
+		ffi_call(someCif[0]&,fPointer,resultValue,valuesPtr[0]&)
+	}
+	CallFuncPtr2 := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,void^ vals,int valsCount) -> void
+	{
+		assert(fType != null)
+		fType = NormalizeFuncType(fType)
+		assert(fType != null)
+		varsCount := fType.Params.Size()
+		assert(varsCount <= 40) //TODO Unconst
+
+		values := void^[40]
+		valuesPtr := void^[40]
+		valuesTypes := void^[40]
+
+		resultType := ffi_type_pointer->{void^}
+
+		// if not fType.ResultRef and fType.ExtraResults.Size() == 0
+		// {
+		// 	if fType.ResultType == GTypeFloat
+		// 	{
+		// 		resultType = ffi_type_float
+		// 	}else if fType.ResultType == GTypeDouble {
+		// 		resultType = ffi_type_double
+		// 	}
+		// }
+		//
+
+		for i : valsCount
+		{
+			if i == 2
+			{
+				valuesPtr[i] = vals->{s64^}[i]&
+				valuesTypes[i] = ffi_type_double
+			}else{
+				valuesPtr[i] = vals->{s64^}[i]&
+				valuesTypes[i] = ffi_type_sint64
+			}
+		}
+
+		someCif := u8[256] //TODO get type size
+
+		if fType.IsVargs
+		{
+			ffi_prep_cif_var(someCif[0]&,2, varsCount,valsCount,resultType,valuesTypes[0]&)
 		}else{
 			ffi_prep_cif(someCif[0]&,2, varsCount,resultType,valuesTypes[0]&)
 		}

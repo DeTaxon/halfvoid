@@ -65,6 +65,8 @@ BCFuncsType := class
 
 		result = PassRemoveUnusedObjects(result)
 
+		result = PassAddGlobalRegsInterp(result)
+
 		SetAllocator(oldAlloc)
 		result = PassFinalizeFunction(result)
 		tmpAlloc.Destroy()

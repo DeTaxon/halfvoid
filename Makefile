@@ -117,7 +117,7 @@ run:
 run2:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv --vk vk.xml
 run_test:
-	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -fastest-runner -nomodules -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv
+	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -nomodules -run RunFunc $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary main2.hv
 run.exe:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid.exe -run RunTest $(NoScary) -g -C0 StandardHVLibrary main2.hv -cache /tmp/TestCache.zip
 

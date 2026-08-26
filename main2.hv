@@ -28,7 +28,20 @@ RunFunc := !() -> void
 
 	// c := gob()
 	// c.Test()
-	printf("hey %p %p\n",test2&,test2->VTable)
+	// printf("hey %p %p\n",test2&,test2->VTable)
+	// tst()
+	x := SubFunc(33,50)
+	y := SubFunc2(1.3,5.05)
+	printf("hello world %i %f\n",x,y)
+}
+
+SubFunc := !(int a, int b) -> int
+{
+	return a + b
+}
+SubFunc2 := !(float a, float b) -> float
+{
+	return a + b
 }
 
 test2 := AVLMap.{int,int}
@@ -319,7 +332,7 @@ ILTest := !() -> void
 tst := !() -> void {
 	nums := 1_000
 	// nums = 10
-	nums = 10_000
+	// nums = 10_000
 
 	bigNums := nums*3
 	values := malloc(bigNums*4)->{int^}

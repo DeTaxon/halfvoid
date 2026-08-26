@@ -61,7 +61,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, Vector.{voi
 
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame, Vector.{int} callerIndx,int returnIndex = 0) -> void
 {
-	// interpFunc.Print()
+	interpFunc.Print()
 	//exit(0)
 
 	if interpFunc.Lines.Size() == 0
@@ -74,6 +74,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 	thisFrame.CreateFrame(iCntx,interpFunc)
 	thisFrame.callerIndx = callerIndx
 	thisFrame.ParentFrame = callerFrame
+
+	ra := thisFrame.Regs
+	rv := thisFrame.Regs->{u64^}[256]&->{vec4f^}
 
 	cs := ref thisFrame.cs
 
@@ -113,19 +116,19 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		}
 		
 	}
-	if callerFrame != null and returnIndex != 0
-	{
-		thisFrame.localVarTable[interpFunc.ResultIndex] = callerFrame.localVarTable[returnIndex]
-	}
-	if callerIndx.Size() != 0
-	{
-		argCount := min(callerIndx.Size(),interpFunc.InputsIndxCount)
-		rng := Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + argCount - 1)
-		for it,i : rng
-		{
-			thisFrame.localVarTable[it] = callerFrame.localVarTable[callerIndx[i]]
-		}
-	}
+	// if callerFrame != null and returnIndex != 0
+	// {
+	// 	thisFrame.localVarTable[interpFunc.ResultIndex] = callerFrame.localVarTable[returnIndex]
+	// }
+	// if callerIndx.Size() != 0
+	// {
+	// 	argCount := min(callerIndx.Size(),interpFunc.InputsIndxCount)
+	// 	rng := Range(interpFunc.InputsIndxStart,interpFunc.InputsIndxStart + argCount - 1)
+	// 	for it,i : rng
+	// 	{
+	// 		thisFrame.localVarTable[it] = callerFrame.localVarTable[callerIndx[i]]
+	// 	}
+	// }
 
 	labelsPtr := interpFunc.StackOffsets.GetPointer()
 
@@ -136,8 +139,30 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		thisLine := ref opPtr[cs]
 		switch thisLine.opcode
 		{
+		case "reg_store_i8"  thisFrame.StoreS64(thisLine.var1,ra->{s64^}[thisLine.var2])
+		case "reg_store_i16" thisFrame.StoreS64(thisLine.var1,ra->{s64^}[thisLine.var2])
+		case "reg_store_i32" thisFrame.StoreS64(thisLine.var1,ra->{s64^}[thisLine.var2])
+		case "reg_store_i64" thisFrame.StoreS64(thisLine.var1,ra->{s64^}[thisLine.var2])
+
+		case "reg_load_s8"  ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
+		case "reg_load_s16" ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
+		case "reg_load_s32" ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
+		case "reg_load_s64" ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
+
+		case "reg_load_u8"  ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
+		case "reg_load_u16" ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
+		case "reg_load_u32" ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
+		case "reg_load_u64" ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
+
+		case "reg_store_f32" thisFrame.StoreDouble(thisLine.var1,ra->{double^}[thisLine.var2])
+		case "reg_store_f64" thisFrame.StoreDouble(thisLine.var1,ra->{double^}[thisLine.var2])
+
+		case "reg_load_f32" ra->{double^}[thisLine.var1] = thisFrame.LoadDouble(thisLine.var2)
+		case "reg_load_f64" ra->{double^}[thisLine.var1] = thisFrame.LoadDouble(thisLine.var2)
+
 		case "noop"
 		case "call_start"
+			varsCount := thisLine.var3
 			fncObj := ref interpFunc.Objects[opPtr[cs].var2]
 			returnIndexCall := opPtr[cs].var1
 			cs += 1
@@ -215,13 +240,13 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 						MCInterpFunction(iCntx,fncAsMC,thisFrame&,indxs,returnIndexCall)
 					}else{
 						fncType := memField.GetType()->{TypeFunc^}.ResultType.Base
-						thisFrame.CallFuncPtr(fncType->{TypeFunc^},memObj,resultPtr,indxs,0)
+						thisFrame.CallFuncPtr2(fncType->{TypeFunc^},memObj,resultPtr,ra,varsCount)
 					}
 
 				}else if fncHV is BoxFuncDeclare {
 					fncType := fncHV.GetType()->{TypeFunc^}
-					thisFrame.CallFuncPtr(fncType,iCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^}),resultPtr,indxs,0)
-				}else if fncHV is in BoxFuncBody{
+					thisFrame.CallFuncPtr2(fncType,iCntx.DeclareToPtr(fncHV->{BoxFuncDeclare^}),resultPtr,ra,varsCount)
+				}else if fncHV is in BoxFuncBody {
 					bdy := fncHV->{BoxFuncBody^}
 					fncPtr := void^
 
