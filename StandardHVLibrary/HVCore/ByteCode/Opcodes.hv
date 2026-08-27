@@ -126,6 +126,12 @@ MCBaseOpcodes := enum extend u16
 
 	"reg_store_f32",
 	"reg_store_f64",
+
+	"reg_store_v64",
+	"reg_store_v128",
+
+	"reg_load_v64",
+	"reg_load_v128",
 	
 	//BACKEND spirv
 	"spirv_hint_loop_merge",

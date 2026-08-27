@@ -123,7 +123,7 @@ MCInterpContext := class
 	}
 	ThisToCif := !(Type^ itType) -> void^
 	{
-		if itType == GTypeChar.GetPoint() or itType == GTypeStr
+		if IsPtrLikeType(itType)
 		{
 			return ffi_type_pointer
 		}else if itType is in  TypePoint{
@@ -160,6 +160,22 @@ MCInterpContext := class
 	{
 		res := MCFunction^
 		functionPointers.Value.Get(ptr,(x) ==> { res = x })
+
+		if res == null
+		{
+			if vtableFunctions.Value.ContainSome(ptr)
+			{
+				mx := vtableFunctions.Value.GetOne(ptr)
+				if mx is ResistFunc
+				{
+					mx = mx->{ResistFunc^}.base->{BoxFuncBody^}
+				}
+
+				assert(mx is in BoxFuncBody)
+
+				return GetMCFunc(mx)
+			}
+		}
 		return res
 	}
 

@@ -39,6 +39,15 @@ AppendClass GreedyPass
 		result = objsSize
 		oPtr[objsSize++] = newReg
 	}
+	PushS64 := !(s64 value) -> int
+	{
+		newReg := MCConstS64
+
+		newReg.GetValue() = value
+
+		result = objsSize
+		oPtr[objsSize++] = newReg
+	}
 	PushFloat := !(float value) -> int
 	{
 		newReg := MCConstFloat

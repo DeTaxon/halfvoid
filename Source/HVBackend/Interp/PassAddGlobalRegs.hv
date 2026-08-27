@@ -2,7 +2,9 @@
 
 PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
 {
-	ctx := MakeGreedyPass(fnc,1,2,true)
+	calls := char[256]
+
+	ctx := MakeGreedyPass(fnc,2,2,true)
 
 	oPtr := ctx.oPtr
 	cPtr := ctx.cPtr
@@ -25,18 +27,39 @@ c
 	{
 		if iPtr[i].opcode == "call_start"
 		{
+
 			resId := iPtr[i].var1
 			fncId := iPtr[i].var2
 			i++
 			j := 0
 			while iPtr[i].opcode != "call_end"
 			{
+				tp := oPtr[iPtr[i].var1].GetType()
+
+				if tp == GTypeFloat {
+					calls[j] = 'f'
+				} else if tp == GTypeDouble {
+					calls[j] = 'd'
+				} else if tp is in TypeVector {
+					calls[j] = 'v'
+				} else {
+					calls[j] = 'i'
+					assert(IsRAXCastType(tp))
+				}
 				ASDMakeLoad(oPtr,cPtr,c,j++,iPtr[i].var1)
 				i++
 			}
 			i++
 
-			cPtr[c++] = MCLine("call_start",0,fncId,j)
+			varsCount := j
+
+			for k : (varsCount + 3) div 4
+			{
+				newInt := ctx.PushS64(calls[0]&->{s64^}[k])
+				ASDMakeLoad(oPtr,cPtr,c,j++,newInt)
+			}
+
+			cPtr[c++] = MCLine("call_start",0,fncId,varsCount)
 			cPtr[c++] = MCLine("call_end")
 
 			if resId != 0
@@ -65,7 +88,14 @@ ASDMakeStore := !(MCObject^ objects,MCLine^ cPtr,int& c,int varId,int regId) -> 
 
 	code := MCBaseOpcodes
 
-	if IsFloat(tp)
+	if tp is in TypeVector
+	{
+		switch tp.GetSize()
+		{
+		case 8 code = "reg_store_v64"
+		case 16 code = "reg_store_v128"
+		}
+	} else if IsFloat(tp)
 	{
 		switch tp.GetSize()
 		{
@@ -88,7 +118,15 @@ ASDMakeLoad := !(MCObject^ objects,MCLine^ cPtr,int& c,int regId,int varId) -> v
 	tp := objects[varId].GetType()
 	code := MCBaseOpcodes
 
-	if IsFloat(tp)
+	if tp is in TypeVector
+	{
+		switch tp.GetSize()
+		{
+		case 8 code = "reg_load_v64"
+		case 16 code = "reg_load_v128"
+		}
+
+	}else if IsFloat(tp)
 	{
 		switch tp.GetSize()
 		{

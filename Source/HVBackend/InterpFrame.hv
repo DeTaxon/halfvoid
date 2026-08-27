@@ -397,13 +397,20 @@ MCInterpFuncFrame := class
 		// 	}
 		// }
 		//
+		//
+		flags := vals->{s64^}[valsCount]&->{char^}
 
 		for i : valsCount
 		{
-			if i == 2
+			if flags[i] == 'd'
 			{
 				valuesPtr[i] = vals->{s64^}[i]&
 				valuesTypes[i] = ffi_type_double
+			}else if flags[i] == 'f' {
+				ptr := vals->{double^}[i]&
+				ptr->{float^}^ = ptr^
+				valuesPtr[i] = ptr
+				valuesTypes[i] = ffi_type_float
 			}else{
 				valuesPtr[i] = vals->{s64^}[i]&
 				valuesTypes[i] = ffi_type_sint64
@@ -418,6 +425,6 @@ MCInterpFuncFrame := class
 		}else{
 			ffi_prep_cif(someCif[0]&,2, varsCount,resultType,valuesTypes[0]&)
 		}
-		ffi_call(someCif[0]&,fPointer,resultValue,valuesPtr[0]&)
+		ffi_call(someCif[0]&,fPointer,vals,valuesPtr[0]&)
 	}
 }

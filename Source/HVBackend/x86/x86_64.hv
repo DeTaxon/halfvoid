@@ -1483,6 +1483,8 @@ IsRAXCastType := !(Type^ tp) -> bool
 		return true
 	if tp is TypeEnum
 		return true
+	if tp == GTypeBool
+		return true
 	return false
 }
 

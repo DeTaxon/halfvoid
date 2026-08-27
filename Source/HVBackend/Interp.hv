@@ -39,29 +39,29 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, Vector.{voi
 
 	defer thisFrame.DestroyStack()
 
+	ra := thisFrame.Regs
+	rv := thisFrame.Regs->{u64^}[256]&->{vec4f^}
+
 	
 	retIndex := 0
-	if resultPtr != null
-	{
-		retIndex = 1
-		thisFrame.localVarTable[1] = resultPtr
-	}
-	inptsIndexes := MakeVectorOnStack.{int,10}()
 	if inputs.Size() != 0
 	{
 		for it,i : inputs
 		{
-			c := i + 5
-			inptsIndexes.Push(c)
-			thisFrame.localVarTable[c] = it
+			ra->{s64^}[i] = it->{s64^}^
 		}
 	}
-	MCInterpFunction(iCntx,interpFunc,thisFrame&,inptsIndexes,retIndex)
+	MCInterpFunction(iCntx,interpFunc,thisFrame&,![],0)
+
+	if resultPtr != null
+	{
+		resultPtr->{s64^}^ = ra->{s64^}[0]
+	}
 }
 
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame, Vector.{int} callerIndx,int returnIndex = 0) -> void
 {
-	interpFunc.Print()
+	// interpFunc.Print()
 	//exit(0)
 
 	if interpFunc.Lines.Size() == 0
@@ -154,11 +154,17 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "reg_load_u32" ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
 		case "reg_load_u64" ra->{s64^}[thisLine.var1] = thisFrame.LoadS64(thisLine.var2)
 
+		case "reg_load_f32" ra->{double^}[thisLine.var1] = thisFrame.LoadDouble(thisLine.var2)
+		case "reg_load_f64" ra->{double^}[thisLine.var1] = thisFrame.LoadDouble(thisLine.var2)
+
 		case "reg_store_f32" thisFrame.StoreDouble(thisLine.var1,ra->{double^}[thisLine.var2])
 		case "reg_store_f64" thisFrame.StoreDouble(thisLine.var1,ra->{double^}[thisLine.var2])
 
-		case "reg_load_f32" ra->{double^}[thisLine.var1] = thisFrame.LoadDouble(thisLine.var2)
-		case "reg_load_f64" ra->{double^}[thisLine.var1] = thisFrame.LoadDouble(thisLine.var2)
+		case "reg_load_v64"  rv->{vec4f^}[thisLine.var1] = thisFrame.LoadVec4f(thisLine.var2)
+		case "reg_load_v128" rv->{vec4f^}[thisLine.var1] = thisFrame.LoadVec4f(thisLine.var2)
+
+		case "reg_store_v64" thisFrame.StoreVec4f(thisLine.var1,rv->{vec4f^}[thisLine.var2])
+		case "reg_store_v128" thisFrame.StoreVec4f(thisLine.var1,rv->{vec4f^}[thisLine.var2])
 
 		case "noop"
 		case "call_start"
@@ -259,7 +265,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			} else if fncObj& is MCConstPointerTyped {
 				assert(fncObj.GetType() is in TypePoint)
 				fType := fncObj.GetType().Base->{TypeFunc^}
-				thisFrame.CallFuncPtr(fType,fncObj&->{MCConstPointer^}.GetValue(),resultPtr,indxs,0)
+				thisFrame.CallFuncPtr2(fType,fncObj&->{MCConstPointer^}.GetValue(),resultPtr,ra,varsCount)
 			} else if fncObj& is MCVariable or fncObj& is MCReference or fncObj is MCConstValue {
 				functionPointer := thisFrame.GetObjectPtr(thisLine.var2)->{void^^}^
 				assert(functionPointer != null) //TODO emit error
@@ -269,7 +275,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 					MCInterpFunction(iCntx,fncVal,thisFrame&,indxs,returnIndexCall)
 				}else{
 					fType := fncObj.GetType().Base->{TypeFunc^}
-					thisFrame.CallFuncPtr(fType,functionPointer,resultPtr,indxs,0)
+					thisFrame.CallFuncPtr2(fType,functionPointer,resultPtr,ra,varsCount)
 				}
 			} else if fncObj& is MCGlobalVariable
 			{
@@ -281,7 +287,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				{
 					MCInterpFunction(iCntx,fncVal,thisFrame&,indxs,returnIndexCall)
 				}else{
-					thisFrame.CallFuncPtr(glbVar.GetType().Base->{TypeFunc^},memObj->{void^^}^,resultPtr,indxs,0)
+					thisFrame.CallFuncPtr2(glbVar.GetType().Base->{TypeFunc^},memObj->{void^^}^,resultPtr,ra,varsCount)
 				}
 
 			}else{

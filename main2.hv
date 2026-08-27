@@ -30,18 +30,26 @@ RunFunc := !() -> void
 	// c.Test()
 	// printf("hey %p %p\n",test2&,test2->VTable)
 	// tst()
-	x := SubFunc(33,50)
-	y := SubFunc2(1.3,5.05)
-	printf("hello world %i %f\n",x,y)
+	// x := SubFunc(33,50)
+	// y := SubFunc2(1.3,5.05)
+	// printf("hello world %i %f\n",x,y)
+	// tst := printf("hello world %f %i\n",y,x)
+	// printf("test %i\n",tst)
+
+	c := cls
+	hmm := vec4f
+	hmm.x = 10
+	hmm.y = 7
+	printf("why %f %f\n",hmm.x,hmm.y)
+	c.tst(hmm)
 }
 
-SubFunc := !(int a, int b) -> int
+cls := class
 {
-	return a + b
-}
-SubFunc2 := !(float a, float b) -> float
-{
-	return a + b
+	tst := virtual !(vec4f gmm) -> void
+	{
+		printf("wut %f %f\n",gmm.x,gmm.y)
+	}
 }
 
 test2 := AVLMap.{int,int}
