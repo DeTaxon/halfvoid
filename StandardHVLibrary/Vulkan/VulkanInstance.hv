@@ -68,7 +68,7 @@ VulkanInstance := class
 		Funcs.vkEnumeratePhysicalDevices(Instance,devCount&,devs.GetPointer())
 		
 		numDevice := DeviceSelectStep(devs&) //TODO check if bad  //<<<<<<<<<<<<<<<<<<<<<<<<< DeviceSelectStep
-		
+
 		PhysicalDevice = devs[numDevice]
 
 		devExts := Vector.{VkExtensionProperties}
@@ -125,15 +125,15 @@ VulkanInstance := class
 		dynamicRender.dynamicRendering = VK_TRUE
 		pushIter(dynamicRender&)
 
-		meshFeature := VkPhysicalDeviceMeshShaderFeaturesEXT()
-		meshFeature.meshShader = 1
-		meshFeature.taskShader = 1
-		if useMeshShader
-			pushIter(meshFeature&)
+		// meshFeature := VkPhysicalDeviceMeshShaderFeaturesEXT()
+		// meshFeature.meshShader = 1
+		// meshFeature.taskShader = 1
+		// if useMeshShader
+		// 	pushIter(meshFeature&)
 
-		maintn4 := VkPhysicalDeviceMaintenance4Features()
-		maintn4.maintenance4 = 1
-		pushIter(maintn4&)
+		// maintn4 := VkPhysicalDeviceMaintenance4Features()
+		// maintn4.maintenance4 = 1
+		// pushIter(maintn4&)
 
 		// shaderObject := VkPhysicalDeviceShaderObjectFeaturesEXT()
 		// shaderObject.shaderObject = 1

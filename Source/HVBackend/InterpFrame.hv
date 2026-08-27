@@ -387,15 +387,15 @@ MCInterpFuncFrame := class
 
 		resultType := ffi_type_pointer->{void^}
 
-		// if not fType.ResultRef and fType.ExtraResults.Size() == 0
-		// {
-		// 	if fType.ResultType == GTypeFloat
-		// 	{
-		// 		resultType = ffi_type_float
-		// 	}else if fType.ResultType == GTypeDouble {
-		// 		resultType = ffi_type_double
-		// 	}
-		// }
+		if not fType.ResultRef and fType.ExtraResults.Size() == 0
+		{
+			if fType.ResultType == GTypeFloat
+			{
+				resultType = ffi_type_float
+			}else if fType.ResultType == GTypeDouble {
+				resultType = ffi_type_double
+			}
+		}
 		//
 		//
 		flags := vals->{s64^}[valsCount]&->{char^}

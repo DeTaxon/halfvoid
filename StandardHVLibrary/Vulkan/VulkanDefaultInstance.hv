@@ -112,8 +112,8 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 				preferedCards[2] = i
 			}
 
-			//printf("-name %s\n",devProp.deviceName&)
-			//printf("-type %i\n",devProp.deviceType)
+			// printf("-name %s\n",devProp.deviceName&)
+			// printf("-type %i\n",devProp.deviceType)
 
 			propsCount := u32
 			Funcs.vkGetPhysicalDeviceQueueFamilyProperties(it,propsCount&,null)
@@ -155,7 +155,7 @@ VulkanDefaultInstance := class extend VulkanGLFWInstance
 		expectDeviceExtensions.Push("VK_KHR_dynamic_rendering")
 		expectDeviceExtensions.Push("VK_KHR_depth_stencil_resolve")
 		expectDeviceExtensions.Push("VK_KHR_create_renderpass2")
-		expectDeviceExtensions.Push("VK_EXT_external_memory_host")
+		// expectDeviceExtensions.Push("VK_EXT_external_memory_host")
 		// expectDeviceExtensions.Push("VK_EXT_shader_object")
 
 

@@ -59,7 +59,7 @@ c
 				ASDMakeLoad(oPtr,cPtr,c,j++,newInt)
 			}
 
-			cPtr[c++] = MCLine("call_start",0,fncId,varsCount)
+			cPtr[c++] = MCLine("call_start",resId,fncId,varsCount)
 			cPtr[c++] = MCLine("call_end")
 
 			if resId != 0

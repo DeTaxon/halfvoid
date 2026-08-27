@@ -36,12 +36,15 @@ RunFunc := !() -> void
 	// tst := printf("hello world %f %i\n",y,x)
 	// printf("test %i\n",tst)
 
-	c := cls
-	hmm := vec4f
-	hmm.x = 10
-	hmm.y = 7
-	printf("why %f %f\n",hmm.x,hmm.y)
-	c.tst(hmm)
+	// c := cls
+	// hmm := vec4f
+	// hmm.x = 10
+	// hmm.y = 7
+	// printf("why %f %f\n",hmm.x,hmm.y)
+	// c.tst(hmm)
+	
+	k := "3.14"
+	printf("hey %f\n",strtod(k,null))
 }
 
 cls := class
