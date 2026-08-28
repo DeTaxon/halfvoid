@@ -42,9 +42,8 @@ RunFunc := !() -> void
 	// hmm.y = 7
 	// printf("why %f %f\n",hmm.x,hmm.y)
 	// c.tst(hmm)
-	
-	k := "3.14"
-	printf("hey %f\n",strtod(k,null))
+
+	c := new BlobOnVector(13)
 }
 
 cls := class

@@ -11,7 +11,7 @@ PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
 
 	o := ref ctx.objsSize
 	c := ref ctx.cmdsSize
-c
+
 	iPtr := fnc.Lines.GetPointer()
 
 	for i : fnc.InputsIndxCount
@@ -30,20 +30,48 @@ c
 
 			resId := iPtr[i].var1
 			fncId := iPtr[i].var2
+
+			fType := oPtr[fncId].GetType()
+
+			if fType is in TypePoint
+				fType = fType.Base
+			assert(fType is TypeFunc)
+			ft := fType->{TypeFunc^}
+
+			calls[0] = '0'
+			if resId != 0
+			{
+				
+				if not ft.ResultRef and ft.ExtraResults.Size() == 0
+				{
+					resTp := ft.ResultType
+
+					if resTp == GTypeFloat
+					{
+						calls[0] = 'f'
+					}else if resTp == GTypeDouble {
+						calls[0] = 'd'
+					}
+
+				}
+				// TODO vector?
+			}
+
 			i++
 			j := 0
+			j2 := 1
 			while iPtr[i].opcode != "call_end"
 			{
 				tp := oPtr[iPtr[i].var1].GetType()
 
 				if tp == GTypeFloat {
-					calls[j] = 'f'
+					calls[j2++] = 'f'
 				} else if tp == GTypeDouble {
-					calls[j] = 'd'
+					calls[j2++] = 'd'
 				} else if tp is in TypeVector {
-					calls[j] = 'v'
+					calls[j2++] = 'v'
 				} else {
-					calls[j] = 'i'
+					calls[j2++] = 'i'
 					assert(IsRAXCastType(tp))
 				}
 				ASDMakeLoad(oPtr,cPtr,c,j++,iPtr[i].var1)
@@ -53,7 +81,7 @@ c
 
 			varsCount := j
 
-			for k : (varsCount + 3) div 4
+			for k : (j2 + 3) div 4
 			{
 				newInt := ctx.PushS64(calls[0]&->{s64^}[k])
 				ASDMakeLoad(oPtr,cPtr,c,j++,newInt)

@@ -288,91 +288,6 @@ MCInterpFuncFrame := class
 	{
 		RevStackState = RevStackState[8]&
 	}
-
-	CallFuncPtr := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,Vector.{int} indexes,int resultIndex) -> void
-	{
-		assert(fType != null)
-		fType = NormalizeFuncType(fType)
-		assert(fType != null)
-		varsCount := fType.Params.Size()
-		assert(varsCount <= 40) //TODO Unconst
-
-		values := void^[40]
-		valuesPtr := void^[40]
-		valuesTypes := void^[40]
-
-		resultType := ffi_type_pointer->{void^}
-
-		if not fType.ResultRef and fType.ExtraResults.Size() == 0
-		{
-			if fType.ResultType == GTypeFloat
-			{
-				resultType = ffi_type_float
-			}else if fType.ResultType == GTypeDouble {
-				resultType = ffi_type_double
-			}
-		}
-
-		for it,i : indexes
-		{
-			itType := func.Objects[it]&.GetType()
-			if itType == GTypeChar.GetPoint() or itType == GTypeStr
-			{
-				values[i] = GetStringPtr(it)
-				valuesPtr[i] = values[i]&
-				valuesTypes[i] = ffi_type_pointer
-			}else if itType is in  TypePoint
-			{
-				values[i] = GetObjectPtr(it)->{void^^}^
-				valuesPtr[i] = values[i]&
-				valuesTypes[i] = ffi_type_pointer
-			}else if itType == GTypeDouble{
-				values[i]&->{double^}^ = GetDouble(it)
-				valuesPtr[i] = values[i]&
-				valuesTypes[i] = ffi_type_double
-			}else if itType == GTypeFloat{
-				valuesPtr[i] = GetObjectPtr(it)->{void^}
-				valuesTypes[i] = ffi_type_float
-			}else if itType == GTypeInt or itType == GTypeTypeId  or itType is in TypeEnum{ // TODO check type size for enum
-				values[i]&->{int^}^ = GetInt(it)
-				valuesPtr[i] = values[i]&
-				valuesTypes[i] = ffi_type_sint32
-			}else if itType == GTypeU32{
-				values[i]&->{int^}^ = GetInt(it)
-				valuesPtr[i] = values[i]&
-				valuesTypes[i] = ffi_type_uint32
-			}else if itType == GTypeU64{
-				values[i]&->{s64^}^ = GetS64(it)
-				valuesPtr[i] = values[i]&
-				valuesTypes[i] = ffi_type_uint64
-			}else if itType == GTypeS64{
-				values[i]&->{s64^}^ = GetS64(it)
-				valuesPtr[i] = values[i]&
-				valuesTypes[i] = ffi_type_sint64
-			}else if itType == GTypeBool{
-				valuesPtr[i] = GetObjectPtr(it)
-				valuesTypes[i] = ffi_type_sint8
-			}else if itType == GTypeU8{
-				valuesPtr[i] = GetObjectPtr(it)
-				valuesTypes[i] = ffi_type_uint8
-			}else if itType == GTypeChar {
-				valuesPtr[i] = GetObjectPtr(it)
-				valuesTypes[i] = ffi_type_uint8
-			}else{
-				printf("unknown type %s\n",itType.GetBADStr().Str())
-				assert(false)
-			}
-		}
-		someCif := u8[256] //TODO get type size
-
-		if fType.IsVargs
-		{
-			ffi_prep_cif_var(someCif[0]&,2, varsCount,indexes.Size(),resultType,valuesTypes[0]&)
-		}else{
-			ffi_prep_cif(someCif[0]&,2, varsCount,resultType,valuesTypes[0]&)
-		}
-		ffi_call(someCif[0]&,fPointer,resultValue,valuesPtr[0]&)
-	}
 	CallFuncPtr2 := !(TypeFunc^ fType,void^ fPointer,void^ resultValue,void^ vals,int valsCount) -> void
 	{
 		assert(fType != null)
@@ -385,20 +300,18 @@ MCInterpFuncFrame := class
 		valuesPtr := void^[40]
 		valuesTypes := void^[40]
 
+		flags := vals->{s64^}[valsCount]&->{char^}
+
 		resultType := ffi_type_pointer->{void^}
 
-		if not fType.ResultRef and fType.ExtraResults.Size() == 0
+		if flags[0] == 'f'
 		{
-			if fType.ResultType == GTypeFloat
-			{
-				resultType = ffi_type_float
-			}else if fType.ResultType == GTypeDouble {
-				resultType = ffi_type_double
-			}
+			resultType = ffi_type_float
+		}else if flags[0] == 'd' {
+			resultType = ffi_type_double
 		}
-		//
-		//
-		flags := vals->{s64^}[valsCount]&->{char^}
+
+		flags = flags[1]&
 
 		for i : valsCount
 		{
