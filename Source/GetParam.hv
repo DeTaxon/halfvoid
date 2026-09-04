@@ -152,10 +152,13 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			if fld != null
 			{
 				itms := CheckExeDownList
-				itms.Push(unroll.MethodObj.CreateCall())
+				itms.Push(obj.CreateCall())
 				return fld.CreateCall(itms)
 			}
 		}
+
+		explicitThis := false
+
 		
 		if par is in BoxFuncBody
 		{
@@ -170,27 +173,40 @@ innerTryGetParam := !(Token^ itm) -> BoxExeObj^
 			
 			if fnc.Attrs.IsMethod and asItm.Value != "this"
 			{
-				tkn1 := TokenIndent(StringSpan("this"))
-				parGetCall := TryCheckGetParam(tkn1&)
+				explicitThis = true
+			}
+		}
 
-				if parGetCall == null
-					return null
+		if par is ThisInGen
+		{
+			explicitThis = true
+		}
 
-				clsType := parGetCall.GetType()
-				assert(clsType is in TypeClass)
-				cls := clsType->{TypeClass^}
+		if explicitThis
+		{
+			tkn1 := TokenIndent("this")
+			parGetCall := TryCheckGetParam(tkn1&)
 
-				fld := cls.GetField(asItm.Value)
-				if fld != null
-				{
-					return fld.CreateCall(![parGetCall])
-				}
+			if parGetCall == null
+				return null
 
-				mt := cls.GetFieldInVTable(asItm.Value)
-				if mt != null
-				{
-					return mt.CreateCall(parGetCall)
-				}
+			clsType := parGetCall.GetType()
+
+			// if clsType is in TypePoint
+			// 	clsType = clsType.Base
+			assert(clsType is in TypeClass)
+			cls := clsType->{TypeClass^}
+
+			fld := cls.GetField(asItm.Value)
+			if fld != null
+			{
+				return fld.CreateCall(![parGetCall])
+			}
+
+			mt := cls.GetFieldInVTable(asItm.Value)
+			if mt != null
+			{
+				return mt.CreateCall(parGetCall)
 			}
 		}
 	}

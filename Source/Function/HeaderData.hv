@@ -57,6 +57,8 @@ FunctionHeaderInfo := class
 
 		bag := HybridQueue.{Token^,10}
 
+		assert(brackets != null)
+
 		iter := brackets.Down
 
 		needCheckResult := false

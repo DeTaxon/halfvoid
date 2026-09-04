@@ -42,6 +42,13 @@ PFunctionParser := class
 			assert(iter != null)
 		}
 
+		if iter.GetValue() == "#gen"
+		{
+			iter = iter.Right
+			Attr.IsGenerator = true
+			assert(iter != null)
+		}
+
 		if iter.GetValue() != "!"
 			return void
 		
@@ -231,6 +238,7 @@ FuncAttributes := class
 	IsLambda := bool
 	IsAutoResult := bool
 	IsInline := bool
+	IsGenerator := bool
 
 	//not for functions
 	IsVirtual := bool

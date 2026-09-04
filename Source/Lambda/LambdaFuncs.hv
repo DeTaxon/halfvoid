@@ -8,7 +8,7 @@ innerTryLambdaCall := !(BoxExeObj^ dwnItem, Vector.{BoxExeObj^} Objs,Vector.{Box
 
 	cls := tp.Base->{TypeClass^}
 
-	if cls.TemplateParent is not LambdaClassTemplate
+	if cls.TemplateParent is not in LambdaClassTemplate
 		return null
 	
 	tmp := TokenIndent

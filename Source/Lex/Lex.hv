@@ -571,7 +571,8 @@ gKeywords := ![
 	"enum",
 	"#Reserve",
 	"#Copy",
-	"#group"
+	"#group",
+	"#gen"
 ]
 
 IsKeyword := !(StringSpan W) -> bool

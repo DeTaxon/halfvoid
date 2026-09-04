@@ -1,5 +1,5 @@
 
-main := !(char^[] args) -> int
+main := !(Vector.{char^} args) -> int
 {
 
 	//itM := MappedFile^
@@ -49,7 +49,7 @@ main := !(char^[] args) -> int
 		,"delete" ,"thread_local" ,"task_local" ,"keep_name" 
 		,"packed_class" ,"self_return" ,"try" ,"catch" 
 		,"throw" ,"on_exception" ,"yield" ,"AppendClass" ,"default" ,"weak","poison","defer_tail"
-		,"static","field"]
+		,"static","field","#gen"]
 
 	tmpArr.Insert(StringSpan(LexKeyWords[^]))
 	//tmpArr.Insert(AllKeyWords[^])

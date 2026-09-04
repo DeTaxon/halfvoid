@@ -3,6 +3,8 @@ BoxLambdaHolder := class extend BoxExeObj
 	tmpl := BoxFuncTemplateBody^
 	cleanType := Type^
 	captureTokens := Token^
+	injectedVars := AVLMap.{Str,Tuple.{Type^,BoxExeObj^,bool}}
+
 	this := !(Token^ brackets, Token^ body,Token^ typeToken,Token^ capturesToken) -> void
 	{
 		captureTokens = capturesToken
@@ -24,7 +26,10 @@ BoxLambdaHolder := class extend BoxExeObj
 			dat.Line = body.Line
 		}
 
-		if brackets.Down?.GetValue() == "()"
+		if brackets.GetValue() == "()"
+		{ 
+			bPtr = brackets
+		}else if brackets.Down?.GetValue() == "()"
 		{
 			bPtr = brackets.Down
 		}else{
@@ -54,6 +59,7 @@ BoxLambdaHolder := class extend BoxExeObj
 	}
 	IsOneFunc := !() -> bool
 	{
+		assert(tmpl != null)
 		return tmpl.IsOneFunc()
 	}
 	CreateOneFuncLambda := !() -> BoxExeObj^
@@ -174,6 +180,13 @@ BoxLambdaHolder := class extend BoxExeObj
 			}
 		}
 
+		for vr,name : injectedVars
+		{
+			locVar := new LocalVar(name,vr.0,true,vr.2)
+			vars.Push(locVar)
+			capturedVars.Emplace(locVar,vr.1)
+		}
+
 		resObj.baseFunc = CurrentFunc
 		resObj.lambdaFunc = newFunc
 
@@ -191,7 +204,6 @@ BoxLambdaHolder := class extend BoxExeObj
 		fncPtr := fncFnc.CreateCall()
 
 		getTupleVar := BoxExeObj^
-
 	
 		tplTypes := MakeVectorOnStack.{Type^,20}()
 		for it : capturedVars
@@ -283,6 +295,7 @@ BoxLambdaHolder := class extend BoxExeObj
 		}
 
 		resObj.preCalls.Push(lVar)
+
 		resObj.mainCall = GetExchange(step2,lambdaType.GetPoint())
 
 		while UnitStack.Size() > stackSize
@@ -314,6 +327,7 @@ LambdaObject := class extend PackedExeObj
 	baseFunc := BoxFuncBody^
 	lambdaFunc := BoxFuncBody^
 	capturedVars := List.{Tuple.{LocalVar^,BoxExeObj^}}
+	lambdaVar := LocalVar^
 
 	CaptureObject := !(Str name, BoxExeObj^ capCall,bool isRef) -> LocalVar^
 	{

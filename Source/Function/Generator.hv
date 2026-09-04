@@ -1,0 +1,61 @@
+
+CreateGenerator := !(PFunctionParser fnc,Type^ cls) -> BoxFunc^
+{
+	lmbd := new BoxLambdaHolder(fnc.brackets,fnc.bodyToken,fnc.resultToken,null)
+
+	if lmbd.tmpl == null
+		return null
+
+	assert(lmbd.IsOneFunc())
+
+	// testVar := new LocalVar()
+
+	saveData := StackState
+	saveData.Save()
+
+	// newFunc.EnterScope()
+
+	bdy := new TokenSymbol(StringSpan("{}"),0)
+	bdy.Line = fnc.brackets.Line
+	names := HybridQueue.{StringSpan,10}
+	names.Push(StringSpan("this"))
+
+	Attr := FuncAttributes
+	Attr.IsAutoResult = true
+	Attr.IsMethod = true
+	newFunc := new BoxFuncCreateGenerator(GetFuncType(![cls],GTypeVoid))
+
+	newFunc.lambda = lmbd
+	newFunc.ParseBodyForced()
+
+	saveData.Load()
+
+	return newFunc
+}
+
+BoxFuncCreateGenerator := class extends BoxFuncCommon
+{
+	lambda := BoxLambdaHolder^
+
+	this := !(TypeFunc^ fncType) -> void
+	{
+		SetType(fncType)
+	}
+	CreateCall := virtual !(Vector.{BoxExeObj^} objs,FuncInputObjects^ iObjs) -> BoxExeObj^ //TODO remove above options with default values
+	{
+		ing := ref lambda.injectedVars["this"]
+		ing.0 = objs[0].GetType()
+		ing.1 = new UnrefFuncCall(objs[0])
+		ing.2 = true
+
+		cls := ThisInGen
+		UnitStack.PushFront(cls&)
+		result =  lambda.CreateOneFuncLambda()
+		UnitStack.Pop()
+	}
+}
+
+ThisInGen := class extends BoxUnit
+{
+	
+}

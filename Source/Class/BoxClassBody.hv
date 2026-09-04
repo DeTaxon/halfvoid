@@ -662,23 +662,30 @@ BoxClassBody := class extends BoxClass
 
 						if asFunc == null
 						{
-							asFunc = fncParser.CreateObject()
-
-							assert(asFunc is in BoxFuncTemplateBody)
-
-							tmpl := asFunc->{BoxFuncTemplateBody^}
-
-							if tmpl.Properties.Contain("#TemplateResist") and TemplateParent? is in BoxClassTemplateBody
+							if fncParser.Attr.IsGenerator
 							{
-								tmpl := TemplateParent->{BoxClassTemplateBody^}
+								asFunc = CreateGenerator(fncParser,this&)
+							}else{
+								asFunc = fncParser.CreateObject()
+							}
 
-								asTmplt := asFunc->{BoxFuncTemplateBody^}
-								assert(asTmplt.IsOneFunc())
-								asTmplt.IsOneFunc()
-								asTmplt.AwaitHeaderParse()
-								newFunc := asTmplt.GetOneFunc()
+							if asFunc is in BoxFuncTemplateBody
+							{
 
-								tmpl.ResistFunctions[fncParser.bodyToken] = newFunc
+								tmpl := asFunc->{BoxFuncTemplateBody^}
+
+								if tmpl.Properties.Contain("#TemplateResist") and TemplateParent? is in BoxClassTemplateBody
+								{
+									tmpl := TemplateParent->{BoxClassTemplateBody^}
+
+									asTmplt := asFunc->{BoxFuncTemplateBody^}
+									assert(asTmplt.IsOneFunc())
+									asTmplt.IsOneFunc()
+									asTmplt.AwaitHeaderParse()
+									newFunc := asTmplt.GetOneFunc()
+
+									tmpl.ResistFunctions[fncParser.bodyToken] = newFunc
+								}
 							}
 						}
 					}

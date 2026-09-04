@@ -36,23 +36,45 @@ RunFunc := !() -> void
 	// tst := printf("hello world %f %i\n",y,x)
 	// printf("test %i\n",tst)
 
-	// c := cls
-	// hmm := vec4f
-	// hmm.x = 10
-	// hmm.y = 7
-	// printf("why %f %f\n",hmm.x,hmm.y)
-	// c.tst(hmm)
+	c := cls
+	c.x = 7
+	printf("h %p\n",c&)
+	// c.tst()
+	g := c.tst()
+	// printf("hey %s\n",g->TypeName)
 
-	c := new BlobOnVector(13)
+	g()
+	g()
+	g()
+	c.x = 100
+	g()
+	g()
+	g()
+	g()
+	g()
+	c.x = 1000
+	g()
+	g()
 }
 
 cls := class
 {
-	tst := virtual !(vec4f gmm) -> void
+	x := int
+	tst := #gen !() -> void
 	{
-		printf("wut %f %f\n",gmm.x,gmm.y)
+		for i : 5
+		{
+			// printf("hey %i %i\n",i,this.x)
+			printf("hey %p %i %i\n",this&,i,x)
+			yield void
+		}
 	}
 }
+
+// "#ComputePi" := !() -> void
+// {
+// 	HV.CacheResult()
+// }
 
 test2 := AVLMap.{int,int}
 
