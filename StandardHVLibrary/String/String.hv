@@ -29,6 +29,20 @@ String := class extend StringView
 		itSize = size
 		charPtr = calloc(itSize + 1,1)->{char^}
 	}
+
+	Borrow := !(char^ ptr, int size = -1) -> void
+	{
+		if ptr == null
+		{
+			charPtr = null
+			itSize = 0
+			return void
+		}
+		if size == -1
+			size = strlen(ptr)
+		charPtr = ptr
+		itSize = size
+	}
 	Destroy := virtual !() -> void
 	{
 		if charPtr == null
@@ -69,7 +83,7 @@ String := class extend StringView
 	}
 	Clone := !() -> Str
 	{
-		return MakeStr(charPtr)
+		return MakeStr(charPtr,itSize)
 	}
 	Size := !() -> int { return itSize }
 	NonNullStr := virtual !() -> char^ { return charPtr }
@@ -106,9 +120,11 @@ StrConcat := !(args...) -> Str
 	return echo.GetStr()
 }
 
-MakeStr := !(char^ ptr) -> Str
+MakeStr := !(char^ ptr, int size = -1) -> Str
 {
 	if ptr == null
 		return ""
-	result->AsString = new String(ptr)
+	if size == -1
+		size = strlen(ptr)
+	result->AsString = new String(ptr,size)
 }

@@ -9,7 +9,13 @@ main := !(Vector.{char^} args) -> int
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
 	// x := 12
+	@work RunFunc()
 	RunFunc()
+}
+
+Hm := !() -> void
+{
+	printf("test\n")
 }
 RunFunc := !() -> void
 {
@@ -35,40 +41,13 @@ RunFunc := !() -> void
 	// printf("hello world %i %f\n",x,y)
 	// tst := printf("hello world %f %i\n",y,x)
 	// printf("test %i\n",tst)
-
-	c := cls
-	c.x = 7
-	printf("h %p\n",c&)
-	// c.tst()
-	g := c.tst()
-	// printf("hey %s\n",g->TypeName)
-
-	g()
-	g()
-	g()
-	c.x = 100
-	g()
-	g()
-	g()
-	g()
-	g()
-	c.x = 1000
-	g()
-	g()
+	// printf("wut %p\n",backtrace_create_state)
+	test := backtrace_create_state(null,1,null,null)
+	backtrace_full(test,0,test_callback,null,null)
 }
-
-cls := class
+test_callback := !(void^ data, void^ pc, char^ fileName, int lineNo,char^ function) -> int
 {
-	x := int
-	tst := #gen !() -> void
-	{
-		for i : 5
-		{
-			// printf("hey %i %i\n",i,this.x)
-			printf("hey %p %i %i\n",this&,i,x)
-			yield void
-		}
-	}
+	printf("pc <%p> file <%p> <%s> line <%i> function <%s>\n",pc,fileName,fileName,lineNo,function)
 }
 
 // "#ComputePi" := !() -> void
@@ -238,6 +217,7 @@ ReflectionTest := !() -> void
 //)
 
 
+//TODO Generator can work with hotload, WHICH IS REALLY SUCKS, need complete rework on how lambda and generators work
 //TODO Why do i have CheckValue on GlobalVar2? works weird in non stop mode
 //TODO !(int size = -1) ,  -1 does not work as default value
 //TODO size_t comparation does not work in x86_64 toRead + redData > tstData.Size(), redData is int

@@ -26,5 +26,5 @@ HvStackTrace := class
 CreateStackTrace := !(int ignoreCalls = 0) -> HvStackTrace^
 {
 	result = new HvStackTrace
-	result.state = backtrace_create_state(HvArg0,1 + ignoreCalls,null,null)
+	result.state = backtrace_create_state(HvArg0,1,null,null)
 }

@@ -85,7 +85,10 @@ TryCheckMethodCall := !(Token^ itm) -> BoxExeObj^
 		return innerTryGetPtrCall(ptrCall,iObjs.Objs)?
 	}
 
-	CurrentWork?.SetErrorMessage(itm.MakeError("Method not found"))
+	dat := char[256]
+	sprintf(dat,"Method <%s> not found",methodName.CStr())
+
+	CurrentWork?.SetErrorMessage(itm.MakeError(MakeStr(dat)))
 	return null
 }
 
