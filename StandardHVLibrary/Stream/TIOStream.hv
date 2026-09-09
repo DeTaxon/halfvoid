@@ -16,6 +16,11 @@ Stream := class extend TGCObject
 
 
 
+	"<<" := !(Str strData) -> ref Stream
+	{
+		Write(strData.NonNullStr(),strData.Size())
+		return this
+	}
 	"<<" := !(char^ strData) -> ref Stream
 	{
 		if strData == null

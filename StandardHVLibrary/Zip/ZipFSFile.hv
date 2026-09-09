@@ -41,6 +41,23 @@ File := class extend vRepoObject
 		}
 		return fileBlob
 	}
+	GetBlob2 := virtual !() -> void[]
+	{
+		fileBlob := new u8[this.Size()]
+		tst := this.GetPath()
+		if fileBlob.Size() != 0
+		{
+			st := GetStream()
+			st.Read(fileBlob.GetPointer(),fileBlob.Size())
+			st.Close()
+			//mp := MappedFile(tst.Str())
+			//memcpy(fileBlob.GetPointer(),mp.Get(),fileBlob.Size())
+			//desc := fopen(tst.Str(),"rb")
+			//defer fclose(desc)
+			//fread(fileBlob.GetPointer(),fileBlob.Size(),1,desc)
+		}
+		return fileBlob
+	}
 	GetModificationTime := !() -> u64
 	{
 		return fsGetModificationTime(GetPath().Str())

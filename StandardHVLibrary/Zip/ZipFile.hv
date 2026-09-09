@@ -59,6 +59,16 @@ vZipEntry := class
 			memcpy(result.GetPointer(),mp.Get(),result.Size())
 		}
 	}
+	GetBlob2 := !() -> void[]
+	{
+		result = new u8[Size()]
+
+		if result.Size() != 0
+		{
+			mp := GetMap()
+			memcpy(result.GetPointer(),mp.Get(),result.Size())
+		}
+	}
 	GetModificationTime := !() -> u64
 	{
 		return timeModified

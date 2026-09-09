@@ -16,7 +16,7 @@ JsonNode2 := class
 	IsRecord := !() -> bool { return itType == jsonTypeRecord}
 	IsArray := !() -> bool { return itType == jsonTypeArray}
 
-	"[]" := !(Str walkPath) -> JsonNode2^
+	"[]" := !(Str walkPath) -> ref JsonNode2
 	{
 		itms := HybridQueue.{StringSpan,20}
 		walkPath.DivideStr(" ",x ==> { itms.Push(x)}) 
@@ -34,9 +34,14 @@ JsonNode2 := class
 				}
 			}
 			if not found 
-				return null
+				return void
 		}
-		return iter
+		result = iter
+	}
+	Size := !() -> int
+	{
+		assert(IsArray())
+		return itSub.Size()
 	}
 	"for" := !() -> jsonNodeIterator2
 	{
@@ -64,7 +69,7 @@ jsonNodeIterator2 := class
 			return false
 		return index < itNode.itSub.Size()
 	}
-	"()" := !(Str^& indx) -> JsonNode2^
+	"()" := !(Str^& indx) -> ref JsonNode2
 	{
 		result = itNode.itSub[index]
 		tmp->AsString = result.itKey&
