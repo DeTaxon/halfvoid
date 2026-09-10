@@ -38,6 +38,11 @@ JsonNode2 := class
 		}
 		result = iter
 	}
+	"[]" := !(int ind) -> ref JsonNode2
+	{
+		assert(ind < itSub.Size())
+		return itSub[ind]^
+	}
 	Size := !() -> int
 	{
 		assert(IsArray())
