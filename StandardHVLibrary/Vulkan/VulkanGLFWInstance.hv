@@ -70,7 +70,8 @@ VulkanGLFWInstance := class extend VulkanInstance
 		}
 		reqMod := pMods[0]
 		reqMod = VK_PRESENT_MODE_FIFO_KHR
-		//reqMod = VK_PRESENT_MODE_IMMEDIATE_KHR
+		// reqMod = VK_PRESENT_MODE_MAILBOX_KHR
+		// reqMod = VK_PRESENT_MODE_IMMEDIATE_KHR
 		//for gUserModes //TODO
 		//{
 		//	if it in pMods

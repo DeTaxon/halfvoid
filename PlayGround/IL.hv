@@ -1,0 +1,16 @@
+
+
+ILTest := !() -> void
+{
+	nums := 10
+
+	values := new int[nums]
+
+	i := 0
+	while i < 10
+	{
+		values[i] = 3
+		printf("test {0}\n",i)
+		i += 1
+	}
+}

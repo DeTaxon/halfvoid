@@ -326,21 +326,6 @@ sortTest := !(int^ buf, int lo, int hi) -> void
 		sortTest(buf,j + 1, hi)
 
 }
-
-ILTest := !() -> void
-{
-	nums := 10
-
-	values := new int[nums]
-
-	i := 0
-	while i < 10
-	{
-		values[i] = 3
-		printf("test {0}\n",i)
-		i += 1
-	}
-}
 tst := !() -> void {
 	nums := 1_000
 	// nums = 10
