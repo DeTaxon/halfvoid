@@ -41,7 +41,7 @@ File := class extend vRepoObject
 		}
 		return fileBlob
 	}
-	GetBlob2 := virtual !() -> void[]
+	GetBlob2 := !() -> void[]
 	{
 		fileBlob := new u8[this.Size()]
 		tst := this.GetPath()

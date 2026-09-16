@@ -241,11 +241,12 @@ FuncLocalVarCleanup := class extend BoxExeObj
 	{
 		size := baseType.GetSize()
 
-		if baseType is in TypeStandard or baseType is in TypePoint
+		if baseType is in TypeStandard or baseType is in TypePoint or baseType is TypeDynamicArray
 		{
 			obj := ctx.AddLocalVar(baseVar)
 			HVB_ins_clean(ctx,obj)
 		}else{
+			//TODO maybe always use ins_clean
 			obj := getVal.WriteMC(ctx).CreatedId
 			zero := HVB_ins_const_int32(ctx,0)
 			typeSize := HVB_ins_const_int32(ctx,baseType.GetSize())

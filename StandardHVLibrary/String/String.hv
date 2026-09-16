@@ -120,11 +120,11 @@ StrConcat := !(args...) -> Str
 	return echo.GetStr()
 }
 
-MakeStr := !(char^ ptr, int size = -1) -> Str
+MakeStr := !(char^ ptr, int size = 1000000) -> Str // TODO replace with -1
 {
 	if ptr == null
 		return ""
-	if size == -1
+	if size == 1000000
 		size = strlen(ptr)
 	result->AsString = new String(ptr,size)
 }

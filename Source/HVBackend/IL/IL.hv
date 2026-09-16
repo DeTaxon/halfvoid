@@ -127,11 +127,11 @@ GenerateILFile := !() -> void
 		{
 			ob := ref bc.Objects[i]
 
-			if ob is MCVariable
+			if ob is MCVariable or ob is MCConstValue
 			{
 				tp := ob.GetType()
 
-				if tp == GTypeInt or tp == GTypeBool or tp is TypeDynamicArray
+				if tp.IsInt() or tp == GTypeBool or tp is TypeDynamicArray
 				{
 					oldToNew[i] = locs.Size()
 					locs.Push(tp)
@@ -162,11 +162,14 @@ GenerateILFile := !() -> void
 			{
 			case MCVariable
 				out^ << "	ldloc " << oldToNew[ind] << "\n"
+			case MCConstValue
+				out^ << "	ldloc " << oldToNew[ind] << "\n"
 			case MCConstInteger
 				out^ << "	ldc.i4 " << ob.GetValue() << "\n"
 			}
 		}
 		storeObj := (int ind) ==> {
+			assert(oldToNew.Contain(ind))
 			out^ << "	stloc " << oldToNew[ind] << "\n"
 		}
 
@@ -226,10 +229,12 @@ GenerateILFile := !() -> void
 				out^ << "	newarr [mscorlib]System.Object\n" // TODO not ints
 				storeObj(line.var1)
 			case "il_box"
-				out^ << "	box [mscorlib]System.Int32\n" // TODO not ints
+				out^ << "	box [mscorlib]System.\n"
+				PrintILCoreType(out^,oPtr[line.var1].GetType())
 			case "cast"
 				loadObj(line.var2)
-				// out^ << "	conv.i8"
+				if oPtr[line.var1].GetType() == GTypeS64
+					out^ << "	conv.i8"
 				storeObj(line.var1)
 			case "cmp"
 				loadObj(line.var2)
@@ -243,6 +248,10 @@ GenerateILFile := !() -> void
 				storeObj(line.var1)
 			case "il_stelem"
 				out^ << "	stelem."
+				out^ << oPtr[line.var1]&->{MCConstString^}.GetValue()
+				out^ << "\n"
+			case "il_ldelem"
+				out^ << "	ldelem."
 				out^ << oPtr[line.var1]&->{MCConstString^}.GetValue()
 				out^ << "\n"
 			case in !["add"]
@@ -263,7 +272,12 @@ GenerateILFile := !() -> void
 
 PrintILCoreType := !(Stream strm,Type^ tp) -> void
 {
-
+	switch tp
+	{
+	case GTypeInt strm << "Int32"
+	case GTypeS64 strm << "Int64"
+	case void printf("Unknown type %s\n",tp.GetBADStr().CStr()) assert(false)
+	}
 }
 PrintILType := !(Stream strm,Type^ tp) -> void
 {
