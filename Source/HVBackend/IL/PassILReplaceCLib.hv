@@ -11,50 +11,76 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 
 	lin := fnc.Lines.GetPointer()
 
-
 	size := fnc.Lines.Size()
+
+	arrAccess := int[int]
+
+	getElement := (int id) ==> {
+		if arrAccess.Contain(id)
+		{
+			old := lin[arrAccess[id]]
+
+			cPtr[c++] = MCLine("il_push",old.var2)
+			cPtr[c++] = MCLine("il_push",old.var3)
+			cPtr[c++] = MCLine("il_ldelem",bldr.PushStr("i4"))
+		}else{
+			cPtr[c++] = MCLine("il_push",id)
+		}
+	}
+
+	preStore := (int id) ==> {
+		if arrAccess.Contain(id)
+		{
+			old := lin[arrAccess[id]]
+			cPtr[c++] = MCLine("il_push",old.var2)
+			cPtr[c++] = MCLine("il_push",old.var3)
+		}
+	}
+	storeElement := (int id) ==> {
+		if arrAccess.Contain(id)
+		{
+			cPtr[c++] = MCLine("il_stelem",bldr.PushStr("i4"))
+		}else{
+			cPtr[c++] = MCLine("il_pop",id)
+		}
+	}
 
 	i := 0
 	while i < fnc.Lines.Size()
 	{
 		line := lin[i]
 
-		if line.opcode == "load_element"
+		switch line.opcode
 		{
-			if i + 1 < size and lin[i+1].opcode == "mov" and lin[i+1].var1 == line.var1
-			{
-				cPtr[c++] = MCLine("il_push",line.var2)
-				cPtr[c++] = MCLine("il_push",line.var3)
-				cPtr[c++] = MCLine("il_push",lin[i+1].var2)
-				cPtr[c++] = MCLine("il_stelem",bldr.PushStr("i4"))
-				i += 2
-				continue
-			}else{
-				tp := oPtr[line.var1].GetType()
-				vr := oPtr[line.var1]&->{MCConstValue^}
-				vr->SetType(MCConstValue)
-				vr.GetValueType() = tp
+		case "load_element"
+			tp := oPtr[line.var1].GetType()
 
-				cPtr[c++] = MCLine("il_push",line.var2)
-				cPtr[c++] = MCLine("il_push",line.var3)
-				cPtr[c++] = MCLine("il_ldelem",bldr.PushStr("i4"))
-				cPtr[c++] = MCLine("il_pop",line.var1)
+			obj := oPtr[line.var1]&->{MCVariable^}
+			obj->SetType(MCVariable)
+			obj.GetValueType() = tp
 
-				i += 1
-				continue
-			}
-		}
+			arrAccess[line.var1] = i
 
-		if line.opcode == "mov"
-		{
-			cPtr[c++] = MCLine("il_push",line.var2)
-			cPtr[c++] = MCLine("il_pop",line.var1)
 			i += 1
-			continue
-		}
-
-		if line.opcode == "call_start"
-		{
+		case in !["add","sub","mul","div","mod"]
+			preStore(line.var1)
+			getElement(line.var2)
+			getElement(line.var3)
+			cPtr[c++] = MCLine(line.opcode)
+			storeElement(line.var1)
+			i += 1
+		case "mov"
+			preStore(line.var1)
+			getElement(line.var2)
+			storeElement(line.var1)
+			i += 1
+		case "cast"
+			preStore(line.var1)
+			getElement(line.var2)
+			cPtr[c++] = MCLine("cast",line.var1)
+			storeElement(line.var1)
+			i += 1
+		case "call_start"
 			fncObj := oPtr[line.var2]&
 
 			fnc := BoxFuncDeclare^
@@ -86,7 +112,7 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 
 				if args.Size() == 1
 				{
-					cPtr[c++] = MCLine("il_push",args[0])
+					getElement(args[0])
 					cPtr[c++] = MCLine("il_call",bldr.PushStr("void class [mscorlib]System.Console::Write(string)"))
 				}else{
 
@@ -121,7 +147,8 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 
 						cPtr[c++] = MCLine("il_push",vr)
 						cPtr[c++] = MCLine("il_push",bldr.PushInt(i - 1))
-						cPtr[c++] = MCLine("il_push",it)
+						// cPtr[c++] = MCLine("il_push",it)
+						getElement(it)
 						cPtr[c++] = MCLine("il_box",it)
 						cPtr[c++] = MCLine("il_stelem",bldr.PushStr("ref"))
 
@@ -134,12 +161,10 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 				assert(false)
 
 			}
-			
-
-		}else{
+		case void
 			cPtr[c++] = line
+			i += 1
 		}
-		i += 1
 	}
 	
 	return bldr.GenerateFunc()

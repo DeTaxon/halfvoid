@@ -169,6 +169,8 @@ GenerateILFile := !() -> void
 			}
 		}
 		storeObj := (int ind) ==> {
+			if not oldToNew.Contain(ind)
+				printf("obj %s %s\n",oPtr[ind].UnitName,oPtr[ind].GetType().GetBADStr().CStr())
 			assert(oldToNew.Contain(ind))
 			out^ << "	stloc " << oldToNew[ind] << "\n"
 		}
@@ -232,10 +234,8 @@ GenerateILFile := !() -> void
 				out^ << "	box [mscorlib]System.\n"
 				PrintILCoreType(out^,oPtr[line.var1].GetType())
 			case "cast"
-				loadObj(line.var2)
 				if oPtr[line.var1].GetType() == GTypeS64
 					out^ << "	conv.i8"
-				storeObj(line.var1)
 			case "cmp"
 				loadObj(line.var2)
 				loadObj(line.var4)
@@ -243,6 +243,10 @@ GenerateILFile := !() -> void
 				switch line.V3Cond()
 				{
 				case "<" out^ << "	clt\n"
+				case ">="
+					out^ << "	clt\n"
+					out^ << "	ldc.i4.0\n"
+					out^ << "	ceq\n"
 				// TODO others
 				}
 				storeObj(line.var1)
@@ -254,11 +258,11 @@ GenerateILFile := !() -> void
 				out^ << "	ldelem."
 				out^ << oPtr[line.var1]&->{MCConstString^}.GetValue()
 				out^ << "\n"
-			case in !["add"]
-				loadObj(line.var2)
-				loadObj(line.var3)
-				out^ << "	add\n"
-				storeObj(line.var1)	
+			case "add" out^ << "	add\n"
+			case "sub" out^ << "	sub\n"
+			case "mul" out^ << "	mul\n"
+			case "div" out^ << "	div\n"
+			case "mod" out^ << "	rem\n"
 				
 			}
 			i += 1
