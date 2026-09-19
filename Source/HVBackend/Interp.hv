@@ -61,7 +61,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, Vector.{voi
 
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame, Vector.{int} callerIndx,int returnIndex = 0) -> void
 {
-	// interpFunc.Print()
+	if interpFunc.BaseFunction?->{BoxFuncBody^}.OutputName == "TestPi"
+		interpFunc.Print()
 	//exit(0)
 
 	if interpFunc.Lines.Size() == 0

@@ -25,9 +25,9 @@ PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
 	end := fnc.Lines.Size()
 	while i < end
 	{
-		if iPtr[i].opcode == "call_start"
+		switch iPtr[i].opcode
 		{
-
+		case "call_start"
 			resId := iPtr[i].var1
 			fncId := iPtr[i].var2
 
@@ -95,7 +95,10 @@ PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
 				ASDMakeStore(oPtr,cPtr,c,resId,0)
 			}
 
-		}else{
+		case in !["debug_set_line","debug_set_file","debug_block_start","debug_block_end","debug_set_var_name"]
+			i++
+
+		case void
 			cPtr[c++] = iPtr[i]
 			i++
 		}
