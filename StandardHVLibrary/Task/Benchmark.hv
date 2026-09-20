@@ -1,0 +1,29 @@
+
+
+initTaskBenchmark := !() -> void
+{
+
+}
+
+bmtStackFrameInfo := class
+{
+	files := char^[15]
+	lines := int[15]
+	count := int
+
+	callerId := int
+	action := bmtActions
+
+}
+
+bmtActions := enum
+{
+	"TaskCreated",
+	"TaskAllocatedStack",
+	"TaskQuit",
+
+	"HatchLock",
+	"HatchReleases",
+
+}
+
