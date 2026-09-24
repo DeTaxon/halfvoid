@@ -134,6 +134,14 @@ HVContextImplementation := class extend HV_Context
 	{
 		return obj->{GlobalVar2^}.ItName
 	}
+
+	GetInterpStackData := virtual !() -> HVInterpreterStackData^
+	{
+		frm := FirstInterpFrame
+		if frm == null
+			return null
+		return frm.stackData
+	}
 }
 HV_FunctionTemplateImp := class extend HV_FunctionTemplate
 {

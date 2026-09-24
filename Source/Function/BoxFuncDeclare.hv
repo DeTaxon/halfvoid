@@ -9,6 +9,9 @@ BoxFuncDeclare := class extend BoxFuncCommon
 
 	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
 	{
+		if itName == ""
+			return void
+
 		f := ctx.writeStream
 
 		f^ << "declare "
@@ -24,5 +27,25 @@ BoxFuncDeclare := class extend BoxFuncCommon
 	GetName := virtual !() -> Str
 	{
 		return itName
+	}
+}
+
+BoxFuncNonExist := class extend BoxFuncCommon
+{
+	this := !(TypeFunc^ tp) -> void
+	{
+		SetType(tp)
+	}
+
+	PrintCode := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+	}
+	PrintName := virtual !(LLVMWriteContext^ ctx) -> void
+	{
+		assert(false)
+	}
+	GetName := virtual !() -> Str
+	{
+		return ""
 	}
 }

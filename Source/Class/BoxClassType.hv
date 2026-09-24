@@ -2,7 +2,7 @@ AppendClass BoxClass
 {
 	InitType := !() -> void
 	{
-		MetaId = ItId
+		MetaId = ItId 
 
 		ItHash = typeHashIterator
 		typeHashIterator += 1
@@ -12,7 +12,7 @@ AppendClass BoxClass
 	PrintType := virtual !(LLVMWriteContext^ ctx) -> void
 	{
 		ctx.UsedTypes.Insert(this&)
-		ctx.writeStream^ << "%Class" << MetaId
+		ctx.writeStream^ << "%Class" << ItId
 	}
 	PrintDebugName := virtual !(LLVMWriteContext^ ctx) -> void
 	{

@@ -16,6 +16,15 @@ Task := class
 	this := !(!()& -> void cb) -> void
 	{
 		taskLambda = cb
+
+		if #Var("HVBenchmark")
+		{
+			taskId = taskIdIterator++
+
+			bench := bmCreateTaskEntry(true,2)
+			bench.action = "TaskCreated"
+			bench.callerTaskId = taskId
+		}
 	}
 	startTaskThread := virtual !() -> void
 	{
@@ -40,6 +49,12 @@ Task := class
 			sprintf(taskNames[taskId].0[0]&,"Task%i\n",taskId)
 			taskData.1 = true
 		}
+		if #Var("HVBenchmark")
+		{
+			bench := bmCreateTaskEntry(false)
+			bench.action = "TaskAllocatedStack"
+			bench.callerTaskId = taskId
+		}
 		TaskCheckMutex.Unlock()
 		firstStartOS()
 		assert(taskLambda != null)
@@ -53,6 +68,12 @@ Task := class
 				taskNames[taskId].1 = false
 				taskId = 0
 			}
+		}
+		if #Var("HVBenchmark")
+		{
+			bench := bmCreateTaskEntry(false)
+			bench.action = "TaskQuit"
+			bench.callerTaskId = taskId
 		}
 
 		delete taskLambda

@@ -1,8 +1,13 @@
 
+bmBigData := PageMemory
+bmIterator := int
+bmBacktrace := void^
 
 initTaskBenchmark := !() -> void
 {
-
+	bmBigData.Create(4*1024*1024,"wr")
+	bmBacktrace = backtrace_create_state(null,1,null,null)
+	// TODO Use marking, but libraries must be loaded first
 }
 
 bmtStackFrameInfo := class
@@ -11,9 +16,18 @@ bmtStackFrameInfo := class
 	lines := int[15]
 	count := int
 
-	callerId := int
+	timeTaken := double
+
+	callerTaskId := int
+	targetTaskId := int
 	action := bmtActions
 
+	TestPrint := !() -> void
+	{
+		printf("Frame, calls count %i\n",count)
+		for i : count
+			printf("Call file <%s> line %i\n",files[i],lines[i])
+	}
 }
 
 bmtActions := enum
@@ -23,7 +37,58 @@ bmtActions := enum
 	"TaskQuit",
 
 	"HatchLock",
-	"HatchReleases",
+	"HatchUnlock",
+	"HatchEmits",
 
+}
+
+bmCreateTaskEntry := !(bool printStack = true,int skipCalls = 0) -> bmtStackFrameInfo^
+{
+	// #MarkFunction("CallAtStart",initTaskBenchmark)
+
+	newId := InterlockAdd(bmIterator,1)
+	ptr := bmBigData.GetPointer()->{bmtStackFrameInfo^}[newId]&
+
+	ptr.timeTaken = GetSteadyTime()
+
+	dat := bmStackCBData
+	dat.skipCounter = skipCalls + 1
+	dat.entry = ptr
+
+	if printStack
+	{
+		backtrace_full(bmBacktrace,0,bmStackCB,null,dat&)
+	}
+
+	// tst := HV.GetInterpStackData()
+	// if tst != null
+	// {
+	// 	for i : tst.counter
+	// 	{
+	// 		printf("Interp %s %i\n",tst.files[i],tst.lines[i])
+	// 	}
+	// }
+	
+	return ptr
+}
+bmStackCBData := class
+{
+	skipCounter := int
+	entry := bmtStackFrameInfo^
+}
+bmStackCB := !(bmStackCBData^ data, void^ pc, char^ fileName, int lineNo,char^ function) -> int
+{
+	if data.skipCounter != 0
+	{
+		data.skipCounter -= 1
+		return 0
+	}
+
+	if data.entry.count == data.entry.files.Size()
+		return 0
+	ind := data.entry.count++
+	data.entry.files[ind] = fileName
+	data.entry.lines[ind] = lineNo
+	// printf("pc <%p> file <%p> <%s> line <%i> function <%s>\n",pc,fileName,fileName,lineNo,function)
 }
 

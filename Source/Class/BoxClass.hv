@@ -59,6 +59,7 @@ BoxClass := class extends Type
 			if needComma^
 				f^ << ","
 			needComma^ = true
+			assert(it.Field != null)
 			typ := it.Field.Value
 
 			ctx.UsedTypes.Insert(typ)

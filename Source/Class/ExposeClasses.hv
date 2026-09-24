@@ -73,6 +73,7 @@ ExposedClass := class extends BoxClass
 
 	this := !() -> void
 	{
+		ItId = GetNewId()
 		InitType()
 	}
 }
@@ -103,7 +104,7 @@ ExposeMaker := class
 	{
 		curntOffset := 8
 
-		emptyDeclare := new BoxFuncDeclare(GetFuncType(![],GTypeVoid),"")
+		emptyDeclare := new BoxFuncNonExist(GetFuncType(![],GTypeVoid))
 
 
 		{
@@ -117,7 +118,7 @@ ExposeMaker := class
 				curntOffset += 8
 			}
 
-			fnc := new BoxFuncDeclare(it.0,"")
+			fnc := new BoxFuncNonExist(it.0)
 
 			vFunc := new BuildInVirtualCall(fnc,ind div 8)
 			target.DefaultSpace.VirtualMethods[it.1].Push(vFunc)
@@ -128,8 +129,11 @@ ExposeMaker := class
 		target.CreateVTable(buildCtx,null)
 
 		vtPtr := target.VTableType.GetPointer()
-		target.Fields.Push(new FieldParam("VTable",vtPtr))
-		target.FieldsPath.Push(new FieldPath(target,vtPtr))
+		fParam := new FieldParam("VTable",vtPtr)
+		fPath := new FieldPath(target,vtPtr)
+		fPath.Field = fParam
+		target.Fields.Push(fParam)
+		target.FieldsPath.Push(fPath)
 
 		ignoreClasses.Insert(target.VTableType)
 	}

@@ -40,6 +40,8 @@ HV_Context := class
 
 	//Temp
 	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void {}
+
+	GetInterpStackData := virtual !() -> HVInterpreterStackData^ {}
 }
 
 TypeGroups := enum
@@ -54,6 +56,13 @@ TypeGroups := enum
 	"Enum",
 	"Class",
 	"DynamicArray"
+}
+
+HVInterpreterStackData := class
+{
+	counter := int
+	files := char^[32]
+	lines := int[32]
 }
 
 HVFunctionTypeInfo := class

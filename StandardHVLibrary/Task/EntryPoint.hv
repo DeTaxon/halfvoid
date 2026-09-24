@@ -80,6 +80,9 @@ internalHVEntryPoint2 := !(int argc,char^^ argv) -> int
 		GlobalTracyInUse = true
 	}
 
+	if #Var("HVBenchmark")
+		initTaskBenchmark()
+
 
 	MainTask = TSpawnTask(() ==> [argv,argc] {
 		spn := MakeVectorSpanOnPtr(argv,argc)

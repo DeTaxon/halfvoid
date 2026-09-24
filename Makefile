@@ -82,8 +82,12 @@ ifeq ($(archType),aarch64)
 	cpuflag := --target-cpu arm64
 endif
 
+ifeq ($(trace),yes)
+	TRACEFlag := -var HVBenchmark
+endif
 
-flags := $(NoScary) $(trc) $(trcm) $(Exper) $(opt_mode) $(Test) $(GCFlag) $(emtls) $(cpuflag) $(FastFlag)
+
+flags := $(NoScary) $(trc) $(trcm) $(Exper) $(opt_mode) $(Test) $(GCFlag) $(emtls) $(cpuflag) $(FastFlag) $(TRACEFlag)
 
 MainTarget: test
 

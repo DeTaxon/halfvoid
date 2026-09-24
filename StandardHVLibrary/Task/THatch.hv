@@ -44,6 +44,23 @@ THatch := class
 	{
 		if flag
 			return void
+
+		if #Var("HVBenchmark")
+		{
+			curTask := CurrentTask
+
+			itr := next_wakeup
+			while itr != null
+			{
+				bench := bmCreateTaskEntry(true,1)
+				bench.action = "HatchEmits"
+				bench.callerTaskId = curTask.taskId
+				bench.targetTaskId = itr.itTask
+
+				itr = itr.next_point
+			}
+		}
+
 		flag = true
 		itr := next_wakeup
 		while itr != null
@@ -91,13 +108,30 @@ THatch := class
 		if flag
 			return void
 
+		curTask := CurrentTask
+
+		if #Var("HVBenchmark")
+		{
+			bench := bmCreateTaskEntry(true,1)
+			bench.action = "HatchLock"
+			bench.callerTaskId = curTask.taskId
+		}
+
 		pt := TITaskPausePoint
 		pt.next_point = next_wakeup
-		pt.itTask = CurrentTask
+		pt.itTask = curTask
 		next_wakeup = pt&
 		assert(pt.itTask != null)
 
 		CurrentThread.switchToMain()
+
+		if #Var("HVBenchmark")
+		{
+			bench := bmCreateTaskEntry(false)
+			bench.action = "HatchUnlock"
+			bench.callerTaskId = curTask.taskId
+		}
+
 	}
 }
 

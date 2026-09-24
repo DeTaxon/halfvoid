@@ -9,7 +9,6 @@ main := !(Vector.{char^} args) -> int
 	// printf("Hop %i\n",st == null)
 	// ModuleTest()
 	// x := 12
-	@work RunFunc()
 	RunFunc()
 }
 
@@ -42,12 +41,18 @@ RunFunc := !() -> void
 	// tst := printf("hello world %f %i\n",y,x)
 	// printf("test %i\n",tst)
 	// printf("wut %p\n",backtrace_create_state)
-	test := backtrace_create_state(null,1,null,null)
-	backtrace_full(test,0,test_callback,null,null)
-}
-test_callback := !(void^ data, void^ pc, char^ fileName, int lineNo,char^ function) -> int
-{
-	printf("pc <%p> file <%p> <%s> line <%i> function <%s>\n",pc,fileName,fileName,lineNo,function)
+	
+	// initTaskBenchmark()
+	testHatch := THatch
+
+	TSpawnTask(() ==> [c = testHatch&]{
+		TSleep(1.0)
+		c.Emit()
+	})
+
+	testHatch.Await()
+	printf("hey\n")
+
 }
 
 // "#ComputePi" := !() -> void

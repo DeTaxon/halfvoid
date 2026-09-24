@@ -61,12 +61,19 @@ ConstFuncPtr := class extend BoxExeConstObj
 	}
 	PrintConst := virtual !(LLVMWriteContext^ ctx) -> void
 	{
-		if Func.IsComplete()
+		if not Func.IsComplete()
 		{
-			Func.PrintName(ctx)
-		}else{
 			ctx.writeStream^ << "null"
+			return void
 		}
+
+		if Func is BoxFuncNonExist
+		{
+			ctx.writeStream^ << "null"
+			return void
+		}
+			
+		Func.PrintName(ctx)
 	}
 }
 

@@ -61,8 +61,8 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, Vector.{voi
 
 MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFuncFrame^ callerFrame, Vector.{int} callerIndx,int returnIndex = 0) -> void
 {
-	if interpFunc.BaseFunction?->{BoxFuncBody^}.OutputName == "TestPi"
-		interpFunc.Print()
+	// if interpFunc.BaseFunction?->{BoxFuncBody^}.OutputName == "TestPi"
+	// 	interpFunc.Print()
 	//exit(0)
 
 	if interpFunc.Lines.Size() == 0
@@ -83,6 +83,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 	opPtr := interpFunc.Lines.GetPointer()
 	assert(opPtr != null)
+
+	frameData := thisFrame.stackData
+	frameIndx := min(frameData.counter++,frameData.files.Size() - 1)
+
+	defer frameData.counter -= 1
 
 	useStackSize := interpFunc.StackFrameSize
 	thisFrame.localVarBlob = thisFrame.AllocateOnStack(useStackSize)->{u8^}
@@ -332,6 +337,33 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}else{
 				assert(false)
 			}
+		case "atomic_add"
+			objTyp := interpFunc.Objects[thisLine.var2].GetType()
+
+		
+			ptr1 := thisFrame.GetObjectPtr(thisLine.var2)
+			ptr2 := thisFrame.GetObjectPtr(thisLine.var3)
+			resPtr := thisFrame.GetObjectPtr(thisLine.var1)
+
+			if IsUInt(objTyp.Base)
+			{
+				switch objTyp.Base.GetSize()
+				{
+				case 1 resPtr->{u8^}^ = InterlockAdd(ptr1->{u8^^}^^,ptr2->{u8^}^)
+				case 2 resPtr->{u16^}^ = InterlockAdd(ptr1->{u16^^}^^,ptr2->{u16^}^)
+				case 4 resPtr->{u32^}^ = InterlockAdd(ptr1->{u32^^}^^,ptr2->{u32^}^)
+				case 8 resPtr->{u64^}^ = InterlockAdd(ptr1->{u64^^}^^,ptr2->{u64^}^)
+				}
+			}else{
+				switch objTyp.Base.GetSize()
+				{
+				case 1 resPtr->{s8^}^ = InterlockAdd(ptr1->{s8^^}^^,ptr2->{s8^}^)
+				case 2 resPtr->{s16^}^ = InterlockAdd(ptr1->{s16^^}^^,ptr2->{s16^}^)
+				case 4 resPtr->{s32^}^ = InterlockAdd(ptr1->{s32^^}^^,ptr2->{s32^}^)
+				case 8 resPtr->{s64^}^ = InterlockAdd(ptr1->{s64^^}^^,ptr2->{s64^}^)
+				}
+			}
+			
 		case in !["add","sub","mul","div","mod"]
 			objTyp := interpFunc.Objects[thisLine.var2].GetType()
 
@@ -878,9 +910,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "debug_set_file"
 			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
 			thisFrame.DebugFileName = ptr1->{char^^}^
+			frameData.files[frameIndx] = ptr1->{char^^}^
 		case "debug_set_line"
 			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
 			thisFrame.DebugFileLine = ptr1->{int^}^
+			frameData.lines[frameIndx] = ptr1->{int^}^
 		case "debug_set_var_name" //nothing
 
 		case "debug_block_start"

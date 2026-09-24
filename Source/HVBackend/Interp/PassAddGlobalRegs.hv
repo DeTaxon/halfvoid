@@ -95,8 +95,8 @@ PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
 				ASDMakeStore(oPtr,cPtr,c,resId,0)
 			}
 
-		case in !["debug_set_line","debug_set_file","debug_block_start","debug_block_end","debug_set_var_name"]
-			i++
+		// case in !["debug_set_line","debug_set_file","debug_block_start","debug_block_end","debug_set_var_name"]
+		// 	i++
 
 		case void
 			cPtr[c++] = iPtr[i]
