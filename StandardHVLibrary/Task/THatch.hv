@@ -55,7 +55,7 @@ THatch := class
 				bench := bmCreateTaskEntry(true,1)
 				bench.action = "HatchEmits"
 				bench.callerTaskId = curTask.taskId
-				bench.targetTaskId = itr.itTask
+				bench.targetTaskId = itr.itTask.taskId
 
 				itr = itr.next_point
 			}

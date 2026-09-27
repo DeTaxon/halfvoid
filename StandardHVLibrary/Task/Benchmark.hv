@@ -5,7 +5,7 @@ bmBacktrace := void^
 
 initTaskBenchmark := !() -> void
 {
-	bmBigData.Create(4*1024*1024,"wr")
+	bmBigData.Create(16*1024*1024,"wr")
 	bmBacktrace = backtrace_create_state(null,1,null,null)
 	// TODO Use marking, but libraries must be loaded first
 }
@@ -92,3 +92,30 @@ bmStackCB := !(bmStackCBData^ data, void^ pc, char^ fileName, int lineNo,char^ f
 	// printf("pc <%p> file <%p> <%s> line <%i> function <%s>\n",pc,fileName,fileName,lineNo,function)
 }
 
+bmPrintInProgressTask := !() -> void
+{
+	ptr := bmBigData.GetPointer()->{bmtStackFrameInfo^}
+
+	creations := bmtStackFrameInfo^[int]
+	quits := bmtStackFrameInfo^[int]
+
+	for i : bmIterator
+	{
+		entry := ref ptr[i]
+
+		switch entry.action
+		{
+		case "TaskCreated"
+			creations[entry.callerTaskId] = entry&
+		case "TaskQuit"
+			quits[entry.callerTaskId] = entry&
+		}
+	}
+	for it,ind : creations
+	{
+		if quits.Contain(ind)
+			continue
+		printf("kept task\n")
+		it.TestPrint()
+	}
+}
