@@ -22,39 +22,53 @@ wd_struct := class
 FIONREAD := 21531
 inotify_wrapper_fd := class
 {
+	event := Event
 	fd := int
 
+	nodesMutex := Mutex
 	fileNodes := AVLMap.{int,inotify_wrapper_node}
+	monitorThread := Thread^
 
 	Init := !() -> void
 	{
 	}
 
-	MonitorFolder := !(Str folderPath,bool recursive,!(FSObject^,FSChangeEvent)& -> void cb) -> TGCObject^
+	MonitorFolder := !(int^ resID, Str folderPath,bool recursive,!(FSObject^,FSChangeEvent)& -> void cb) -> void
 	{
 		@once {
+			event."this"()
+			nodesMutex."this"()
 			this.fd = inotify_init1(2048)
 			
-			monitorThread := static Thread^
-
 			monitorThread = new Thread(() ==> {
-				pollList := pollfd
-				pollList.fd = iw_fd.fd
-				pollList.events = POLLIN
+				pollList := pollfd[2]
+
+				pollList[0].fd = event.Get()
+				pollList[0].events = POLLIN
+
+				pollList[1].fd = iw_fd.fd
+				pollList[1].events = POLLIN
 
 				buf := char[4096]
 
-				while true //TODO gracefull quit
+				while not iw_fd_quit
 				{
-					pollList.revents = 0
-					poll(pollList&,1,1000)
-					if (pollList.revents and_b POLLIN) == 0
+					pollList[1].revents = 0
+					poll(pollList&,2,1000)
+
+					if (pollList[0].revents and_b POLLIN) != 0
+						return void
+					if (pollList[1].revents and_b POLLIN) == 0
 						continue
 
-					redBytes := read(pollList.fd,buf[0]&,4096)
+					redBytes := read(pollList[1].fd,buf[0]&,4096)
 
 					ptr := buf[0]&->{wd_struct^}
 					fileName := StringSpan(ptr.name[0]&)
+
+					nodesMutex.Lock()
+					defer nodesMutex.Unlock()
+
 
 					node := ref iw_fd.fileNodes[ptr.wd]
 					sBuf := TEchoStream
@@ -94,9 +108,11 @@ inotify_wrapper_fd := class
 
 		thisWork := NodeWork
 		thisWork.monitorTask = CurrentTask
-		TLock(this&)
+
+		nodesMutex.Lock()
 
 		wd := inotify_add_watch(this.fd,folderPath.GetString().Str(),thisMask)
+		resID?^ = wd
 		newNode := ref fileNodes[wd]
 		newNode.objectName->AsString = folderPath.GetString()
 		newNode.nodeWork = thisWork&
@@ -108,17 +124,18 @@ inotify_wrapper_fd := class
 					return void
 				absPath := fsGetAbsolutePath(x.GetPath())
 				wd := inotify_add_watch(this.fd,absPath.GetOr("").Str(),thisMask)
+				resID?^ = wd
 				newNode := ref fileNodes[wd]
 				newNode.objectName = x.GetPath()
 				newNode.nodeWork = thisWork&
 			})
 		}
 
-		TUnlock(this&)
+		nodesMutex.Unlock()
 
 		thrd := CurrentThread
 		//TODO Cancalable
-		while true
+		while not thisWork.isCanceled
 		{
 			TaskCheckMutex.Lock()
 			thisWork.isPaused = true
@@ -137,6 +154,22 @@ inotify_wrapper_fd := class
 			}
 		}
 	}
+	Stop := !(int id) -> void
+	{
+		nodesMutex.Lock()
+		defer nodesMutex.Unlock()
+
+		if not fileNodes.Contain(id)
+			return void
+
+		node := ref fileNodes[id]
+
+		node.nodeWork.isCanceled = true
+		node.nodeWork.monitorTask.resume()
+		node.nodeWork.isPaused = false
+
+		fileNodes.Remove(id)
+	}
 }
 inotify_wrapper_node := class
 {
@@ -149,22 +182,37 @@ NodeWork := class
 	monitorTask := Task^
 	changedObjects := List.{Tuple.{FSObject^,FSChangeEvent}}
 	isPaused := bool
+	isCanceled := bool
 }
 
 iw_fd := inotify_wrapper_fd
+iw_fd_quit := false
 //TODO add destroy
 initMonitorFolder := !() -> void
 {
 	iw_fd.Init()
 }
+stopMonitorFolder := !() -> void
+{
+	if iw_fd.monitorThread != null
+	{
+		iw_fd_quit = true
+		iw_fd.event.Emit()
+		iw_fd.monitorThread.Join()
+	}
+
+}
 
 
-//#MarkFunction("JITPass",AsyncMonitorFolderNonStop)
-AsyncMonitorFolderNonStop := !(Str folderPath,bool recursive,!(FSObject^,FSChangeEvent)& -> void cb) -> TGCObject^
+AsyncMonitorFolderNonStop := !(int^ resID,Str folderPath,bool recursive,!(FSObject^,FSChangeEvent)& -> void cb) -> void
 	#Mark("JITPass")
 {
 	#MarkFunction("CallAtStart",initMonitorFolder)
+	#MarkFunction("CallAtEnd",stopMonitorFolder)
 
-	return iw_fd.MonitorFolder(folderPath,recursive,cb)
+	iw_fd.MonitorFolder(resID,folderPath,recursive,cb)
 }
-
+AsyncMonitorFolderStop := !(int resID) -> void
+{
+	iw_fd.Stop(resID)
+}

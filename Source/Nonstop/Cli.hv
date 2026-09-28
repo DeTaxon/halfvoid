@@ -138,7 +138,7 @@ EnterCliMode := !() -> int
 
 	TSpawnTask(() ==> {
 
-		AsyncMonitorFolderNonStop(".",true,(changedObj,changedOption) ==> {
+		AsyncMonitorFolderNonStop(null,".",true,(changedObj,changedOption) ==> {
 
 			if changedObj is not in File
 				return void

@@ -1,24 +1,24 @@
 Event := class
 {
-    evId := int
+    id := int
     this := !() -> void
     {
-        evId = eventfd(0,0)
+        id = eventfd(0,0)
     }
     Get := !() -> int
     {
-        return evId
+        return id
     }
 
     Emit := !() -> void
     {
         someVal := 1U
-        write(evId,someVal&,8)
+        write(id,someVal&,8)
     }
     Wait := !() -> void
     {
         someVal := u64
-        read(evId,someVal&,8)
+        read(id,someVal&,8)
     }
     Reset := !() -> void
     {
@@ -27,6 +27,6 @@ Event := class
 
     Destroy := virtual !() -> void
     {
-        close(evId)
+        close(id)
     }
 }

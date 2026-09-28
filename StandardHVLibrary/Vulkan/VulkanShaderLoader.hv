@@ -9,6 +9,8 @@ VulkanShaderLoader := class
 	// hotloadedShaders := TShaderInput^[Blob^]
 	changedFiles := Vector.{Str}
 
+	monitorId := int
+
 	SetInput := !(Str name,TShaderInput^ model) -> void
 	{
 		inputTypes[name] = model
@@ -85,7 +87,7 @@ VulkanShaderLoader := class
 	SetFolderHotload := !(Str folderPath) -> void
 	{
 		TSpawnTask(() ==> [folderPath] {
-			AsyncMonitorFolderNonStop(folderPath,true, (x,t) ==> {
+			AsyncMonitorFolderNonStop(monitorId&,folderPath,true, (x,t) ==> {
 				changedFiles.Push(x.GetPath().CStr())
 			})
 		})
@@ -133,5 +135,10 @@ VulkanShaderLoader := class
 
 			changedFiles.Destroy()
 		}
+	}
+	DisableLoader := !() -> void
+	{
+		AsyncMonitorFolderStop(monitorId)
+
 	}
 }

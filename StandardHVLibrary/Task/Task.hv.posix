@@ -107,4 +107,7 @@ AppendClass Task
 			stackPtr = null
 		}
 	}
+	Cancel := virtual !() -> bool
+	{
+	}
 }

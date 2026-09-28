@@ -47,4 +47,8 @@ AppendClass Task
 	OSDestroy := !() -> void
 	{
 	}
+	Cancel := virtual !() -> void
+	{
+		
+	}
 }
