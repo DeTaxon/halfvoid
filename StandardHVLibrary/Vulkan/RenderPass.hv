@@ -51,7 +51,7 @@ TRenderPass := class
 			attmRef2.attachment = ls
 			attmRef2.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 
-			attmDesc[ls].format = VK_FORMAT_D16_UNORM
+			attmDesc[ls].format = VK_FORMAT_D32_SFLOAT
 			attmDesc[ls].samples = VK_SAMPLE_COUNT_1_BIT
 			attmDesc[ls].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
 			attmDesc[ls].storeOp = VK_ATTACHMENT_STORE_OP_STORE
