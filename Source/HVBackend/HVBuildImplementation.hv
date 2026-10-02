@@ -54,6 +54,7 @@ HVContextImplementation := class extend HV_Context
 		newClass := new BoxClass
 		newClass.ItId = GetNewId()
 		newClass.InitType()
+		newClass.Name =  str_printf("ModuleClass%i",GetNewId())
 
 		AllClasses.Push(newClass)
 
