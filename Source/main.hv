@@ -688,7 +688,7 @@ PrintDeclares := !(LLVMWriteContext^ ctx) -> void
 	f^ << "declare void @llvm.debugtrap() #0\n"
 	f^ << "declare i8* @llvm.frameaddress.p0i8(i32 %asd) #2\n"
 	f^ << "declare i8* @llvm.stacksave() #1\n"
-	f^ << "declare i8* @llvm.stackrestore(i8* %abc) #0\n"
+	f^ << "declare void @llvm.stackrestore(i8* %abc) #0\n"
 	f^ << "declare float @llvm.vector.reduce.fadd.f32.v4f32(float %acc, <4 x float> %a)\n"
 	f^ << "declare float @llvm.vector.reduce.fadd.f32.v3f32(float %acc, <3 x float> %a)\n"
 	f^ << "declare float @llvm.vector.reduce.fadd.f32.v2f32(float %acc, <2 x float> %a)\n"
