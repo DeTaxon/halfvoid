@@ -213,6 +213,7 @@ AsyncMonitorFolderNonStop := !(int^ resID,Str folderPath,bool recursive,!(FSObje
 	iw_fd.MonitorFolder(resID,folderPath,recursive,cb)
 }
 AsyncMonitorFolderStop := !(int resID) -> void
+	#Mark("JITPass")
 {
 	iw_fd.Stop(resID)
 }

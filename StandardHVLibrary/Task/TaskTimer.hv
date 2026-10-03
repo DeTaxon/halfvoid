@@ -52,5 +52,10 @@ AppendClass TaskWorker
 		TaskTimersArray[^].0 = 0
 		TaskCheckMutex.Unlock()
 	}
+}
 
+ThreadSkipTimers := !() -> void
+	#Mark("JITPass")
+{
+	CurrentThread?.SkipTimers()
 }
