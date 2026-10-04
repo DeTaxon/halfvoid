@@ -1,0 +1,5 @@
+main := !(Vector.{char^} args) -> void
+{
+	win := new Window(800,800,"Window")
+	win.RunVulkan()
+}
