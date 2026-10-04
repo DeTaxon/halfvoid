@@ -179,8 +179,11 @@ cycle_release.exe:
 proj:
 	systemd-run --user --scope -p MemoryMax=1000M -p MemorySwapMax=1000M  $(mass_if) $(gdb_tui) ./halfvoid
 
+detective:
+	./halfvoid -g -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Detective -o /tmp/det.ll  --vk vk.xml
+	clang++ -g /tmp/det.ll -o detective
 	
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 
 
-.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe test.exe Mach.m unit 
+.PHONY:  cycle ver3_2 test halfvoid win.exe halfvoid.exe win2.exe test.exe Mach.m unit detective

@@ -1,6 +1,5 @@
 AppendClass Window
 {
-
 	imgCommands := AVLMap.{u32,SimpleWindowImageInfo}
 	imgGeneration := int
 	cmdGeneration := int
@@ -18,7 +17,10 @@ AppendClass Window
 		vInstance.PreferIntegratedGPU()
 		
 		//Init(windowSize.x,h,windowTitle.Str())
-		Init(windowSize.x,windowSize.y,windowTitle.Str(),true)
+		ttl := "Window"
+		if windowTitle != null
+			ttl = windowTitle.Str()
+		Init(windowSize.x,windowSize.y,ttl,true)
 
 		vInstance.Init()
 
@@ -44,6 +46,11 @@ AppendClass Window
 		TSpawnTask(() ==> [c = this&]{
 			c.VulkanPollFunc()
 		})
+	}
+	RunVulkan := !() -> void
+	{
+		InitVulkan()
+		VulkanPollFunc()
 	}
 
 	VulkanPollFunc := !() -> void

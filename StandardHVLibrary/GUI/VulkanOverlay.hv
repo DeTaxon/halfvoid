@@ -84,7 +84,7 @@ VkOverlayContext := class
 		boxIndexes := ![0,1,2,2,3,1]
 
 		itType := VKType(u32,1)
-		boxMesh = inst.CreateMesh(boxVerts,boxIndexes,itType)
+		// boxMesh = inst.CreateMesh(boxVerts,boxIndexes,itType)
 	}
 }
 

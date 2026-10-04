@@ -73,6 +73,11 @@ TryGetNewDeleteOperator := !(Token^ itm) -> BoxExeObj^
 
 		typeSize := GetExeInt(tp.GetSize())
 
+		if tp is in TypeClass
+		{
+			DB_TypeSizeUsage.Add(CurrentFunc?,tp)
+		}
+
 		if allocObj != null
 		{
 			consts := Vector.{BoxExeConstObj^}
