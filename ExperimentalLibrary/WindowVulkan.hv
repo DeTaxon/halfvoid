@@ -60,7 +60,6 @@ AppendClass Window
 
 		lastTime := GetSteadyTime() - 1 //sec
 
-
 		while not ShouldClose()
 		{
 			if (cmdGeneration != vkOverlay.CmdGeneration) or (imgGeneration != vkOverlay.DataGeneration) or true

@@ -1,5 +1,61 @@
 main := !(Vector.{char^} args) -> void
 {
 	win := new Window(800,800,"Window")
-	win.RunVulkan()
+	win.InitVulkan()
+
+	cmds := TVkCommandBuffer(win.vInstance,win.vInstance.itDrawCmdPool2)
+
+	while not win.ShouldClose()
+	{
+		surfaceIndex := u32
+		drawRes := true
+		//@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+		@work win.vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+
+		cmds.Reset()
+		cmds.Start()
+
+		bar1 := VkImageMemoryBarrier()
+		bar1.image = win.vInstance.surfaceImages^[surfaceIndex]
+		bar1.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED
+		bar1.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+		bar1.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT
+		bar1.subresourceRange.levelCount = 1
+		bar1.subresourceRange.layerCount = 1
+		win.vInstance.Funcs.vkCmdPipelineBarrier(cmds.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
+
+		clrValues := vec4f(1.0,0.0,0.0,1.0)
+
+		atm := VkRenderingAttachmentInfo()
+		atm.imageView = win.vInstance.surfaceImageViews^[surfaceIndex]
+		atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+		atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
+		atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+		atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
+		memcpy(atm.clearValue&,clrValues&,4*4)
+
+		rndr := VkRenderingInfo()
+		rndr.renderArea.extent.width = win.vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
+		rndr.renderArea.extent.height = win.vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
+		rndr.layerCount = 1
+		rndr.colorAttachmentCount = 1
+		rndr.pColorAttachments&->{void^^}^ = atm&
+
+		win.vInstance.Funcs.vkCmdBeginRendering(cmds.Get(),rndr&)
+
+		win.vInstance.Funcs.vkCmdEndRendering(cmds.Get())
+
+		bar1.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+		bar1.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+		win.vInstance.Funcs.vkCmdPipelineBarrier(cmds.Get(),VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,0,0,null,0,null,1,bar1&)
+
+		cmds.Stop()
+		cmds.Submit(win.vInstance.DrawQueue,null)
+		
+		@work win.vInstance.DrawPresentImage(surfaceIndex)
+
+		win.PollEvents()
+		@work glfwWaitEventsTimeout(0.01)
+	}
+	// win.RunVulkan()
 }
