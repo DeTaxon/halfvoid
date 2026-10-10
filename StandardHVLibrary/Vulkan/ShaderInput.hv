@@ -34,6 +34,7 @@ VkInputTopology := enum
 	"Triangles",
 	"Points",
 	"TriangleStrip",
+	"TriangleFan",
 }
 
 TShaderInput := class 
@@ -174,6 +175,8 @@ TShaderInput := class
 			paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
 		case "TriangleStrip"
 			paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
+		case "TriangleFan"
+			paC1.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN
 		}
 
 		stts := VkDynamicState[3]

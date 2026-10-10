@@ -5,6 +5,31 @@ main := !(Vector.{char^} args) -> void
 
 	cmds := TVkCommandBuffer(win.vInstance,win.vInstance.itDrawCmdPool2)
 
+	vk := win.vInstance
+	
+	shadersDB := VulkanShaderLoader
+	resMngr := VKResourceManager
+
+	resMngr.inst = vk
+	
+	lightRenderPass := resMngr.CreateRenderPass(![
+		TRenderPassFrame(vk.SwapImageFormat,	VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
+	],false)
+
+	empty := TShaderInputVertexInfo	
+	lightLayout := lightRenderPass.CreateLayout(empty,![],![
+		new TVertexPushConstant(16)
+	],
+	1,
+	topology = "TriangleFan"
+	)
+
+	v := #EmbedVulkanShader("local:Square.vert")
+	f := #EmbedVulkanShader("local:Square.frag")
+
+	
+	shader := lightLayout.CreateShader(v,f)
+
 	while not win.ShouldClose()
 	{
 		surfaceIndex := u32
@@ -24,7 +49,7 @@ main := !(Vector.{char^} args) -> void
 		bar1.subresourceRange.layerCount = 1
 		win.vInstance.Funcs.vkCmdPipelineBarrier(cmds.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
 
-		clrValues := vec4f(1.0,0.0,0.0,1.0)
+		clrValues := vec4f(0.0,0.0,0.0,1.0)
 
 		atm := VkRenderingAttachmentInfo()
 		atm.imageView = win.vInstance.surfaceImageViews^[surfaceIndex]
@@ -34,6 +59,7 @@ main := !(Vector.{char^} args) -> void
 		atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
 		memcpy(atm.clearValue&,clrValues&,4*4)
 
+
 		rndr := VkRenderingInfo()
 		rndr.renderArea.extent.width = win.vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
 		rndr.renderArea.extent.height = win.vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
@@ -42,6 +68,9 @@ main := !(Vector.{char^} args) -> void
 		rndr.pColorAttachments&->{void^^}^ = atm&
 
 		win.vInstance.Funcs.vkCmdBeginRendering(cmds.Get(),rndr&)
+
+		shader.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+		vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
 
 		win.vInstance.Funcs.vkCmdEndRendering(cmds.Get())
 
