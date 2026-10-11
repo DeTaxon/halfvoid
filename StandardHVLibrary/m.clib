@@ -1,0 +1,12 @@
+
+{
+	"link" : "static",
+	"initname" : "standartminit",
+	"libs" : [
+		"libm.so.6"
+	],
+	"funcs" : {
+		"acosf" : "float,float",
+		"acos" : "double,double"
+	}
+}
