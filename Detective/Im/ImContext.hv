@@ -1,18 +1,27 @@
 ImContext := class
 {
+	vk := VulkanDefaultInstance^
+
 	lightRenderPass := TRenderPass^
 
 	lightLayout := TShaderInput^
 	textedLayout := TShaderInput^
 	meshLayout := TShaderInput^
 
-	shader := vShader^
+	shaderDataNode := vShader^
 	shaderText := vShader^
 	shaderMesh := vShader^
 
+	// draw data
+	cmds := TVkCommandBuffer^
+	width := float
+	height := float
+	// selected
+	selectedObject := void^
+
 	Init := !(VulkanDefaultInstance^ inst,VKResourceManager^ resMngr) -> void
 	{
-		vk := inst
+		vk = inst
 	
 		lightRenderPass = resMngr.CreateRenderPass(![
 			TRenderPassFrame(vk.SwapImageFormat,	VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
@@ -44,8 +53,58 @@ ImContext := class
 		topology = "Triangles"
 		)
 	
-		shader = lightLayout.CreateShader( #EmbedVulkanShader("local:Square.vert"),#EmbedVulkanShader("local:Square.frag"))
+		shaderDataNode = lightLayout.CreateShader( #EmbedVulkanShader("local:Square.vert"),#EmbedVulkanShader("local:Square.frag"))
 		shaderText = textedLayout.CreateShader( #EmbedVulkanShader("local:Texture.vert"),#EmbedVulkanShader("local:Texture.frag"))
 		shaderMesh = meshLayout.CreateShader( #EmbedVulkanShader("local:DrawMesh.vert"),#EmbedVulkanShader("local:DrawMesh.frag"))
 	}
+
+	DrawStart := !(float w, float h,TVkCommandBuffer^ inCmds,VkImageView target ) -> void
+	{
+		cmds = inCmds
+		width = w
+		height = h
+
+		clrValues := vec4f(0.0,0.0,0.0,1.0)
+
+		atm := VkRenderingAttachmentInfo()
+		atm.imageView = target
+		atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+		atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
+		atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+		atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
+		memcpy(atm.clearValue&,clrValues&,4*4)
+
+		rndr := VkRenderingInfo()
+		rndr.renderArea.extent.width = w //surfAb.currentExtent.width
+		rndr.renderArea.extent.height = h //surfAb.currentExtent.height
+		rndr.layerCount = 1
+		rndr.colorAttachmentCount = 1
+		rndr.pColorAttachments&->{void^^}^ = atm&
+
+		vk.Funcs.vkCmdBeginRendering(cmds.Get(),rndr&)
+	}
+
+	DrawNodes := !(ImNode[] nodes) -> void
+	{
+		shaderDataNode.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+
+		for node : nodes
+		{
+			data := float[4]
+			data[0] = node.size.x / width
+			data[1] = node.size.y / height
+			data[2] = node.pos.x / width
+			data[3] = node.pos.y / height
+
+			vk.Funcs.vkCmdPushConstants(cmds.Get(),lightLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,data->TypeSize,data&)
+			vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
+		}
+	}
+
+}
+
+ImNode := class
+{
+	pos := vec2f
+	size := vec2f
 }
