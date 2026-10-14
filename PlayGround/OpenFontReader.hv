@@ -1,3 +1,7 @@
+main := !(Vector.{char^} args) -> void
+{
+	OpenFontTest()
+}
 
 OpenFontTest := !() -> void
 {

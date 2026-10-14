@@ -16,12 +16,12 @@ OFGlyph := class
 }
 
 
-NewOpenFont := !(Blob^ blb,Image^ img) -> OpenFont^
+NewOpenFont := !(Blob^ blb,Image^ img,int targetSize) -> OpenFont^
 {
 	result = new OpenFont
 
 	loader := OpenFontLoader
-	loader.Load(blb,img)
+	loader.Load(blb,img,targetSize)
 
 }
 
@@ -38,13 +38,13 @@ OpenFontLoader := class
 
 	fmt4 := OpenTypeFormat4^
 
-	Load := !(Blob^ blb,Image^ img) -> void
+	Load := !(Blob^ blb,Image^ img,int targetSize) -> void
 	{
 		ptr := blb.GetPointer()->{u8^}
 
 		hdr := ptr->{OpenTypeHeader^}
 
-		printf("ver %i\n",FromBigEndian(hdr.numTables))
+		// printf("ver %i\n",FromBigEndian(hdr.numTables))
 
 		itr := hdr[1]&->{OpenTypeTableHeader^}
 
@@ -67,23 +67,23 @@ OpenFontLoader := class
 				hmtx = ptr[FromBigEndian(itr[i].offset)]&->{u16^}
 		}
 
-		printf("num of glyphs %i\n",FromBigEndian(maxp.numGlyphs))
+		// printf("num of glyphs %i\n",FromBigEndian(maxp.numGlyphs))
 
 
 		cmapCount := FromBigEndian(cmap->{u16^}[1])
-		printf("cmap count %i\n",cmapCount)
+		// printf("cmap count %i\n",cmapCount)
 		cmapTables := cmap->{u16^}[2]&->{OpenTypeCMapTable^}
 		for i : cmapCount
 		{
 			plat := FromBigEndian(cmapTables[i].platformID)
 			enc := FromBigEndian(cmapTables[i].encodingID)
 			offst := FromBigEndian(cmapTables[i].offset) 
-			printf("Table %i %i\n",plat,enc)
+			// printf("Table %i %i\n",plat,enc)
 
 			if plat == 0 and enc == 3
 			{
 				fmt := cmap->{u8^}[offst]&
-				printf("format %i\n",FromBigEndian(fmt->{u16^}^))
+				// printf("format %i\n",FromBigEndian(fmt->{u16^}^))
 				d := fmt->{OpenTypeFormat4^}
 				fmt4 = d
 			}
@@ -93,7 +93,6 @@ OpenFontLoader := class
 
 		aliasScale := 8
 
-		targetSize := 22
 		pixelSize := targetSize*aliasScale
 
 		offset3.x = 0
@@ -110,6 +109,7 @@ OpenFontLoader := class
 		}
 		for c : 'A'..'Z'
 		{
+			// printf("char %c\n",c)
 			drawChar(c,img,pixelSize,per,aliasScale,targetSize)
 		}
 		for c : '0'..'9'
@@ -131,7 +131,7 @@ OpenFontLoader := class
 	{
 		id := GetCharId(c)
 
-		printf("char id %i\n",id)
+		// printf("char id %i\n",id)
 
 		glp := GetGlyphById(id)
 
@@ -256,6 +256,9 @@ OpenFontLoader := class
 
 				diffX := Abs(x.x - y.x)->{int}
 				diffY := Abs(x.y - y.y)->{int}
+
+				if diffX == 0 and diffY == 0
+					return void
 
 				leftGo := x.x > y.x
 
@@ -404,18 +407,18 @@ OpenFontLoader := class
 		{
 			ofsts := loca->{u16^}
 			offset := FromBigEndian(ofsts[id])*2
-			printf("offset1 %i\n",offset)
+			// printf("offset1 %i\n",offset)
 			g = glyf->{u8^}[offset]&->{OpenTypeGlyf^}
 		}else{
 			ofsts := loca->{u32^}
 			offset := FromBigEndian(ofsts[id])
-			printf("offset2 %i\n",offset)
+			// printf("offset2 %i\n",offset)
 			g = glyf->{u8^}[offset]&->{OpenTypeGlyf^}
 		}
 
 		cntrCount := FromBigEndian(g.numOfContours)
-		printf("min %i max %i\n",FromBigEndian(g.xMin),FromBigEndian(g.xMax))
-		printf("min %i max %i\n",FromBigEndian(g.yMin),FromBigEndian(g.yMax))
+		// printf("min %i max %i\n",FromBigEndian(g.xMin),FromBigEndian(g.xMax))
+		// printf("min %i max %i\n",FromBigEndian(g.yMin),FromBigEndian(g.yMax))
 
 		result.rangeX.Start = FromBigEndian(g.xMin)
 		result.rangeX.End = FromBigEndian(g.xMax)
@@ -424,9 +427,9 @@ OpenFontLoader := class
 
 		result.advanceWidth = FromBigEndian(hmtx[id*2])
 
-		printf("advance width %f\n",result.advanceWidth)
+		// printf("advance width %f\n",result.advanceWidth)
 
-		printf("countorCount %i\n",cntrCount)
+		// printf("countorCount %i\n",cntrCount)
 
 		if cntrCount < 0
 		{
@@ -477,7 +480,7 @@ OpenFontLoader := class
 					scaleX = f2D14ToFloat(itr->{s16^}^)
 					scaleY = scaleX
 					itr = itr[2]&
-					printf("a\n")
+					// printf("a\n")
 
 				}else if (flag and_b 0x40) != 0 // scale x y
 				{
@@ -485,13 +488,13 @@ OpenFontLoader := class
 					itr = itr[2]&
 					scaleY = f2D14ToFloat(itr->{s16^}^)
 					itr = itr[2]&
-					printf("b %f %f\n",scaleX,scaleY)
+					// printf("b %f %f\n",scaleX,scaleY)
 				}else if (flag and_b 0x80) != 0
 				{
 					for 4
 						itr = itr[2]&
 					//TODO rotation
-					printf("c\n")
+					// printf("c\n")
 				}
 
 				if (flag and_b 0x02) != 0

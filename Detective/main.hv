@@ -1,3 +1,9 @@
+MeshData := class
+{
+	pos := vec2f
+	uv := vec2f
+}
+
 main := !(Vector.{char^} args) -> void
 {
 	win := new Window(800,800,"Window")
@@ -23,12 +29,170 @@ main := !(Vector.{char^} args) -> void
 	1,
 	topology = "TriangleFan"
 	)
-
-	v := #EmbedVulkanShader("local:Square.vert")
-	f := #EmbedVulkanShader("local:Square.frag")
-
 	
-	shader := lightLayout.CreateShader(v,f)
+	textedLayout := lightRenderPass.CreateLayout(empty,![
+		new TImageSet(1)
+	],![
+		new TVertexPushConstant(16)
+	],
+	1,
+	topology = "TriangleFan"
+	)
+
+	meshLayout := lightRenderPass.CreateLayout(MeshData,![
+		new TImageSet(1)
+	],![
+		new TVertexPushConstant(16)
+	],
+	1,
+	topology = "Triangles"
+	)
+
+	// {
+		img := NewImage_RGBA(512,512)
+		memset(img.Data,255,512*512*4)
+		dat := FSGetFile("./Goldman-Regular.ttf").GetBlob()
+		// dat := FSGetFile("./JetBrainsMono-Bold.ttf").GetBlob()
+		// NewOpenFont(dat,img,8)
+		fontSize := 22
+		oversampling := 2
+
+		atlasTest := Vector.{u8}(512*512)
+
+		packContext := stbtt_pack_context
+
+		stbtt_PackBegin(packContext&,atlasTest.GetPointer(),512,512,512,1,null) //TODO unconst
+		stbtt_PackSetOversampling(packContext&,oversampling,oversampling)
+
+		chars := stbtt_packedchar[256]
+		stbtt_PackFontRange(packContext&,dat.GetPointer(),0,fontSize,0,256,chars&) //TODO check result,
+
+		stbtt_PackEnd(packContext&)
+
+		ff := atlasTest.GetPointer()
+		tt := img.GetPointer()
+		for i : 512
+		{
+			for j : 512
+			{
+				c := ff[i + j*512]
+				// tt[(i + j*512)*4 + 0] = c 
+				// tt[(i + j*512)*4 + 1] = c 
+				// tt[(i + j*512)*4 + 2] = c 
+				// tt[(i + j*512)*4 + 3] = 255
+
+				tt[(i + j*512)*4 + 0] =	255 
+				tt[(i + j*512)*4 + 1] =	255 
+				tt[(i + j*512)*4 + 2] =	255  
+				tt[(i + j*512)*4 + 3] = c
+			}
+		}
+
+		vkImg := vk.CreateTexture()
+		vkImg.CreateTexture(img)
+	// }
+	
+	shader := lightLayout.CreateShader( #EmbedVulkanShader("local:Square.vert"),#EmbedVulkanShader("local:Square.frag"))
+	shaderText := textedLayout.CreateShader( #EmbedVulkanShader("local:Texture.vert"),#EmbedVulkanShader("local:Texture.frag"))
+	shaderMesh := meshLayout.CreateShader( #EmbedVulkanShader("local:DrawMesh.vert"),#EmbedVulkanShader("local:DrawMesh.frag"))
+
+
+	// txt := "-3.14"
+	txt := "BbRr?"
+	meshData := MeshData[20] //4*5
+	indxs := int[30] // 2*3*5
+
+	scale := 300
+
+	xPos := 0.0
+	yPos := 0.0
+	for i : 5
+	{
+		gl := ref chars[txt[i]]
+
+		meshData[i*4].pos.x = xPos
+
+		meshData[i*4 + 0].uv.x = gl.x1 / 512
+		meshData[i*4 + 1].uv.x = gl.x1 / 512
+		meshData[i*4 + 2].uv.x = gl.x0 / 512
+		meshData[i*4 + 3].uv.x = gl.x0 / 512
+
+		meshData[i*4 + 0].uv.y = gl.y1 / 512
+		meshData[i*4 + 1].uv.y = gl.y0 / 512
+		meshData[i*4 + 2].uv.y = gl.y0 / 512
+		meshData[i*4 + 3].uv.y = gl.y1 / 512
+
+		xSize := (gl.xoff2 - gl.xoff) / scale
+		ySize := (gl.yoff2 - gl.yoff) / scale
+
+		j := i*4
+
+		for tx : ![false,false,true,true] , ty : ![false,true,true,false]
+		{
+			wrt := ref meshData[j++]
+
+			nowX := xPos + gl.xoff / scale
+			nowY := yPos + gl.yoff / scale
+
+			if tx 
+			{	
+				wrt.pos.x = nowX
+			}else{
+				wrt.pos.x = nowX + xSize
+			}
+			if ty 
+			{
+				wrt.pos.y = nowY
+			}else{ 
+				wrt.pos.y = nowY + ySize
+			}
+		}
+
+		indxs[i*6 + 0] = i*4
+		indxs[i*6 + 1] = i*4 + 1
+		indxs[i*6 + 2] = i*4 + 2
+
+		indxs[i*6 + 3] = i*4
+		indxs[i*6 + 4] = i*4 + 2
+		indxs[i*6 + 5] = i*4 + 3
+
+
+		xPos += gl.xadvance / scale
+	}
+
+	// msh := vk.CreateMesh(meshData,indxs,VKType(u32,1))
+	// gg := VKType
+	// msh := vk.CreateMesh(null,null,gg)
+	msh := vk.CreateMesh(BlobOnSpan2(meshData&,meshData->TypeSize),BlobOnSpan2(indxs&,indxs->TypeSize),VKType(u32,1))
+	gSamplerNearest := VkSampler
+
+	imV := VkSamplerCreateInfo()
+	imV.magFilter = VK_FILTER_NEAREST
+	imV.minFilter = VK_FILTER_NEAREST
+	imV.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST
+	imV.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+	imV.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+	imV.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+	//imV.mpLodBias = 0.0f
+	//imV.anisotropyEnable = VK_FALSE
+	imV.maxAnisotropy = 1.0
+	imV.compareEnable = VK_FALSE
+	imV.compareOp = VK_COMPARE_OP_ALWAYS
+	imV.minLod = 0.0
+	imV.maxLod = 0.0
+	imV.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK
+	//imV.unnormalizedCoordinates = VK_FALSE
+
+	vk.Funcs.vkCreateSampler(vk.LogicalDevice,imV&,null,gSamplerNearest&)
+
+	pool := textedLayout.CreateDescriptorPool(0,1)
+	atlas := pool.CreateDescriptor()
+
+	vSetTexture(vk,atlas,vkImg,gSamplerNearest)
+
+	pool2 := meshLayout.CreateDescriptorPool(0,1)
+	atlas2 := pool2.CreateDescriptor()
+	vSetTexture(vk,atlas2,vkImg,gSamplerNearest)
 
 	while not win.ShouldClose()
 	{
@@ -59,7 +223,6 @@ main := !(Vector.{char^} args) -> void
 		atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
 		memcpy(atm.clearValue&,clrValues&,4*4)
 
-
 		rndr := VkRenderingInfo()
 		rndr.renderArea.extent.width = win.vInstance.GetSurfaceWidth() //surfAb.currentExtent.width
 		rndr.renderArea.extent.height = win.vInstance.GetSurfaceHeight() //surfAb.currentExtent.height
@@ -71,6 +234,22 @@ main := !(Vector.{char^} args) -> void
 
 		shader.ApplyShaderToQueue(vk,cmds.Get(),800,800)
 		vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
+
+		//shaderText.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+		//sts := VkDescriptorSet[2]
+		//sts[0] = atlas //vkPerspSet
+		////sts[1] = modelTextureSet
+		//vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,textedLayout.Get(),0,1,sts[0]&,0,null)
+		//vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
+
+		shaderMesh.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+		sts := VkDescriptorSet[2]
+		sts[0] = atlas2 //vkPerspSet
+		//sts[1] = modelTextureSet
+		vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,textedLayout.Get(),0,1,sts[0]&,0,null)
+		msh.Bind(cmds.Get())
+		vk.Funcs.vkCmdDrawIndexed(cmds.Get(),5*6,1,0,0,0)
+		// vk.Funcs.vkCmdDraw(cmds.Get(),5*6,1,0,0)
 
 		win.vInstance.Funcs.vkCmdEndRendering(cmds.Get())
 
