@@ -17,36 +17,9 @@ main := !(Vector.{char^} args) -> void
 	resMngr := VKResourceManager
 
 	resMngr.inst = vk
-	
-	lightRenderPass := resMngr.CreateRenderPass(![
-		TRenderPassFrame(vk.SwapImageFormat,	VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
-	],false)
 
-	empty := TShaderInputVertexInfo	
-	lightLayout := lightRenderPass.CreateLayout(empty,![],![
-		new TVertexPushConstant(16)
-	],
-	1,
-	topology = "TriangleFan"
-	)
-	
-	textedLayout := lightRenderPass.CreateLayout(empty,![
-		new TImageSet(1)
-	],![
-		new TVertexPushConstant(16)
-	],
-	1,
-	topology = "TriangleFan"
-	)
-
-	meshLayout := lightRenderPass.CreateLayout(MeshData,![
-		new TImageSet(1)
-	],![
-		new TVertexPushConstant(16)
-	],
-	1,
-	topology = "Triangles"
-	)
+	im := ImContext
+	im.Init(vk,resMngr&)
 
 	// {
 		img := NewImage_RGBA(512,512)
@@ -92,10 +65,6 @@ main := !(Vector.{char^} args) -> void
 		vkImg.CreateTexture(img)
 	// }
 	
-	shader := lightLayout.CreateShader( #EmbedVulkanShader("local:Square.vert"),#EmbedVulkanShader("local:Square.frag"))
-	shaderText := textedLayout.CreateShader( #EmbedVulkanShader("local:Texture.vert"),#EmbedVulkanShader("local:Texture.frag"))
-	shaderMesh := meshLayout.CreateShader( #EmbedVulkanShader("local:DrawMesh.vert"),#EmbedVulkanShader("local:DrawMesh.frag"))
-
 
 	// txt := "-3.14"
 	txt := "BbRr?"
@@ -185,12 +154,12 @@ main := !(Vector.{char^} args) -> void
 
 	vk.Funcs.vkCreateSampler(vk.LogicalDevice,imV&,null,gSamplerNearest&)
 
-	pool := textedLayout.CreateDescriptorPool(0,1)
+	pool := im.textedLayout.CreateDescriptorPool(0,1)
 	atlas := pool.CreateDescriptor()
 
 	vSetTexture(vk,atlas,vkImg,gSamplerNearest)
 
-	pool2 := meshLayout.CreateDescriptorPool(0,1)
+	pool2 := im.meshLayout.CreateDescriptorPool(0,1)
 	atlas2 := pool2.CreateDescriptor()
 	vSetTexture(vk,atlas2,vkImg,gSamplerNearest)
 
@@ -232,7 +201,7 @@ main := !(Vector.{char^} args) -> void
 
 		win.vInstance.Funcs.vkCmdBeginRendering(cmds.Get(),rndr&)
 
-		shader.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+		im.shader.ApplyShaderToQueue(vk,cmds.Get(),800,800)
 		vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
 
 		//shaderText.ApplyShaderToQueue(vk,cmds.Get(),800,800)
@@ -242,11 +211,11 @@ main := !(Vector.{char^} args) -> void
 		//vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,textedLayout.Get(),0,1,sts[0]&,0,null)
 		//vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
 
-		shaderMesh.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+		im.shaderMesh.ApplyShaderToQueue(vk,cmds.Get(),800,800)
 		sts := VkDescriptorSet[2]
 		sts[0] = atlas2 //vkPerspSet
 		//sts[1] = modelTextureSet
-		vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,textedLayout.Get(),0,1,sts[0]&,0,null)
+		vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,im.textedLayout.Get(),0,1,sts[0]&,0,null)
 		msh.Bind(cmds.Get())
 		vk.Funcs.vkCmdDrawIndexed(cmds.Get(),5*6,1,0,0,0)
 		// vk.Funcs.vkCmdDraw(cmds.Get(),5*6,1,0,0)

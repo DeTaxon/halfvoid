@@ -1,0 +1,51 @@
+ImContext := class
+{
+	lightRenderPass := TRenderPass^
+
+	lightLayout := TShaderInput^
+	textedLayout := TShaderInput^
+	meshLayout := TShaderInput^
+
+	shader := vShader^
+	shaderText := vShader^
+	shaderMesh := vShader^
+
+	Init := !(VulkanDefaultInstance^ inst,VKResourceManager^ resMngr) -> void
+	{
+		vk := inst
+	
+		lightRenderPass = resMngr.CreateRenderPass(![
+			TRenderPassFrame(vk.SwapImageFormat,	VK_IMAGE_LAYOUT_UNDEFINED,VK_IMAGE_LAYOUT_PRESENT_SRC_KHR),
+		],false)
+
+		empty := TShaderInputVertexInfo	
+		lightLayout = lightRenderPass.CreateLayout(empty,![],![
+			new TVertexPushConstant(16)
+		],
+		1,
+		topology = "TriangleFan"
+		)
+		
+		textedLayout = lightRenderPass.CreateLayout(empty,![
+			new TImageSet(1)
+		],![
+			new TVertexPushConstant(16)
+		],
+		1,
+		topology = "TriangleFan"
+		)
+
+		meshLayout = lightRenderPass.CreateLayout(MeshData,![
+			new TImageSet(1)
+		],![
+			new TVertexPushConstant(16)
+		],
+		1,
+		topology = "Triangles"
+		)
+	
+		shader = lightLayout.CreateShader( #EmbedVulkanShader("local:Square.vert"),#EmbedVulkanShader("local:Square.frag"))
+		shaderText = textedLayout.CreateShader( #EmbedVulkanShader("local:Texture.vert"),#EmbedVulkanShader("local:Texture.frag"))
+		shaderMesh = meshLayout.CreateShader( #EmbedVulkanShader("local:DrawMesh.vert"),#EmbedVulkanShader("local:DrawMesh.frag"))
+	}
+}
