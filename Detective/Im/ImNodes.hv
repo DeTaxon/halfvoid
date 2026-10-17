@@ -1,0 +1,146 @@
+
+ImNode := class
+{
+	pos := vec2f
+	size := vec2f
+	color := vec4f
+}
+
+ImNodePair := class
+{
+	source := int
+	target := int
+	subNode1 := u16
+	subNode2 := u16
+}
+
+ImNodeData := class
+{
+	arrowsCount := int
+	arrows := ImNodePair[5]
+}
+
+AppendClass ImContext
+{
+	DrawNodes := !(ImNode[] nodes,ImNodeData^ data) -> void
+	{
+		shaderDataNode.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+
+		for node,j : nodes
+		{
+			posX := node.pos.x
+			posY := node.pos.y
+
+			if selectedObject == node&
+			{
+				diff := mousePos - capturedPos
+				posX += diff.x
+				posY += diff.y
+
+				if not mousePressed
+				{
+					node.pos += diff
+					selectedObject = null
+				}
+			}
+
+			if mouseFirstPress and selectedObject == null
+			{
+				if mousePos.x > posX and mousePos.y > posY
+					and mousePos.x < (posX + node.size.x)
+					and mousePos.y < (posY + node.size.y)
+				{
+					capturedPos = mousePos
+					selectedObject = node&
+				}
+			}
+
+			drawCube(vec2f(posX,posY),node.size,node.color)
+
+			hSize := vec2f(5,5)
+
+			for i : 4
+				drawCube(cubeGetPos(nodes,j,i,false) - hSize,vec2f(10),vec4f(1.0,0.0,0.0,1.0))
+			for i : 4
+				drawCube(cubeGetPos(nodes,j,i,true) - hSize,vec2f(10),vec4f(1.0,0.0,0.0,1.0))
+
+		}
+
+		for i : data.arrowsCount
+		{
+			arr := ref data.arrows[i]
+
+			from := cubeGetPos(nodes,arr.source,arr.subNode1,true)
+			to := cubeGetPos(nodes,arr.target,arr.subNode2,false)
+
+			dim := vec2f(width,height)
+
+			from = from / dim
+			to = to / dim
+
+			from = (from *vec2f(2.0)) - vec2f(1.0)
+			to = (to *vec2f(2.0)) - vec2f(1.0)
+
+			meshData := vertPtr[vertCount]&
+
+			meshData[0].pos = from - vec2f(0.0,0.02)
+			meshData[0].uv = vec2f(1.0,1.0)
+			meshData[1].pos = from + vec2f(0.0,0.02)
+			meshData[1].uv = vec2f(1.0,1.0)
+			meshData[2].pos = to + vec2f(0.0,0.02)
+			meshData[2].uv = vec2f(1.0,1.0)
+			meshData[3].pos = to - vec2f(0.0,0.02)
+			meshData[3].uv = vec2f(1.0,1.0)
+
+			indxs := indPtr[indCount]&
+
+			offst := vertCount
+
+			indxs[0] = offst
+			indxs[1] = offst + 1
+			indxs[2] = offst + 2
+
+			indxs[3] = offst 
+			indxs[4] = offst  + 2
+			indxs[5] = offst  + 3
+
+			vertCount += 4
+			indCount += 6
+
+		}
+	}
+
+	cubeGetPos := !(ImNode[] nodes,int indx,int subPos,bool isRight) -> vec2f
+	{
+		subSize := vec2f(10,10)
+
+		node := ref nodes[indx]
+
+		pos := node.pos
+
+		if node& == selectedObject
+			pos += (mousePos - capturedPos)
+
+		pos.y += (subPos + 1)*subSize.x*2
+
+		if isRight
+			pos.x += node.size.x
+
+		return pos
+	}
+	drawCube := !(vec2f pos,vec2f size,vec4f color) -> void
+	{
+		data := float[8]
+		data[0] = size.x / width
+		data[1] = size.y / height
+		data[2] = pos.x / width
+		data[3] = pos.y / height
+		data[4] = color.x
+		data[5] = color.y
+		data[6] = color.z
+		data[7] = color.w
+
+		vk.Funcs.vkCmdPushConstants(cmds.Get(),lightLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,data->TypeSize,data&)
+		vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
+	}
+}

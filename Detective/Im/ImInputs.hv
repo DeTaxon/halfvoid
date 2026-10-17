@@ -1,0 +1,19 @@
+AppendClass ImContext
+{
+	//inputes
+	mousePressed := bool
+	mouseFirstPress := bool
+	mousePos := vec2f
+
+	mousePrev := bool
+
+	Inputs := !(bool mouse1,vec2f inMousePos) -> void
+	{
+		mousePrev = mousePressed
+		mousePressed = mouse1
+		mousePos = inMousePos
+
+		mouseFirstPress = mousePressed and not mousePrev
+
+	}
+}

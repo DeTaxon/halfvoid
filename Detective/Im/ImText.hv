@@ -1,0 +1,71 @@
+AppendClass ImContext
+{
+	DrawText := !(vec2f pos,char^ text,stbtt_packedchar^ chars) -> void
+	{
+		xPos := pos.x / width
+		yPos := pos.y / height
+
+		i := 0
+		while text[i] != 0
+		{
+			gl := chars[text[i]]&
+
+			meshData := vertPtr[vertCount]&
+
+			meshData[0].uv.x = gl.x1 / 512 
+			meshData[1].uv.x = gl.x1 / 512 
+			meshData[2].uv.x = gl.x0 / 512 
+			meshData[3].uv.x = gl.x0 / 512 
+
+			meshData[0].uv.y = gl.y1 / 512 
+			meshData[1].uv.y = gl.y0 / 512 
+			meshData[2].uv.y = gl.y0 / 512 
+			meshData[3].uv.y = gl.y1 / 512 
+
+			xSize := (gl.xoff2 - gl.xoff)*2 / width
+			ySize := (gl.yoff2 - gl.yoff)*2 / height
+
+			j := 0
+
+
+			nowX := xPos + gl.xoff*2.0 / width - 1
+			nowY := yPos + gl.yoff*2.0 / height - 1
+
+			for tx : ![false,false,true,true] , ty : ![false,true,true,false]
+			{
+				wrt := ref meshData[j++]
+
+				if tx 
+				{	
+					wrt.pos.x = nowX
+				}else{
+					wrt.pos.x = nowX + xSize
+				}
+				if ty 
+				{
+					wrt.pos.y = nowY
+				}else{ 
+					wrt.pos.y = nowY + ySize
+				}
+			}
+
+			indxs := indPtr[indCount]&
+
+			offst := vertCount
+
+			indxs[0] = offst
+			indxs[1] = offst + 1
+			indxs[2] = offst + 2
+
+			indxs[3] = offst 
+			indxs[4] = offst  + 2
+			indxs[5] = offst  + 3
+
+			xPos += gl.xadvance*2 / width
+				
+			vertCount += 4
+			indCount += 6
+			i += 1
+		}
+	}
+}

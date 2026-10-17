@@ -12,12 +12,24 @@ ImContext := class
 	shaderText := vShader^
 	shaderMesh := vShader^
 
+	stageVertMem := TVkMemBuffer^
+	stageIndMem := TVkMemBuffer^
+	gpuVertMem := TVkMemBuffer^
+	gpuIndMem := TVkMemBuffer^
+
 	// draw data
 	cmds := TVkCommandBuffer^
 	width := float
 	height := float
+
+	vertPtr := MeshData^
+	indPtr := int^
+	vertCount := int
+	indCount := int
+
 	// selected
 	selectedObject := void^
+	capturedPos := vec2f
 
 	Init := !(VulkanDefaultInstance^ inst,VKResourceManager^ resMngr) -> void
 	{
@@ -29,7 +41,7 @@ ImContext := class
 
 		empty := TShaderInputVertexInfo	
 		lightLayout = lightRenderPass.CreateLayout(empty,![],![
-			new TVertexPushConstant(16)
+			new TVertexPushConstant(32)
 		],
 		1,
 		topology = "TriangleFan"
@@ -38,7 +50,7 @@ ImContext := class
 		textedLayout = lightRenderPass.CreateLayout(empty,![
 			new TImageSet(1)
 		],![
-			new TVertexPushConstant(16)
+			new TVertexPushConstant(32)
 		],
 		1,
 		topology = "TriangleFan"
@@ -47,7 +59,7 @@ ImContext := class
 		meshLayout = lightRenderPass.CreateLayout(MeshData,![
 			new TImageSet(1)
 		],![
-			new TVertexPushConstant(16)
+			new TVertexPushConstant(32)
 		],
 		1,
 		topology = "Triangles"
@@ -56,6 +68,13 @@ ImContext := class
 		shaderDataNode = lightLayout.CreateShader( #EmbedVulkanShader("local:Square.vert"),#EmbedVulkanShader("local:Square.frag"))
 		shaderText = textedLayout.CreateShader( #EmbedVulkanShader("local:Texture.vert"),#EmbedVulkanShader("local:Texture.frag"))
 		shaderMesh = meshLayout.CreateShader( #EmbedVulkanShader("local:DrawMesh.vert"),#EmbedVulkanShader("local:DrawMesh.frag"))
+
+
+		temp := 8*1024*1024
+		stageVertMem = vk.CreateTransferMemBuffer(temp)
+		stageIndMem = vk.CreateTransferMemBuffer(temp)
+		gpuVertMem = vk.CreateMemBufferObject(temp,VK_BUFFER_USAGE_VERTEX_BUFFER_BIT or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT)
+		gpuIndMem = vk.CreateMemBufferObject(temp,VK_BUFFER_USAGE_INDEX_BUFFER_BIT or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT)
 	}
 
 	DrawStart := !(float w, float h,TVkCommandBuffer^ inCmds,VkImageView target ) -> void
@@ -64,7 +83,7 @@ ImContext := class
 		width = w
 		height = h
 
-		clrValues := vec4f(0.0,0.0,0.0,1.0)
+		clrValues := vec4f(0.0,0.3,0.3,1.0)
 
 		atm := VkRenderingAttachmentInfo()
 		atm.imageView = target
@@ -82,29 +101,71 @@ ImContext := class
 		rndr.pColorAttachments&->{void^^}^ = atm&
 
 		vk.Funcs.vkCmdBeginRendering(cmds.Get(),rndr&)
+
+		vertPtr = stageVertMem.Map()->{MeshData^}
+		indPtr = stageIndMem.Map()->{int^}
+
+		vertCount = 0
+		indCount = 0
 	}
-
-	DrawNodes := !(ImNode[] nodes) -> void
+	DrawEnd := !(VkDescriptorSet atlas2) -> void
 	{
-		shaderDataNode.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+		stageVertMem.Unmap()
+		stageIndMem.Unmap()
 
-		for node : nodes
-		{
-			data := float[4]
-			data[0] = node.size.x / width
-			data[1] = node.size.y / height
-			data[2] = node.pos.x / width
-			data[3] = node.pos.y / height
+		vk.PushTransferQueueAndWait(cmd ==> {
+			cpyCmd := VkBufferCopy
+			cpyCmd.size = vertCount*MeshData->TypeSize
+			
+			vk.Funcs.vkCmdCopyBuffer(cmd.Get(),stageVertMem.itBuffer,gpuVertMem.itBuffer,1,cpyCmd&)
+			memBar := VkBufferMemoryBarrier()
+			memBar.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT
+			memBar.dstAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT
+			memBar.srcQueueFamilyIndex = 0
+			memBar.srcQueueFamilyIndex = not_b memBar.srcQueueFamilyIndex
+			memBar.dstQueueFamilyIndex = memBar.srcQueueFamilyIndex
+			memBar.buffer = gpuVertMem.itBuffer
+			memBar.size = cpyCmd.size
 
-			vk.Funcs.vkCmdPushConstants(cmds.Get(),lightLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,data->TypeSize,data&)
-			vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
-		}
+			vk.Funcs.vkCmdPipelineBarrier(cmd.Get(),VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,0,0,null,1,memBar&,0,null)
+		})
+		vk.PushTransferQueueAndWait(cmd ==> {
+			cpyCmd := VkBufferCopy
+			cpyCmd.size = indCount*4
+			
+			vk.Funcs.vkCmdCopyBuffer(cmd.Get(),stageIndMem.itBuffer,gpuIndMem.itBuffer,1,cpyCmd&)
+			memBar := VkBufferMemoryBarrier()
+			memBar.srcAccessMask = VK_ACCESS_MEMORY_WRITE_BIT
+			memBar.dstAccessMask = VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT
+			memBar.srcQueueFamilyIndex = 0
+			memBar.srcQueueFamilyIndex = not_b memBar.srcQueueFamilyIndex
+			memBar.dstQueueFamilyIndex = memBar.srcQueueFamilyIndex
+			memBar.buffer = gpuVertMem.itBuffer
+			memBar.size = cpyCmd.size
+
+			vk.Funcs.vkCmdPipelineBarrier(cmd.Get(),VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,0,0,null,1,memBar&,0,null)
+		})
+
+		shaderMesh.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+		sts := VkDescriptorSet[2]
+		sts[0] = atlas2 //vkPerspSet
+		//sts[1] = modelTextureSet
+		vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,textedLayout.Get(),0,1,sts[0]&,0,null)
+
+
+		offsets := VkDeviceSize
+
+		vk.Funcs.vkCmdBindVertexBuffers(cmds.Get(),0,1,gpuVertMem.GetBufferPointer(),offsets&)
+		vk.Funcs.vkCmdBindIndexBuffer(cmds.Get(),gpuIndMem.GetBufferPointer()^,0,VKType(u32,1).GetBaseIndexType())
+
+		vk.Funcs.vkCmdDrawIndexed(cmds.Get(),indCount,1,0,0,0)
 	}
 
 }
 
-ImNode := class
+
+MeshData := class
 {
 	pos := vec2f
-	size := vec2f
+	uv := vec2f
 }

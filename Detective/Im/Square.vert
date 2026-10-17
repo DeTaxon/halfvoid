@@ -6,9 +6,11 @@
 layout(push_constant) uniform PushConsts{
 	vec2 scale;
 	vec2 offset;
+	vec4 color;
 }consts;
 
 layout (location = 0) out vec2 outUV;
+layout (location = 1) out vec4 outColor;
 
 
 vec2 mesh[4] = {
@@ -24,5 +26,6 @@ void main()
 	pos = pos*2.0 - 1.0;
 	gl_Position = vec4(pos, 0.0f, 1.0f);
 	outUV = outUV*2.0 - 1.0;
+	outColor = consts.color;
 	// outUV *= consts.screenScales;
 }

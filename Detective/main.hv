@@ -1,8 +1,3 @@
-MeshData := class
-{
-	pos := vec2f
-	uv := vec2f
-}
 
 main := !(Vector.{char^} args) -> void
 {
@@ -60,6 +55,9 @@ main := !(Vector.{char^} args) -> void
 				tt[(i + j*512)*4 + 3] = c
 			}
 		}
+
+		last := tt[(512*511 + 511)*4]&
+		last[3] = 255
 
 		vkImg := vk.CreateTexture()
 		vkImg.CreateTexture(img)
@@ -166,9 +164,26 @@ main := !(Vector.{char^} args) -> void
 	TestNodes := ImNode[2]
 	TestNodes[0].pos = vec2f(100.0,100.0)
 	TestNodes[0].size = vec2f(200,200.0)
+	TestNodes[0].color = vec4f(0.0,0.0,1.0,1.0)
 
 	TestNodes[1].pos = vec2f(500.0,500.0)
 	TestNodes[1].size = vec2f(100,100.0)
+	TestNodes[1].color = vec4f(0.0,1.0,0.0,1.0)
+
+	data := ImNodeData
+
+	data.arrowsCount = 2
+	data.arrows[0].source = 0
+	data.arrows[0].target = 1
+	data.arrows[1].source = 0
+	data.arrows[1].subNode1 = 3
+	data.arrows[1].target = 1
+	data.arrows[1].subNode2 = 1
+
+	fps := 0
+
+	fpsCount := 0
+	fpsTime := GetSteadyTime()
 
 	while not win.ShouldClose()
 	{
@@ -176,6 +191,19 @@ main := !(Vector.{char^} args) -> void
 		drawRes := true
 		//@work vInstance.DrawGetImage(surfaceIndex&,drawRes&)
 		@work win.vInstance.DrawGetImage(surfaceIndex&,drawRes&)
+
+		fpsCount += 1
+
+		now := GetSteadyTime()
+
+		if now - fpsTime >= 1.0
+		{
+			fps = fpsCount
+			fpsCount = 0
+			fpsTime = now 
+		}
+
+		im.Inputs(buttons['q'],win.MousePosition)		
 
 		cmds.Reset()
 		cmds.Start()
@@ -191,23 +219,11 @@ main := !(Vector.{char^} args) -> void
 
 		im.DrawStart(800,800,cmds&,win.vInstance.surfaceImageViews^[surfaceIndex])
 
-		im.DrawNodes(TestNodes)
+		im.DrawNodes(TestNodes,data&)
+		im.DrawText(vec2f(0,44),"Test this",chars)
+		im.DrawFloat(vec2f(0,22),fps,chars)
 
-		//shaderText.ApplyShaderToQueue(vk,cmds.Get(),800,800)
-		//sts := VkDescriptorSet[2]
-		//sts[0] = atlas //vkPerspSet
-		////sts[1] = modelTextureSet
-		//vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,textedLayout.Get(),0,1,sts[0]&,0,null)
-		//vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
-
-		// im.shaderMesh.ApplyShaderToQueue(vk,cmds.Get(),800,800)
-		// sts := VkDescriptorSet[2]
-		// sts[0] = atlas2 //vkPerspSet
-		// //sts[1] = modelTextureSet
-		// vk.Funcs.vkCmdBindDescriptorSets(cmds.Get(),VK_PIPELINE_BIND_POINT_GRAPHICS,im.textedLayout.Get(),0,1,sts[0]&,0,null)
-		// msh.Bind(cmds.Get())
-		// vk.Funcs.vkCmdDrawIndexed(cmds.Get(),5*6,1,0,0,0)
-		// vk.Funcs.vkCmdDraw(cmds.Get(),5*6,1,0,0)
+		im.DrawEnd(atlas2)
 
 		win.vInstance.Funcs.vkCmdEndRendering(cmds.Get())
 
