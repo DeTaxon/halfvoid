@@ -203,7 +203,7 @@ main := !(Vector.{char^} args) -> void
 			fpsTime = now 
 		}
 
-		im.Inputs(buttons['q'],win.MousePosition)		
+		im.Inputs(buttons['q'] or MouseButtons[0],win.MousePosition)		
 
 		cmds.Reset()
 		cmds.Start()

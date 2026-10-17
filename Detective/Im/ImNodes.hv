@@ -73,40 +73,7 @@ AppendClass ImContext
 			from := cubeGetPos(nodes,arr.source,arr.subNode1,true)
 			to := cubeGetPos(nodes,arr.target,arr.subNode2,false)
 
-			dim := vec2f(width,height)
-
-			from = from / dim
-			to = to / dim
-
-			from = (from *vec2f(2.0)) - vec2f(1.0)
-			to = (to *vec2f(2.0)) - vec2f(1.0)
-
-			meshData := vertPtr[vertCount]&
-
-			meshData[0].pos = from - vec2f(0.0,0.02)
-			meshData[0].uv = vec2f(1.0,1.0)
-			meshData[1].pos = from + vec2f(0.0,0.02)
-			meshData[1].uv = vec2f(1.0,1.0)
-			meshData[2].pos = to + vec2f(0.0,0.02)
-			meshData[2].uv = vec2f(1.0,1.0)
-			meshData[3].pos = to - vec2f(0.0,0.02)
-			meshData[3].uv = vec2f(1.0,1.0)
-
-			indxs := indPtr[indCount]&
-
-			offst := vertCount
-
-			indxs[0] = offst
-			indxs[1] = offst + 1
-			indxs[2] = offst + 2
-
-			indxs[3] = offst 
-			indxs[4] = offst  + 2
-			indxs[5] = offst  + 3
-
-			vertCount += 4
-			indCount += 6
-
+			drawLine(from,to)
 		}
 	}
 
@@ -142,5 +109,102 @@ AppendClass ImContext
 
 		vk.Funcs.vkCmdPushConstants(cmds.Get(),lightLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,data->TypeSize,data&)
 		vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
+	}
+
+	bezierSize := float
+	drawLine := !(vec2f from,vec2f to) -> void
+	{
+		bezierSize = 0.005
+		middle := (from + to)*0.5
+
+		drawBezierStart(from)
+		drawBezier(from,vec2f(middle.x,from.y),middle)
+		drawBezier(middle,vec2f(middle.x,to.y),to)
+	}
+	drawBezierStart := !(vec2f from) -> void
+	{
+		dim := vec2f(width,height)
+		from = from / dim
+		from = (from *vec2f(2.0)) - vec2f(1.0)
+
+		meshData := vertPtr[vertCount]&
+
+		meshData[0].pos = from - vec2f(0.0,bezierSize)
+		meshData[0].uv = vec2f(1.0,1.0)
+		meshData[1].pos = from - vec2f(0.0,bezierSize)
+		meshData[1].uv = vec2f(1.0,1.0)
+
+		vertCount += 2
+	}
+	drawBezier := !(vec2f from,vec2f middle, vec2f to) -> void
+	{
+		dim := vec2f(width,height)
+
+		from = from / dim
+		to = to / dim
+		mdl := middle / dim
+
+		from = (from *vec2f(2.0)) - vec2f(1.0)
+		to = (to *vec2f(2.0)) - vec2f(1.0)
+		mdl = (mdl *vec2f(2.0)) - vec2f(1.0)
+
+		prev := vec2f
+		prevA := vec2f
+		prevB := vec2f
+
+		for i : 32
+		{
+			anti := vec2f(i / 31)
+			proc := vec2f(1.0 - anti.x)
+
+			pos1 := from * proc + mdl*anti
+			pos2 := mdl*proc + to*anti
+			pos := pos1*proc + pos2*anti
+
+
+			if i != 0
+			{
+				normal := vec2f
+
+				diff := pos - prev
+				len := diff.Length()
+
+				if len > 0.0001
+				{
+					diff = diff*(1 / len)
+					normal.x = -diff.y
+					normal.y = diff.x
+				}
+
+				normal = normal*bezierSize
+
+				meshData := vertPtr[vertCount]&
+
+				meshData[0].pos = pos + normal
+				meshData[0].uv = vec2f(1.0,1.0)
+				meshData[1].pos = pos - normal
+				meshData[1].uv = vec2f(1.0,1.0)
+
+				indxs := indPtr[indCount]&
+
+				offst := vertCount - 2
+
+				indxs[0] = offst
+				indxs[1] = offst + 1
+				indxs[2] = offst + 2
+
+				indxs[3] = offst + 2
+				indxs[4] = offst + 3
+				indxs[5] = offst + 1
+
+				vertCount += 2
+				indCount += 6
+
+			}
+
+			prev = pos
+		}
+
+
 	}
 }
