@@ -129,7 +129,7 @@ AppendClass ImContext
 
 		meshData := vertPtr[vertCount]&
 
-		meshData[0].pos = from - vec2f(0.0,bezierSize)
+		meshData[0].pos = from + vec2f(0.0,bezierSize)
 		meshData[0].uv = vec2f(1.0,1.0)
 		meshData[1].pos = from - vec2f(0.0,bezierSize)
 		meshData[1].uv = vec2f(1.0,1.0)
