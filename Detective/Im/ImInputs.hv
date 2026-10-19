@@ -7,6 +7,9 @@ AppendClass ImContext
 
 	mousePrev := bool
 
+	oldButtons := bool[256]
+	newButton := int
+
 	Inputs := !(bool mouse1,vec2f inMousePos) -> void
 	{
 		mousePrev = mousePressed
@@ -15,5 +18,15 @@ AppendClass ImContext
 
 		mouseFirstPress = mousePressed and not mousePrev
 
+		newButton = 0
+		for i : 256
+		{
+			if oldButtons[i] != buttons[i]
+			{
+				if buttons[i]
+					newButton = i
+				oldButtons[i] = buttons[i]
+			}
+		}
 	}
 }

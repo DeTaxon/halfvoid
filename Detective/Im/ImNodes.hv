@@ -44,7 +44,7 @@ AppendClass ImContext
 				}
 			}
 
-			if mouseFirstPress and selectedObject == null
+			if mouseFirstPress
 			{
 				if mousePos.x > posX and mousePos.y > posY
 					and mousePos.x < (posX + node.size.x)

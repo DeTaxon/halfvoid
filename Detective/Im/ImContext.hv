@@ -29,6 +29,7 @@ ImContext := class
 
 	// selected
 	selectedObject := void^
+	textEditPosition := int
 	capturedPos := vec2f
 
 	Init := !(VulkanDefaultInstance^ inst,VKResourceManager^ resMngr) -> void

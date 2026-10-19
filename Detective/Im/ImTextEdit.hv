@@ -1,0 +1,70 @@
+AppendClass ImContext
+{
+	DrawTextEdit := !(vec2f pos, char^ text, int size,stbtt_packedchar^ chars) -> bool
+	{
+		compSize := vec2f(120,22)
+		drawCube(pos,compSize + vec2f(0,5),vec4f(1.0,0.5,0.0,1.0))
+		DrawText(pos,text,chars)
+
+		if selectedObject == text
+		{
+			if newButton != 0
+			{
+				switch newButton
+				{
+				case 'L'
+					textEditPosition = max(textEditPosition - 1,0)
+				case 'R'
+					if text[textEditPosition] != 0
+						textEditPosition = min(textEditPosition + 1,size - 1)
+				case 'B'
+					if textEditPosition > 0
+					{
+						textEditPosition -= 1
+						j := textEditPosition
+						while text[j] != 0
+						{
+							text[j] = text[j+1]
+							j+=1
+						}
+					}
+
+
+				case void
+
+					if newButton not in 'A'..'Z'
+					{
+						j := strlen(text)
+
+						while j > textEditPosition
+						{
+							text[j+1] = text[j]
+							j -= 1
+						}
+
+						if text[textEditPosition] == 0
+							text[textEditPosition + 1] = 0
+
+						ch := newButton
+						if buttons['S']
+							ch += 'A' - 'a'
+						text[textEditPosition] = ch
+						textEditPosition += 1
+					}
+				}
+			}
+		}
+
+		if mouseFirstPress
+		{
+			posEnd := pos + compSize
+
+			if mousePos.x >= pos.x and mousePos.x <= posEnd.x
+				and mousePos.y >= pos.y and mousePos.y <= posEnd.y
+			{
+				selectedObject = text
+				textEditPosition = 0
+			}
+		}
+	}
+}

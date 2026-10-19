@@ -63,74 +63,6 @@ main := !(Vector.{char^} args) -> void
 		vkImg.CreateTexture(img)
 	// }
 	
-
-	// txt := "-3.14"
-	txt := "BbRr?"
-	meshData := MeshData[20] //4*5
-	indxs := int[30] // 2*3*5
-
-	scale := 300
-
-	xPos := 0.0
-	yPos := 0.0
-	for i : 5
-	{
-		gl := ref chars[txt[i]]
-
-		meshData[i*4].pos.x = xPos
-
-		meshData[i*4 + 0].uv.x = gl.x1 / 512
-		meshData[i*4 + 1].uv.x = gl.x1 / 512
-		meshData[i*4 + 2].uv.x = gl.x0 / 512
-		meshData[i*4 + 3].uv.x = gl.x0 / 512
-
-		meshData[i*4 + 0].uv.y = gl.y1 / 512
-		meshData[i*4 + 1].uv.y = gl.y0 / 512
-		meshData[i*4 + 2].uv.y = gl.y0 / 512
-		meshData[i*4 + 3].uv.y = gl.y1 / 512
-
-		xSize := (gl.xoff2 - gl.xoff) / scale
-		ySize := (gl.yoff2 - gl.yoff) / scale
-
-		j := i*4
-
-		for tx : ![false,false,true,true] , ty : ![false,true,true,false]
-		{
-			wrt := ref meshData[j++]
-
-			nowX := xPos + gl.xoff / scale
-			nowY := yPos + gl.yoff / scale
-
-			if tx 
-			{	
-				wrt.pos.x = nowX
-			}else{
-				wrt.pos.x = nowX + xSize
-			}
-			if ty 
-			{
-				wrt.pos.y = nowY
-			}else{ 
-				wrt.pos.y = nowY + ySize
-			}
-		}
-
-		indxs[i*6 + 0] = i*4
-		indxs[i*6 + 1] = i*4 + 1
-		indxs[i*6 + 2] = i*4 + 2
-
-		indxs[i*6 + 3] = i*4
-		indxs[i*6 + 4] = i*4 + 2
-		indxs[i*6 + 5] = i*4 + 3
-
-
-		xPos += gl.xadvance / scale
-	}
-
-	// msh := vk.CreateMesh(meshData,indxs,VKType(u32,1))
-	// gg := VKType
-	// msh := vk.CreateMesh(null,null,gg)
-	msh := vk.CreateMesh(BlobOnSpan2(meshData&,meshData->TypeSize),BlobOnSpan2(indxs&,indxs->TypeSize),VKType(u32,1))
 	gSamplerNearest := VkSampler
 
 	imV := VkSamplerCreateInfo()
@@ -185,6 +117,10 @@ main := !(Vector.{char^} args) -> void
 	fpsCount := 0
 	fpsTime := GetSteadyTime()
 
+	textTest := char[256]
+
+	strcpy(textTest[0]&,"Hello world")
+
 	while not win.ShouldClose()
 	{
 		surfaceIndex := u32
@@ -220,8 +156,10 @@ main := !(Vector.{char^} args) -> void
 		im.DrawStart(800,800,cmds&,win.vInstance.surfaceImageViews^[surfaceIndex])
 
 		im.DrawNodes(TestNodes,data&)
-		im.DrawText(vec2f(0,44),"Test this",chars)
-		im.DrawFloat(vec2f(0,22),fps,chars)
+		// im.DrawText(vec2f(44,44),"Test this",chars)
+		im.DrawFloat(vec2f(0,0),fps,chars)
+
+		im.DrawTextEdit(vec2f(50,50),textTest[0]&,256,chars)
 
 		im.DrawEnd(atlas2)
 
