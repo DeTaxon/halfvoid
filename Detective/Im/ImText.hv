@@ -1,6 +1,6 @@
 AppendClass ImContext
 {
-	DrawText := !(vec2f pos,char^ text,stbtt_packedchar^ chars) -> void
+	DrawText := !(vec2f pos,char^ text) -> void
 	{
 		pos += vec2f(0,22)
 
@@ -19,7 +19,7 @@ AppendClass ImContext
 				}
 			}
 
-			xPos += drawChar(xPos,yPos,text[i],chars)
+			xPos += drawChar(xPos,yPos,text[i])
 
 			i += 1
 		}
@@ -31,7 +31,7 @@ AppendClass ImContext
 			}
 		}
 	}
-	drawChar := !(float xPos,float yPos,int ch,stbtt_packedchar^ chars) -> float
+	drawChar := !(float xPos,float yPos,int ch) -> float
 	{
 		xPos = xPos / width
 		yPos = yPos / height

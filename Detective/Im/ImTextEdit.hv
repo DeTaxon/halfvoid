@@ -1,10 +1,10 @@
 AppendClass ImContext
 {
-	DrawTextEdit := !(vec2f pos, char^ text, int size,stbtt_packedchar^ chars) -> bool
+	DrawTextEdit := !(vec2f pos, char^ text, int size) -> bool
 	{
 		compSize := vec2f(120,22)
 		drawCube(pos,compSize + vec2f(0,5),vec4f(1.0,0.5,0.0,1.0))
-		DrawText(pos,text,chars)
+		DrawText(pos,text)
 
 		if selectedObject == text
 		{

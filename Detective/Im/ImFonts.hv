@@ -1,0 +1,83 @@
+AppendClass ImContext
+{
+	gSamplerNearest := VkSampler
+
+	chars := stbtt_packedchar[256]
+	atlas2 := VkDescriptorSet
+
+	InitFonts := !() -> void
+	{
+		img := NewImage_RGBA(512,512)
+		memset(img.Data,255,512*512*4)
+		dat := FSGetFile("./Goldman-Regular.ttf").GetBlob()
+		// dat := FSGetFile("./JetBrainsMono-Bold.ttf").GetBlob()
+		// NewOpenFont(dat,img,8)
+		fontSize := 22
+		oversampling := 2
+
+		atlasTest := Vector.{u8}(512*512)
+
+		packContext := stbtt_pack_context
+
+		stbtt_PackBegin(packContext&,atlasTest.GetPointer(),512,512,512,1,null) //TODO unconst
+		stbtt_PackSetOversampling(packContext&,oversampling,oversampling)
+
+		stbtt_PackFontRange(packContext&,dat.GetPointer(),0,fontSize,0,256,chars&) //TODO check result,
+
+		stbtt_PackEnd(packContext&)
+
+		ff := atlasTest.GetPointer()
+		tt := img.GetPointer()
+		for i : 512
+		{
+			for j : 512
+			{
+				c := ff[i + j*512]
+				// tt[(i + j*512)*4 + 0] = c 
+				// tt[(i + j*512)*4 + 1] = c 
+				// tt[(i + j*512)*4 + 2] = c 
+				// tt[(i + j*512)*4 + 3] = 255
+
+				tt[(i + j*512)*4 + 0] =	255 
+				tt[(i + j*512)*4 + 1] =	255 
+				tt[(i + j*512)*4 + 2] =	255  
+				tt[(i + j*512)*4 + 3] = c
+			}
+		}
+
+		last := tt[(512*511 + 511)*4]&
+		last[3] = 255
+
+		vkImg := vk.CreateTexture()
+		vkImg.CreateTexture(img)
+
+		imV := VkSamplerCreateInfo()
+		imV.magFilter = VK_FILTER_NEAREST
+		imV.minFilter = VK_FILTER_NEAREST
+		imV.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST
+		imV.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+		imV.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+		imV.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
+		//imV.mpLodBias = 0.0f
+		//imV.anisotropyEnable = VK_FALSE
+		imV.maxAnisotropy = 1.0
+		imV.compareEnable = VK_FALSE
+		imV.compareOp = VK_COMPARE_OP_ALWAYS
+		imV.minLod = 0.0
+		imV.maxLod = 0.0
+		imV.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK
+		//imV.unnormalizedCoordinates = VK_FALSE
+
+		vk.Funcs.vkCreateSampler(vk.LogicalDevice,imV&,null,gSamplerNearest&)
+		//
+		// pool := im.textedLayout.CreateDescriptorPool(0,1)
+		// atlas := pool.CreateDescriptor()
+
+		// vSetTexture(vk,atlas,vkImg,gSamplerNearest)
+
+		pool2 := meshLayout.CreateDescriptorPool(0,1)
+		atlas2 = pool2.CreateDescriptor()
+		vSetTexture(vk,atlas2,vkImg,gSamplerNearest)
+
+	}
+}

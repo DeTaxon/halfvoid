@@ -1,15 +1,15 @@
 AppendClass ImContext
 {
-	DrawInt := !(vec2f pos,int value,stbtt_packedchar^ chars) -> void
+	DrawInt := !(vec2f pos,int value) -> void
 	{
 		intVal := char[32]
 		IntToStrArr(value,intVal[0]&,32)
-		DrawText(pos,intVal[0]&,chars)
+		DrawText(pos,intVal[0]&)
 	}
-	DrawFloat := !(vec2f pos,double value,stbtt_packedchar^ chars) -> void
+	DrawFloat := !(vec2f pos,double value) -> void
 	{
 		val := char[32]
 		FloatToStrArr(value,val[0]&,32)
-		DrawText(pos,val[0]&,chars)
+		DrawText(pos,val[0]&)
 	}
 }

@@ -109,7 +109,7 @@ ImContext := class
 		vertCount = 0
 		indCount = 0
 	}
-	DrawEnd := !(VkDescriptorSet atlas2) -> void
+	DrawEnd := !() -> void
 	{
 		stageVertMem.Unmap()
 		stageIndMem.Unmap()
