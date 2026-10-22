@@ -61,6 +61,9 @@ OptCodeGenLLVM := !(LLVMWriteContext^ ctx) -> void
 	printf("end\n")
 
 	FinilizeCache()
+
+	if #Var("HVBenchmark")
+		show_bm()
 	exit(0)
 }
 

@@ -179,12 +179,16 @@ cycle_release.exe:
 proj:
 	systemd-run --user --scope -p MemoryMax=1000M -p MemorySwapMax=1000M  $(mass_if) $(gdb_tui) ./halfvoid
 
+cycle_bm:
+	$(TimeF) $(gdb_tui) $(vgrind) $(mass_if) $(hg)  $(cg) ./halfvoid $(flags) -var HVBenchmark --vk vk.xml -C1 ExperimentalLibrary -self-build -g -C0 Detective -C0 StandardHVLibrary/ -C1 Source/ -o $(TempFile) $(CacheFlags)
+	clang -g -gdwarf-4 $(TempFile) -lm -ldl -o halfvoid
+
 
 fonttest:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -nomodules  $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary PlayGround/OpenFontReader.hv -o /tmp/tst.ll --vk vk.xml
 	clang /tmp/tst.ll -o test
 detective:
-	./halfvoid -g -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Detective -o /tmp/det.ll  --vk vk.xml
+	./halfvoid -var HVBenchmark -g -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Detective -o /tmp/det.ll  --vk vk.xml
 	clang++ -g /tmp/det.ll -o detective
 	
 clean: 

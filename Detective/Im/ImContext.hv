@@ -22,6 +22,8 @@ ImContext := class
 	width := float
 	height := float
 
+	drawScale := vec2f
+
 	vertPtr := MeshData^
 	indPtr := int^
 	vertCount := int
@@ -83,6 +85,7 @@ ImContext := class
 		cmds = inCmds
 		width = w
 		height = h
+		drawScale = vec2f(1.0,1.0)
 
 		clrValues := vec4f(0.0,0.3,0.3,1.0)
 
@@ -147,7 +150,7 @@ ImContext := class
 			vk.Funcs.vkCmdPipelineBarrier(cmd.Get(),VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,0,0,null,1,memBar&,0,null)
 		})
 
-		shaderMesh.ApplyShaderToQueue(vk,cmds.Get(),800,800)
+		shaderMesh.ApplyShaderToQueue(vk,cmds.Get(),width,height)
 		sts := VkDescriptorSet[2]
 		sts[0] = atlas2 //vkPerspSet
 		//sts[1] = modelTextureSet

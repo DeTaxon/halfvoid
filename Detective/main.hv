@@ -1,7 +1,11 @@
 
 main := !(Vector.{char^} args) -> void
 {
-	win := new Window(800,800,"Window")
+	show_bm()
+}
+show_bm := !() -> void
+{
+	win := new Window(1000,1000,"Window")
 	win.InitVulkan()
 
 	cmds := TVkCommandBuffer(win.vInstance,win.vInstance.itDrawCmdPool2)
@@ -13,37 +17,43 @@ main := !(Vector.{char^} args) -> void
 
 	resMngr.inst = vk
 
+
+	TSpawnTask(() ==> {
+		TSleep(0.7)
+		testHatch.Emit()
+	})
+	TSpawnTask(() ==> {
+		TSleep(0.5)
+		testHatch.Await()
+	})
+
 	im := ImContext
 	im.Init(vk,resMngr&)
 	im.InitFonts()
+	im.InitNodes()
 
-	TestNodes := ImNode[2]
-	TestNodes[0].pos = vec2f(100.0,100.0)
-	TestNodes[0].size = vec2f(200,200.0)
-	TestNodes[0].color = vec4f(0.0,0.0,1.0,1.0)
+	TSpawnTask(() ==> {
+		TSleep(3)
+		testHatch.Reset()
+		TSpawnTask(() ==> {
+			TSleep(0.7)
+			testHatch.Emit()
+		})
+		TSpawnTask(() ==> {
+			TSleep(0.5)
+			testHatch.Await()
+		})
+	})
 
-	TestNodes[1].pos = vec2f(500.0,500.0)
-	TestNodes[1].size = vec2f(100,100.0)
-	TestNodes[1].color = vec4f(0.0,1.0,0.0,1.0)
-
-	data := ImNodeData
-
-	data.arrowsCount = 2
-	data.arrows[0].source = 0
-	data.arrows[0].target = 1
-	data.arrows[1].source = 0
-	data.arrows[1].subNode1 = 3
-	data.arrows[1].target = 1
-	data.arrows[1].subNode2 = 1
 
 	fps := 0
 
 	fpsCount := 0
 	fpsTime := GetSteadyTime()
 
-	textTest := char[256]
+	// textTest := char[256]
 
-	strcpy(textTest[0]&,"Hello world")
+	// strcpy(textTest[0]&,"Hello world")
 
 	while not win.ShouldClose()
 	{
@@ -77,13 +87,13 @@ main := !(Vector.{char^} args) -> void
 		bar1.subresourceRange.layerCount = 1
 		win.vInstance.Funcs.vkCmdPipelineBarrier(cmds.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
 
-		im.DrawStart(800,800,cmds&,win.vInstance.surfaceImageViews^[surfaceIndex])
+		im.DrawStart(1000,1000,cmds&,win.vInstance.surfaceImageViews^[surfaceIndex])
 
-		im.DrawNodes(TestNodes,data&)
 		// im.DrawText(vec2f(44,44),"Test this",chars)
 		im.DrawFloat(vec2f(0,0),fps)
+		im.DrawNodes()
 
-		im.DrawTextEdit(vec2f(50,50),textTest[0]&,256)
+		// im.DrawTextEdit(vec2f(50,50),textTest[0]&,256)
 
 		im.DrawEnd()
 
@@ -95,6 +105,8 @@ main := !(Vector.{char^} args) -> void
 
 		cmds.Stop()
 		cmds.Submit(win.vInstance.DrawQueue,null)
+
+		vk.Funcs.vkQueueWaitIdle(win.vInstance.DrawQueue)
 		
 		@work win.vInstance.DrawPresentImage(surfaceIndex)
 
@@ -103,3 +115,7 @@ main := !(Vector.{char^} args) -> void
 	}
 	// win.RunVulkan()
 }
+
+testHatch := THatch
+
+

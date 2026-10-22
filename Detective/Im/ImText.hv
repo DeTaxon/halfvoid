@@ -1,6 +1,6 @@
 AppendClass ImContext
 {
-	DrawText := !(vec2f pos,char^ text) -> void
+	DrawText := !(vec2f pos,char^ text) -> vec2f
 	{
 		pos += vec2f(0,22)
 
@@ -30,6 +30,8 @@ AppendClass ImContext
 				drawCube(vec2f(xPos,yPos - 22),vec2f(10,22 + 5),vec4f(0,0,1,1))
 			}
 		}
+
+		return vec2f(xPos - pos.x,22)
 	}
 	drawChar := !(float xPos,float yPos,int ch) -> float
 	{
@@ -75,6 +77,7 @@ AppendClass ImContext
 			}else{ 
 				wrt.pos.y = nowY + ySize
 			}
+			wrt.pos = wrt.pos*drawScale
 			wrt.pos = wrt.pos*vec2f(2.0) - vec2f(1.0)
 		}
 

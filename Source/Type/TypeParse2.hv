@@ -454,7 +454,7 @@ CheckTemplateConst := !(BoxExeConstObj^ cnst, Token^ itm,AVLMap.{Str,BoxUnit^} r
 		{
 			if resCnsts[nm] != val
 			{
-				assert(false)
+				// assert(false)
 				return null
 			}
 		}else{
