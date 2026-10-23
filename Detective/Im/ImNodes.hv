@@ -45,6 +45,37 @@ AppendClass ImContext
 		line := bmtStackFrameInfo^[1024]
 		busy := bool[1024]
 
+		delta := 1.0
+		zoomDelta := delta*1.01
+
+
+		drawScale = vec2f(curZoom,curZoom)
+
+		moveVal := delta*10 / curZoom
+		if buttons['L']
+			offst.x += moveVal
+		if buttons['R']
+			offst.x -= moveVal
+		if buttons['U']
+			offst.y += moveVal
+		if buttons['D']
+			offst.y -= moveVal
+
+		if buttons['q'] or buttons['a']
+		{
+			newZoom := curZoom
+			if buttons['q']
+				newZoom = newZoom / zoomDelta
+			if buttons['a']
+				newZoom *= zoomDelta
+
+			globPos := (mousePos + offst)*drawScale
+
+			offst = globPos / vec2f(newZoom) - mousePos
+
+			curZoom = newZoom
+		}
+
 
 		for i : bmIterator
 		{
@@ -97,23 +128,6 @@ AppendClass ImContext
 
 			pos := vec2f(xOffset,yOffset) + offst
 
-			moveVal := 1.0 / curZoom
-			if buttons['L']
-				offst.x += moveVal
-			if buttons['R']
-				offst.x -= moveVal
-			if buttons['U']
-				offst.y += moveVal
-			if buttons['D']
-				offst.y -= moveVal
-
-			if buttons['q']
-				curZoom = curZoom / 1.001
-			if buttons['a']
-				curZoom *= 1.001
-
-			drawScale = vec2f(curZoom,curZoom)
-
 			endPos := (blkSize + pos)*curZoom
 			posScaled := pos*curZoom
 
@@ -121,8 +135,6 @@ AppendClass ImContext
 				continue
 			if posScaled.x >= width or posScaled.y >= height
 				break
-
-
 
 			// if selectedObject == nd
 			// {
