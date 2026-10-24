@@ -73,7 +73,7 @@ show_bm := !() -> void
 			fpsTime = now 
 		}
 
-		im.Inputs(buttons['q'] or MouseButtons[0],win.MousePosition)		
+		im.Inputs(buttons['q'] or MouseButtons[0],win.MousePosition)
 
 		cmds.Reset()
 		cmds.Start()

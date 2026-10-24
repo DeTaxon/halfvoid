@@ -49,6 +49,7 @@
 		"glfwSetErrorCallback" : "void,void^",
 		"glfwSetKeyCallback" : "void,void^,void^",
 		"glfwSetCharCallback" : "void,void^,void^",
+		"glfwSetScrollCallback" : "void,void^,void^".
 		"glfwCreateWindow" : "void^,int,int,char^,void^,void^",
 		"glfwWindowHint" : "void^,int,int",
 		"glfwDestroyWindow" : "void,void^",

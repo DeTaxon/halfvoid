@@ -10,6 +10,9 @@ AppendClass ImContext
 	oldButtons := bool[256]
 	newButton := int
 
+	oldMouseWheel := vec2f
+	deltaMouseWheel := vec2f // -1 0 1
+
 	Inputs := !(bool mouse1,vec2f inMousePos) -> void
 	{
 		mousePrev = mousePressed
@@ -28,5 +31,8 @@ AppendClass ImContext
 				oldButtons[i] = buttons[i]
 			}
 		}
+
+		deltaMouseWheel = MouseWheel - oldMouseWheel
+		oldMouseWheel = MouseWheel
 	}
 }

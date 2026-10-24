@@ -1,5 +1,6 @@
 buttons := bool[256]
 MouseButtons := bool[5]
+MouseWheel := vec2f
 
 GLFWWindow := class 
 {
@@ -46,6 +47,8 @@ GLFWWindow := class
 		glfwSetCharCallback(windowHandle,glfwCharPress)
 		glfwSetWindowRefreshCallback(windowHandle,glfwRefreshCB)
 
+
+		glfwSetScrollCallback(windowHandle,glfwMouseScroll)
 
 		glfwSetWindowUserPointer(windowHandle,this&)
 
@@ -227,6 +230,11 @@ glfwMousePressed := !(void^ w,int button, int action, int mods) -> void
 	glfwGetWindowUserPointer(w)->{GLFWWindow^}.MousePressedInner(button,action,mods)
 }
 
+glfwMouseScroll := !(void^ win,double xOffst,double yOffst) -> void
+{
+	MouseWheel.x += xOffst
+	MouseWheel.y += yOffst
+}
 glfwCharPress := !(void^ wi, int charCode) -> void
 {
 	//printf("test %i\n",charCode)

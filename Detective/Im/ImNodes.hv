@@ -46,7 +46,7 @@ AppendClass ImContext
 		busy := bool[1024]
 
 		delta := 1.0
-		zoomDelta := delta*1.01
+		zoomDelta := delta*1.06
 
 		if newButton == 'e'
 		{
@@ -54,12 +54,12 @@ AppendClass ImContext
 			offst = vec2f(0)
 		}
 
-		if buttons['q'] or buttons['a']
+		if deltaMouseWheel.y != 0.0
 		{
 			newZoom := curZoom
-			if buttons['q']
+			if deltaMouseWheel.y < 0
 				newZoom = newZoom / zoomDelta
-			if buttons['a']
+			else
 				newZoom *= zoomDelta
 
 			// mousePos = x*vec2f(curZoom) + offst
@@ -81,15 +81,18 @@ AppendClass ImContext
 		if buttons['D']
 			offst.y -= moveVal
 
+
+		useDrag := MouseButtons[1]
+
 		if selectedObject == this& // TODO note the this
 		{
 			offst += mousePos - capturedPos
 			capturedPos = mousePos
 
-			if not buttons['w']
+			if not useDrag
 				selectedObject = null
 		}else{
-			if buttons['w']
+			if useDrag
 			{
 				selectedObject = this&
 				capturedPos = mousePos
