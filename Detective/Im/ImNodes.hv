@@ -81,6 +81,21 @@ AppendClass ImContext
 		if buttons['D']
 			offst.y -= moveVal
 
+		if selectedObject == this& // TODO note the this
+		{
+			offst += mousePos - capturedPos
+			capturedPos = mousePos
+
+			if not buttons['w']
+				selectedObject = null
+		}else{
+			if buttons['w']
+			{
+				selectedObject = this&
+				capturedPos = mousePos
+			}
+		}
+
 		for i : bmIterator
 		{
 			nd := ptr[i]&
