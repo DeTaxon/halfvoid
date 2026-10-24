@@ -23,6 +23,7 @@ ImContext := class
 	height := float
 
 	drawScale := vec2f
+	drawOffset := vec2f
 
 	vertPtr := MeshData^
 	indPtr := int^
@@ -86,6 +87,7 @@ ImContext := class
 		width = w
 		height = h
 		drawScale = vec2f(1.0,1.0)
+		drawOffset = vec2f(0,0)
 
 		clrValues := vec4f(0.0,0.3,0.3,1.0)
 

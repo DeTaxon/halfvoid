@@ -77,7 +77,7 @@ AppendClass ImContext
 			}else{ 
 				wrt.pos.y = nowY + ySize
 			}
-			wrt.pos = wrt.pos*drawScale
+			wrt.pos = wrt.pos*drawScale + drawOffset/vec2f(width,height) // TODO optimize, precompute as much as possible
 			wrt.pos = wrt.pos*vec2f(2.0) - vec2f(1.0)
 		}
 

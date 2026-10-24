@@ -46,10 +46,37 @@ AppendClass ImContext
 		busy := bool[1024]
 
 		delta := 1.0
-		zoomDelta := delta*1.01
-
+		zoomDelta := delta*1.5
 
 		drawScale = vec2f(curZoom,curZoom)
+
+		if newButton == 'e'
+		{
+			curZoom = 1
+			offst = vec2f(0)
+		}
+
+		// if buttons['q'] or buttons['a']
+		if newButton == 'q' or newButton == 'a'
+		{
+			newZoom := curZoom
+			if newButton == 'q'
+				newZoom = newZoom / zoomDelta
+			if newButton == 'a'
+				newZoom *= zoomDelta
+			// if buttons['a']
+			// 	newZoom *= zoomDelta
+
+			// offst += mousePos - mousePos * vec2f(newZoom)
+
+			// globPos := mousePos*drawScale + offst
+			// offst = globPos - mousePos*vec2f(newZoom)
+
+			// globPos := (mousePos + offst)*drawScale
+			// offst = globPos/vec2f(newZoom) - mousePos
+
+			curZoom = newZoom
+		}
 
 		moveVal := delta*10 / curZoom
 		if buttons['L']
@@ -60,22 +87,6 @@ AppendClass ImContext
 			offst.y += moveVal
 		if buttons['D']
 			offst.y -= moveVal
-
-		if buttons['q'] or buttons['a']
-		{
-			newZoom := curZoom
-			if buttons['q']
-				newZoom = newZoom / zoomDelta
-			if buttons['a']
-				newZoom *= zoomDelta
-
-			globPos := (mousePos + offst)*drawScale
-
-			offst = globPos / vec2f(newZoom) - mousePos
-
-			curZoom = newZoom
-		}
-
 
 		for i : bmIterator
 		{
@@ -126,7 +137,8 @@ AppendClass ImContext
 
 			yOffset := inLine*240 + 100
 
-			pos := vec2f(xOffset,yOffset) + offst
+			pos := vec2f(xOffset,yOffset)
+			drawOffset = offst
 
 			endPos := (blkSize + pos)*curZoom
 			posScaled := pos*curZoom
@@ -240,11 +252,13 @@ AppendClass ImContext
 	}
 	drawCube := !(vec2f pos,vec2f size,vec4f color) -> void
 	{
+		pos2 := pos*drawScale + drawOffset
+
 		data := float[8]
-		data[0] = size.x*curZoom / width
-		data[1] = size.y*curZoom / height
-		data[2] = pos.x*curZoom / width
-		data[3] = pos.y*curZoom/ height
+		data[0] = size.x*drawScale.x / width
+		data[1] = size.y*drawScale.y / height
+		data[2] = pos2.x / width
+		data[3] = pos2.y / height
 		data[4] = color.x
 		data[5] = color.y
 		data[6] = color.z
