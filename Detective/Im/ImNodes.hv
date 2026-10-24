@@ -46,9 +46,7 @@ AppendClass ImContext
 		busy := bool[1024]
 
 		delta := 1.0
-		zoomDelta := delta*1.5
-
-		drawScale = vec2f(curZoom,curZoom)
+		zoomDelta := delta*1.01
 
 		if newButton == 'e'
 		{
@@ -56,27 +54,22 @@ AppendClass ImContext
 			offst = vec2f(0)
 		}
 
-		// if buttons['q'] or buttons['a']
-		if newButton == 'q' or newButton == 'a'
+		if buttons['q'] or buttons['a']
 		{
 			newZoom := curZoom
-			if newButton == 'q'
+			if buttons['q']
 				newZoom = newZoom / zoomDelta
-			if newButton == 'a'
+			if buttons['a']
 				newZoom *= zoomDelta
-			// if buttons['a']
-			// 	newZoom *= zoomDelta
 
-			// offst += mousePos - mousePos * vec2f(newZoom)
-
-			// globPos := mousePos*drawScale + offst
-			// offst = globPos - mousePos*vec2f(newZoom)
-
-			// globPos := (mousePos + offst)*drawScale
-			// offst = globPos/vec2f(newZoom) - mousePos
+			// mousePos = x*vec2f(curZoom) + offst
+			loc := (mousePos - offst) / vec2f(curZoom)
+			offst = mousePos - loc*vec2f(newZoom)
 
 			curZoom = newZoom
 		}
+
+		drawScale = vec2f(curZoom,curZoom)
 
 		moveVal := delta*10 / curZoom
 		if buttons['L']
@@ -143,10 +136,10 @@ AppendClass ImContext
 			endPos := (blkSize + pos)*curZoom
 			posScaled := pos*curZoom
 
-			if endPos.x < 0 or endPos.y < 0
-				continue
-			if posScaled.x >= width or posScaled.y >= height
-				break
+			// if endPos.x < 0 or endPos.y < 0
+			// 	continue
+			// if posScaled.x >= width or posScaled.y >= height
+			// 	break
 
 			// if selectedObject == nd
 			// {
