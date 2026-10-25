@@ -20,6 +20,16 @@ ImNodeData := class
 	arrows := ImNodePair[5]
 }
 
+TracesCached := class
+{
+	columns := int
+
+	lines := bmtStackFrameInfo^[1024]
+	busy := bool[1024]
+}
+
+cachesSize := 50
+
 AppendClass ImContext
 {
 	offst := vec2f
@@ -27,10 +37,15 @@ AppendClass ImContext
 
 	nodeColors := vec4f[16]
 
+	cCount := int
+	cachedVals := TracesCached[]
+
 	InitNodes := !() -> void
 	{
 		curZoom = 1.0
 		nodeColors[^] = vec4f(RandFloat(0,1),RandFloat(0,1),RandFloat(0,1),1.0)
+
+		cachedVals = new TracesCached[4096]
 	}
 	DrawNodes := !() -> void
 	{
@@ -99,9 +114,22 @@ AppendClass ImContext
 			}
 		}
 
+		expCaches := bmIterator div cachesSize
+
+		if expCaches > cCount
+		{
+			// prevLine := 
+		}
+		
+
+		expectedRightColumn := 0
+
 		for i : bmIterator
 		{
 			nd := ptr[i]&
+
+			// if nd.action == "TaskCreated"
+			// 	continue
 
 			inLine := -1
 
@@ -151,13 +179,15 @@ AppendClass ImContext
 			pos := vec2f(xOffset,yOffset)
 			drawOffset = offst
 
-			endPos := (blkSize + pos)*curZoom
-			posScaled := pos*curZoom
+			endPos := (blkSize + pos)*curZoom + offst
+			posScaled := pos*curZoom + offst
 
-			// if endPos.x < 0 or endPos.y < 0
-			// 	continue
-			// if posScaled.x >= width or posScaled.y >= height
-			// 	break
+			if endPos.x < 0 or endPos.y < 0
+				continue
+			if posScaled.x >= width
+				break
+			if posScaled.y >= height
+				continue
 
 			// if selectedObject == nd
 			// {
@@ -195,17 +225,16 @@ AppendClass ImContext
 				if nd.count != 0
 				{
 					stPos := pos+vec2f(0,24*3)
-					ps := DrawText(stPos,"StackTrace")
+					ps := DrawText(stPos,"StackTrace")*drawScale
 
-					tPos := stPos*drawScale
-					ps = ps*drawScale
+					tPos := stPos*drawScale + offst
 
 					if mousePos.x >= tPos.x and mousePos.x <= (tPos.x + ps.x)
 						and mousePos.y >= tPos.y and mousePos.y <= (tPos.y + ps.y)
 					{
-						oldScale := drawScale
-						drawScale = vec2f(0.8)
-						dat := mousePos / drawScale
+						// oldScale := drawScale
+						// drawScale = vec2f(0.8)
+						dat := (mousePos - offst) / drawScale
 
 						for i : nd.count
 						{
@@ -217,7 +246,7 @@ AppendClass ImContext
 							DrawInt(p + vec2f(txtSize.x + 5,0),nd.lines[i])
 						}
 
-						drawScale = oldScale
+						// drawScale = oldScale
 					}
 				}
 			}
