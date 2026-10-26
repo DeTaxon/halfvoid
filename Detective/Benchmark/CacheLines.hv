@@ -60,7 +60,8 @@ CacheState := class
 	{
 		lines[x] = null
 
-		//todo decrement linesCount?
+		while linesCount > 0 and lines[linesCount] == null
+			linesCount -= 1
 	}
 }
 

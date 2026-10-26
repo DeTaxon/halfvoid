@@ -107,26 +107,8 @@ AppendClass ImContext
 				capturedPos = mousePos
 			}
 		}
-
-		expCaches := bmIterator div cachesSize
-
-		if expCaches > cCount
-		{
-			state := ref cachedVals[cCount].state
-
-			if cCount != 0
-				state = cachedVals[cCount - 1].state
-
-			o := cCount*cachesSize
-
-			for i : cachesSize
-			{
-				state.Get(ptr[i + o]&)
-			}
-
-			cCount += 1
-		}
 		
+		CheckCacheLines(ptr)
 
 		expectedRightColumn := 0
 
