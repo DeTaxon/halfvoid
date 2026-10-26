@@ -1,0 +1,66 @@
+
+cachesSize := 50
+
+CacheState := class
+{
+	linesCount := int
+	xLine := int
+	lines := bmtStackFrameInfo^[1024]
+	busy := bool[1024]
+
+	"=" := !(CacheState other) -> void
+	{
+		memcpy(this&,other&,this->TypeSize)
+	}
+	Get := !(bmtStackFrameInfo^ nd) -> int
+	{
+		inLine := -1
+
+		for j : linesCount
+		{
+			if lines[j]?.callerTaskId == nd.callerTaskId
+			{
+				inLine = j
+				break
+			}
+		}
+
+		if inLine == -1
+		{
+			putLine := -1
+			for j : linesCount
+			{
+				if lines[j] == null and not busy[j]
+				{
+					putLine = j
+					break
+				}
+			}
+			if putLine == -1 and putLine < lines.Size()
+				putLine = linesCount++
+			if putLine == -1
+				return -1
+
+			lines[putLine] = nd
+
+			inLine = putLine
+		}else{
+			if busy[inLine]
+			{
+				xLine += 1
+				busy[^] = false
+			}
+		}
+		if inLine != -1
+			busy[inLine] = true
+
+		return inLine
+	}
+	Drop := !(int x) -> void
+	{
+		lines[x] = null
+
+		//todo decrement linesCount?
+	}
+}
+

@@ -1,0 +1,7 @@
+AppencClass ImContext
+{
+	CheckCackeLines := !() -> void
+	{
+		
+	}
+}

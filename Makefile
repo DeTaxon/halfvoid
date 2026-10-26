@@ -188,7 +188,7 @@ fonttest:
 	$(TimeF) $(gdb_tui) $(vgrind)  $(cg)  ./halfvoid -nomodules  $(NoScary) -g $(AddExtra) -C0 ExperimentalLibrary -C0 StandardHVLibrary PlayGround/OpenFontReader.hv -o /tmp/tst.ll --vk vk.xml
 	clang /tmp/tst.ll -o test
 detective:
-	./halfvoid -var HVBenchmark -g -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Detective -o /tmp/det.ll  --vk vk.xml
+	$(TimeF) ./halfvoid -var HVBenchmark -g -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Detective -o /tmp/det.ll  --vk vk.xml
 	clang++ -g /tmp/det.ll -o detective
 	
 clean: 
