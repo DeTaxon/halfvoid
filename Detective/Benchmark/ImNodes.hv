@@ -24,8 +24,70 @@ TracesCached := class
 {
 	columns := int
 
+	state := CacheState
+}
+
+CacheState := class
+{
+	linesCount := int
+	xLine := int
 	lines := bmtStackFrameInfo^[1024]
 	busy := bool[1024]
+
+	"=" := !(CacheState other) -> void
+	{
+		memcpy(this&,other&,this->TypeSize)
+	}
+	Get := !(bmtStackFrameInfo^ nd) -> int
+	{
+		inLine := -1
+
+		for j : linesCount
+		{
+			if lines[j]?.callerTaskId == nd.callerTaskId
+			{
+				inLine = j
+				break
+			}
+		}
+
+		if inLine == -1
+		{
+			putLine := -1
+			for j : linesCount
+			{
+				if lines[j] == null and not busy[j]
+				{
+					putLine = j
+					break
+				}
+			}
+			if putLine == -1 and putLine < lines.Size()
+				putLine = linesCount++
+			if putLine == -1
+				return -1
+
+			lines[putLine] = nd
+
+			inLine = putLine
+		}else{
+			if busy[inLine]
+			{
+				xLine += 1
+				busy[^] = false
+			}
+		}
+		if inLine != -1
+			busy[inLine] = true
+
+		return inLine
+	}
+	Drop := !(int x) -> void
+	{
+		lines[x] = null
+
+		//todo decrement linesCount?
+	}
 }
 
 cachesSize := 50
@@ -53,12 +115,8 @@ AppendClass ImContext
 
 		ptr := bmBigData.GetPointer()->{bmtStackFrameInfo^}
 		blkSize := vec2f(200,200)
-
  
-		linesCount := 0
 		xOffset := float
-		line := bmtStackFrameInfo^[1024]
-		busy := bool[1024]
 
 		delta := 1.0
 		zoomDelta := delta*1.06
@@ -118,11 +176,25 @@ AppendClass ImContext
 
 		if expCaches > cCount
 		{
-			// prevLine := 
+			state := ref cachedVals[cCount].state
+
+			if cCount != 0
+				state = cachedVals[cCount - 1].state
+
+			o := cCount*cachesSize
+
+			for i : cachesSize
+			{
+				state.Get(ptr[i + o]&)
+			}
+
+			cCount += 1
 		}
 		
 
 		expectedRightColumn := 0
+
+		state := CacheState
 
 		for i : bmIterator
 		{
@@ -131,48 +203,13 @@ AppendClass ImContext
 			// if nd.action == "TaskCreated"
 			// 	continue
 
-			inLine := -1
-
-			for j : linesCount
-			{
-				if line[j]?.callerTaskId == nd.callerTaskId
-				{
-					inLine = j
-					break
-				}
-			}
-
+			inLine := state.Get(nd)
 			if inLine == -1
-			{
-				putLine := -1
-				for j : linesCount
-				{
-					if line[j] == null and not busy[j]
-					{
-						putLine = j
-						break
-					}
-				}
-				if putLine == -1 and putLine < line.Size()
-					putLine = linesCount++
-				if putLine == -1
-					continue
-
-				line[putLine] = nd
-
-				inLine = putLine
-			}else{
-				if busy[inLine]
-				{
-					xOffset += 240
-					busy[^] = false
-				}
-			}
+				continue
+			xOffset = 240*state.xLine
 
 			if nd.action == "TaskQuit"
-				line[inLine] = null
-
-			busy[inLine] = true
+				state.Drop(inLine)
 
 			yOffset := inLine*240 + 100
 

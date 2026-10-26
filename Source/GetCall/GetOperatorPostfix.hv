@@ -13,7 +13,8 @@ TryGetPostfixOperator := !(Token^ itm) -> BoxExeObj^
 		if dwn.Down?.Right?.GetValue() == "[]" and dwn.Down.Right.Right == null
 		{
 			cl := TryGetExeCall(dwn.Down)
-			assert(cl != null)
+			if cl == null
+				return null
 
 			objs := CheckExeDownList
 			objs.Push(cl)
