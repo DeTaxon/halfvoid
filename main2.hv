@@ -57,12 +57,6 @@ RunFunc := !() -> void
 
 // TODO hotload in lambda function, captures are gone
 
-// TODO make it to compile infinatly
-// AppencClass HeyHey
-// {
-//
-// }
-
 // "#ComputePi" := !() -> void
 // {
 // 	HV.CacheResult()

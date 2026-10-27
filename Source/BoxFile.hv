@@ -309,7 +309,8 @@ BoxFile := class extend BoxUnit
 		TSpawnTask(() ==> { //todo pass CurrentFile directly?
 			ParseFile()
 
-			state = null
+			if state?.itState != "Failed"
+				state = null
 			parsingIt = false
 		})
 	}
@@ -319,7 +320,8 @@ BoxFile := class extend BoxUnit
 		// LoadFiles()
 
 		ParseBlock(null,fileTokens)
-		state.itState = "Complete"
+		if state.itState != "Failed"
+			state.itState = "Complete"
 		loaded.Emit()
 	}
 
@@ -344,7 +346,7 @@ BoxFile := class extend BoxUnit
 		}
 
 		prevCounter := 0
-
+		maxSteps := 0
 
 		while failedTokens.Size() != 0
 		{
@@ -352,9 +354,17 @@ BoxFile := class extend BoxUnit
 			{
 				HotloadStream << "MadeProgress\n"
 				state.itState = "MadeProgress"
+				maxSteps = 0
 			}else{
 				HotloadStream << "Failed\n"
 				state.itState = "Failed"
+
+				if maxSteps >= 50
+				{
+					state.itError = failedTokens[0].MakeError("Could not compile this line")
+					return void
+				}
+				maxSteps += 1
 			}
 			prevCounter = failedTokens.Size()
 
