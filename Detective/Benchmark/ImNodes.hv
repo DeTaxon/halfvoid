@@ -50,7 +50,8 @@ AppendClass ImContext
 		shaderDataNode.ApplyShaderToQueue(vk,cmds.Get(),width,height)
 
 		ptr := bmBigData.GetPointer()->{bmtStackFrameInfo^}
-		blkSize := vec2f(200,200)
+		boxSize := vec2f(200,200)
+		fullSize := boxSize + vec2f(20,20)
  
 		xOffset := float
 
@@ -110,13 +111,33 @@ AppendClass ImContext
 		
 		CheckCacheLines(ptr)
 
-		expectedRightColumn := 0
+
+		erc := (-offst.x*curZoom / fullSize.x)->{int}
 
 		state := CacheState
 
-		for i : bmIterator
+		cachedIndex := -1
+
+		for i : cCount
+		{
+			c := ref cachedVals[i]
+			if erc > c.state.xLine
+			{
+				cachedIndex = i - 1
+			}
+		}
+
+		i := 0
+		if cachedIndex != -1
+		{
+			i = cachedIndex*cachesSize
+		}
+		// printf("Cache test %i %i\n",cachedIndex,erc)
+		while i < bmIterator
 		{
 			nd := ptr[i]&
+
+			defer i += 1
 
 			// if nd.action == "TaskCreated"
 			// 	continue
@@ -129,12 +150,12 @@ AppendClass ImContext
 			if nd.action == "TaskQuit"
 				state.Drop(inLine)
 
-			yOffset := inLine*240 + 100
+			yOffset := inLine*fullSize.y + 100
 
 			pos := vec2f(xOffset,yOffset)
 			drawOffset = offst
 
-			endPos := (blkSize + pos)*curZoom + offst
+			endPos := (boxSize + pos)*curZoom + offst
 			posScaled := pos*curZoom + offst
 
 			if endPos.x < 0 or endPos.y < 0
@@ -168,7 +189,7 @@ AppendClass ImContext
 			// 	}
 			// }
 
-			drawCube(pos,blkSize,nodeColors[nd.callerTaskId mod 16])
+			drawCube(pos,boxSize,nodeColors[nd.callerTaskId mod 16])
 			DrawText(pos,nd.action.ToCStr())
 			if curZoom >= 0.5
 			{
