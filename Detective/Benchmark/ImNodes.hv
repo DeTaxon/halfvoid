@@ -43,7 +43,7 @@ AppendClass ImContext
 		curZoom = 1.0
 		nodeColors[^] = vec4f(RandFloat(0,1),RandFloat(0,1),RandFloat(0,1),1.0)
 
-		cachedVals = new TracesCached[4096]
+		cachedVals = new TracesCached[16000]
 	}
 	DrawNodes := !() -> void
 	{

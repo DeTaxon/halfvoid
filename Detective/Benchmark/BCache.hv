@@ -20,6 +20,5 @@ AppendClass ImContext
 
 			cCount += 1
 		}
-		
 	}
 }

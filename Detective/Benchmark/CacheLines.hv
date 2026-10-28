@@ -36,7 +36,7 @@ CacheState := class
 					break
 				}
 			}
-			if putLine == -1 and putLine < lines.Size()
+			if putLine == -1 and linesCount < lines.Size()
 				putLine = linesCount++
 			if putLine == -1
 				return -1
