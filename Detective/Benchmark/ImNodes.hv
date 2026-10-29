@@ -36,11 +36,13 @@ AppendClass ImContext
 	nodeColors := vec4f[16]
 
 	cCount := int
+	cIndex := int
 	cachedVals := TracesCached[]
 
 	InitNodes := !() -> void
 	{
 		curZoom = 1.0
+		cIndex = -1
 		nodeColors[^] = vec4f(RandFloat(0,1),RandFloat(0,1),RandFloat(0,1),1.0)
 
 		cachedVals = new TracesCached[16000]
@@ -118,30 +120,23 @@ AppendClass ImContext
 
 		cachedIndex := -1
 
-		// left := 0
-		// right := cCount
-		//
-		// while left != right
-		// {
-		// 	mdl := (right + left) div 2
-		//
-		// 	tst := ref cachedVals[mdl].state
-		//
-		// 	if erc > tst.xLine
-		// 	{
-		// 	}else{
-		//
-		// 	}
-		// }
 
-		for i : cCount
+		if cIndex >= 0 and cIndex + 1 < cCount
+			and erc >= cachedVals[cIndex].state.xLine
+			and erc <= cachedVals[cIndex+1].state.xLine
 		{
-			c := ref cachedVals[i]
-			if erc > c.state.xLine
+			cachedIndex = cIndex
+		}else{
+			for i : cCount
 			{
-				cachedIndex = i - 1
-				break
+				c := ref cachedVals[i]
+				if erc <= c.state.xLine
+				{
+					cachedIndex = i - 1
+					break
+				}
 			}
+			cIndex = cachedIndex
 		}
 
 		i := 0
