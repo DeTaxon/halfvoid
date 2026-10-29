@@ -112,11 +112,27 @@ AppendClass ImContext
 		CheckCacheLines(ptr)
 
 
-		erc := (-offst.x*curZoom / fullSize.x)->{int}
+		erc := (-offst.x / (fullSize.x*curZoom))->{int}
 
 		state := CacheState
 
 		cachedIndex := -1
+
+		// left := 0
+		// right := cCount
+		//
+		// while left != right
+		// {
+		// 	mdl := (right + left) div 2
+		//
+		// 	tst := ref cachedVals[mdl].state
+		//
+		// 	if erc > tst.xLine
+		// 	{
+		// 	}else{
+		//
+		// 	}
+		// }
 
 		for i : cCount
 		{
@@ -124,6 +140,7 @@ AppendClass ImContext
 			if erc > c.state.xLine
 			{
 				cachedIndex = i - 1
+				break
 			}
 		}
 
@@ -131,7 +148,10 @@ AppendClass ImContext
 		if cachedIndex != -1
 		{
 			i = cachedIndex*cachesSize
+			if cachedIndex != 0
+				state = cachedVals[cachedIndex - 1].state
 		}
+
 		// printf("Cache test %i %i\n",cachedIndex,erc)
 		while i < bmIterator
 		{
@@ -145,7 +165,7 @@ AppendClass ImContext
 			inLine := state.Get(nd)
 			if inLine == -1
 				continue
-			xOffset = 240*state.xLine
+			xOffset = fullSize.x*state.xLine
 
 			if nd.action == "TaskQuit"
 				state.Drop(inLine)
