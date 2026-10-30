@@ -58,6 +58,9 @@ CacheState := class
 	}
 	Drop := !(int x) -> void
 	{
+		if x < 0 or x >= linesCount
+			return void
+
 		lines[x] = null
 
 		while linesCount > 0 and lines[linesCount] == null

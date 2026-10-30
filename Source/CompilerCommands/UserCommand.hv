@@ -177,6 +177,10 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 
 			if fncResult == GTypeVoid {
 				return new BlobSpan
+			}else if fncResult == GTypeInt { // TODO int and float
+				newBlob := MakeBlob(4)
+				memcpy(newBlob.GetPointer(),resultBlob&,4)
+				return newBlob
 			}else if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint() 
 			{
 				if resultBlob == null
@@ -238,6 +242,8 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 				}
 				return blbRes
 			}
+		}else if (fncResult == GTypeInt) {
+			return GetExeInt(resBlb.GetPointer()->{int^}^)
 		}
 		
 		return GObjNone
@@ -249,6 +255,52 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 	return null
 }
 
+CreateUserCommand := !(Str name,PFunctionParser^ fncParser,Token^ itm) -> void^
+{
+	fncTmplt := fncParser.CreateObject()
+
+	if fncTmplt == null
+		return null
+	assert(fncTmplt is in BoxFuncTemplate) //TODO to error
+	if not fncTmplt->{BoxFuncTemplate^}.IsOneFunc()
+		return null
+	fnc := fncTmplt->{BoxFuncTemplate^}.GetOneFunc()
+
+	userCmd := ref UserCommands[name]
+	userCmd.CallFunction = fnc->{BoxFuncBody^}
+
+	fncResult := fnc.GetType()->{TypeFunc^}.ResultType
+
+	// if fncResult == GTypeVoid {}
+	// else if TypeFight(fncResult,GBlobType.GetPoint()) == GBlobType.GetPoint() {}
+	// else {
+	// 	MakeErrorMsg(itm,"Call function uses function with non cmopatable type, compatable types [void,Blob^]")
+	// 	// return null
+	// }
+
+	//if namedArgs.Contain(StringSpan("ExchangeOutput"))
+	//{
+	//	c2 := PFunctionParser(namedArgs[StringSpan("ExchangeOutput")])
+	//	if not c2.IsFound()
+	//	{
+	//		MakeErrorMsg(itm,"ExchangeOut object is not a function")
+	//		return null
+	//	}
+	//	fncTmplt := c2.CreateObject()
+	//	assert(fncTmplt != null and fncTmplt is in BoxFuncTemplate) //TODO to error
+	//	assert(fncTmplt->{BoxFuncTemplate^}.IsOneFunc()) //TODO error check
+	//	fnc := fncTmplt->{BoxFuncTemplate^}.GetOneFunc()
+
+	//	userCmd.ExchangeOut = fnc->{BoxFuncBody^}
+	//	
+	//}
+
+	//if namedArgs.Contain(StringSpan("CacheOn")) and CFile != null
+	//{
+	//	userCmd.UseCache = true
+	//	userCmd.CachedValues = CFile.GetModule(cmdName->{TokenString^}.Value)
+	//}
+}
 
 ParseCmdInputs := !(Token^ itm,List.{Token^} posArgs,AVLMap.{Str,Token^} res) -> bool
 {

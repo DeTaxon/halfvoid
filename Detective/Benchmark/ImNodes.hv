@@ -121,26 +121,26 @@ AppendClass ImContext
 		cachedIndex := -1
 
 
-		if cIndex >= 0 and cIndex + 1 < cCount
-			and erc >= cachedVals[cIndex].state.xLine
-			and erc <= cachedVals[cIndex+1].state.xLine
-		{
-			cachedIndex = cIndex
-		}else{
+		// if cIndex >= 0 and cIndex + 1 < cCount
+		// 	and erc >= cachedVals[cIndex].state.xLine
+		// 	and erc <= cachedVals[cIndex+1].state.xLine
+		// {
+		// 	cachedIndex = cIndex
+		// }else{
 			for i : cCount
 			{
 				c := ref cachedVals[i]
 				if erc <= c.state.xLine
 				{
-					cachedIndex = i - 1
+					cachedIndex = i
 					break
 				}
 			}
 			cIndex = cachedIndex
-		}
+		// }
 
 		i := 0
-		if cachedIndex != -1
+		if cachedIndex >= 0
 		{
 			i = cachedIndex*cachesSize
 			if cachedIndex != 0

@@ -15,7 +15,11 @@ AppendClass ImContext
 
 			for i : cachesSize
 			{
-				state.Get(ptr[i + o]&)
+				nd := ref ptr[i + o]
+				inLine := state.Get(nd&)
+
+				if nd.action == "TaskQuit"
+					state.Drop(inLine)
 			}
 
 			cCount += 1

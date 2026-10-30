@@ -512,6 +512,14 @@ BoxFile := class extend BoxUnit
 
 			if fnc.IsFound()
 			{
+				if name[0] == '#'
+				{
+					if oldData == null // TODO hotload commands?
+					{
+						CreateUserCommand(name,fnc&,right)
+					}
+					return true
+				}
 				if oldData != null
 				{
 					hsh := fnc.ComputeHeaderHash()

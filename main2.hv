@@ -43,16 +43,14 @@ RunFunc := !() -> void
 	// printf("wut %p\n",backtrace_create_state)
 	
 	// initTaskBenchmark()
-	testHatch := THatch
 
-	TSpawnTask(() ==> [c = testHatch&]{
-		TSleep(1.0)
-		c.Emit()
-	})
+	printf("AnotherTest %i\n",#TestNewCommand(13))
+}
 
-	testHatch.Await()
-	printf("hey\n")
-
+"#TestNewCommand" := !(int x) -> int
+{
+	printf("At compile time %i\n",x)
+	return 7
 }
 
 // TODO hotload in lambda function, captures are gone

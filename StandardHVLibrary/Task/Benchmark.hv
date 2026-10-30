@@ -5,7 +5,7 @@ bmBacktrace := void^
 
 initTaskBenchmark := !() -> void
 {
-	bmBigData.Create(16*1024*1024,"wr")
+	bmBigData.Create(32*1024*1024,"wr")
 	bmBacktrace = backtrace_create_state(null,1,null,null)
 	// TODO Use marking, but libraries must be loaded first
 }
