@@ -89,13 +89,11 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 			{
 			case MCConstFunction
 
-				if fncObj.GetValue() is BoxFuncDeclare
+				if fncObj.GetValue() is in BoxFunc
 					fnc = fncObj.GetValue()->{BoxFuncDeclare^}
 
 			case void assert(false)
 			}
-
-			assert(fnc != null)
 
 			args := HybridQueue.{int,20}
 
@@ -106,61 +104,68 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 				i += 1
 			}
 
-			switch fnc.itName
+			if fnc is BoxFuncDeclare
 			{
-			case "printf"
-
-				if args.Size() == 1
+				switch fnc.itName
 				{
-					getElement(args[0])
-					cPtr[c++] = MCLine("il_call",bldr.PushStr("void class [mscorlib]System.Console::Write(string)"))
-				}else{
+				case "printf"
 
-					originalStr := oPtr[args[0]]&->{MCConstString^}.GetValue().CStr()
-
-					newStr := malloc(1024)->{char^}
-
-					k := 0
-					index := 0
-					while originalStr[k] != 0
+					if args.Size() == 1
 					{
-						if originalStr[k] == '%'
+						getElement(args[0])
+						cPtr[c++] = MCLine("il_call",bldr.PushStr("void class [mscorlib]System.Console::Write(string)"))
+					}else{
+
+						originalStr := oPtr[args[0]]&->{MCConstString^}.GetValue().CStr()
+
+						newStr := malloc(1024)->{char^}
+
+						k := 0
+						index := 0
+						while originalStr[k] != 0
 						{
-							newStr[k++] = '{'
-							newStr[k++] = '0' + index++ // TODO case for 10+
-							newStr[k++] = '}'
-						}else{
-							newStr[k] = originalStr[k]
-							k += 1
+							if originalStr[k] == '%'
+							{
+								newStr[k++] = '{'
+								newStr[k++] = '0' + index++ // TODO case for 10+
+								newStr[k++] = '}'
+							}else{
+								newStr[k] = originalStr[k]
+								k += 1
+							}
 						}
-					}
-					newStr[k] = 0
+						newStr[k] = 0
 
-					vr  := bldr.PushVar(GTypeILObject.GetDynamicArray())
+						vr  := bldr.PushVar(GTypeILObject.GetDynamicArray())
 
-					cPtr[c++] = MCLine("new",vr,bldr.PushInt(args.Size() - 1))
+						cPtr[c++] = MCLine("new",vr,bldr.PushInt(args.Size() - 1))
 
-					for it,i : args
-					{
-						if i == 0
-							continue
+						for it,i : args
+						{
+							if i == 0
+								continue
 
+							cPtr[c++] = MCLine("il_push",vr)
+							cPtr[c++] = MCLine("il_push",bldr.PushInt(i - 1))
+							// cPtr[c++] = MCLine("il_push",it)
+							getElement(it)
+							cPtr[c++] = MCLine("il_box",it)
+							cPtr[c++] = MCLine("il_stelem",bldr.PushStr("ref"))
+
+						}
+						cPtr[c++] = MCLine("il_push",args[0])
 						cPtr[c++] = MCLine("il_push",vr)
-						cPtr[c++] = MCLine("il_push",bldr.PushInt(i - 1))
-						// cPtr[c++] = MCLine("il_push",it)
-						getElement(it)
-						cPtr[c++] = MCLine("il_box",it)
-						cPtr[c++] = MCLine("il_stelem",bldr.PushStr("ref"))
-
+						cPtr[c++] = MCLine("il_call",bldr.PushStr("void class [mscorlib]System.Console::Write(string,object[])"))
 					}
-					cPtr[c++] = MCLine("il_push",args[0])
-					cPtr[c++] = MCLine("il_push",vr)
-					cPtr[c++] = MCLine("il_call",bldr.PushStr("void class [mscorlib]System.Console::Write(string,object[])"))
+				case none
+					assert(false)
 				}
-			case none
+			}else if fnc is in BoxFuncBody {
+				cPtr[c++] = MCLine("il_call",line.var2)
+			}else {
 				assert(false)
-
 			}
+
 		case void
 			cPtr[c++] = line
 			i += 1

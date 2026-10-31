@@ -1,21 +1,8 @@
 main := !(Vector.{char^} args) -> int
 {
-	// assert(false,"error message HAHA")
-	// RunFunc()
-	// HotloadTest()
-	// st := Str
-	// printf("Hop %i\n",st == null)
-	// st = "asd"
-	// printf("Hop %i\n",st == null)
-	// ModuleTest()
-	// x := 12
 	RunFunc()
 }
 
-Hm := !() -> void
-{
-	printf("test\n")
-}
 RunFunc := !() -> void
 {
 	// OpenFontTest()
@@ -23,203 +10,8 @@ RunFunc := !() -> void
 	// tst()
 	// FlacTest()
 	// OpusTest()
-	// ReflectionTest()
-	// FStringTest()
 	// ClosureTest()
-	
-	//tst := ClassA.{ClassB}
-	//// tst.Emplace(int->{TypeId})
-	//tst.Emplace(int)
-
-	// c := gob()
-	// c.Test()
-	// printf("hey %p %p\n",test2&,test2->VTable)
-	// tst()
-	// x := SubFunc(33,50)
-	// y := SubFunc2(1.3,5.05)
-	// printf("hello world %i %f\n",x,y)
-	// tst := printf("hello world %f %i\n",y,x)
-	// printf("test %i\n",tst)
-	// printf("wut %p\n",backtrace_create_state)
-	
-	// initTaskBenchmark()
-
-	printf("AnotherTest %i\n",#TestNewCommand(13))
 }
-
-"#TestNewCommand" := !(int x) -> int
-{
-	printf("At compile time %i\n",x)
-	return 7
-}
-
-// TODO hotload in lambda function, captures are gone
-
-// "#ComputePi" := !() -> void
-// {
-// 	HV.CacheResult()
-// }
-
-test2 := AVLMap.{int,int}
-
-ModuleTest := !() -> void
-{
-	z := CreatedTestClass
-	z.first = 12
-
-	r := OnDemandTestClass
-	r.x = null
-	r.u = null
-	r.x = null
-
-	for it,ind : r->#AllFields
-	{
-		printf("yep %s %i\n",ind,it)
-	}
-}
-
-ClassB := class
-{
-	this := !(TypeId test) -> void
-	{
-		printf("yep\n")
-	}
-}
-
-ClassA := class .{@T}
-{
-	Emplace := !(args...) -> void
-		#MimicInput(T.this)
-	{
-		c := ClassB(args...)
-	}
-}
-
-HotloadTest := !() -> void
-{
-	// SecondFunc()
-	// SecondFunc2()
-
-	a1 := ExtendsClass
-	a2 := ComposeClass
-	a3 := ComposeClass2
-	a4 := ComposeClass3
-
-	// a1.Huh()
-}
-
-TestClass := class
-{
-	// Huh := !() -> void
-	// {
-	// 	printf("Test\n")
-	// }
-}
-
-ExtendsClass := class extends TestClass
-{
-
-}
-
-ComposeClass := class
-{
-	r := TestClass
-}
-ComposeClass2 := class
-{
-	r := TestClass^
-}
-ComposeClass3 := class
-{
-	r := MakeItTemplate.{TestClass}
-}
-// SecondFunc := !() -> void
-// {
-// 	c := TestClass
-// }
-// SecondFunc2 := !() -> void
-// {
-// 	c := TestClass^
-// }
-//
-MakeItTemplate := class .{@T}
-{
-	h := T
-}
-
-FStringTest := !() -> void
-{
-	val1 := 13
-	val2 := 99
-	val3 := 3.9
-
-	val4 := "asd"
-	kk := val4&
-
-	z := Str
-	z = "Bla"
-
-	printf("Hey %p\n",val4)
-	x := @"Test: <{z}>"
-	printf("test %s\n",x)
-}
-
-ReflectionTest := !() -> void
-{
-	c := HV.GetTypeObj(int)
-	r := c.GetPointer().GetPointer()
-	printf("test %s\n",r.GetDebugStr())
-
-	z := CreatedTestClass
-	z.first = 13
-}
-
-#Module(
-	cls := TypeClass^
-	clsOnDemand := TypeClass^
-
-	GetItem := virtual !(Str name) -> HV_Object^
-	{
-		if name == "CreatedTestClass"
-		{
-			return cls->{HV_Object^}?
-
-			cls = HV.CreateClass2()
-			cls.SetName("CreatedTestClass")
-
-			cls.GetFieldsCount()
-
-			cls.AddField("first",HV.GetType("int"))
-
-			printf("after created %i <%s>\n",cls.GetFieldsCount(),cls.GetDebugRepr().CStr())
-
-			return cls->{HV_Object^}
-		}
-
-		if name == "OnDemandTestClass"
-		{
-			return clsOnDemand->{HV_Object^}?
-
-			clsOnDemand = HV.CreateClass2()
-			clsOnDemand.SetFieldFailedCallback((x) ==> {
-				c := HV.GetTypeObj(int)
-
-				c2 := HV.GetFuncType(![c],![false],c,false,false)
-				return c2.GetPointer()
-				return HV.GetTypeObj(int)
-			})
-			return clsOnDemand->{HV_Object^}
-		}
-
-	}
-)
-
-
-//TODO if one input variable named result, rename return result to anon
-//#ExposeClass("Type",
-//	"GetPoint",
-//	"GetArray",
-//)
 
 
 //TODO Generator can work with hotload, WHICH IS REALLY SUCKS, need complete rework on how lambda and generators work
@@ -229,7 +21,6 @@ ReflectionTest := !() -> void
 //TODO for it : Cls1->#ClassFamily , what if extends change for a class None->SomeClass, SomeClass1->SomeClass2
 //TODO closure api?
 //TODO LazyClass does not work if some class uses it as a field
-
 //TODO gc manual deletes
 //TODO gc free unused pages
 //TODO Sort(arr,size, by=.generation)
@@ -244,6 +35,13 @@ ReflectionTest := !() -> void
 //TODO lazy class in hotload
 //TODO it is REALY painfull, if .x called in child class we must call in base class and rebuild this class
 //TODO allow !(ref int x) , in functions and function types, lambdas
+//TODO @cache function, @once function/call
+//TODO decorator func pass constants?
+//TODO default initializer for growing class, and const value as global const
+//TODO field becomes static if it is not inside class
+//TODO zero size class optimizations
+//TODO x := field 10  non types not working
+//TODO Module Vulkan uses Normal Class and usese new API
 
 
 makeSpirv := !() -> void
@@ -354,41 +152,3 @@ JavaMain := !() -> void
 {
 
 }
-
-//
-//SwapnWork(() ==>{
-//	thisTask = SpawnTask(() ==> {
-//		interpretetion fails here
-//		something to do with thisTask being captured
-//	})
-//})
-//
-//
-//
-//
-//
-
-//for i : ![1,2,3] TODO, this array is not affected by reload
-//{
-//	
-//}
-
-
-
-
-
-//Zip file
-//crc32
-//deflate
-//zip -v check
-//if file already exists
-//throw exceptions when file cannot be created, no space on disk, incorrect file format
-
-//TODO
-//@cache function, @once function/call
-//decorator func pass constants?
-//default initializer for growing class, and const value as global const
-//field becomes static if it is not inside class
-//zero size class optimizations
-//x := field 10  non types not working
-//Module Vulkan uses Normal Class and usese new API

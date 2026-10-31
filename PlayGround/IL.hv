@@ -1,4 +1,13 @@
+ILMain := !() -> void
+{
+	printf("yep\n")
+	Func2()
+}
 
+Func2 := !() -> void
+{
+	printf("haha\n")
+}
 
 ILTest := !() -> void
 {

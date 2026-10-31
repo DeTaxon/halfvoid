@@ -41,14 +41,6 @@ GenerateILFile := !() -> void
   	extends [mscorlib]System.Object
   {
 
-    // method line 1
-    .method public static hidebysig 
-           default void Main (string[] args)  cil managed 
-    {
-        // Method begins at RVA 0x2050
-	.entrypoint
-	// Code size 19 (0x13)
-	.maxstack 200
 	"""
 
 	//IL_0000:  nop 
@@ -80,8 +72,6 @@ GenerateILFile := !() -> void
 	//IL_0007:  ldloc.0 
 	//IL_0008:  ret 
 	funcEnd := """
-    } // end of method MainClass::SubFunc
-
     // method line 3
     .method public hidebysig specialname rtspecialname 
            instance default void '.ctor' ()  cil managed 
@@ -103,18 +93,33 @@ GenerateILFile := !() -> void
 	outFile.Write(fileHeader,strlen(fileHeader))
 	outFile.Write(funcStart,strlen(funcStart))
 
-	assert(c.WriteFunctions.Size() == 1)
-
 	for func : c.WriteFunctions
 	{
 		bc := BCFuncs.GetBaseFunc(func)
 
-		bc.Print()
+		// bc.Print()
 
 		bc = PassILReplaceCLib(bc)
 
-		bc.Print()
+		// bc.Print()
 
+		outFile^ << "	.method public static hidebysig\n"
+			<< "		default void "
+
+		if func == mainFunc
+		{
+			outFile^ << " Main (string[] args)"
+			outFile^ << " cil managed\n"
+			outFile^ << "{\n"
+				<< ".entrypoint\n"
+		}else{
+			outFile^ << func.OutputName << " ()"
+			outFile^ << " cil managed\n"
+			outFile^ << "{\n"
+		}
+
+
+		outFile^ << ".maxstack 200\n"
 
 		locs := Vector.{Type^}
 		oldToNew := AVLMap.{int,int}
@@ -212,7 +217,21 @@ GenerateILFile := !() -> void
 			case "il_pop"
 				storeObj(line.var1)
 			case "il_call"
-				out^ << "	call " << bc.Objects[line.var1]&->{MCConstString^}.GetValue() << "\n"
+				obj := ref bc.Objects[line.var1]
+				if obj& is MCConstString
+				{
+					out^ << "	call " << bc.Objects[line.var1]&->{MCConstString^}.GetValue() << "\n"
+				}else if obj& is MCConstFunction {
+					fnc := obj&->{MCConstFunction^}.GetValue()
+					if fnc is BoxFuncBody
+					{
+						out^ << "	call void class MainClass::" << fnc.OutputName << "()\n"
+					}else{
+						assert(false)
+					}
+				}else{
+					assert(false)
+				}
 			case "mov"
 				ob1 := ref bc.Objects[line.var1]
 				ob2 := ref bc.Objects[line.var2]
@@ -269,6 +288,7 @@ GenerateILFile := !() -> void
 		}
 
 		outFile^ << "	ret\n"
+		outFile^ << "}\n"
 	}
 
 	outFile.Write(funcEnd,strlen(funcEnd))
