@@ -84,11 +84,13 @@ AppendClass ImContext
 
 		if deltaMouseWheel.y != 0.0
 		{
+			zd := zoomDelta*1.3
+
 			newZoom := curZoom
 			if deltaMouseWheel.y < 0
-				newZoom = newZoom / zoomDelta
+				newZoom = newZoom / zd
 			else
-				newZoom *= zoomDelta
+				newZoom *= zd
 
 			// mousePos = x*vec2f(curZoom) + offst
 			loc := (mousePos - offst) / vec2f(curZoom)
