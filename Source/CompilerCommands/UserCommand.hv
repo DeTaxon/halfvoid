@@ -255,6 +255,7 @@ TryAddCallCommand := !(Token^ itm) -> BoxExeObj^
 	return null
 }
 
+//TODO combine code with above
 CreateUserCommand := !(Str name,PFunctionParser^ fncParser,Token^ itm) -> void^
 {
 	fncTmplt := fncParser.CreateObject()

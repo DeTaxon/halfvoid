@@ -63,7 +63,7 @@ CacheState := class
 
 		lines[x] = null
 
-		while linesCount > 0 and lines[linesCount] == null
+		while linesCount > 0 and lines[linesCount - 1] == null
 			linesCount -= 1
 	}
 }

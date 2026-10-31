@@ -39,6 +39,8 @@ AppendClass ImContext
 	cIndex := int
 	cachedVals := TracesCached[]
 
+	prevTime := double
+
 	InitNodes := !() -> void
 	{
 		curZoom = 1.0
@@ -49,6 +51,10 @@ AppendClass ImContext
 	}
 	DrawNodes := !() -> void
 	{
+		nowTime := GetSteadyTime()
+		deltaTime := nowTime - prevTime
+		prevTime = nowTime
+
 		shaderDataNode.ApplyShaderToQueue(vk,cmds.Get(),width,height)
 
 		ptr := bmBigData.GetPointer()->{bmtStackFrameInfo^}
@@ -57,13 +63,23 @@ AppendClass ImContext
  
 		xOffset := float
 
-		delta := 1.0
-		zoomDelta := delta*1.06
+		zoomDelta := (deltaTime*0.8 + 1.0)
 
 		if newButton == 'e'
 		{
 			curZoom = 1
 			offst = vec2f(0)
+		}
+		if newButton == 'c'
+		{
+			st := CacheState
+			for i : bmIterator
+			{
+				pr := ref ptr[i]
+				inLine := st.Get(pr&)
+				printf("step %s %i %i %i\n",pr.action.ToCStr(),pr.callerTaskId,inLine,st.xLine)
+
+			}
 		}
 
 		if deltaMouseWheel.y != 0.0
@@ -81,9 +97,27 @@ AppendClass ImContext
 			curZoom = newZoom
 		}
 
+		if buttons['q'] or buttons['a']
+		{
+			newZoom := curZoom
+
+			p := vec2f(width,height) * 0.5
+
+			if buttons['q']
+				newZoom = newZoom / zoomDelta
+			else
+				newZoom *= zoomDelta
+
+			// mousePos = x*vec2f(curZoom) + offst
+			loc := (p - offst) / vec2f(curZoom)
+			offst = p - loc*vec2f(newZoom)
+
+			curZoom = newZoom
+		}
+
 		drawScale = vec2f(curZoom,curZoom)
 
-		moveVal := delta*10 / curZoom
+		moveVal := deltaTime*800 * curZoom
 		if buttons['L']
 			offst.x += moveVal
 		if buttons['R']
@@ -147,7 +181,6 @@ AppendClass ImContext
 				state = cachedVals[cachedIndex - 1].state
 		}
 
-		// printf("Cache test %i %i\n",cachedIndex,erc)
 		while i < bmIterator
 		{
 			nd := ptr[i]&
@@ -160,11 +193,11 @@ AppendClass ImContext
 			inLine := state.Get(nd)
 			if inLine == -1
 				continue
-			xOffset = fullSize.x*state.xLine
 
 			if nd.action == "TaskQuit"
 				state.Drop(inLine)
 
+			xOffset = fullSize.x*state.xLine
 			yOffset := inLine*fullSize.y + 100
 
 			pos := vec2f(xOffset,yOffset)
