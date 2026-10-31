@@ -1,12 +1,14 @@
 ILMain := !() -> void
 {
 	printf("yep\n")
-	Func2()
+	c := Func2()
+	printf("ret %i\n",c)
 }
 
-Func2 := !() -> void
+Func2 := !() -> int
 {
 	printf("haha\n")
+	return 1337
 }
 
 ILTest := !() -> void
