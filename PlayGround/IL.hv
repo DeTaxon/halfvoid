@@ -1,13 +1,13 @@
 ILMain := !() -> void
 {
 	printf("yep\n")
-	c := Func2()
-	printf("ret %i\n",c)
+	c := Func2(13)
+	printf("ret {0}\n",c)
 }
 
-Func2 := !() -> int
+Func2 := !(int x) -> int
 {
-	printf("haha\n")
+	printf("haha {0}\n",x)
 	return 1337
 }
 

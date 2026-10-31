@@ -45,6 +45,16 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 		}
 	}
 
+	for j : fnc.InputsIndxCount
+	{
+		indx := j + fnc.InputsIndxStart
+
+		if not IsInt(fnc.Objects[indx].GetType())
+			continue
+		cPtr[c++] = MCLine("il_arg",j)
+		cPtr[c++] = MCLine("il_pop",indx)
+	}
+
 	i := 0
 	while i < fnc.Lines.Size()
 	{
@@ -161,7 +171,12 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 					assert(false)
 				}
 			}else if fnc is in BoxFuncBody {
-				cPtr[c++] = MCLine("il_call",line.var2)
+				for a : args
+					cPtr[c++] = MCLine("il_push",a)
+				cPtr[c++] = MCLine("il_call",line.var2,line.var1)
+
+				if line.var1 != 0
+					cPtr[c++] = MCLine("il_pop",line.var1)
 			}else {
 				assert(false)
 			}
@@ -170,6 +185,11 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 			cPtr[c++] = line
 			i += 1
 		}
+	}
+
+	if fnc.ResultIndex != 0
+	{
+		cPtr[c++] = MCLine("il_push",fnc.ResultIndex)
 	}
 	
 	return bldr.GenerateFunc()

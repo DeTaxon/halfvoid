@@ -96,24 +96,35 @@ GenerateILFile := !() -> void
 	for func : c.WriteFunctions
 	{
 		bc := BCFuncs.GetBaseFunc(func)
-
-		// bc.Print()
-
 		bc = PassILReplaceCLib(bc)
 
-		// bc.Print()
+		resType := bc.Objects[bc.ResultIndex].GetType()
 
 		outFile^ << "	.method public static hidebysig\n"
-			<< "		default void "
 
 		if func == mainFunc
 		{
+			outFile^ << "		default void "
 			outFile^ << " Main (string[] args)"
 			outFile^ << " cil managed\n"
 			outFile^ << "{\n"
 				<< ".entrypoint\n"
 		}else{
-			outFile^ << func.OutputName << " ()"
+			outFile^ << "		default "
+			PrintILType(outFile,resType)
+			outFile^ << " " <<func.OutputName << " ("
+
+			for j : bc.InputsIndxCount
+			{
+				indx := j + bc.InputsIndxStart
+
+				if j != 0
+					outFile^ << ","
+				PrintILType(outFile,bc.Objects[indx].GetType())
+				outFile^ << " arg" << j
+			}
+
+			outFile^ << ")"
 			outFile^ << " cil managed\n"
 			outFile^ << "{\n"
 		}
@@ -225,7 +236,10 @@ GenerateILFile := !() -> void
 					fnc := obj&->{MCConstFunction^}.GetValue()
 					if fnc is BoxFuncBody
 					{
-						out^ << "	call void class MainClass::" << fnc.OutputName << "()\n"
+						out^ << "	call "
+						t := bc.Objects[line.var2].GetType()
+						PrintILType(out,t)
+						out^ << " class MainClass::" << fnc.OutputName << "(int32)\n"
 					}else{
 						assert(false)
 					}
@@ -277,6 +291,8 @@ GenerateILFile := !() -> void
 				out^ << "	ldelem."
 				out^ << oPtr[line.var1]&->{MCConstString^}.GetValue()
 				out^ << "\n"
+			case "il_arg"
+				out^ << "	ldarg." << line.var1 << "\n"
 			case "add" out^ << "	add\n"
 			case "sub" out^ << "	sub\n"
 			case "mul" out^ << "	mul\n"
