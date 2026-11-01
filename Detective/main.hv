@@ -17,34 +17,35 @@ show_bm := !() -> void
 
 	resMngr.inst = vk
 
-
-	TSpawnTask(() ==> {
-		TSleep(0.7)
-		testHatch.Emit()
-	})
-	TSpawnTask(() ==> {
-		TSleep(0.5)
-		testHatch.Await()
-	})
-
+	//
+	// TSpawnTask(() ==> {
+	// 	TSleep(0.7)
+	// 	testHatch.Emit()
+	// })
+	// TSpawnTask(() ==> {
+	// 	TSleep(0.5)
+	// 	testHatch.Await()
+	// })
+	//
 	im := ImContext
 	im.Init(vk,resMngr&)
 	im.InitFonts()
 	im.InitNodes()
+	//
+	// TSpawnTask(() ==> {
+	// 	TSleep(3)
+	// 	testHatch.Reset()
+	// 	TSpawnTask(() ==> {
+	// 		TSleep(0.7)
+	// 		testHatch.Emit()
+	// 	})
+	// 	TSpawnTask(() ==> {
+	// 		TSleep(0.5)
+	// 		testHatch.Await()
+	// 	})
+	// })
 
-	TSpawnTask(() ==> {
-		TSleep(3)
-		testHatch.Reset()
-		TSpawnTask(() ==> {
-			TSleep(0.7)
-			testHatch.Emit()
-		})
-		TSpawnTask(() ==> {
-			TSleep(0.5)
-			testHatch.Await()
-		})
-	})
-
+	ssa := HV.GetSSAFunc(HV.FindFunction("TestFunc"))
 
 	fps := 0
 
@@ -91,7 +92,8 @@ show_bm := !() -> void
 
 		// im.DrawText(vec2f(44,44),"Test this",chars)
 		im.DrawFloat(vec2f(0,0),fps)
-		im.DrawNodes()
+		im.DrawFunc(ssa)
+		// im.DrawNodes()
 
 		// im.DrawTextEdit(vec2f(50,50),textTest[0]&,256)
 
@@ -116,6 +118,13 @@ show_bm := !() -> void
 	// win.RunVulkan()
 }
 
-testHatch := THatch
+// testHatch := THatch
 
+TestFunc := !() -> void
+{
+	x := 13
+	y := 4
+	z := x + y
+	printf("hon\n")
+}
 

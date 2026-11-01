@@ -1,0 +1,69 @@
+AppendClass ImContext
+{
+	selectedLine := int
+
+	DrawFunc := !(HVB_Function^ fnc) -> void
+	{
+		// printf("yep %f\n",fnc)
+		pos := vec2f(50,100)
+		// DrawText(pos,"Hello world")
+		margin := vec2f(0,26)
+
+		cSize := fnc.Lines.Size()
+		cPtr := fnc.Lines.GetPointer()
+
+		oPtr := fnc.Objects.GetPointer()
+
+		// if cSize > 10
+		// 	cSize = 10
+		switch newButton
+		{
+		case 'U'
+			selectedLine -= 1
+		case 'D'
+			selectedLine += 1
+		}
+
+		if selectedLine < 0
+			selectedLine = 0
+		if selectedLine >= cSize
+			selectedLine = cSize - 1
+
+		shaderDataNode.ApplyShaderToQueue(vk,cmds.Get(),width,height)
+		for i : cSize
+		{
+			line := cPtr[i]
+			
+			p := pos + margin*i->{float}
+
+			if i == selectedLine
+			{
+				drawCube(p + vec2f(0.0,3.0),vec2f(530,26),vec4f(0.1,0.1,0.1,1.0))
+			}
+
+			DrawText(p,line.opcode.ToCStr())
+
+			for j : 5
+			{
+				c := line.var1&[j]
+				// if c == 0
+				// 	continue
+				DrawInt(p + vec2f(250 + 60*j,0), c)
+			}
+		}
+
+		ln := cPtr[selectedLine]
+		for j : 5
+		{
+			o := ln.var1&[j]
+			if o == 0
+				continue
+			obj := oPtr[o]
+
+			ofst := pos + vec2f(540,j*26)
+
+			DrawInt(ofst,o)
+			DrawText(ofst + vec2f(32,0),obj.UnitName)
+		}
+	}
+}
