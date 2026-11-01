@@ -58,12 +58,17 @@ AppendClass ImContext
 			o := ln.var1&[j]
 			if o == 0
 				continue
-			obj := oPtr[o]
+			obj := oPtr[o]&
 
 			ofst := pos + vec2f(540,j*26)
 
 			DrawInt(ofst,o)
-			DrawText(ofst + vec2f(32,0),obj.UnitName)
+			drwPos := DrawText(ofst + vec2f(32,0),obj.UnitName)
+			switch obj is
+			{
+			case MCConstInteger
+				DrawInt(ofst + vec2f(drwPos.x + 40,0),obj.Value)
+			}
 		}
 	}
 }
