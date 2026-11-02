@@ -191,8 +191,7 @@ detective:
 	$(TimeF) ./halfvoid -var HVBenchmark -g -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Detective -o /tmp/det.ll  --vk vk.xml
 	clang++ -g /tmp/det.ll -o detective
 detective_run:
-	$(TimeF) $(gdb_tui) ./halfvoid  -nonstop -run show_bm -g -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Detective -o /tmp/det.ll  --vk vk.xml
-	clang++ -g /tmp/det.ll -o detective
+	$(TimeF) $(gdb_tui) ./halfvoid  -nonstop -run show_bm -g -C0 StandardHVLibrary -C0 ExperimentalLibrary -C0 PlayGround -C1 Detective -o /tmp/det.ll  --vk vk.xml
 	
 clean: 
 	rm -f out.ll WinObj.o a.exe a.out 

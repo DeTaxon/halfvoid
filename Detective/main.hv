@@ -45,7 +45,7 @@ show_bm := !() -> void
 	// 	})
 	// })
 
-	ssa := HV.GetSSAFunc(HV.FindFunction("TestFunc"))
+	ssa := HV.GetSSAFunc(HV.FindFunction("ComputePiTest"))
 
 	fps := 0
 
@@ -115,16 +115,10 @@ show_bm := !() -> void
 		win.PollEvents()
 		@work glfwWaitEventsTimeout(0.01)
 	}
+	win.DestroyWindow()
+
 	// win.RunVulkan()
 }
 
 // testHatch := THatch
-
-TestFunc := !() -> void
-{
-	x := 13
-	y := 4
-	z := x + y
-	printf("hon\n")
-}
 
