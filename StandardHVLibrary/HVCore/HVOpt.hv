@@ -1,0 +1,7 @@
+
+HVOptType := class
+{
+	GetDataUsage := virtual !(HVB_Function^ fnc) -> int^ {}
+	GetRetConstUsage := virtual !(HVB_Function^ fnc) -> bool^ {}
+}
+HVOpt := HVOptType^ 

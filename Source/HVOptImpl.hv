@@ -1,0 +1,30 @@
+HVOptImpl := class extends HVOptType
+{
+	GetDataUsage := virtual !(HVB_Function^ fnc) -> int^
+	{
+	}
+	GetRetConstUsage := virtual !(HVB_Function^ fnc) -> bool^
+	{	
+		cPtr := fnc.Lines.GetPointer()
+		cCount := fnc.Lines.Size()
+
+		usage := hv_malloc(fnc.Objects.Size()*4)->{int^}
+
+		for i : cCount
+		{
+			line := cPtr[i]
+			if IsOpcodeReturnsValue(line.opcode,0)
+				usage[line.var1] += 1
+		}
+
+		result = hv_malloc(cCount)->{bool^}
+		for i : cCount
+		{
+			line := cPtr[i]
+			if IsOpcodeReturnsValue(line.opcode,0) and usage[line.var1] == 1
+				result[i] = true
+		}
+	}
+}
+
+HVOptThis := HVOptImpl

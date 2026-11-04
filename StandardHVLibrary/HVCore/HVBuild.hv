@@ -34,6 +34,7 @@ HV_Context := class
 	// Get function + all function that are called by it, + used classes and globals
 	GetFunctionAndHisFriends := virtual !(HV_Object^ func) -> HVFunctionUsage {}
 
+	GetBCFunc := virtual !(HV_Object^ fnc, BCFuncTypeEnum en) -> HVB_Function^ {}
 	GetSSAFunc := virtual !(HV_Object^ fnc) -> HVB_Function^ {}
 
 	GetGlobalVarName := virtual !(HV_Object^ obj) -> Str {}
@@ -42,6 +43,13 @@ HV_Context := class
 	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void {}
 
 	GetInterpStackData := virtual !() -> HVInterpreterStackData^ {}
+}
+
+BCFuncTypeEnum := enum
+{
+	"Base",
+	"Interp",
+	"SSA"
 }
 
 TypeGroups := enum

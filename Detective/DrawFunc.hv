@@ -3,7 +3,7 @@ AppendClass ImContext
 	selectedLine := int
 	pg := int
 
-	DrawFunc := !(HVB_Function^ fnc) -> void
+	DrawFunc := !(HVB_Function^ fnc, bool^ retsData) -> void
 	{
 		// printf("yep %f\n",fnc)
 		pos := vec2f(50,100)
@@ -74,6 +74,9 @@ AppendClass ImContext
 				// 	continue
 				DrawInt(p + vec2f(250 + 60*j,0), c)
 			}
+
+			if retsData != null and retsData[i]
+				DrawText(p - vec2f(10,0),"!")
 
 		}
 

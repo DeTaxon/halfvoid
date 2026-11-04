@@ -1,7 +1,10 @@
 InitRunContext := !() -> void
 {
 	initedRun := static false
+	if initedRun
+		return void
 	HV = new HVContextImplementation
+	initedRun = true
 }
 
 HVContextImplementation := class extend HV_Context
@@ -126,6 +129,22 @@ HVContextImplementation := class extend HV_Context
 			return null
 
 		return BCFuncs.GetFunc_SSA(fnc)
+	}
+	GetBCFunc := virtual !(HV_Object^ fnc,BCFuncTypeEnum en) -> HVB_Function^
+	{
+		if fnc is not in BoxFuncBody
+			return null
+
+		switch en
+		{
+		case "Base"
+			return BCFuncs.GetBaseFunc(fnc)
+		case "Interp"
+			return BCFuncs.GetInterpFunc(fnc)
+		case "SSA"
+			return BCFuncs.GetFunc_SSA(fnc)
+		}
+		return null
 	}
 	PrintMCFunction := virtual !(HVB_Function^ fnc) -> void
 	{

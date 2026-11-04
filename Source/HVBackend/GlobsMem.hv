@@ -12,6 +12,12 @@ GlobsMemType := class
 			InitRunContext()
 			return HV&
 		}
+		if vr.ItName == "HVOpt"
+		{
+			HVOptImpPtr := static HVOptImpl^
+			HVOptImpPtr = HVOptThis&
+			return HVOptImpPtr&
+		}
 		if vr.ItName == "gLibDB"
 			return gLibDB&
 
