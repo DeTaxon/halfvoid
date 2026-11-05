@@ -25,6 +25,10 @@ HVOptImpl := class extends HVOptType
 				result[i] = true
 		}
 	}
+	IsRetValue := virtual !(MCBaseOpcodes opcode) -> bool 
+	{
+		return IsOpcodeReturnsValue(opcode,0)
+	}
 }
 
 HVOptThis := HVOptImpl

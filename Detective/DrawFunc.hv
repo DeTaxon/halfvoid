@@ -92,10 +92,13 @@ AppendClass ImContext
 
 			DrawInt(ofst,o)
 			drwPos := DrawText(ofst + vec2f(32,0),obj.UnitName)
+			datOffst := ofst + vec2f(drwPos.x + 40,0)
 			switch obj is
 			{
 			case MCConstInteger
-				DrawInt(ofst + vec2f(drwPos.x + 40,0),obj.Value)
+				DrawInt(datOffst,obj.Value)
+			case MCConstString
+				DrawText(datOffst,obj.Value&->{Str^}^.CStr())
 			}
 		}
 	}

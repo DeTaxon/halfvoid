@@ -5,7 +5,7 @@ main := !(Vector.{char^} args) -> void
 }
 show_bm := !() -> void
 {
-	win := new Window(1000,1000,"Window")
+	win := new Window(1500,1000,"Window")
 	win.InitVulkan()
 
 	cmds := TVkCommandBuffer(win.vInstance,win.vInstance.itDrawCmdPool2)
@@ -99,7 +99,7 @@ show_bm := !() -> void
 		bar1.subresourceRange.layerCount = 1
 		win.vInstance.Funcs.vkCmdPipelineBarrier(cmds.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
 
-		im.DrawStart(1000,1000,cmds&,win.vInstance.surfaceImageViews^[surfaceIndex])
+		im.DrawStart(1500,1000,cmds&,win.vInstance.surfaceImageViews^[surfaceIndex])
 
 		// im.DrawText(vec2f(44,44),"Test this",chars)
 		im.DrawFloat(vec2f(0,0),fps)
