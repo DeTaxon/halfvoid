@@ -85,6 +85,11 @@ StringSpan := class extend StringView
 		})
 	}
 	NonNullStr := virtual !() -> char^ { return ptr }
+	AsStr := !(String obj = #Var String) -> Str
+	{
+		obj.Borrow(NonNullStr(),Size())
+		result->AsString = obj&
+	}
 }
 "->{}" := !(char^ obj) .{StringView} -> StringSpan
 {
