@@ -112,6 +112,12 @@ StringView := class extend TGCObject
 		buffer[s] = 0
 		return strtol(buffer[0]&,null,0)
 	}
+	ToFloat := !() -> float
+	{
+		dat := char[64]
+		memcpy(dat[0]&,NonNullStr(),min(Size(),63))
+		return strtod(dat[0]&,null)
+	}
 
 	NonNullStr := virtual !() -> char^ { assert(false) }
 
