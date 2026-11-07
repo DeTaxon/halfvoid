@@ -316,23 +316,6 @@ AppendClass ImContext
 
 		return pos
 	}
-	drawCube := !(vec2f pos,vec2f size,vec4f color) -> void
-	{
-		pos2 := pos*drawScale + drawOffset
-
-		data := float[8]
-		data[0] = size.x*drawScale.x / width
-		data[1] = size.y*drawScale.y / height
-		data[2] = pos2.x / width
-		data[3] = pos2.y / height
-		data[4] = color.x
-		data[5] = color.y
-		data[6] = color.z
-		data[7] = color.w
-
-		vk.Funcs.vkCmdPushConstants(cmds.Get(),lightLayout.Get(),VK_SHADER_STAGE_VERTEX_BIT,0,data->TypeSize,data&)
-		vk.Funcs.vkCmdDraw(cmds.Get(),4,1,0,0)
-	}
 
 	bezierSize := float
 	drawLine := !(vec2f from,vec2f to) -> void
