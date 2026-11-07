@@ -1,7 +1,10 @@
 AppendClass ImContext
 {
-	DrawText := !(vec2f pos,char^ text) -> vec2f
+	DrawText := !(vec2f pos,char^ text, void^ key = null) -> vec2f
 	{
+		if key == null
+			key = text
+
 		pos += vec2f(0,22)
 
 		xPos := pos.x
@@ -10,8 +13,7 @@ AppendClass ImContext
 		i := 0
 		while text[i] != 0
 		{
-
-			if selectedObject == text
+			if selectedObject == key
 			{
 				if i == textEditPosition
 				{

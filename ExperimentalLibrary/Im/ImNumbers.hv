@@ -12,4 +12,30 @@ AppendClass ImContext
 		FloatToStrArr(value,val[0]&,32)
 		DrawText(pos,val[0]&)
 	}
+
+	DrawFloatEdit := !(vec2f pos,float^ toEdit) -> void
+	{
+
+		if mouseFirstPress
+		{
+			posEnd := pos + vec2f(120,22)
+
+			if mousePos.x >= pos.x and mousePos.x <= posEnd.x
+				and mousePos.y >= pos.y and mousePos.y <= posEnd.y
+			{
+				selectedObject = toEdit
+				FloatToStrArr(toEdit^,numberEdit[0]&,numberEdit.Size())
+			}
+		}
+
+		if selectedObject == toEdit
+		{
+			if DrawTextEdit(pos,numberEdit[0]&,numberEdit.Size(),toEdit)
+				toEdit^ = strtod(numberEdit[0]&,null) //TODO something needed for safe converting
+		}else{
+			val := char[32]
+			FloatToStrArr(toEdit^,val[0]&,32)
+			DrawText(pos,val[0]&)
+		}
+	}
 }

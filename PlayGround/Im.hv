@@ -30,6 +30,8 @@ show_bm := !() -> void
 	fpsCount := 0
 	fpsTime := GetSteadyTime()
 
+	testCentf := centf()
+
 	while not win.ShouldClose()
 	{
 		surfaceIndex := u32
@@ -67,6 +69,7 @@ show_bm := !() -> void
 
 		// im.DrawText(vec2f(44,44),"Test this",chars)
 		im.DrawFloat(vec2f(0,0),fps)
+		im.DrawCentfEdit(vec2f(100,100),testCentf&)
 		// im.DrawNodes()
 
 		// im.DrawTextEdit(vec2f(50,50),textTest[0]&,256)

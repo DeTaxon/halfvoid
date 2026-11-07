@@ -184,7 +184,7 @@ glfwKeyPressRes := !(void^ wn,int key, int scancode,int action) -> void
 {
 	asCh := 0
 
-	// printf("heh %i\n",key)
+	printf("heh %i\n",key)
 	switch(key)
 	{
 		case in GLFW_KEY_0..GLFW_KEY_9
@@ -193,6 +193,9 @@ glfwKeyPressRes := !(void^ wn,int key, int scancode,int action) -> void
 			asCh = 'a' + key - GLFW_KEY_A
 		case GLFW_KEY_ESCAPE
 			asCh = 'Q'
+		case 46 asCh = ','	
+		case 47 asCh = '.'
+		case 257 asCh = 'E'
 		case 263 asCh = 'L'
 		case 262 asCh = 'R'
 		case 265 asCh = 'U'

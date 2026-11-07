@@ -1,12 +1,15 @@
 AppendClass ImContext
 {
-	DrawTextEdit := !(vec2f pos, char^ text, int size) -> bool
+	DrawTextEdit := !(vec2f pos, char^ text, int size, void^ key = null) -> bool
 	{
+		if key == null
+			key = text
+
 		compSize := vec2f(120,22)
 		drawCube(pos,compSize + vec2f(0,5),vec4f(1.0,0.5,0.0,1.0))
-		DrawText(pos,text)
+		DrawText(pos,text,key)
 
-		if selectedObject == text
+		if selectedObject == key
 		{
 			if newButton != 0
 			{
@@ -17,6 +20,9 @@ AppendClass ImContext
 				case 'R'
 					if text[textEditPosition] != 0
 						textEditPosition = min(textEditPosition + 1,size - 1)
+				case 'E'
+					selectedObject = null
+					result = true
 				case 'B'
 					if textEditPosition > 0
 					{
@@ -27,12 +33,14 @@ AppendClass ImContext
 							text[j] = text[j+1]
 							j+=1
 						}
+						result = true
 					}
-
 
 				case void
 
-					if newButton not in 'A'..'Z'
+					if newButton in 'a'..'z'
+						or newButton in '0'..'9'
+						or newButton in "!@#$%^&*()_+,./';[]"
 					{
 						j := strlen(text)
 
@@ -46,10 +54,12 @@ AppendClass ImContext
 							text[textEditPosition + 1] = 0
 
 						ch := newButton
-						if buttons['S']
+						if buttons['S'] and newButton in 'a'..'z'
 							ch += 'A' - 'a'
 						text[textEditPosition] = ch
 						textEditPosition += 1
+
+						result = true
 					}
 				}
 			}
@@ -62,7 +72,7 @@ AppendClass ImContext
 			if mousePos.x >= pos.x and mousePos.x <= posEnd.x
 				and mousePos.y >= pos.y and mousePos.y <= posEnd.y
 			{
-				selectedObject = text
+				selectedObject = key
 				textEditPosition = 0
 			}
 		}

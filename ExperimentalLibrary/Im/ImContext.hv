@@ -34,6 +34,7 @@ ImContext := class
 	selectedObject := void^
 	textEditPosition := int
 	capturedPos := vec2f
+	numberEdit := char[64]
 
 	Init := !(VulkanDefaultInstance^ inst,VKResourceManager^ resMngr) -> void
 	{

@@ -1,0 +1,10 @@
+AppendClass ImContext
+{
+	DrawCentfEdit := !(vec2f pos,centf^ toEdit) -> void
+	{
+		for i,j : 0..3
+			DrawFloatEdit(pos+vec2f(120*j,0),toEdit->{float^}[i]&)
+		for i,j : 4..7
+			DrawFloatEdit(pos+vec2f(120*j,25),toEdit->{float^}[i]&)
+	}
+}
