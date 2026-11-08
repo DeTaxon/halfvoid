@@ -35,7 +35,46 @@ AppendClass ImContext
 		}else{
 			val := char[32]
 			FloatToStrArr2(toEdit^,val[0]&,32)
-			DrawText(pos,val[0]&)
+			textSize := DrawText(pos,val[0]&)
+
+			dotIndx := -1
+
+			i := 0
+			while val[i] != 0
+			{
+				if val[i] == '.'
+				{
+					dotIndx = i
+					break
+				}
+				i += 1
+			}
+			assert(dotIndx != -1)
+
+			endP := pos + textSize
+
+			if mousePos.x > pos.x and mousePos.x < endP.x
+				and mousePos.y > pos.y and mousePos.y < endP.y
+			{
+
+				indx := 0
+				stp := pos.x
+
+				i := 0
+				while val[i] != 0
+				{
+					cSize := getCharWidth(val[i])
+					if mousePos.x < stp + cSize
+						break
+					stp += cSize
+					i += 1
+				}
+
+				DrawInt(mousePos + vec2f(0,20),i + dotIndx)
+				DrawFloat(mousePos + vec2f(0,40),mousePos.x)
+				DrawFloat(mousePos + vec2f(0,60),pos.x)
+				DrawFloat(mousePos + vec2f(0,80),stp)
+			}
 		}
 	}
 }

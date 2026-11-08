@@ -35,6 +35,10 @@ AppendClass ImContext
 
 		return vec2f(xPos - pos.x,22)
 	}
+	getCharWidth := !(int ch) -> float
+	{
+		return chars[ch].xadvance
+	}
 	drawChar := !(float xPos,float yPos,int ch) -> float
 	{
 		xPos = xPos / width
