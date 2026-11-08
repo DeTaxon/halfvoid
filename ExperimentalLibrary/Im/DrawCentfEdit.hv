@@ -2,9 +2,15 @@ AppendClass ImContext
 {
 	DrawCentfEdit := !(vec2f pos,centf^ toEdit) -> void
 	{
+		txtSize := DrawText(pos,"Ang: ")
+
+		p := pos
+		p.x += txtSize.x + 10
 		for i,j : 0..3
-			DrawFloatEdit(pos+vec2f(120*j,0),toEdit->{float^}[i]&)
+			DrawFloatEdit(p+vec2f(120*j,0),toEdit->{float^}[i]&)
+
+		DrawText(pos + vec2f(0,25),"Pos: ")
 		for i,j : 4..7
-			DrawFloatEdit(pos+vec2f(120*j,25),toEdit->{float^}[i]&)
+			DrawFloatEdit(p+vec2f(120*j,25),toEdit->{float^}[i]&)
 	}
 }
