@@ -42,9 +42,9 @@ IntToStrArr := !(int value, char^ target, int targetSize) -> int
 
 		i += 1
 
-		result = 31 - i
+		result = 32 - i
 
-		for j : (32 - i)
+		for j : result
 		{
 			target[j] = tmp[j + i]
 		}
@@ -54,4 +54,33 @@ IntToStrArr := !(int value, char^ target, int targetSize) -> int
 FloatToStrArr := !(double value,char^ target, int targetSize) -> int
 {
 	return sprintf(target,"%f",value)
+}
+FloatToStrArr2 := !(double value,char^ target, int targetSize) -> int
+{
+	intPart := value->{int}
+	siz := IntToStrArr(intPart,target,targetSize)
+
+	value = value - floor(value)
+	if value != 0
+	{
+		target[siz++] = '.'
+
+		for i : 5
+		{
+			value *= 10.0
+			bs := floor(value)
+			value -= bs
+			target[siz++] = "0123456789?"[bs->{int}]
+		}
+		while target[siz-1] == '0'
+		{
+			siz -= 1
+			target[siz] = 0
+		}
+	}else{
+		target[siz++] = '.'
+		target[siz++] = '0'
+	}
+
+	// return sprintf(target,"%f",value)
 }

@@ -7,6 +7,8 @@
 	],
 	"funcs" : {
 		"acosf" : "float,float",
-		"acos" : "double,double"
+		"acos" : "double,double",
+
+		"floor" : "double,double"
 	}
 }

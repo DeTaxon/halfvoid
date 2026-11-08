@@ -9,7 +9,7 @@ AppendClass ImContext
 	DrawFloat := !(vec2f pos,double value) -> void
 	{
 		val := char[32]
-		FloatToStrArr(value,val[0]&,32)
+		FloatToStrArr2(value,val[0]&,32)
 		DrawText(pos,val[0]&)
 	}
 
@@ -24,17 +24,17 @@ AppendClass ImContext
 				and mousePos.y >= pos.y and mousePos.y <= posEnd.y
 			{
 				selectedObject = toEdit
-				FloatToStrArr(toEdit^,numberEdit[0]&,numberEdit.Size())
+				FloatToStrArr2(toEdit^,numberEdit[0]&,numberEdit.Size())
 			}
 		}
 
 		if selectedObject == toEdit
 		{
-			if DrawTextEdit(pos,numberEdit[0]&,numberEdit.Size(),toEdit)
+			if DrawTextEdit(pos,numberEdit[0]&,numberEdit.Size(),toEdit) == "quit"
 				toEdit^ = strtod(numberEdit[0]&,null) //TODO something needed for safe converting
 		}else{
 			val := char[32]
-			FloatToStrArr(toEdit^,val[0]&,32)
+			FloatToStrArr2(toEdit^,val[0]&,32)
 			DrawText(pos,val[0]&)
 		}
 	}

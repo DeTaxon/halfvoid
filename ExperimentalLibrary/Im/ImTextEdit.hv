@@ -1,6 +1,6 @@
 AppendClass ImContext
 {
-	DrawTextEdit := !(vec2f pos, char^ text, int size, void^ key = null) -> bool
+	DrawTextEdit := !(vec2f pos, char^ text, int size, void^ key = null) -> ImEditState
 	{
 		if key == null
 			key = text
@@ -22,7 +22,7 @@ AppendClass ImContext
 						textEditPosition = min(textEditPosition + 1,size - 1)
 				case 'E'
 					selectedObject = null
-					result = true
+					result = "quit"
 				case 'B'
 					if textEditPosition > 0
 					{
@@ -33,7 +33,7 @@ AppendClass ImContext
 							text[j] = text[j+1]
 							j+=1
 						}
-						result = true
+						result = "changed"
 					}
 
 				case void
@@ -59,7 +59,7 @@ AppendClass ImContext
 						text[textEditPosition] = ch
 						textEditPosition += 1
 
-						result = true
+						result = "changed"
 					}
 				}
 			}
@@ -77,4 +77,11 @@ AppendClass ImContext
 			}
 		}
 	}
+}
+
+ImEditState := enum
+{
+	"nothing",
+	"changed",
+	"quit"
 }
