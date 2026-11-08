@@ -82,7 +82,7 @@ ImContext := class
 		gpuIndMem = vk.CreateMemBufferObject(temp,VK_BUFFER_USAGE_INDEX_BUFFER_BIT or_b VK_BUFFER_USAGE_TRANSFER_DST_BIT)
 	}
 
-	DrawStart := !(float w, float h,TVkCommandBuffer^ inCmds,VkImageView target ) -> void
+	DrawStart := !(float w, float h,TVkCommandBuffer^ inCmds) -> void
 	{
 		cmds = inCmds
 		width = w
@@ -92,22 +92,22 @@ ImContext := class
 
 		clrValues := vec4f(0.0,0.3,0.3,1.0)
 
-		atm := VkRenderingAttachmentInfo()
-		atm.imageView = target
-		atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-		atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
-		atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
-		atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
-		memcpy(atm.clearValue&,clrValues&,4*4)
-
-		rndr := VkRenderingInfo()
-		rndr.renderArea.extent.width = w //surfAb.currentExtent.width
-		rndr.renderArea.extent.height = h //surfAb.currentExtent.height
-		rndr.layerCount = 1
-		rndr.colorAttachmentCount = 1
-		rndr.pColorAttachments&->{void^^}^ = atm&
-
-		vk.Funcs.vkCmdBeginRendering(cmds.Get(),rndr&)
+		// atm := VkRenderingAttachmentInfo()
+		// atm.imageView = target
+		// atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+		// atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
+		// atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+		// atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
+		// memcpy(atm.clearValue&,clrValues&,4*4)
+		//
+		// rndr := VkRenderingInfo()
+		// rndr.renderArea.extent.width = w //surfAb.currentExtent.width
+		// rndr.renderArea.extent.height = h //surfAb.currentExtent.height
+		// rndr.layerCount = 1
+		// rndr.colorAttachmentCount = 1
+		// rndr.pColorAttachments&->{void^^}^ = atm&
+		//
+		// vk.Funcs.vkCmdBeginRendering(cmds.Get(),rndr&)
 
 		vertPtr = stageVertMem.Map()->{MeshData^}
 		indPtr = stageIndMem.Map()->{int^}

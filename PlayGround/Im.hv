@@ -67,7 +67,7 @@ show_bm := !() -> void
 
 		im.DrawStart(1500,1000,cmds&,win.vInstance.surfaceImageViews^[surfaceIndex])
 
-		// im.DrawText(vec2f(44,44),"Test this",chars)
+		im.DrawText(vec2f(44,44),"Test this",chars)
 		im.DrawFloat(vec2f(0,0),fps)
 		im.DrawCentfEdit(vec2f(100,100),testCentf&)
 		// im.DrawNodes()

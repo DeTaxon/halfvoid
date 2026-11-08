@@ -179,6 +179,7 @@ GLFWWindow := class
 
 }
 
+hFKeys := "!@#$%^&*()_+"
 
 glfwKeyPressRes := !(void^ wn,int key, int scancode,int action) -> void
 {
@@ -187,6 +188,8 @@ glfwKeyPressRes := !(void^ wn,int key, int scancode,int action) -> void
 	// printf("heh %i\n",key)
 	switch(key)
 	{
+		case in 290..301
+			asCh = hFKeys[key - 290]
 		case in GLFW_KEY_0..GLFW_KEY_9
 			asCh = '0' + key - GLFW_KEY_0
 		case in GLFW_KEY_A..GLFW_KEY_Z
