@@ -35,7 +35,6 @@ AppendClass ImContext
 		}else{
 			val := char[32]
 			FloatToStrArr2(toEdit^,val[0]&,32)
-			textSize := DrawText(pos,val[0]&)
 
 			dotIndx := -1
 
@@ -51,6 +50,26 @@ AppendClass ImContext
 			}
 			assert(dotIndx != -1)
 
+			expDotPos := 4
+			expSize := 8
+
+			fils := 0
+			if dotIndx < expDotPos
+				fils = expDotPos - dotIndx
+
+			chWidth := 10
+
+			chPos := pos + vec2f(chWidth*fils,22)
+
+			i = 0
+			while val[i] != 0
+			{
+				drawChar(chPos.x,chPos.y,val[i])
+				chPos.x += chWidth
+				i += 1
+			}
+			textSize := vec2f(chWidth*expSize,22)
+
 			endP := pos + textSize
 
 			if mousePos.x > pos.x and mousePos.x < endP.x
@@ -61,18 +80,27 @@ AppendClass ImContext
 				stp := pos.x
 
 				i := 0
-				while val[i] != 0
+				while true
 				{
-					cSize := getCharWidth(val[i])
+					cSize := chWidth
 					if mousePos.x < stp + cSize
 						break
 					stp += cSize
 					i += 1
 				}
+				values := ![1000.0,100.0,10.0,1.0,1.0,0.1,0.01,0.001,0.0001]
+				// i = expDotPos - i
+				val := 0.0
+				if i < values.Size()
+					val = values[i]
 
-				DrawInt(mousePos + vec2f(0,20),i + dotIndx)
-				DrawFloat(mousePos + vec2f(0,40),mousePos.x)
-				DrawFloat(mousePos + vec2f(0,60),pos.x)
+				added := deltaMouseWheel.y*val
+
+				toEdit^ += added
+
+				DrawFloat(mousePos + vec2f(0,20),i)
+				DrawFloat(mousePos + vec2f(0,40),values.Size())
+				DrawFloat(mousePos + vec2f(0,60),val)
 				DrawFloat(mousePos + vec2f(0,80),stp)
 			}
 		}
