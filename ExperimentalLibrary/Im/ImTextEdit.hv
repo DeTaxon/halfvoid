@@ -1,13 +1,15 @@
 AppendClass ImContext
 {
-	DrawTextEdit := !(vec2f pos, char^ text, int size, void^ key = null) -> ImEditState
+	DrawTextEdit := !(vec2f pos, char[] text, void^ key = null) -> ImEditState
 	{
 		if key == null
-			key = text
+			key = text.GetPointer()
+
+		assert(key != null)
 
 		compSize := vec2f(120,22)
 		drawCube(pos,compSize + vec2f(0,5),vec4f(1.0,0.5,0.0,1.0))
-		DrawText(pos,text,key)
+		DrawText(pos,text.GetPointer(),key)
 
 		if selectedObject == key
 		{
@@ -19,7 +21,7 @@ AppendClass ImContext
 					textEditPosition = max(textEditPosition - 1,0)
 				case 'R'
 					if text[textEditPosition] != 0
-						textEditPosition = min(textEditPosition + 1,size - 1)
+						textEditPosition = min(textEditPosition + 1,text.Size() - 1)
 				case 'E'
 					selectedObject = null
 					result = "quit"
@@ -42,7 +44,7 @@ AppendClass ImContext
 						or newButton in '0'..'9'
 						or newButton in "!@#$%^&*()_+,./';[]"
 					{
-						j := strlen(text)
+						j := strlen(text.GetPointer())
 
 						while j > textEditPosition
 						{

@@ -30,7 +30,7 @@ AppendClass ImContext
 
 		if selectedObject == toEdit
 		{
-			if DrawTextEdit(pos,numberEdit[0]&,numberEdit.Size(),toEdit) == "quit"
+			if DrawTextEdit(pos,numberEdit,toEdit) == "quit"
 				toEdit^ = strtod(numberEdit[0]&,null) //TODO something needed for safe converting
 		}else{
 			val := char[32]
