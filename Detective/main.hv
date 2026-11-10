@@ -5,7 +5,10 @@ main := !(Vector.{char^} args) -> void
 }
 show_bm := !() -> void
 {
-	win := new Window(1500,1000,"Window")
+	w := 1500
+	h := 1000
+
+	win := new Window(w,h,"Window")
 	win.InitVulkan()
 
 	cmds := TVkCommandBuffer(win.vInstance,win.vInstance.itDrawCmdPool2)
@@ -99,7 +102,25 @@ show_bm := !() -> void
 		bar1.subresourceRange.layerCount = 1
 		win.vInstance.Funcs.vkCmdPipelineBarrier(cmds.Get(),VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,0,0,null,0,null,1,bar1&)
 
-		im.DrawStart(1500,1000,cmds&,win.vInstance.surfaceImageViews^[surfaceIndex])
+		clrValues := vec4f(0.0,0.3,0.3,1.0)
+
+		atm := VkRenderingAttachmentInfo()
+		atm.imageView = win.vInstance.surfaceImageViews^[surfaceIndex]
+		atm.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+		atm.resolveMode = VK_RESOLVE_MODE_NONE //TODO
+		atm.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR
+		atm.storeOp = VK_ATTACHMENT_STORE_OP_STORE
+		memcpy(atm.clearValue&,clrValues&,4*4)
+
+		rndr := VkRenderingInfo()
+		rndr.renderArea.extent.width = w //surfAb.currentExtent.width
+		rndr.renderArea.extent.height = h //surfAb.currentExtent.height
+		rndr.layerCount = 1
+		rndr.colorAttachmentCount = 1
+		rndr.pColorAttachments&->{void^^}^ = atm&
+
+		vk.Funcs.vkCmdBeginRendering(cmds.Get(),rndr&)
+		im.DrawStart(1500,1000,cmds&)
 
 		// im.DrawText(vec2f(44,44),"Test this",chars)
 		im.DrawFloat(vec2f(0,0),fps)
