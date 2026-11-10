@@ -1,6 +1,4 @@
 #UnaryMinus
-"#best ()"
-"try {} catch () {}"
 "! []" "! {}"
 #NewConstruct
 #FunctionBody
@@ -27,7 +25,6 @@
 "not d"
 "d and d" "d or d" "d xor d"
 #NewDelete
-"throw d" 
 "d << d" "d >> d"
 "d <-"
 #CallDecoratorCall

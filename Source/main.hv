@@ -337,8 +337,6 @@ main := !(Vector.{char^} args) -> int
 		spc.Modules[^].Work()
 	}
 
-	// CodeFiles[^].Parse()
-	// CodeFiles[^].AddWork()
 	WorkBag.DoWork()
 
 	InitTaskLocal()
