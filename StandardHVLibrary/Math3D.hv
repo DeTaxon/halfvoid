@@ -77,6 +77,11 @@ quantfAt := !(float x, float y, float z, float de) -> quantf
 			cos(halfAn))
 }
 
+QuatAround := !(vec3f at, float rad) -> quantf
+{
+	return quantfAt(at.x,at.y,at.z,rad)
+}
+
 centf := class
 {
 	ang := quantf

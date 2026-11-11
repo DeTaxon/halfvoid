@@ -14,7 +14,17 @@ AppendClass ImContext
 			val := toEdit->{float^}[i]&
 			ps := p+vec2f(120*j,0)
 			DrawFloatEdit(ps,val,false)
-			val^ += editNumberBox(ps,vec2f(100,22),angAdders)
+			delta := editNumberBox(ps,vec2f(100,22),angAdders)
+
+			if delta != 0 and i < 3
+			{
+				rad := delta * 1deg // deg to radians
+				vc := vec3f
+				vc&->{float^}[i] = 1.0
+				moveQ := quantfAt(vc.x,vc.y,vc.z,rad)
+
+				toEdit.ang = toEdit.ang <*> moveQ
+			}
 		}
 
 		DrawText(pos + vec2f(0,25),"Pos: ")
