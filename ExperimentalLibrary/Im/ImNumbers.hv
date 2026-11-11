@@ -13,7 +13,7 @@ AppendClass ImContext
 		DrawText(pos,val[0]&)
 	}
 
-	DrawFloatEdit := !(vec2f pos,float^ toEdit) -> void
+	DrawFloatEdit := !(vec2f pos,float^ toEdit,bool EditByMouse = true) -> vec2f
 	{
 
 		if mouseFirstPress
@@ -72,7 +72,8 @@ AppendClass ImContext
 
 			endP := pos + textSize
 
-			if mousePos.x > pos.x and mousePos.x < endP.x
+			if EditByMouse
+				and mousePos.x > pos.x and mousePos.x < endP.x
 				and mousePos.y > pos.y and mousePos.y < endP.y
 			{
 
@@ -89,7 +90,7 @@ AppendClass ImContext
 					i += 1
 				}
 				values := ![1000.0,100.0,10.0,1.0,1.0,0.1,0.01,0.001,0.0001]
-				// i = expDotPos - i
+
 				val := 0.0
 				if i < values.Size()
 					val = values[i]
@@ -103,6 +104,39 @@ AppendClass ImContext
 				DrawFloat(mousePos + vec2f(0,60),val)
 				DrawFloat(mousePos + vec2f(0,80),stp)
 			}
+		}
+	}
+	editNumberBox := !(vec2f pos, vec2f size,float[] values) -> float
+	{
+		endP := pos + size
+
+		if mousePos.x > pos.x and mousePos.x < endP.x
+			and mousePos.y > pos.y and mousePos.y < endP.y
+		{
+
+			indx := 0
+			stp := pos.x
+
+			i := 0
+			while true
+			{
+				cSize := 10
+				if mousePos.x < stp + cSize
+					break
+				stp += cSize
+				i += 1
+			}
+
+			val := 0.0
+			if i < values.Size()
+				val = values[i]
+
+			result = deltaMouseWheel.y*val
+
+			DrawFloat(mousePos + vec2f(0,20),i)
+			DrawFloat(mousePos + vec2f(0,40),values.Size())
+			DrawFloat(mousePos + vec2f(0,60),val)
+			DrawFloat(mousePos + vec2f(0,80),stp)
 		}
 	}
 }

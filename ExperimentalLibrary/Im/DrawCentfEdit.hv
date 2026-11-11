@@ -4,10 +4,18 @@ AppendClass ImContext
 	{
 		txtSize := DrawText(pos,"Ang: ")
 
+		angAdders := float[]
+		angAdders = ![20.0,10.0,5.0,1.0,0.5,0.1,0.05,0.01]
+
 		p := pos
 		p.x += txtSize.x + 10
 		for i,j : 0..3
-			DrawFloatEdit(p+vec2f(120*j,0),toEdit->{float^}[i]&)
+		{
+			val := toEdit->{float^}[i]&
+			ps := p+vec2f(120*j,0)
+			DrawFloatEdit(ps,val,false)
+			val^ += editNumberBox(ps,vec2f(100,22),angAdders)
+		}
 
 		DrawText(pos + vec2f(0,25),"Pos: ")
 		for i,j : 4..7
