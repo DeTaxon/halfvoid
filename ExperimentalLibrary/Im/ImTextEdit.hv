@@ -46,14 +46,14 @@ AppendClass ImContext
 					{
 						j := strlen(text.GetPointer())
 
-						while j > textEditPosition
-						{
-							text[j+1] = text[j]
-							j -= 1
-						}
-
 						if text[textEditPosition] == 0
 							text[textEditPosition + 1] = 0
+
+						while j > textEditPosition
+						{
+							text[j] = text[j-1]
+							j -= 1
+						}
 
 						ch := newButton
 						if buttons['S'] and newButton in 'a'..'z'

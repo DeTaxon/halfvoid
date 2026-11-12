@@ -1,0 +1,19 @@
+AppendClass ImContext
+{
+	Button := !(vec2f pos,vec2f size, Str text) -> bool
+	{
+		drawCube(pos,size,vec4f(1.0,0.0,gColor,1.0))
+		DrawText(pos,text)
+
+		endP := pos + size
+
+		if mouseFirstPress
+			and mousePos.x >= pos.x and mousePos.x <= endP.x
+			and mousePos.y >= pos.y and mousePos.y <= endP.y
+		{
+			result = true
+		}
+	}
+}
+
+gColor := 0.0

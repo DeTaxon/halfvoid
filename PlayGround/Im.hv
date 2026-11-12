@@ -34,6 +34,7 @@ show_bm := !() -> void
 	fpsTime := GetSteadyTime()
 
 	testCentf := centf()
+	testCentf.pos.y = -16
 
 	while not win.ShouldClose()
 	{
@@ -92,6 +93,11 @@ show_bm := !() -> void
 		im.DrawFloat(vec2f(0,0),fps)
 		im.DrawCentfEdit(vec2f(100,100),testCentf&)
 		// im.DrawNodes()
+		// if im.Button(vec2f(100,100),vec2f(200,100),"Hi")
+		// {
+		// 	printf("hi\n")
+		// 	gColor += 0.05
+		// }
 
 		// im.DrawTextEdit(vec2f(50,50),textTest[0]&,256)
 
