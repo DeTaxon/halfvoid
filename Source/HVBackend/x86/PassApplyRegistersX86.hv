@@ -384,7 +384,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			{
 				ln := fnc.Lines[i]
 
-				cPtr[c] = MCLine("jmp_if_op",ln.var2,cmpObj,"==",ln.var1)
+				cPtr[c] = MCLine("jmp_if_op",ln.var2,cmpObj,bldr.PushCond("=="),ln.var1)
 				c += 1
 				i += 1
 			}
@@ -503,17 +503,19 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 			cPtr[c] = MCLine("mov",reg1,it.var2)
 			cPtr[c+1] = MCLine("mov",reg2,it.var4)
+			
+			cnd := oPtr[it.var3]&->{MCCompareOperator^}.GetValue()
 
 			if IsFloat(tp) {
-				if it.V3Cond() == ">" {
-					cPtr[c+2] = MCLine("cmp",res,reg2,"<",reg1)
-				}else if it.V3Cond() == ">=" {
-					cPtr[c+2] = MCLine("cmp",res,reg2,"<=",reg1)
+				if cnd == ">" {
+					cPtr[c+2] = MCLine("cmp",res,reg2,bldr.PushCond("<"),reg1)
+				}else if cnd == ">=" {
+					cPtr[c+2] = MCLine("cmp",res,reg2,bldr.PushCond("<="),reg1)
 				}else {
-					cPtr[c+2] = MCLine("cmp",res,reg1,it.V3Cond(),reg2)
+					cPtr[c+2] = MCLine("cmp",res,reg1,it.var3,reg2)
 				}
 			}else{
-				cPtr[c+2] = MCLine("cmp",res,reg1,it.V3Cond(),reg2)
+				cPtr[c+2] = MCLine("cmp",res,reg1,it.var3,reg2)
 			}
 
 			cPtr[c+3] = MCLine("mov",it.var1,res)

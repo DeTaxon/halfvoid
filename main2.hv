@@ -23,6 +23,7 @@ testFunc := !(float[] x) -> void
 	printf("Test %p %i\n",te&,x.Size())
 }
 
+//TODO NO EXPLICIT CONVETION ENUM TO INT
 
 //TODO Generator can work with hotload, WHICH IS REALLY SUCKS, need complete rework on how lambda and generators work
 //TODO Why do i have CheckValue on GlobalVar2? works weird in non stop mode

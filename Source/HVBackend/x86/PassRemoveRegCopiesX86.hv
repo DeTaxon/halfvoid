@@ -32,11 +32,6 @@ PassRemoveRegCopies := !(MCFunction^ fnc) ->MCFunction^
 
 		if iCmds[i].opcode == "mov" and oPtr[iCmds[i].var2]& is MCConstRegisterX86 and oPtr[iCmds[i].var1]& is in MCVariable
 		{
-			if i == 25
-			{
-				v := 494
-			}
-
 			k := 1
 		
 			while true

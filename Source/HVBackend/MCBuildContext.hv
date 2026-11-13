@@ -213,6 +213,13 @@ MCBuildContext := class
 		result = objects.Size()
 		objects.Push(setVal)
 	}
+	AddCond := !(MCJumpIfConditions cond) -> int
+	{
+		obj := MCCompareOperator
+		obj.GetValue() = cond
+		result = objects.Size()
+		objects.Push(obj)
+	}
 	CreateMCFunction := !() -> MCFunction^
 	{
 		result = new MCFunction

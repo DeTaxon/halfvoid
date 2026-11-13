@@ -84,3 +84,6 @@ MCConstPointerTyped := class extend MCObject
 MCLabel := class extend MCObject
 {
 }
+MCCompareOperator := class extend MCObject
+{
+}

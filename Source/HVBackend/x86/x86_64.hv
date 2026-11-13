@@ -481,6 +481,7 @@ MCBuildFuncContext_x86_64 := class
 				//ResultData << "\x48\x3B\xD0" //cmp
 				
 				tp := objs[line.var2].GetType()
+				cnd := objs[line.var3]&->{MCCompareOperator^}.GetValue()
 
 				if reg1 >= 16
 				{
@@ -496,7 +497,7 @@ MCBuildFuncContext_x86_64 := class
 					}
 					ResultData.WriteByte("\xC0"[0] + (r1 shl 3) + r2)
 
-					switch line.V3Cond()
+					switch cnd
 					{
 						case "==" ResultData.WriteByte(0)
 						case "!=" ResultData << "\x04"
@@ -504,6 +505,7 @@ MCBuildFuncContext_x86_64 := class
 						case "<" ResultData << "\x01"
 						case ">=" ResultData << "\x05"
 						case ">" ResultData << "\x06"
+						case void assert(false)
 					}
 					ResultData << "\x66\x0F\x7E" // movd rax xmm0
 					ResultData.WriteByte(0xC0 + (r1 shl 3) + resReg)
@@ -514,7 +516,7 @@ MCBuildFuncContext_x86_64 := class
 					ResultData.WriteByte(0xC0 + (reg1 shl 3) + reg2)
 
 					if IsUInt(tp) or IsPtrLikeType(tp) {
-						switch line.V3Cond()
+						switch cnd
 						{
 							case "==" ResultData << "\x0F\x94"
 							case "!=" ResultData << "\x0F\x95"
@@ -522,9 +524,10 @@ MCBuildFuncContext_x86_64 := class
 							case "<" ResultData << "\x0F\x92"
 							case ">=" ResultData << "\x0F\x93"
 							case ">" ResultData << "\x0F\x97"
+							case void assert(false)
 						}
 					}else{
-						switch line.V3Cond()
+						switch cnd
 						{
 							case "==" ResultData << "\x0F\x94"
 							case "!=" ResultData << "\x0F\x95"
@@ -532,6 +535,7 @@ MCBuildFuncContext_x86_64 := class
 							case "<" ResultData << "\x0F\x9C"
 							case ">=" ResultData << "\x0F\x9D"
 							case ">" ResultData << "\x0F\x9F"
+							case void assert(false)
 						}
 					}
 					WriteData(0xC0 + resReg)
@@ -738,7 +742,9 @@ MCBuildFuncContext_x86_64 := class
 				Mov(fnc,"rax",line.var4)
 				ResultData << "\x48\x3B\xD0" //cmp
 
-				switch line.V3Cond()
+				cnd := objs[line.var3]&->{MCCompareOperator^}.GetValue()
+
+				switch cnd
 				{
 					case "==" ResultData << "\x0F\x84"
 					case "!=" ResultData << "\x0F\x85"
@@ -747,7 +753,7 @@ MCBuildFuncContext_x86_64 := class
 					case ">=" ResultData << "\x0F\x8D"
 					case ">" ResultData << "\x0F\x8F"
 					case void 
-						printf("wut %i\n",line.V3Cond())
+						printf("wut %i\n",cnd)
 						assert(false)
 				}
 				labelTarget[line.var1].Push(strm.Size())
@@ -1344,9 +1350,11 @@ MCBuildFuncContext_x86_64 := class
 
 				regIndx := reg mod 8
 				MovPtrToReg(fnc,"r10",memPtr)
-				if obj.GetType() == GTypeDouble {
+
+				oType := obj.GetType()
+				if oType == GTypeDouble {
 					WriteData(0x66,0x49,0x0F,0x6E,(regIndx shl 3) + 2) // mov reg, (r10)
-				}else if obj.GetType() == GTypeFloat {
+				}else if oType == GTypeFloat or oType == GTypeVec2f{
 					WriteData(0x66,0x41,0x0F,0x6E,(regIndx shl 3) + 2) // mov reg, (r10)
 				}else{
 					assert(false)

@@ -147,6 +147,10 @@ AppendClass MCLabel
 {
 	PrintObject := virtual !() -> void { printf("Label") }
 }
+AppendClass MCCompareOperator
+{
+	GetValue := !() -> ref MCJumpIfConditions { return Value&->{MCJumpIfConditions^}^}
+}
 
 MCFunction := type HVB_Function
 AppendClass HVB_Function

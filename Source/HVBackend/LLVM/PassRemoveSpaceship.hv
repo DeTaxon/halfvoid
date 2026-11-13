@@ -35,6 +35,16 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 		result = o
 		o += 1
 	}
+	pushCond := (MCJumpIfConditions value) ==> int
+	{
+		newVar := MCCompareOperator
+
+		newVar.GetValue() = value
+
+		oPtr[o] = newVar
+		result = o
+		o += 1
+	}
 	pushLabel := () ==> int
 	{
 		newLabel := MCLabel
@@ -46,7 +56,14 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 
 	for it , i : fnc.Lines
 	{
-		if it.opcode != "cmp" or it.V3Cond() != "<=>" {
+		if it.opcode != "cmp" {
+			cPtr[c] = it
+			c += 1
+			continue
+		}
+		cnd := oPtr[it.var3]&->{MCCompareOperator^}.GetValue()
+
+		if cnd != "<=>" {
 			cPtr[c] = it
 			c += 1
 			continue
@@ -73,12 +90,12 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 
 			cPtr[c+2] = MCLine("mov",resVal,pushInt(1))
 			res1 := pushVar(GTypeBool)
-			cPtr[c+3] = MCLine("cmp",res1,c1,">",c2)
+			cPtr[c+3] = MCLine("cmp",res1,c1,pushCond(">"),c2)
 			cPtr[c+4] = MCLine("jmp_if_bool",qLabel,res1)
 
 			cPtr[c+5] = MCLine("mov",resVal,pushInt(-1))
 			res2 := pushVar(GTypeBool)
-			cPtr[c+6] = MCLine("cmp",res2,c1,"<",c2)
+			cPtr[c+6] = MCLine("cmp",res2,c1,pushCond("<"),c2)
 			cPtr[c+7] = MCLine("jmp_if_bool",qLabel,res2)
 
 			cPtr[c+8] = MCLine("mov",resVal,pushInt(0))
@@ -96,12 +113,12 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 
 			cPtr[c+0] = MCLine("mov",resVal,pushInt(1))
 			res1 := pushVar(GTypeBool)
-			cPtr[c+1] = MCLine("cmp",res1,c1,">",c2)
+			cPtr[c+1] = MCLine("cmp",res1,c1,pushCond(">"),c2)
 			cPtr[c+2] = MCLine("jmp_if_bool",qLabel,res1)
 
 			cPtr[c+3] = MCLine("mov",resVal,pushInt(-1))
 			res2 := pushVar(GTypeBool)
-			cPtr[c+4] = MCLine("cmp",res2,c1,"<",c2)
+			cPtr[c+4] = MCLine("cmp",res2,c1,pushCond("<"),c2)
 			cPtr[c+5] = MCLine("jmp_if_bool",qLabel,res2)
 
 			cPtr[c+6] = MCLine("mov",resVal,pushInt(0))

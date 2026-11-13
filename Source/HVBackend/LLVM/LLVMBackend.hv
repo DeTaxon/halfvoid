@@ -579,9 +579,11 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 
 				out << "	%Var" << op.var1 << " = "
 
+				cnd := fnc.Objects[op.var3]&->{MCCompareOperator^}.GetValue()
+
 				if IsFloat(ob1.GetType()) {
 					out << "fcmp "
-					switch op.V3Cond()
+					switch cnd
 					{
 					case "<" out << "ult"
 					case "<=" out << "ule"
@@ -589,12 +591,13 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 					case ">=" out << "uge"
 					case "==" out << "ueq"
 					case "!=" out << "une"
+					case void assert(false)
 					}
 				}else{
 					out << "icmp "
 
 					if IsUInt(ob1.GetType()) {
-						switch op.V3Cond()
+						switch cnd
 						{
 						case "<" out << "ult"
 						case "<=" out << "ule"
@@ -602,9 +605,10 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 						case ">=" out << "uge"
 						case "==" out << "eq"
 						case "!=" out << "ne"
+						case void assert(false)
 						}
 					}else{
-						switch op.V3Cond()
+						switch cnd
 						{
 						case "<" out << "slt"
 						case "<=" out << "sle"
@@ -612,6 +616,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 						case ">=" out << "sge"
 						case "==" out << "eq"
 						case "!=" out << "ne"
+						case void assert(false)
 						}
 					}
 				}

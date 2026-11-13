@@ -85,5 +85,14 @@ AppendClass GreedyPass
 		result = objsSize
 		oPtr[objsSize++] = newPtr
 	}
+	PushCond := !(MCJumpIfConditions value) -> int
+	{
+		newPtr := MCCompareOperator
+
+		newPtr.GetValue() = value
+
+		result = objsSize
+		oPtr[objsSize++] = newPtr
+	}
 }
 

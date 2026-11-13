@@ -273,7 +273,9 @@ GenerateILFile := !() -> void
 				loadObj(line.var2)
 				loadObj(line.var4)
 
-				switch line.V3Cond()
+				cnd := oPtr[line.var3]&->{MCCompareOperator^}.GetValue()
+
+				switch cnd
 				{
 				case "<" out^ << "	clt\n"
 				case ">="

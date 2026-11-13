@@ -70,7 +70,8 @@ HVB_ins_cmp := !(MCBuildContext^ ctx , s32 res , s32 obj1, char^ cmpOper, s32 ob
 	case void 
 		return false
 	}
-	ctx.lines.Push(MCLine("cmp", res,obj1,cond,obj2))
+	cndId := ctx.AddCond(cond)
+	ctx.lines.Push(MCLine("cmp", res,obj1,cndId,obj2))
 	return true
 }
 

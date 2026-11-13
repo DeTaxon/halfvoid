@@ -490,7 +490,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				assert(false)
 			}
 
-			switch thisLine.V3Cond()
+			cnd := interpFunc.Objects[thisLine.var3]&->{MCCompareOperator^}.GetValue()
+
+			switch cnd
 			{
 				case "==" resBool^ = (spc == 0)
 				case "!=" resBool^ = (spc != 0)
