@@ -173,6 +173,16 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "reg_store_v128" thisFrame.StoreVec4f(thisLine.var1,rv->{vec4f^}[thisLine.var2])
 
 		case "noop"
+
+		case "interp_prepare_va_args"
+			vCount := interpFunc.InputsIndxCount
+
+			toCopy := 128 - vCount
+			vaList := thisFrame.AllocateOnStack(toCopy*8)->{u8^}
+
+			memcpy(vaList,ra->{s64^}[vCount]&,toCopy)
+			ra->{void^^}[127] = vaList
+
 		case "call_start"
 			varsCount := thisLine.var3
 			fncObj := ref interpFunc.Objects[opPtr[cs].var2]
@@ -778,73 +788,21 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 		case "va_start"
 
-			if callerFrame != null
+			ptr := ra->{void^^}[127]
+
+			lst := thisFrame.GetObjectPtr(opPtr[cs].var2)->{va_list^^}^
+			assert(lst != null)
+
+			if #OS() == "Linux"
 			{
-				bs := callerFrame.cs - 1
-				cPtr := callerFrame.func.Lines.GetPointer()
-				oPtr := callerFrame.func.Objects.GetPointer()
-
-				assert(cPtr[bs].opcode == "call_end" or cPtr[bs].opcode == "load_var" or cPtr[bs].opcode == "call_start")
-
-				while cPtr[bs].opcode != "call_start"
-					bs -= 1
-
-				fTyp := oPtr[cPtr[bs].var2].GetType()
-				if fTyp? is in TypePoint
-					fTyp = fTyp.Base
-				if fTyp? is TypeFunc
-				{
-					fT := fTyp->{TypeFunc^}
-					assert(fT.IsVargs)
-
-					argsCount := fT.Params.Size()
-					indxs := HybridQueue.{int,20}
-
-					bs += 1
-					k := -1
-					while cPtr[bs].opcode != "call_end"
-					{
-						k += 1
-						bs += 1
-
-						if k < argsCount
-							continue
-						indxs.Push(cPtr[bs - 1].var2)
-					}
-
-					if indxs.Size() != 0
-					{
-						ptr := thisFrame.AllocateOnStack(indxs.Size()*8)
-
-						for ind,i : indxs
-						{
-							ptr->{u64^}[i] = callerFrame.GetObjectPtr(ind)->{u64^}^
-						}
-						lst := thisFrame.GetObjectPtr(opPtr[cs].var2)->{va_list^^}^
-						assert(lst != null)
-
-						ptr := 
-
-						if #OS() == "Linux"
-						{
-							lst.intOffset = 48
-							lst.floatOffset = 176
-							lst.stackArea = ptr->{u8^}
-							lst.regArea = ptr->{u8^}
-						}
-						if #OS() == "Windows"
-						{
-							lst^ = ptr
-						}
-					}
-
-
-				}else{
-					assert(false)
-				}
-
-			}else{
-				assert(false)
+				lst.intOffset = 48
+				lst.floatOffset = 176
+				lst.stackArea = ptr->{u8^}
+				lst.regArea = ptr->{u8^}
+			}
+			if #OS() == "Windows"
+			{
+				lst^ = ptr
 			}
 		case "va_end"
 		case "va_arg"

@@ -8,3 +8,9 @@ main := !(char^[] args) -> void
 	}
 	printf("good\n")
 }
+
+RunOnly := !() -> void
+{
+	VaCallTest()
+	printf("good run\n")
+}

@@ -1,6 +1,6 @@
 
 
-VaCallTestInt := !() -> void
+VaCallTest := !() -> void
 	#Mark("UnitTest")
 {
 	assert(VaCallFuncInt(4,2,5,3,7) == 17)

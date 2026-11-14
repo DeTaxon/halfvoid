@@ -130,6 +130,8 @@ MCInterpContext := class
 			return ffi_type_pointer
 		}else if itType == GTypeDouble{
 			return ffi_type_double
+		}else if itType == GTypeFloat{
+			return ffi_type_float
 		}else if itType == GTypeInt or itType == GTypeTypeId {
 			return ffi_type_sint32
 		}else if itType == GTypeU32{
