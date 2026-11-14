@@ -75,9 +75,9 @@ PassSetFallbacksX86 := !(MCFunction^ fnc) ->MCFunction^
 			oPtr[o++] = newObj
 
 			cPtr[c++] = MCLine("call_start",0,fncId)
-			cPtr[c++] = MCLine("load_var",0,line.var1)
 			cPtr[c++] = MCLine("load_var",0,line.var2)
 			cPtr[c++] = MCLine("load_var",0,line.var3)
+			cPtr[c++] = MCLine("load_var",0,line.var4)
 			cPtr[c++] = MCLine("call_end")
 			i += 1
 		}else{
