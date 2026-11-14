@@ -738,11 +738,11 @@ MCBuildFuncContext_x86_64 := class
 			case "jmp_if_op"
 
 				//TODO cmp floats
-				Mov(fnc,"rdx",line.var2)
-				Mov(fnc,"rax",line.var4)
+				Mov(fnc,"rdx",line.var3)
+				Mov(fnc,"rax",line.var5)
 				ResultData << "\x48\x3B\xD0" //cmp
 
-				cnd := objs[line.var3]&->{MCCompareOperator^}.GetValue()
+				cnd := objs[line.var4]&->{MCCompareOperator^}.GetValue()
 
 				switch cnd
 				{
@@ -756,7 +756,7 @@ MCBuildFuncContext_x86_64 := class
 						printf("wut %i\n",cnd)
 						assert(false)
 				}
-				labelTarget[line.var1].Push(strm.Size())
+				labelTarget[line.var2].Push(strm.Size())
 				x := 0
 				ResultData.Write(x&,4)
 			case "jmp"

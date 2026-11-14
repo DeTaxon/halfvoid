@@ -384,7 +384,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			{
 				ln := fnc.Lines[i]
 
-				cPtr[c] = MCLine("jmp_if_op",ln.var2,cmpObj,bldr.PushCond("=="),ln.var1)
+				cPtr[c] = MCLine("jmp_if_op",0,ln.var2,cmpObj,bldr.PushCond("=="),ln.var1)
 				c += 1
 				i += 1
 			}
