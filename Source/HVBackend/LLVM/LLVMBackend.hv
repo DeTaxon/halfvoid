@@ -399,7 +399,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 				currentDbgBlockId = blocksStack[0]
 
 			case "jmp"
-				out << "	br label %Label" << op.var1 << "\n"
+				out << "	br label %Label" << op.var2 << "\n"
 			case "jmp_if_bool"
 				t := tmpLabelIter
 				tmpLabelIter += 1

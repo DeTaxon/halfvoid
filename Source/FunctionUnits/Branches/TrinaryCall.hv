@@ -101,7 +101,7 @@ TrinaryOper := class extend TrinaryOperBase
 		cmpTest := ifStatement.WriteMC(ctx)
 
 		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
-		ctx.lines.Push(MCLine("jmp",falsePath))
+		ctx.lines.Push(MCLine("jmp",0,falsePath))
 
 		HVB_ins_label(ctx,truePath)
 		tRes := onTrue.WriteMC(ctx)
@@ -159,7 +159,7 @@ TrinaryOperMem := class extend TrinaryOperBase
 		cmpTest := ifStatement.WriteMC(ctx)
 
 		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
-		ctx.lines.Push(MCLine("jmp",falsePath))
+		ctx.lines.Push(MCLine("jmp",0,falsePath))
 
 		HVB_ins_label(ctx,truePath)
 		tRes := onTrue.WriteMC(ctx)

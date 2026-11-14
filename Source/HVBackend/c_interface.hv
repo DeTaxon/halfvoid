@@ -27,7 +27,7 @@ HVB_ins_jump_if_bool := !(MCBuildContext^ ctx,s32 labelId, s32 cmpTest) -> void
 }
 HVB_ins_jump := !(MCBuildContext^ ctx,s32 labelId) -> void
 {
-	ctx.lines.Push(MCLine("jmp",labelId))
+	ctx.lines.Push(MCLine("jmp",0,labelId))
 }
 
 HVB_ins_new := !(MCBuildContext^ ctx,s32 resId,s32 countId) -> void

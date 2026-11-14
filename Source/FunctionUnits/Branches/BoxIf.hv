@@ -181,12 +181,12 @@ BoxIf := class extend BoxExeObj
 		cmpTest := Val.WriteMC(ctx)
 
 		ctx.lines.Push(MCLine("jmp_if_bool",truePath,cmpTest.CreatedId))
-		ctx.lines.Push(MCLine("jmp",falsePath))
+		ctx.lines.Push(MCLine("jmp",0,falsePath))
 
 		ctx.lines.Push(MCLine("label",truePath))
 		PreTrue[^].WriteMC(ctx)
 		OnTrue.WriteMC(ctx)
-		ctx.lines.Push(MCLine("jmp",endPath))
+		ctx.lines.Push(MCLine("jmp",0,endPath))
 		ctx.lines.Push(MCLine("label",falsePath))
 		PreFalse[^].WriteMC(ctx)
 		OnFalse?.WriteMC(ctx)

@@ -507,7 +507,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 		case "label"
 		case "jmp"
 			//cs = getLabel(thisLine.var1)
-			cs = labelsPtr[thisLine.var1] - 1
+			cs = labelsPtr[thisLine.var2] - 1
 		case "jmp_if_bool"
 			boolVar := thisFrame.GetObjectPtr(thisLine.var2)->{u8^}
 			if boolVar^ != 0

@@ -89,7 +89,7 @@ BuildArm64Context := class
 				jmpIfs[outIndx] = line.var1
 				WriteCmd(0x54000001)
 			case "jmp"
-				jmps[outIndx] = line.var1
+				jmps[outIndx] = line.var2
 				WriteCmd(0x14000000)
 			case "label"
 				labels[line.var1] = outIndx

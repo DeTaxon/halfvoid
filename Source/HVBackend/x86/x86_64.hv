@@ -762,7 +762,7 @@ MCBuildFuncContext_x86_64 := class
 			case "jmp"
 				ResultData << "\xE9"
 				x := 0
-				labelTarget[line.var1].Push(strm.Size())
+				labelTarget[line.var2].Push(strm.Size())
 				ResultData.Write(x&,4)
 			case "label"
 				labelPos[line.var1] = strm.Size()
