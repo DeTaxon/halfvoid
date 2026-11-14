@@ -1,8 +1,0 @@
-
-IsOpcodeUsesVar := !(MCBaseOpcodes code, int index) -> bool
-{
-	return true
-	if code == "cmp" and index == 2
-		return false
-	return true
-}

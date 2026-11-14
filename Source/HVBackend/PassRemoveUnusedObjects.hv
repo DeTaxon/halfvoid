@@ -30,8 +30,6 @@ PassRemoveUnusedObjects := !(MCFunction^ fnc) -> MCFunction^
 		line := icPtr[i]
 		for k : 5
 		{
-			if not IsOpcodeUsesVar(line.opcode,k)
-				continue
 			isUsed[line.var1&[k]] = true
 		}
 	}
@@ -58,8 +56,6 @@ PassRemoveUnusedObjects := !(MCFunction^ fnc) -> MCFunction^
 
 		for k : 5
 		{
-			if not IsOpcodeUsesVar(line.opcode,k)
-				continue
 			line.var1&[k] = newIds[line.var1&[k]]
 		}
 

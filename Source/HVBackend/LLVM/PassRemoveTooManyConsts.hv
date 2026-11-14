@@ -109,8 +109,7 @@ PassRemoveTooManyVars := !(MCFunction^ fnc) ->MCFunction^
 			for j : 5
 			{
 				id := line.var1&[j]
-				if IsOpcodeUsesVar(line.opcode,j)
-					id = remakeId[id]?
+				id = remakeId[id]?
 				line.var1&[j] = id
 			}
 			cPtr[c++] = line

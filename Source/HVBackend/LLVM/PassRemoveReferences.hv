@@ -116,8 +116,6 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 				for i : inIndx..4
 				{
-					if not IsOpcodeUsesVar(line.opcode,i)
-						continue
 					v := line.var1&[i]
 					if oPtr[v] is MCReference
 					{
