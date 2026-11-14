@@ -13,7 +13,7 @@ HVOptImpl := class extends HVOptType
 		for i : cCount
 		{
 			line := cPtr[i]
-			if IsOpcodeReturnsValue(line.opcode,0)
+			if IsOpcodeReturnsValue(line.opcode,0) and line.opcode != "mov" and line.opcode != "clean"
 				usage[line.var1] += 1
 		}
 
@@ -21,13 +21,13 @@ HVOptImpl := class extends HVOptType
 		for i : cCount
 		{
 			line := cPtr[i]
-			if IsOpcodeReturnsValue(line.opcode,0) and usage[line.var1] == 1
+			if IsOpcodeReturnsValue(line.opcode,0) and usage[line.var1] == 1 and line.opcode != "mov" and line.opcode != "clean"
 				result[i] = true
 		}
 	}
 	IsRetValue := virtual !(MCBaseOpcodes opcode) -> bool 
 	{
-		return IsOpcodeReturnsValue(opcode,0)
+		return IsOpcodeReturnsValue(opcode,0) and opcode != "mov" and opcode != "clean"
 	}
 }
 

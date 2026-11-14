@@ -17,7 +17,7 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 			usages[it.var2] += 2
 		if it.opcode == "clean" and IsObjectVariable(fnc.Objects[it.var1])
 			usages[it.var1] += 1
-		if not IsOpcodeReturnsValue(it.opcode,0)
+		if not IsOpcodeReturnsValue(it.opcode,0) and it.opcode != "mov" and it.opcode != "clean"
 			continue
 
 		if fnc.Objects[it.var1] is MCGlobalVariable
@@ -36,7 +36,7 @@ PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 	{
 		it := ref fnc.Lines[indx]
 
-		if IsOpcodeReturnsValue(it.opcode,0)
+		if IsOpcodeReturnsValue(it.opcode,0) and it.opcode != "mov" and it.opcode != "clean"
 		{
 			if it.opcode == "clean" {
 
@@ -131,7 +131,9 @@ IsOpcodeReturnsValue := !(MCBaseOpcodes opcode , int index) -> bool
 	case "get_array_elem_ptr" return true
 	case "va_arg" return true
 	case "load_element" return true
-	// case "mov" return true
+	case "mov" return true
+	case "clean" return true
+	case "label" return true
 
 	case none return false
 	}

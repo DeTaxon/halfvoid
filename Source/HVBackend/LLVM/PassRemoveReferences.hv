@@ -78,6 +78,9 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 
 		isRetObj := IsOpcodeReturnsValue(line.opcode,0) or line.opcode == "mov"
 
+		if line.opcode == "clean"
+			isRetObj = false
+
 		if line.opcode == "mov" and oPtr[line.var1] is MCReference
 		{
 			line.opcode = "store"
@@ -113,6 +116,8 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 				inIndx := 0
 				if IsOpcodeReturnsValue(line.opcode,0) or line.opcode == "mov"
 					inIndx = 1
+				if line.opcode == "clean"
+					inIndx = 0
 
 				for i : inIndx..4
 				{
