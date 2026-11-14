@@ -672,8 +672,8 @@ SpirvCompiler := class
 				c.Write32(toLocalId(line.var1))
 			case "spirv_hint_loop_merge"
 				c.Write32(0x0040000 + 246) //OpLoopMerge
-				c.Write32(toLocalId(line.var1))
 				c.Write32(toLocalId(line.var2))
+				c.Write32(toLocalId(line.var3))
 				c.Write32(0)
 
 			case "cmp"

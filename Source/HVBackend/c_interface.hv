@@ -265,5 +265,5 @@ HVB_ins_debug_trap := !(MCBuildContext^ ctx) -> void
 
 HVB_ins_spirv_hint_loop_merge := !(MCBuildContext^ ctx, s32 opr1,s32 opr2) -> void
 {
-	ctx.lines.Push(MCLine("spirv_hint_loop_merge",opr1,opr2))
+	ctx.lines.Push(MCLine("spirv_hint_loop_merge",0,opr1,opr2))
 }
