@@ -11,6 +11,16 @@ BCFuncsType := class
 	ssaFuncs := AVLMap.{BoxFuncBody^,HVB_Function^}
 	llvmFuncs := AVLMap.{BoxFuncBody^,HVB_Function^}
 
+	tmp := !(HVB_Function^ fnc) -> void
+	{
+		for line : fnc.Lines
+		{
+			if line.var1 != 0 and not IsOpcodeReturnsValue(line.opcode,0)
+			{
+				printf("Yep %s\n",line.opcode.ToCStr())
+			}
+		}
+	}
 	ForgetFunction := !(BoxFuncBody^ fnc) -> void
 	{
 		baseFuncs.Remove(fnc)
@@ -35,6 +45,8 @@ BCFuncsType := class
 
 		// result.Print()
 		baseFuncs[itm] = result
+
+		// tmp(result)	
 	}
 	GetInterpFunc := !(BoxFuncBody^ itm) -> MCFunction^
 	{

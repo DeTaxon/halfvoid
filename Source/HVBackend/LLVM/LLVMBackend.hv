@@ -75,12 +75,12 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 		{
 			if it.opcode != "debug_set_var_name"
 				continue
-			val := fnc.Objects[it.var2]&->{MCConstString^}.GetValue()
+			val := fnc.Objects[it.var3]&->{MCConstString^}.GetValue()
 			if val == null
 				continue
 
 			name := val.CStr()
-			varDebIds[it.var1] = !{GetNewId(),name,0}
+			varDebIds[it.var2] = !{GetNewId(),name,0}
 		}
 	}
 
@@ -329,10 +329,10 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 			case "debug_set_var_name"
 				if DebugMode
 				{
-					metaId := varDebIds[op.var1].0
-					varDebIds[op.var1].2 = currentDbgBlockId
+					metaId := varDebIds[op.var2].0
+					varDebIds[op.var2].2 = currentDbgBlockId
 
-					varType := fnc.Objects[op.var1].GetType()
+					varType := fnc.Objects[op.var2].GetType()
 					varType = NormalizeType(varType) //TODO some pass should remove this
 
 					//out << "	#dbg_declare("
@@ -345,7 +345,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 					varType.PrintType(ctx)
 					//if baseVar.isReference
 					//	f^ << "*"
-					out << "* %Var" << op.var1
+					out << "* %Var" << op.var2
 					out << " , metadata !" << metaId << " , metadata !DIExpression())"
 					printDebugEnd()
 				}
@@ -379,7 +379,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 			case "debug_set_line"
 				dbgIsSet = true
 
-				ln := fnc.Objects[op.var1]&->{MCConstInteger^}.GetValue()
+				ln := fnc.Objects[op.var2]&->{MCConstInteger^}.GetValue()
 				currentLine = ln
 
 				itId := GetNewId()

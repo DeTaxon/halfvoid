@@ -200,24 +200,24 @@ HVB_ins_memset := !(MCBuildContext^ ctx, s32 opr1, s32 opr2 , s32 opr3) -> void
 HVB_ins_debug_set_file := !(MCBuildContext^ ctx, char^ fileName) -> void
 {
 	strVal := HVB_ins_const_str(ctx,fileName)
-	ctx.lines.Push(MCLine("debug_set_file",strVal))
+	ctx.lines.Push(MCLine("debug_set_file",0,strVal))
 }
 HVB_ins_debug_set_line := !(MCBuildContext^ ctx, int lineNumber) -> void
 {
 	intVal := HVB_ins_const_int32(ctx,lineNumber)
-	ctx.lines.Push(MCLine("debug_set_line",intVal))
+	ctx.lines.Push(MCLine("debug_set_line",0,intVal))
 }
 HVB_ins_debug_set_var_name := !(MCBuildContext^ ctx,int varId, char^ varName) -> void
 {
 	intVal := HVB_ins_const_str(ctx,varName)
-	ctx.lines.Push(MCLine("debug_set_var_name",varId,intVal))
+	ctx.lines.Push(MCLine("debug_set_var_name",0,varId,intVal))
 }
 
 // HVB_ins_debug_var_lifetime_start := !(MCBuildContext^ ctx,int varId) -> void { ctx.lines.Push(MCLine("debug_var_lifetime_start",varId)) }
 // HVB_ins_debug_var_lifetime_end := !(MCBuildContext^ ctx,int varId) -> void { ctx.lines.Push(MCLine("debug_var_lifetime_end",varId)) }
 
-HVB_ins_debug_block_start := !(MCBuildContext^ ctx, int varId) -> void { ctx.lines.Push(MCLine("debug_block_start",varId)) }
-HVB_ins_debug_block_end := !(MCBuildContext^ ctx, int varId) -> void { ctx.lines.Push(MCLine("debug_block_end",varId)) }
+HVB_ins_debug_block_start := !(MCBuildContext^ ctx, int varId) -> void { ctx.lines.Push(MCLine("debug_block_start",0,varId)) }
+HVB_ins_debug_block_end := !(MCBuildContext^ ctx, int varId) -> void { ctx.lines.Push(MCLine("debug_block_end",0,varId)) }
 
 HVB_ins_call_start := !(MCBuildContext^ ctx, s32 opr1,s32 opr2) -> void
 {

@@ -187,9 +187,9 @@ MCBuildFuncContext_x86_64 := class
 			switch line.opcode
 			{
 			case "debug_set_file"	
-				fileName = objs[line.var1]&->{MCConstString^}.GetValue()
+				fileName = objs[line.var2]&->{MCConstString^}.GetValue()
 			case "debug_set_line"
-				fileLine = objs[line.var1]&->{MCConstInteger^}.GetValue()
+				fileLine = objs[line.var2]&->{MCConstInteger^}.GetValue()
 			case "debug_set_var_name" //none
 			
 			case "debug_block_start"

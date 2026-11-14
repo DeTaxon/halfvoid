@@ -910,11 +910,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			}
 
 		case "debug_set_file"
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
 			thisFrame.DebugFileName = ptr1->{char^^}^
 			frameData.files[frameIndx] = ptr1->{char^^}^
 		case "debug_set_line"
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
 			thisFrame.DebugFileLine = ptr1->{int^}^
 			frameData.lines[frameIndx] = ptr1->{int^}^
 		case "debug_set_var_name" //nothing

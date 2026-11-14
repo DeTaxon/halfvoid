@@ -130,6 +130,8 @@ IsOpcodeReturnsValue := !(MCBaseOpcodes opcode , int index) -> bool
 	case "get_field_ptr" return true
 	case "get_array_elem_ptr" return true
 	case "va_arg" return true
+	case "load_element" return true
+	// case "mov" return true
 
 	case none return false
 	}
