@@ -91,12 +91,12 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c+2] = MCLine("mov",resVal,pushInt(1))
 			res1 := pushVar(GTypeBool)
 			cPtr[c+3] = MCLine("cmp",res1,c1,pushCond(">"),c2)
-			cPtr[c+4] = MCLine("jmp_if_bool",qLabel,res1)
+			cPtr[c+4] = MCLine("jmp_if_bool",0,qLabel,res1)
 
 			cPtr[c+5] = MCLine("mov",resVal,pushInt(-1))
 			res2 := pushVar(GTypeBool)
 			cPtr[c+6] = MCLine("cmp",res2,c1,pushCond("<"),c2)
-			cPtr[c+7] = MCLine("jmp_if_bool",qLabel,res2)
+			cPtr[c+7] = MCLine("jmp_if_bool",0,qLabel,res2)
 
 			cPtr[c+8] = MCLine("mov",resVal,pushInt(0))
 
@@ -114,12 +114,12 @@ PassRemoveSpaceship := !(MCFunction^ fnc) ->MCFunction^
 			cPtr[c+0] = MCLine("mov",resVal,pushInt(1))
 			res1 := pushVar(GTypeBool)
 			cPtr[c+1] = MCLine("cmp",res1,c1,pushCond(">"),c2)
-			cPtr[c+2] = MCLine("jmp_if_bool",qLabel,res1)
+			cPtr[c+2] = MCLine("jmp_if_bool",0,qLabel,res1)
 
 			cPtr[c+3] = MCLine("mov",resVal,pushInt(-1))
 			res2 := pushVar(GTypeBool)
 			cPtr[c+4] = MCLine("cmp",res2,c1,pushCond("<"),c2)
-			cPtr[c+5] = MCLine("jmp_if_bool",qLabel,res2)
+			cPtr[c+5] = MCLine("jmp_if_bool",0,qLabel,res2)
 
 			cPtr[c+6] = MCLine("mov",resVal,pushInt(0))
 

@@ -190,7 +190,7 @@ GenMCTable := !() -> void
 	tbl["call_end"] = MCLine("noop")
 
 	tbl["jmp"] = MCLine("noop")
-	tbl["jmp_if_bool"] = MCLine("noop",0,1)
+	tbl["jmp_if_bool"] = MCLine("noop",0,0,1)
 	tbl["label"] = MCLine("noop")
 
 	tbl["load_element"] = MCLine("noop",0,1,1,1,1)

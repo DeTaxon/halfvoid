@@ -728,12 +728,12 @@ MCBuildFuncContext_x86_64 := class
 				assert(false)
 
 			case "jmp_if_bool"
-				Mov(fnc,"rax",line.var2)
+				Mov(fnc,"rax",line.var3)
 				x := 0
 				WriteData(0x3C) // cmp al and 0
 				ResultData.Write(x&,1)
 				WriteData(0x0F,0x85)
-				labelTarget[line.var1].Push(strm.Size())
+				labelTarget[line.var2].Push(strm.Size())
 				ResultData.Write(x&,4)
 			case "jmp_if_op"
 

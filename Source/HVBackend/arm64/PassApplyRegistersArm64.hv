@@ -121,8 +121,8 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 			cPtr[c++] = line
 		case "jmp_if_bool"
 			r := bldr.PushArmReg(0,GTypeBool)
-			cPtr[c++] = MCLine("mov",r,line.var2)
-			cPtr[c++] = MCLine("jmp_if_bool",line.var1,r)
+			cPtr[c++] = MCLine("mov",r,line.var3)
+			cPtr[c++] = MCLine("jmp_if_bool",line.var2,r)
 		case "label"
 			cPtr[c++] = line
 		case void

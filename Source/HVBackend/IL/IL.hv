@@ -201,8 +201,8 @@ GenerateILFile := !() -> void
 			switch line.opcode
 			{
 			case "jmp_if_bool"
-				loadObj(line.var2)
-				out^ << "	brtrue label" << line.var1 << "\n"
+				loadObj(line.var3)
+				out^ << "	brtrue label" << line.var2 << "\n"
 			case "jmp"
 				out^ << "	br label" << line.var1 << "\n"
 			case "label"

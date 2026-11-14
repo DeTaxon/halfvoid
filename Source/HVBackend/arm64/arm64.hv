@@ -84,9 +84,9 @@ BuildArm64Context := class
 			{
 			case "jmp_if_bool"
 
-				rg := oPtr[line.var2]&->{MCConstRegisterArm64^}.GetValue()
+				rg := oPtr[line.var3]&->{MCConstRegisterArm64^}.GetValue()
 				WriteCmd(0xf100001f + (rg shl 5))
-				jmpIfs[outIndx] = line.var1
+				jmpIfs[outIndx] = line.var2
 				WriteCmd(0x54000001)
 			case "jmp"
 				jmps[outIndx] = line.var2

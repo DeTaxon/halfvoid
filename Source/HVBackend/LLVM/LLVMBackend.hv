@@ -404,8 +404,8 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 				t := tmpLabelIter
 				tmpLabelIter += 1
 				out << "	br i1 "
-				LLVMPrintObjValue(ctx,fnc.Objects[op.var2],op.var2)
-				out << ",label %Label" << op.var1 << " , label %TmpLabel" << t << "\n"
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var3],op.var3)
+				out << ",label %Label" << op.var2 << " , label %TmpLabel" << t << "\n"
 				out << "TmpLabel" << t << ":\n"
 			case "label"
 				out << "	br label %Label" << op.var1 << "\n"
