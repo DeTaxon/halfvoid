@@ -231,7 +231,7 @@ GenMCTable := !() -> void
 	tbl["vec_shuffle_zero"] = MCLine("noop",0)
 	tbl["vec_shuffle_end"] = MCLine("noop",0)
 
-	tbl["memset"] = MCLine("noop",1,1,1)
+	tbl["memset"] = MCLine("noop",0,1,1,1)
 	tbl["clean"] = MCLine("noop")
 
 	tbl["max"] = MCLine("noop",0,1,1)

@@ -764,11 +764,11 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			
 			
 		case "memset"
-			sizeType := interpFunc.Objects[thisLine.var3].GetType()
+			sizeType := interpFunc.Objects[thisLine.var4].GetType()
 
-			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var1)
-			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var2)
-			ptr3 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptr1 := thisFrame.GetObjectPtr(opPtr[cs].var2)
+			ptr2 := thisFrame.GetObjectPtr(opPtr[cs].var3)
+			ptr3 := thisFrame.GetObjectPtr(opPtr[cs].var4)
 
 			assert(sizeType == GTypeInt)
 			switch sizeType.GetSize()

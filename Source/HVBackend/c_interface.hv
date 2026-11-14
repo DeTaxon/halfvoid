@@ -193,7 +193,7 @@ HVB_ins_vec_shuffle_end := !(MCBuildContext^ ctx) -> void
 
 HVB_ins_memset := !(MCBuildContext^ ctx, s32 opr1, s32 opr2 , s32 opr3) -> void
 {
-	ctx.lines.Push(MCLine("memset",opr1,opr2,opr3))
+	ctx.lines.Push(MCLine("memset",0,opr1,opr2,opr3))
 }
 
 

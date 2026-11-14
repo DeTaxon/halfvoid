@@ -863,15 +863,15 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 				printDebugEnd()
 				
 			case "memset"
-				ob1 := ref fnc.Objects[op.var1]
-				ob2 := ref fnc.Objects[op.var2]
-				ob3 := ref fnc.Objects[op.var3]
+				ob1 := ref fnc.Objects[op.var2]
+				ob2 := ref fnc.Objects[op.var3]
+				ob3 := ref fnc.Objects[op.var4]
 				out << "	call void @llvm.memset.inline.p0.p0i8.i32(i8* "
-				LLVMPrintObjValue(ctx,ob1,op.var1)
+				LLVMPrintObjValue(ctx,ob1,op.var2)
 				out << ",i8 "
-				LLVMPrintObjValue(ctx,ob2,op.var2)
+				LLVMPrintObjValue(ctx,ob2,op.var3)
 				out << ",i32 "
-				LLVMPrintObjValue(ctx,ob3,op.var3)
+				LLVMPrintObjValue(ctx,ob3,op.var4)
 				out << ",i1 0)"
 				printDebugEnd()
 			case "store"
