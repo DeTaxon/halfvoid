@@ -207,12 +207,12 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 			while fnc.Lines[indx].opcode != "call_end"
 			{
 				ln := ref fnc.Lines[indx]
-				ob := ref fnc.Objects[ln.var1]
+				ob := ref fnc.Objects[ln.var2]
 				if needComma
 					out << ","
 				ob.GetType().PrintType(ctx)
 				out << " "
-				LLVMPrintObjValue(ctx,fnc.Objects[ln.var1],ln.var1)
+				LLVMPrintObjValue(ctx,fnc.Objects[ln.var2],ln.var2)
 				needComma = true
 				indx += 1
 			}
@@ -248,7 +248,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 			while fnc.Lines[indx].opcode == "clob_str"
 			{
 				ln := ref fnc.Lines[indx]
-				ob := ref fnc.Objects[ln.var1]
+				ob := ref fnc.Objects[ln.var2]
 				if needComma
 					out << ","
 				needComma = true
@@ -270,11 +270,11 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 			while fnc.Lines[indx].opcode == "load_var"
 			{
 				ln := ref fnc.Lines[indx]
-				ob := ref fnc.Objects[ln.var1]
+				ob := ref fnc.Objects[ln.var2]
 				if needComma
 					out << ","
 				ob.GetType().PrintType(ctx)
-				out << " %Var" << fnc.Lines[indx].var1
+				out << " %Var" << ln.var2
 				needComma = true
 				indx += 1
 			}

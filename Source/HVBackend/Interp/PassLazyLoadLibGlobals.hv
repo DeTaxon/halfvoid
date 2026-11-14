@@ -62,7 +62,7 @@ PassLazyLoadLibGlobals := !(MCFunction^ fnc) ->MCFunction^
 		oPtr[o++] = thisVar
 
 		cPtr[c++] = MCLine("call_start",0,loadFncId)
-		cPtr[c++] = MCLine("load_var",id)
+		cPtr[c++] = MCLine("load_var",0,id)
 		cPtr[c++] = MCLine("call_end")
 	}
 

@@ -29,7 +29,7 @@ PassApplyRegistersArm64 := !(MCFunction^ fnc) -> MCFunction^
 			while fnc.Lines[i].opcode != "call_end"
 			{
 				// TODO float simd
-				id := fnc.Lines[i].var1
+				id := fnc.Lines[i].var2
 				cPtr[c++] = MCLine("mov",bldr.PushArmReg(intReg++,oPtr[id].GetType()),id)
 				i += 1
 			}

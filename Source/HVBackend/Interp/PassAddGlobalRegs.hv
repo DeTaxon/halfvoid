@@ -62,7 +62,7 @@ PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
 			j2 := 1
 			while iPtr[i].opcode != "call_end"
 			{
-				tp := oPtr[iPtr[i].var1].GetType()
+				tp := oPtr[iPtr[i].var2].GetType()
 
 				if tp == GTypeFloat {
 					calls[j2++] = 'f'
@@ -74,7 +74,7 @@ PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
 					calls[j2++] = 'i'
 					assert(IsRAXCastType(tp))
 				}
-				ASDMakeLoad(oPtr,cPtr,c,j++,iPtr[i].var1)
+				ASDMakeLoad(oPtr,cPtr,c,j++,iPtr[i].var2)
 				i++
 			}
 			i++

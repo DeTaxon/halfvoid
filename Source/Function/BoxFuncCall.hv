@@ -425,7 +425,7 @@ BoxFuncCall := class extend BoxExeObj
 			ctx.lines.Push(MCLine("call_start",setResultId,fncId))
 			for it, i  : thisIndexes
 			{
-				ctx.lines.Push(MCLine("load_var",it))
+				ctx.lines.Push(MCLine("load_var",0,it))
 			}
 			ctx.lines.Push(MCLine("call_end"))
 

@@ -218,7 +218,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				{
 					vr := ref fnc.Lines[i]
 
-					tp := oPtr[vr.var1].GetType()
+					tp := oPtr[vr.var2].GetType()
 
 					if IsFloat(tp) or tp is in TypeVector
 					{
@@ -229,11 +229,11 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 							reg&->{int^}^ += usedFloats
 
 							regId := bldr.PushReg(reg,GTypeSizeT)
-							cPtr[c++] = MCLine("mov",regId,vr.var1)
+							cPtr[c++] = MCLine("mov",regId,vr.var2)
 							usedVars.Push(regId)
 							usedFloats += 1
 						}else{
-							stackPassed.PushFront(vr.var1)
+							stackPassed.PushFront(vr.var2)
 						}
 					}else{
 						if usedInts < 6
@@ -250,11 +250,11 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 							case 5 reg = "r9"
 							}
 							regId := bldr.PushReg(reg,tp)
-							cPtr[c++] = MCLine("mov",regId,vr.var1)
+							cPtr[c++] = MCLine("mov",regId,vr.var2)
 							usedVars.Push(regId)
 							usedInts += 1
 						}else{
-							stackPassed.PushFront(vr.var1)
+							stackPassed.PushFront(vr.var2)
 						}
 					}
 					
@@ -294,7 +294,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				{
 					vr := ref fnc.Lines[i]
 
-					tp := oPtr[vr.var1].GetType()
+					tp := oPtr[vr.var2].GetType()
 
 					if usedVarsCount < 4
 					{
@@ -314,11 +314,11 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 							}
 						}
 						regId := bldr.PushReg(reg,tp)
-						cPtr[c++] = MCLine("mov",regId,vr.var1)
+						cPtr[c++] = MCLine("mov",regId,vr.var2)
 						usedVars.Push(regId)
 						usedVarsCount += 1
 					}else{
-						stackPassed.PushFront(vr.var1)
+						stackPassed.PushFront(vr.var2)
 					}
 					
 					i += 1
@@ -351,7 +351,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			}
 
 			cPtr[c++] = startLine
-			cPtr[c++] = MCLine("load_var",usedVars[^])
+			cPtr[c++] = MCLine("load_var",0,usedVars[^])
 			cPtr[c++] = MCLine("call_end")
 
 			if stackMemUsed != 0

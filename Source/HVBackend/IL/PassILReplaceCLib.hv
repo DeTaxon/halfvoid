@@ -110,7 +110,7 @@ PassILReplaceCLib := !(MCFunction^ fnc) -> MCFunction^
 			i += 1
 			while lin[i].opcode != "call_end"
 			{
-				args.Push(lin[i].var1)
+				args.Push(lin[i].var2)
 				i += 1
 			}
 

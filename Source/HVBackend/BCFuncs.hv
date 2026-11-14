@@ -46,7 +46,7 @@ BCFuncsType := class
 		// result.Print()
 		baseFuncs[itm] = result
 
-		// tmp(result)	
+		tmp(result)	
 	}
 	GetInterpFunc := !(BoxFuncBody^ itm) -> MCFunction^
 	{

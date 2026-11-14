@@ -27,8 +27,8 @@ PassFixDynamicArrays := !(MCFunction^ fnc) ->MCFunction^
 
 
 				cPtr[c++] = MCLine("call_start",line.var1,fId)
-				cPtr[c++] = MCLine("load_var",line.var2)
-				cPtr[c++] = MCLine("load_var",line.var3)
+				cPtr[c++] = MCLine("load_var",0,line.var2)
+				cPtr[c++] = MCLine("load_var",0,line.var3)
 				cPtr[c++] = MCLine("call_end")
 
 			}else{

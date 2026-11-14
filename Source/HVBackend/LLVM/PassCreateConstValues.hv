@@ -64,19 +64,19 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 				vr := ref fnc.Lines[i]
 				assert(vr.opcode == "load_var")
 
-				obj := ref fnc.Objects[vr.var1]
+				obj := ref fnc.Objects[vr.var2]
 				if IsObjectVariable(obj)
 				{
 					cnstId := toConstVar(obj)
 					varConsts.Push(cnstId)
-					cPtr[c++] = MCLine("mov",cnstId,vr.var1)
+					cPtr[c++] = MCLine("mov",cnstId,vr.var2)
 				}else{
-					varConsts.Push(vr.var1)
+					varConsts.Push(vr.var2)
 				}
 				i += 1
 			}
 			cPtr[c++] = stLine
-			cPtr[c++] = MCLine("load_var",varConsts[^])
+			cPtr[c++] = MCLine("load_var",0,varConsts[^])
 			cPtr[c++] = MCLine("call_end")
 			i += 1
 		case "switch_start"
@@ -107,17 +107,17 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 				vr := ref fnc.Lines[i]
 				if vr.opcode == "load_var"
 				{
-					obj := ref oPtr[vr.var1]
+					obj := ref oPtr[vr.var2]
 					if IsObjectVariable(obj)
 					{
 						cnstId := toConstVar(obj)
 						varConsts.Push(cnstId)
-						cPtr[c++] = MCLine("mov",cnstId,vr.var1)
+						cPtr[c++] = MCLine("mov",cnstId,vr.var2)
 					}else{
-						varConsts.Push(vr.var1)
+						varConsts.Push(vr.var2)
 					}
 				}else if vr.opcode == "clob_str"{
-					clobObjs.Push(vr.var1)
+					clobObjs.Push(vr.var2)
 				}else{
 					printf("wut %s %s\n",vr.opcode.ToCStr(),fnc.BaseFunction->{BoxFuncBody^}.OutputName)
 					assert(false)
@@ -126,9 +126,9 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			}
 			cPtr[c++] = stLine
 			for it : clobObjs
-				cPtr[c++] = MCLine("clob_str",it)
+				cPtr[c++] = MCLine("clob_str",0,it)
 			for it : varConsts
-				cPtr[c++] = MCLine("load_var",it)
+				cPtr[c++] = MCLine("load_var",0,it)
 			cPtr[c++] = MCLine("asm_end")
 			i += 1
 		case void
@@ -186,7 +186,7 @@ GenMCTable := !() -> void
 
 	tbl := ref OpcodeMustConstTable
 	//tbl["call_start"] = MCLine("noop")
-	tbl["load_var"] = MCLine("noop",1)
+	tbl["load_var"] = MCLine("noop",0,1)
 	tbl["call_end"] = MCLine("noop")
 
 	tbl["jmp"] = MCLine("noop")

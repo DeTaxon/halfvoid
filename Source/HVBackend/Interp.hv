@@ -185,7 +185,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			{
 				if opPtr[cs].opcode == "load_var"
 				{
-					indxs.Push(opPtr[cs].var1)
+					indxs.Push(opPtr[cs].var2)
 				}else{
 					assert(false)
 				}
@@ -809,7 +809,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 						if k < argsCount
 							continue
-						indxs.Push(cPtr[bs - 1].var1)
+						indxs.Push(cPtr[bs - 1].var2)
 					}
 
 					if indxs.Size() != 0

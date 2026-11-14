@@ -42,7 +42,7 @@ PassSetFallbacksX86 := !(MCFunction^ fnc) ->MCFunction^
 			o += 1
 
 			cPtr[c] = MCLine("call_start",line.var1,fncId)
-			cPtr[c+1] = MCLine("load_var",line.var2)
+			cPtr[c+1] = MCLine("load_var",0,line.var2)
 			cPtr[c+2] = MCLine("call_end")
 			c += 3
 			i += 1
@@ -63,8 +63,8 @@ PassSetFallbacksX86 := !(MCFunction^ fnc) ->MCFunction^
 			oPtr[o++] = newObj
 
 			cPtr[c++] = MCLine("call_start",line.var1,fncId)
-			cPtr[c++] = MCLine("load_var",line.var2)
-			cPtr[c++] = MCLine("load_var",line.var3)
+			cPtr[c++] = MCLine("load_var",0,line.var2)
+			cPtr[c++] = MCLine("load_var",0,line.var3)
 			cPtr[c++] = MCLine("call_end")
 			i += 1
 		}else if line.opcode ==  "memset" {
@@ -75,9 +75,9 @@ PassSetFallbacksX86 := !(MCFunction^ fnc) ->MCFunction^
 			oPtr[o++] = newObj
 
 			cPtr[c++] = MCLine("call_start",0,fncId)
-			cPtr[c++] = MCLine("load_var",line.var1)
-			cPtr[c++] = MCLine("load_var",line.var2)
-			cPtr[c++] = MCLine("load_var",line.var3)
+			cPtr[c++] = MCLine("load_var",0,line.var1)
+			cPtr[c++] = MCLine("load_var",0,line.var2)
+			cPtr[c++] = MCLine("load_var",0,line.var3)
 			cPtr[c++] = MCLine("call_end")
 			i += 1
 		}else{
