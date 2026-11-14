@@ -14,6 +14,19 @@ PassAddGlobalRegsInterp := !(MCFunction^ fnc) ->MCFunction^
 
 	iPtr := fnc.Lines.GetPointer()
 
+	// haveVaStart := false
+	// for it : fnc.Lines
+	// {
+	// 	if it.opcode == "va_start"
+	// 	{
+	// 		haveVaStart = true
+	// 		break
+	// 	}
+	// }
+	//
+	// if haveVaStart
+	// 	cPtr[c++] = MCLine("interp_prepare_va_args")
+
 	for i : fnc.InputsIndxCount
 	{
 		indx := fnc.InputsIndxStart + i

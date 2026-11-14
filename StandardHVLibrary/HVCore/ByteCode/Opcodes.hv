@@ -144,6 +144,9 @@ MCBaseOpcodes := enum extend u16
 	// "stack_add_int"
 	// "stack_add_float"
 
+	// BACKEND interpreter
+	"interp_prepare_va_args",
+
 	//BACKEND llvm ir
 	
 	//BACKEND x86
