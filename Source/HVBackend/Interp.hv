@@ -926,9 +926,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 		case "switch_start"
 
-			valType := thisFrame.func.Objects[opPtr[cs].var1].GetType()
+			valType := thisFrame.func.Objects[opPtr[cs].var2].GetType()
 
-			switchValue := thisFrame.GetObjectPtr(opPtr[cs].var1)->{int^}^
+			switchValue := thisFrame.GetObjectPtr(opPtr[cs].var2)->{int^}^
 
 			if valType is TypeEnum
 			{
@@ -943,10 +943,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 
 			while opPtr[cs].opcode != "switch_end"
 			{
-				objVal := thisFrame.GetObjectPtr(opPtr[cs].var1)->{int^}^
+				objVal := thisFrame.GetObjectPtr(opPtr[cs].var2)->{int^}^
 
 				if objVal == switchValue {
-					cs = labelsPtr[opPtr[cs].var2]
+					cs = labelsPtr[opPtr[cs].var3]
 					break
 				}
 				cs += 1

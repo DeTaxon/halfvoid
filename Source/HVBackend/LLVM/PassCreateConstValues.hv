@@ -83,10 +83,10 @@ PassCreateConstValues := !(MCFunction^ fnc) ->MCFunction^
 			stLine := it
 			i += 1
 
-			if IsVarType(oPtr[stLine.var1])
+			if IsVarType(oPtr[stLine.var2])
 			{
-				cnstId := makeConstVar(stLine.var1)
-				stLine.var1 = cnstId
+				cnstId := makeConstVar(stLine.var2)
+				stLine.var2 = cnstId
 			}
 			cPtr[c++] = stLine
 			while iPtr[i].opcode != "switch_end"

@@ -376,7 +376,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 			}
 			
 		case "switch_start"
-			cmpObj := it.var1
+			cmpObj := it.var2
 		
 			i += 1
 

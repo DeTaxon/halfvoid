@@ -286,7 +286,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 		{
 			indx += 1
 
-			obj := fnc.Objects[op.var1]
+			obj := fnc.Objects[op.var2]
 			tp := obj.GetType()
 
 			tmpLbl := GetNewId()
@@ -294,17 +294,17 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 			out << "	switch "
 			tp.PrintType(ctx)
 			out << " "
-			LLVMPrintObjValue(ctx,obj,op.var1)
+			LLVMPrintObjValue(ctx,obj,op.var2)
 			out << " , label %Tmp" << tmpLbl << " ["
 
 			while fnc.Lines[indx].opcode != "switch_end"
 			{
 				ln := ref fnc.Lines[indx]
-				ob := ref fnc.Objects[ln.var1]
+				ob := ref fnc.Objects[ln.var2]
 				tp.PrintType(ctx)
 				out << " "
-				LLVMPrintObjValue(ctx,ob,ln.var1)
-				out << " , label %Label" << ln.var2 << "\n"
+				LLVMPrintObjValue(ctx,ob,ln.var2)
+				out << " , label %Label" << ln.var3 << "\n"
 
 				indx += 1
 			}
