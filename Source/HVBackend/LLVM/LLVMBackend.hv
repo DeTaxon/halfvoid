@@ -1013,7 +1013,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 
 			case "va_start"
 				out << "	call void @llvm.va_start(i8* "
-				LLVMPrintObjValue(ctx,fnc.Objects[op.var1],op.var1)
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var2],op.var2)
 				out << ")"
 				printDebugEnd()
 
@@ -1026,7 +1026,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 				
 			case "va_end"
 				out << "	call void @llvm.va_end(i8* "
-				LLVMPrintObjValue(ctx,fnc.Objects[op.var1],op.var1)
+				LLVMPrintObjValue(ctx,fnc.Objects[op.var2],op.var2)
 				out << ")"
 				printDebugEnd()
 			case "debug_trap"

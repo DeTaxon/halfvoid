@@ -1,0 +1,21 @@
+
+
+VaCallTestInt := !() -> void
+	#Mark("UnitTest")
+{
+	assert(VaCallFuncInt(4,2,5,3,7) == 17)
+
+}
+
+
+VaCallFuncInt := !(int count, ...) -> int
+{
+	lst := va_list
+	va_start(lst&)
+
+	for i : count
+	{
+		result += va_arg.{int}(lst&)
+	}
+
+}

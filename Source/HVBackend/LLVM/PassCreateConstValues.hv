@@ -248,9 +248,9 @@ GenMCTable := !() -> void
 	tbl["debug_block_end"] = MCLine("noop",0)
 	tbl["debug_trap"] = MCLine("noop")
 
-	tbl["va_start"] = MCLine("noop",1)
+	tbl["va_start"] = MCLine("noop",0,1)
 	tbl["va_arg"] = MCLine("noop",0,1)
-	tbl["va_end"] = MCLine("noop",1)
+	tbl["va_end"] = MCLine("noop",0,1)
 
 	tbl["store"] = MCLine("noop",1,1)
 	tbl["load"] = MCLine("noop",0,1)

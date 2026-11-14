@@ -11,16 +11,28 @@ RunFunc := !() -> void
 	// FlacTest()
 	// OpusTest()
 	// ClosureTest()
-	huh := float[5]
-	huh2 := float[10]
 
-	testFunc(huh)
-	testFunc(huh2)
+	vaFunc(2,5,3,4,7)
+
 }
 testFunc := !(float[] x) -> void
 {
 	te := static 13
 	printf("Test %p %i\n",te&,x.Size())
+}
+
+vaFunc := !(...) -> void
+{
+	lst := va_list
+	va_start(lst&)
+
+	printf("hoy %p\n",lst&)
+	printf("hmm %i\n",lst.intOffset)
+
+	for i : 5
+	{
+		printf("test %i\n",va_arg.{int}(lst&))
+	}
 }
 
 //TODO NO EXPLICIT CONVETION ENUM TO INT

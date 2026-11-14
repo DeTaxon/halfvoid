@@ -820,7 +820,10 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 						{
 							ptr->{u64^}[i] = callerFrame.GetObjectPtr(ind)->{u64^}^
 						}
-						lst := thisFrame.GetObjectPtr(opPtr[cs].var1)->{va_list^^}^
+						lst := thisFrame.GetObjectPtr(opPtr[cs].var2)->{va_list^^}^
+						assert(lst != null)
+
+						ptr := 
 
 						if #OS() == "Linux"
 						{

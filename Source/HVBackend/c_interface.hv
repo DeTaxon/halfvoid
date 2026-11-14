@@ -235,11 +235,11 @@ HVB_ins_call_end := !(MCBuildContext^ ctx) -> void
 
 HVB_ins_va_start := !(MCBuildContext^ ctx, s32 opr1) -> void
 {
-	ctx.lines.Push(MCLine("va_start",opr1))
+	ctx.lines.Push(MCLine("va_start",0,opr1))
 }
 HVB_ins_va_end := !(MCBuildContext^ ctx, s32 opr1) -> void
 {
-	ctx.lines.Push(MCLine("va_end",opr1))
+	ctx.lines.Push(MCLine("va_end",0,opr1))
 }
 HVB_ins_va_arg := !(MCBuildContext^ ctx, s32 opr1,s32 opr2) -> void
 {

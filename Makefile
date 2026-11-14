@@ -110,6 +110,7 @@ unit:
 	./halfvoid -g $(flags) -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Tests -o /tmp/out.ll
 	clang -g /tmp/out.ll -o /tmp/hv_tests -lm -ldl
 	/tmp/hv_tests
+	./halfvoid -g $(flags) -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Tests -o /tmp/out.ll -run main
 unit.exe:
 	./halfvoid.exe -g $(flags) -emulate-tls -win32  -C0 StandardHVLibrary -C0 ExperimentalLibrary -C1 Tests -o /tmp/out.ll
 	clang.exe -g /tmp/out.ll -o /tmp/hv_tests.exe -static
