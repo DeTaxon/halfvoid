@@ -3,7 +3,5 @@ HVOptType := class
 {
 	GetDataUsage := virtual !(HVB_Function^ fnc) -> int^ {}
 	GetRetConstUsage := virtual !(HVB_Function^ fnc) -> bool^ {}
-
-	IsRetValue := virtual !(MCBaseOpcodes opcode) -> bool {}
 }
 HVOpt := HVOptType^ 

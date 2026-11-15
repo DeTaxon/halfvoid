@@ -258,37 +258,37 @@ MCBuildFuncContext_x86_64 := class
 				}
 			case "store"
 
-				if objs[line.var2] is MCConstInteger
+				if objs[line.var3] is MCConstInteger
 				{
-					reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue() 
-					val := objs[line.var2]&->{MCConstInteger^}.GetValue()
+					reg1 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue() 
+					val := objs[line.var3]&->{MCConstInteger^}.GetValue()
 
 					offst := 0
 					regData := reg1 mod 8
-					if line.var3 != 0
+					if line.var4 != 0
 					{
-						offst = objs[line.var3]&->{MCConstInteger^}.GetValue()
+						offst = objs[line.var4]&->{MCConstInteger^}.GetValue()
 						regData = regData or_b GetOffsetRegCode(offst)
 					}
 					//TODO unsigned version
 					// TODO r11 support?
 					WriteData(0x48,0xC7,regData)
-					if line.var3 != 0
+					if line.var4 != 0
 						WriteOffsetRegCode(offst)
 						
 					WriteInt32(val)
 
 				}else{
 
-					reg1 := objs[line.var1]&->{MCConstRegisterX86^}.GetValue() 
-					reg2 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue()
+					reg1 := objs[line.var2]&->{MCConstRegisterX86^}.GetValue() 
+					reg2 := objs[line.var3]&->{MCConstRegisterX86^}.GetValue()
 
-					size := objs[line.var2].GetType().GetSize()
+					size := objs[line.var3].GetType().GetSize()
 
 
 					regData := (reg1 mod 8) + ((reg2 mod 8) shl 3)
 
-					if line.var3 != 0
+					if line.var4 != 0
 						regData = regData or_b 0x80
 
 					if reg2 >= 16 {
@@ -321,9 +321,9 @@ MCBuildFuncContext_x86_64 := class
 
 					}
 
-					if line.var3 != 0
+					if line.var4 != 0
 					{
-						obj := objs[line.var3]
+						obj := objs[line.var4]
 						assert(obj is MCConstInteger)
 
 						offst := obj&->{MCConstInteger^}.GetValue()

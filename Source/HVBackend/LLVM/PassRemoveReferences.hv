@@ -84,7 +84,10 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 		if line.opcode == "mov" and oPtr[line.var1] is MCReference
 		{
 			line.opcode = "store"
-			line.var1 = getVar(line.var1)
+			line.var3 = line.var2
+			line.var2 = getVar(line.var1)
+			line.var1 = 0
+			isRetObj = false
 		}
 
 
@@ -152,7 +155,7 @@ passRemoveReferencesRemoveReferences := !(MCFunction^ fnc) ->MCFunction^
 				v2 := grd.PushConstVar(oPtr[v].GetType())
 				retPtr := getVar(v)
 				cPtr[c-1].var1 = v2
-				cPtr[c++] = MCLine("store",retPtr,v2)
+				cPtr[c++] = MCLine("store",0,retPtr,v2)
 			}
 		}
 		ii += 1

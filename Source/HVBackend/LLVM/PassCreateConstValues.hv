@@ -252,7 +252,7 @@ GenMCTable := !() -> void
 	tbl["va_arg"] = MCLine("noop",0,1)
 	tbl["va_end"] = MCLine("noop",0,1)
 
-	tbl["store"] = MCLine("noop",1,1)
+	tbl["store"] = MCLine("noop",0,1,1)
 	tbl["load"] = MCLine("noop",0,1)
 	tbl["get_field_ptr"] = MCLine("noop",0,1,1,1,1)
 	tbl["get_array_elem_ptr"] = MCLine("noop",0,1,1,1,1)

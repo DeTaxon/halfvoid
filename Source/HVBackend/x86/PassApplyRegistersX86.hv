@@ -183,7 +183,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				case 3 reg = "r9"
 				}
 
-				cPtr[c++] = MCLine("store",r1,bldr.PushReg(reg,GTypeVoidP),bldr.PushInt(8*i))
+				cPtr[c++] = MCLine("store",0,r1,bldr.PushReg(reg,GTypeVoidP),bldr.PushInt(8*i))
 			}
 		}
 	}
@@ -536,16 +536,16 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				c += 2
 			}
 		case "store"
-			ob1 := oPtr[it.var1]
-			ob2 := oPtr[it.var2]
+			ob1 := oPtr[it.var2]
+			ob2 := oPtr[it.var3]
 
 			tp := ob1.GetType()
 
 			if ob1.GetType() == ob2.GetType() {
 				reg := bldr.PushReg("rax",tp)
 
-				cPtr[c] = MCLine("mov",reg,it.var2)
-				cPtr[c+1] = MCLine("mov",it.var1,reg)
+				cPtr[c] = MCLine("mov",reg,it.var3)
+				cPtr[c+1] = MCLine("mov",it.var2,reg)
 				c += 2
 			}else{
 				reg1 := bldr.PushReg("rcx",ob1.GetType())
@@ -559,9 +559,9 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				}
 				
 
-				cPtr[c] = MCLine("mov",reg1,it.var1)
-				cPtr[c+1] = MCLine("mov",reg2,it.var2)
-				cPtr[c+2] = MCLine("store",reg1,reg2)
+				cPtr[c] = MCLine("mov",reg1,it.var2)
+				cPtr[c+1] = MCLine("mov",reg2,it.var3)
+				cPtr[c+2] = MCLine("store",0,reg1,reg2)
 				c += 3
 
 			}
@@ -643,7 +643,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 				r2 := bldr.PushReg("rcx",oPtr[it.var2].GetType())
 				cPtr[c] = MCLine("get_pointer",r1,it.var1)
 				cPtr[c+1] = MCLine("mov",r2,it.var2)
-				cPtr[c+2] = MCLine("store",r1,r2)
+				cPtr[c+2] = MCLine("store",0,r1,r2)
 				c += 3
 			}else{
 				cPtr[c] = it
@@ -674,14 +674,14 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 				cPtr[c++] = MCLine("mov",r1,it.var2)
 				// cPtr[c++] = MCLine("mov",r2,bldr.PushInt(min(redInts,6)*8))
-				cPtr[c++] = MCLine("store",r1,bldr.PushInt(min(redInts,6)*8))
+				cPtr[c++] = MCLine("store",0,r1,bldr.PushInt(min(redInts,6)*8))
 				// cPtr[c++] = MCLine("mov",r2,bldr.PushInt(min(redFloats,8)*16 + 6*8))
-				cPtr[c++] = MCLine("store",r1,bldr.PushInt(min(redFloats,8)*16 + 6*8),bldr.PushInt(4))
+				cPtr[c++] = MCLine("store",0,r1,bldr.PushInt(min(redFloats,8)*16 + 6*8),bldr.PushInt(4))
 
 				cPtr[c++] = MCLine("get_pointer",r3,pushVar(16,GTypeSizeT))
-				cPtr[c++] = MCLine("store",r1,r3,bldr.PushInt(8))
+				cPtr[c++] = MCLine("store",0,r1,r3,bldr.PushInt(8))
 				cPtr[c++] = MCLine("get_pointer",r3,regAreaId)
-				cPtr[c++] = MCLine("store",r1,r3,bldr.PushInt(16))
+				cPtr[c++] = MCLine("store",0,r1,r3,bldr.PushInt(16))
 			}
 			if targetWindows
 			{
@@ -692,7 +692,7 @@ PassApplyRegistersX86 := !(MCFunction^ fnc) ->MCFunction^
 
 				cPtr[c++] = MCLine("get_pointer",r2,pushVar( offst*8 + 16,GTypeVoidP.GetPoint()))
 				cPtr[c++] = MCLine("mov",r1,it.var2)
-				cPtr[c++] = MCLine("store",r1,r2)
+				cPtr[c++] = MCLine("store",0,r1,r2)
 				
 			}
 		case "va_end"

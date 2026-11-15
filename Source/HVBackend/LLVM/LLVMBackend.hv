@@ -875,19 +875,19 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 				out << ",i1 0)"
 				printDebugEnd()
 			case "store"
-				ob1 := ref fnc.Objects[op.var1]
-				ob2 := ref fnc.Objects[op.var2]
+				ob1 := ref fnc.Objects[op.var2]
+				ob2 := ref fnc.Objects[op.var3]
 
 				out << "	store "
 				ob2.GetType().PrintType(ctx)
 				out << " "
-				LLVMPrintObjValue(ctx,ob2,op.var2)
+				LLVMPrintObjValue(ctx,ob2,op.var3)
 				out << " , "
 				ob1.GetType().PrintType(ctx)
 				if ob1 is MCVariable
 					out << "*"
 				out << " "
-				LLVMPrintObjValue(ctx,ob1,op.var1)
+				LLVMPrintObjValue(ctx,ob1,op.var2)
 				printDebugEnd()
 			case "load"
 				ob1 := ref fnc.Objects[op.var1]

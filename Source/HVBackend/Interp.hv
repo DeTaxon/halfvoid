@@ -840,9 +840,9 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 			setPtr->{u8^^}^ = v2->{u8^^}^[fld.MemOffset]&
 
 		case "store"
-			resType := interpFunc.Objects[thisLine.var2].GetType()
-			v1 := thisFrame.GetObjectPtr(thisLine.var1)
-			v2 := thisFrame.GetObjectPtr(thisLine.var2)
+			resType := interpFunc.Objects[thisLine.var3].GetType()
+			v1 := thisFrame.GetObjectPtr(thisLine.var2)
+			v2 := thisFrame.GetObjectPtr(thisLine.var3)
 
 			switch resType.GetSize()
 			{
