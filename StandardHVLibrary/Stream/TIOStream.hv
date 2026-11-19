@@ -18,14 +18,19 @@ Stream := class extend TGCObject
 
 	"<<" := !(Str strData) -> ref Stream
 	{
-		Write(strData.NonNullStr(),strData.Size())
+		if strData == null
+		{
+			Write("(null)",6)
+		}else{
+			Write(strData.NonNullStr(),strData.Size())
+		}
 		return this
 	}
 	"<<" := !(char^ strData) -> ref Stream
 	{
 		if strData == null
 		{
-			Write("(nil)",5)
+			Write("(null)",6)
 		}else{
 			Write(strData,strlen(strData))
 		}
