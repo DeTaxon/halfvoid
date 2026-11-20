@@ -48,9 +48,9 @@ show_bm := !() -> void
 	// 	})
 	// })
 
-	tf := HV.FindFunction("ComputePiTest")
-	ssa := HV.GetSSAFunc(tf)
-	points := bool^
+	// tf := HV.FindFunction("ComputePiTest")
+	// ssa := HV.GetSSAFunc(tf)
+	// points := bool^
 
 	fps := 0
 
@@ -81,13 +81,13 @@ show_bm := !() -> void
 
 		im.Inputs(buttons['q'] or MouseButtons[0],win.MousePosition)
 
-		switch im.newButton
-		{
-		case 'z' ssa = HV.GetBCFunc(tf,"Base")
-		case 'x' ssa = HV.GetBCFunc(tf,"Interp")
-		case 'c' ssa = HV.GetBCFunc(tf,"SSA")
-		case 'v' points = HVOpt.GetRetConstUsage(ssa)
-		}
+		// switch im.newButton
+		// {
+		// case 'z' ssa = HV.GetBCFunc(tf,"Base")
+		// case 'x' ssa = HV.GetBCFunc(tf,"Interp")
+		// case 'c' ssa = HV.GetBCFunc(tf,"SSA")
+		// case 'v' points = HVOpt.GetRetConstUsage(ssa)
+		// }
 
 
 		cmds.Reset()
@@ -124,8 +124,8 @@ show_bm := !() -> void
 
 		// im.DrawText(vec2f(44,44),"Test this",chars)
 		im.DrawFloat(vec2f(0,0),fps)
-		im.DrawFunc(ssa,points)
-		// im.DrawNodes()
+		// im.DrawFunc(ssa,points)
+		im.DrawNodes()
 
 		// im.DrawTextEdit(vec2f(50,50),textTest[0]&,256)
 

@@ -3,12 +3,17 @@ bmBigData := PageMemory
 bmIterator := int
 bmBacktrace := void^
 
+bmMaxInts := int
+
 initTaskBenchmark := !() -> void
 {
 	bmBigData.Create(32*1024*1024,"wr")
 	bmBacktrace = backtrace_create_state(null,1,null,null)
 	// TODO Use marking, but libraries must be loaded first
+	bmMaxInts = bmBigData.Size() div bmtStackFrameInfo->TypeSize
 }
+
+outOfMemTrace := bmtStackFrameInfo
 
 bmtStackFrameInfo := class
 {
@@ -47,7 +52,15 @@ bmCreateTaskEntry := !(bool printStack = true,int skipCalls = 0) -> bmtStackFram
 	// #MarkFunction("CallAtStart",initTaskBenchmark)
 
 	newId := InterlockAdd(bmIterator,1)
-	ptr := bmBigData.GetPointer()->{bmtStackFrameInfo^}[newId]&
+
+	ptr := bmtStackFrameInfo^
+	if newId >= 6000
+	{
+		ptr := outOfMemTrace&
+		return ptr
+	}else{
+		ptr = bmBigData.GetPointer()->{bmtStackFrameInfo^}[newId]&
+	}
 
 	ptr.timeTaken = GetSteadyTime()
 
