@@ -1,9 +1,7 @@
 
 PassForceReturnConstValues := !(MCFunction^ fnc) ->MCFunction^
 {
-	usages := Vector.{int}
-
-	usages.Resize(fnc.Objects.Size())
+	usages := hv_malloc(fnc.Objects.Size()*int->TypeSize)->{int^}
 
 	usages[fnc.ResultIndex] = 999
 	for i : fnc.InputsIndxCount
