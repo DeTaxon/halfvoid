@@ -764,7 +764,7 @@ MCInterpFunction := !(MCInterpContext^ iCntx,MCFunction^ interpFunc, MCInterpFun
 				{
 					vecDest->{float^}[ind] = 0.0
 				}else{
-					thisInd := thisFrame.GetObjectPtr(opPtr[cs].var1)->{int^}^
+					thisInd := thisFrame.GetObjectPtr(opPtr[cs].var2)->{int^}^
 					vecDest->{float^}[ind] = vecSource->{float^}[thisInd]
 				}
 				ind += 1

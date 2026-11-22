@@ -801,7 +801,7 @@ MCBuildFuncContext_x86_64 := class
 					switch lines[i].opcode 
 					{
 					case "vec_shuffle_index"
-						obj := ref objs[lines[i].var1]
+						obj := ref objs[lines[i].var2]
 						assert(obj is MCConstInteger)
 						val := obj&->{MCConstInteger^}.GetValue()
 						indx = indx + (val shl j*2)

@@ -180,7 +180,7 @@ HVB_ins_vec_shuffle_begin := !(MCBuildContext^ ctx, s32 resId, s32 opr1) -> void
 }
 HVB_ins_vec_shuffle_index := !(MCBuildContext^ ctx, s32 posVal) -> void
 {
-	ctx.lines.Push(MCLine("vec_shuffle_index",posVal))
+	ctx.lines.Push(MCLine("vec_shuffle_index",0,posVal))
 }
 HVB_ins_vec_shuffle_zero := !(MCBuildContext^ ctx) -> void
 {

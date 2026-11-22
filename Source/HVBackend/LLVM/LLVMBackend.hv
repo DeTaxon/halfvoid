@@ -949,7 +949,7 @@ LLVMWriteBodyFunction := !(BoxFuncBody^ base,LLVMWriteContext^ ctx) -> void
 					switch line.opcode
 					{
 					case "vec_shuffle_index"
-						out << "i32 " << fnc.Objects[line.var1]&->{MCConstInteger^}.GetValue()
+						out << "i32 " << fnc.Objects[line.var2]&->{MCConstInteger^}.GetValue()
 					case "vec_shuffle_zero"
 						out << "i32 " << vecSize
 					}
