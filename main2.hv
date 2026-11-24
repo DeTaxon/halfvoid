@@ -12,6 +12,7 @@ RunFunc := !() -> void
 	// OpusTest()
 	// ClosureTest()
 
+	codeBase := 0x40000
 
 	header := ElfHeader
 	header.magic[0] = 0x7f
@@ -24,23 +25,52 @@ RunFunc := !() -> void
 	header.version = 1
 
 	header.abi = 0
-	header.abiVer = 0
+	header.abiVersion = 0
 	header.eType = 3 // shared object?
 	header.machine = 0x3e // x86_64
-	header.efiVersion = 1
+	header.elfVersion = 1
 
 	header.eEntry = 0 //??????
 	header.programHeaderOffset = 0x40
 	header.sectionHeaderOffset = 0 //??????
 
 	header.flags = 0
-
 	header.ehSize = 64
-	header.phetSize = 0x38
+
+	header.phetSize = 0x38	
+	header.phNum = 1 // ????????
 	
-	header.phNum = 0 // ????????
+	header.shentSize = 0x40
+	header.shNum = 0
 	header.index = 0// ?????????????/
 
+	
+	codeHeader := ElfProgramHeader
+	codeHeader.pType = 1
+	codeHeader.offset = 0
+	codeHeader.virtAddress = codeBase
+	codeHeader.fileSize = 0//???
+	codeHeader.memSize = 0
+	codeHeader.align = 0x1000
+
+	offsetToCode := header->TypeSize + codeHeader->TypeSize
+	
+	code := FSGetFile("PlayGround/Asm/exit.bin").GetBlob()
+
+	header.eEntry = codeBase + offsetToCode
+
+	codeHeader.fileSize = code.Size()
+	codeHeader.memSize = codeHeader.fileSize
+	codeHeader.offset = offsetToCode
+	codeHeader.virtAddress = header.eEntry
+
+	tst := TFile("tst.out","w")
+
+	tst.Write(header&,header->TypeSize)
+	tst.Write(codeHeader&,codeHeader->TypeSize)
+	tst.Write(code.GetPointer(),code.Size())
+
+	tst.Close()
 	
 }
 
