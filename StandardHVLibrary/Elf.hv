@@ -1,0 +1,50 @@
+
+
+ElfHeader := class
+{
+	magic := u8[4]
+	archSize := u8 // 1 for 32-bit 2 for 64-bit
+	endian := u8 //1 for little endian
+	version := u8 // always 1
+	abi := u8 // 0 for system-v
+	abiVers := u8 // 3?
+	pad := u8[7]
+	eType := u16 // 2 exe , 3 .so
+	machine := u16 // 3 - x86, 0xB7 - arm64
+	elfVersion := u32 // 1 for elf
+	eEntry := size_t
+	programHeaderOffset := size_t
+	sectionHeaderOffset := size_t
+	flags := u32 
+	ehSize := u16 //header size 64 for 64 52 for 32
+	phetSize := u16 // size of a section header table entry
+	phNum := u16 // number of entriies
+	index := u16 // index of the section header table entry
+}
+
+ElfProgramHeader := class
+{
+	pType := u32 // 0x7 TLS, 0x2 dyn link inf,0x1 loadable segment
+	flags := u32 // 0x1 exe, 0x2 write, 0x4 read
+	offset := size_t
+	virtAddr := size_t
+	physAddr := size_t
+	fileSize := size_t
+	memSize := size_t
+	flags2 := u32 // same as flags but for something else
+	align := size_t // power of two or zero
+}
+
+ElfSectionHeader := class
+{
+	name := u8[4]
+	itType := u32 // huh?
+	flags := size_t
+	virtAddr := size_t
+	offset := size_t
+	size := size_t
+	link := u32
+	info := u32
+	addrAlign := size_t
+	entSize := size_t
+}

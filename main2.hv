@@ -12,27 +12,36 @@ RunFunc := !() -> void
 	// OpusTest()
 	// ClosureTest()
 
-	vaFunc(2,5,3,4,7)
 
-}
-testFunc := !(float[] x) -> void
-{
-	te := static 13
-	printf("Test %p %i\n",te&,x.Size())
-}
+	header := ElfHeader
+	header.magic[0] = 0x7f
+	header.magic[1] = 'E'
+	header.magic[2] = 'L'
+	header.magic[3] = 'F'
 
-vaFunc := !(...) -> void
-{
-	lst := va_list
-	va_start(lst&)
+	header.archSize = 2
+	header.endian = 1
+	header.version = 1
 
-	printf("hoy %p\n",lst&)
-	printf("hmm %i\n",lst.intOffset)
+	header.abi = 0
+	header.abiVer = 0
+	header.eType = 3 // shared object?
+	header.machine = 0x3e // x86_64
+	header.efiVersion = 1
 
-	for i : 5
-	{
-		printf("test %i\n",va_arg.{int}(lst&))
-	}
+	header.eEntry = 0 //??????
+	header.programHeaderOffset = 0x40
+	header.sectionHeaderOffset = 0 //??????
+
+	header.flags = 0
+
+	header.ehSize = 64
+	header.phetSize = 0x38
+	
+	header.phNum = 0 // ????????
+	header.index = 0// ?????????????/
+
+	
 }
 
 //TODO NO EXPLICIT CONVETION ENUM TO INT

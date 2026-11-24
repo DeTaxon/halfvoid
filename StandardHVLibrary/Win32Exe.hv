@@ -1,0 +1,145 @@
+
+image_dos_signature := 0x5a4d
+image_dos_header := packed_class
+{
+	e_magic := u16
+	e_cblp := u16
+	e_cp := u16
+	e_crlc := u16
+	e_cparhdr := u16
+	e_minalloc := u16
+	e_maxalloc := u16
+	e_ss := u16
+	e_csum := u16
+	e_ip := u16
+	e_ip := u16
+	e_cs := u16
+	e_lfarlc := u16
+	e_ovno := u16
+	e_res := u16[4]
+	e_oemid := u16
+	e_oeminfo := u16
+	e_res2 := u16[10]
+	e_lfanew := s32 //LONG
+}
+
+image_file_header := packed_class
+{
+	Machine := u16
+	NumberOfSections := u16
+	TimeDateStamp := u32
+	PointerToSymbolTable := u32
+	NumberOfSymbols := u32
+	SizeOfOptionalHeader := u16
+	Characteristics := u16
+}
+image_data_directory := packed_class
+{
+	VirtualAddress := u32
+	Size := u32
+}
+image_optional_header64 := packed_class
+{
+	Magic := u16
+	MajorLinkerVersion := u8
+	MinorLinkerVersion := u8
+	SizeOfCode := u32
+	SizeOfInitializedData := u32
+	SizeOfUninitializedData := u32
+	AddressOfEntryPoint := u32
+	BaseOfCode := u32
+	ImageBase := void^
+	SectionAligment := u32
+	FileAligment := u32
+	MajorOperatingSystemVersion := u16
+	MinorOperatingSystemVersion := u16
+	MajorImageVersion := u16
+	MinorImageVersion := u16
+	MajorSubsystemVersion := u16
+	MinorSubsystemVersion := u16
+	Win32VersionValue := u32
+	SizeOfImage := u32
+	SizeOfHeaders := u32
+	CheckSum := u32
+	Subsystem := u16
+	DllCharacteristics := u16
+	SizeOfStackReserve := u64
+	SizeOfStackCommit := u64
+	SizeOfHeapReserve := u64
+	SizeOfHeapCommit := u64
+	LoaderFlags := u32
+	NumberOfRvaAndSizes := u32
+	DataDirectory := image_data_directory[16]
+}
+image_nt_header64_signature := 0x4550 //0x00004550
+image_nt_header64 := packed_class
+{
+	Signature := u32
+	FileHeader := image_file_header
+	OptionalHeader := image_optional_header64
+}
+
+image_section_header := packed_class
+{
+	Name := char[8]
+	VirtualSize := u32
+	//PhysicalAddress := u32 at VirtualSize
+	VirtualAddress := u32
+	SizeOfRawData := u32
+	PointerToRawData := u32
+	PointerToRelocations := u32
+	PointerToLinenumbers := u32
+	NumberOfRelocations := u16
+	NumberOfLinenumbers := u16
+	Characteristics := u32
+}
+
+image_import_descriptor := packed_class
+{
+	Characteristics := u32
+	//OriginalFirstTrunk := u32 at Char
+	TimeDateStamp := u32
+	ForwardedChain := u32
+	Name := u32
+	FirstThunk := u32
+}
+
+image_export_descriptor := packed_class
+{
+	Characteristics := u32
+	TimeDateStamp := u32
+	MajorVersion := u16
+	MinorVersion := u16
+	Name := u32
+	Base := u32
+	NumberOfFunctions := u32
+	NumberOfNames := u32
+	AddressOfFunctions := u32
+	AddressOfNames := u32
+	AddressOfNameOrdinals := u32
+}
+image_import_by_name := packed_class
+{
+	Hint := u16
+	Name := char[1]
+}
+image_base_relocation := packed_class
+{
+	VirtualAddress := u32
+	SizeOfBlock := u32
+}
+image_tls_directory64 := packed_class
+{
+	StartAddressOfRawData := u64
+	EndAddressOfRawData := u64
+	AddressOfIndex := u64
+	AddressOfCallBacks := u64
+	SizeOfZeroFill := u32
+	Characteristics := u32
+}
+
+
+
+IMAGE_SCN_MEM_EXECUTE := 0x20000000
+IMAGE_SCN_MEM_READ := 0x40000000
+IMAGE_SCN_MEM_WRITE := 0x80000000
