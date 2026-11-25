@@ -63,6 +63,7 @@ RunFunc := !() -> void
 	codeHeader.memSize = codeHeader.fileSize
 	codeHeader.offset = offsetToCode
 	codeHeader.virtAddress = header.eEntry
+	codeHeader.flags = 5
 
 	tst := TFile("tst.out","w")
 
