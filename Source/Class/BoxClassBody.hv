@@ -101,7 +101,6 @@ PClassParser := class
 		}
 		res := new BoxClassBody(isPacked,parents,bodyToken)
 		res.isClassLazy = isClassLazy
-		res.StartParseHeader()
 		return res
 	}
 	ComputeHash := !(Blob^ fileData) -> u32
